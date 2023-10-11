@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,20 +5,6 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-}
-
-enum State {
-  New        @map("0")
-  Learning   @map("1")
-  Review     @map("2")
-  Relearning @map("3")
-}
-
-enum Rating {
-  Again @map("1")
-  Hard  @map("2")
-  Good  @map("3")
-  Easy  @map("4")
 }
 
 model Revlog {
@@ -32,7 +15,6 @@ model Revlog {
   elapsed_days   Int
   scheduled_days Int
   review         DateTime
-  card           Card     @relation(fields: [cid], references: [cid])
 }
 
 model Card {
@@ -47,15 +29,13 @@ model Card {
   state          State     @default(New)
   last_review    DateTime?
   nid            String?   @unique
-  note           Note?     @relation(fields: [nid], references: [nid])
-  log            Revlog[]
 }
 
 model Parameters {
   uid               Int     @id @unique @default(autoincrement())
-  request_retention Decimal @default(0.9)
+  request_retention Decimal @default(0.900000000000000000000000000000)
   maximum_interval  Int     @default(36500)
-  w                 Json    @default("[1,1,5,-0.5,-0.5,0.2,1.4,-0.12,0.8,2,-0.2,0.2,1]")
+  w                 Json
   enable_fuzz       Boolean @default(false)
 }
 
@@ -63,5 +43,18 @@ model Note {
   nid      String @id @unique @default(cuid())
   question String @default("")
   answer   String @default("")
-  card     Card?
+}
+
+enum State {
+  New        @map("0")
+  Learning   @map("1")
+  Review     @map("2")
+  Relearning @map("3")
+}
+
+enum Rating {
+  Again @map("1")
+  Hard  @map("2")
+  Good  @map("3")
+  Easy  @map("4")
 }
