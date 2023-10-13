@@ -12,6 +12,7 @@
     "dbpush": "dotenv -e .env.local -- npx prisma db push"
   },
   "dependencies": {
+    "@prisma/client": "5.4.2",
     "next": "13.5.4",
     "react": "^18",
     "react-dom": "^18",
