@@ -5,11 +5,13 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  relationMode = "prisma" //emulate relations
 }
 
 model Revlog {
   lid            String   @id @unique @default(cuid())
   cid            String
+  card           Card     @relation(fields: [cid], references: [cid])
   grade          Rating
   state          State
   elapsed_days   Int
@@ -30,7 +32,9 @@ model Card {
   lapses         Int
   state          State     @default(New)
   last_review    DateTime?
-  nid            String?   @unique
+  nid            String    @unique
+  note           Note      @relation(fields: [nid], references: [nid])
+  logs           Revlog[]
 }
 
 model Parameters {
@@ -46,6 +50,7 @@ model Note {
   question String @default("")
   answer   String @default("")
   extend   Json
+  card     Card?
 }
 
 enum State {

@@ -9,7 +9,8 @@
     "lint": "next lint",
     "studio": "dotenv -e .env.local -- npx prisma studio",
     "dbpull": "dotenv -e .env.local -- npx prisma db pull",
-    "dbpush": "dotenv -e .env.local -- npx prisma db push"
+    "dbpush": "dotenv -e .env.local -- npx prisma db push",
+    "prismaGen": "dotenv -e .env.local -- npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "5.4.2",
