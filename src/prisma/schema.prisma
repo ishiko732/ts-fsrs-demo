@@ -3,26 +3,27 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-  relationMode = "prisma" //emulate relations
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+  
 }
 
 model Revlog {
   lid            String   @id @unique @default(cuid())
-  cid            String
-  card           Card     @relation(fields: [cid], references: [cid])
+  cid            Int
   grade          Rating
   state          State
   elapsed_days   Int
   scheduled_days Int
   review         DateTime
+  card           Card     @relation(fields: [cid], references: [cid])
 
   @@index([cid])
 }
 
 model Card {
-  cid            String    @id @unique @default(cuid())
+  cid            Int    @id @unique @default(autoincrement())
   due            DateTime  @default(now())
   stability      Float
   difficulty     Float
@@ -32,7 +33,7 @@ model Card {
   lapses         Int
   state          State     @default(New)
   last_review    DateTime?
-  nid            String    @unique
+  nid            Int    @unique
   note           Note      @relation(fields: [nid], references: [nid])
   logs           Revlog[]
 }
@@ -46,7 +47,7 @@ model Parameters {
 }
 
 model Note {
-  nid      String @id @unique @default(cuid())
+  nid      Int @id @unique @default(autoincrement())
   question String @default("")
   answer   String @default("")
   extend   Json

@@ -1,64 +1,77 @@
-import { createEmptyCardByPrisma } from "ts-fsrs";
 import prisma from "./prisma";
+import { NodeData } from "@/types";
+import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
 
-type Data={
-    [key:string]:any
-}
+export async function addNote(data: NodeData) {
+  const question = data["英単語"];
+  const answer = data["意味"];
+  if (!question || !answer) {
+    return false;
+  }
 
-
-export async function addNote(data:Data,questionField:string,answerField:string){
-
-    const question=data[questionField]
-    const answer = data[answerField]
-    if(!question||!answer){
-        return false;
-    }
-
-    const fc = createEmptyCardByPrisma();
-    prisma.card.create({
+  const fc = createEmptyCardByPrisma();
+  const _note = await prisma.note.findFirst({
+    where: { question },
+    select: { nid: true },
+  });
+  return _note
+    ? prisma.note.update({
+        where: {
+          nid: _note ? _note.nid : undefined,
+        },
         data: {
-            ...fc,
-            note: {
-                create: {
-                    question,
-                    answer,
-                    extend: data,
-                },
-            }
+          question,
+          answer,
+          extend: JSON.stringify(data),
         },
-    });
+      })
+    : prisma.note.create({
+        data: {
+          question,
+          answer,
+          extend: JSON.stringify(data),
+          card: {
+            create: fc,
+          },
+        },
+        include: { card: true },
+      });
 }
 
-export async function getNotes(){
-    const notes = await prisma.note.findMany({
-        include: {
-            card: true,
-        },
-    });
-    return notes;
+export async function addNotes(dates: NodeData[]) {
+  const all = dates.map((note) => addNote(note));
+  return Promise.all(all);
 }
 
-export async function getNoteByQuestion(question:string){
-    const note = await prisma.note.findFirst({
-        where:{
-            question,
-        },
-        include:{
-            card:true,
-        },
-    });
-    return note;
+export async function getNotes() {
+  const notes = await prisma.note.findMany({
+    include: {
+      card: true,
+    },
+  });
+  return notes;
 }
 
-export async function delNoteByQuestion(question:string){
-    const note= await getNoteByQuestion(question);
-    if(!note){
-        return false;
-    }
-    await prisma.note.delete({
-        where:{
-            nid:note.nid,
-        },
-    });
-    return true;
+export async function getNoteByQuestion(question: string) {
+  const note = await prisma.note.findFirst({
+    where: {
+      question,
+    },
+    include: {
+      card: true,
+    },
+  });
+  return note;
+}
+
+export async function delNoteByQuestion(question: string) {
+  const note = await getNoteByQuestion(question);
+  if (!note) {
+    return false;
+  }
+  return prisma.note.delete({
+    where: {
+      nid: note.nid,
+    },
+  });
 }
