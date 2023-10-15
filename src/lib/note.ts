@@ -48,6 +48,17 @@ export async function getNotes(take?:number) {
   return notes;
 }
 
+export async function getNoteByNid(nid: number) {
+    const note = await prisma.note.findFirst({
+        where: {
+            nid,
+        },
+        include: {
+        card: true,
+        },
+    });
+    return note;
+}
 export async function getNoteByQuestion(question: string) {
   const note = await prisma.note.findFirst({
     where: {
