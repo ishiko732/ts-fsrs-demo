@@ -43,8 +43,8 @@ export async function addNotes(dates: NodeData[]) {
   return Promise.all(all);
 }
 
-export async function getNotes() {
-  const notes = await prisma.note.findMany();
+export async function getNotes(take?:number) {
+  const notes = await prisma.note.findMany({ take: take });
   return notes;
 }
 
