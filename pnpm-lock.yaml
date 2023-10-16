@@ -18,8 +18,8 @@ dependencies:
     specifier: ^18
     version: 18.2.0(react@18.2.0)
   ts-fsrs:
-    specifier: ^3.0.0
-    version: 3.0.0
+    specifier: ^3.0.2
+    version: 3.0.2
 
 devDependencies:
   '@types/node':
@@ -2508,8 +2508,8 @@ packages:
       typescript: 5.2.2
     dev: true
 
-  /ts-fsrs@3.0.0:
-    resolution: {integrity: sha512-zJjZ/jzcu/4YT+e6cmBuDKuCn+liN3PDlQZN8wkMZlv0LXshryotIwN5lbf2TIaf0X4bave/cMktNmiMWPcVmQ==}
+  /ts-fsrs@3.0.2:
+    resolution: {integrity: sha512-l1sIpAjN7FbrYhxLtOp/wn4m/j14bQvyl/kZQVx6SR9/3rcH80TdVeRX/+5+Nk3CFmmMmjiDORbbMgDyWqUIRQ==}
     dependencies:
       dotenv: 16.3.1
       seedrandom: 3.0.5
