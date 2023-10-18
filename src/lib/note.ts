@@ -1,6 +1,8 @@
 import prisma from "./prisma";
 import { NodeData } from "@/types";
 import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
+import { Card, Note, Prisma } from "@prisma/client";
+
 
 export async function addNote(data: NodeData) {
   const question = data["英単語"];
@@ -43,9 +45,9 @@ export async function addNotes(dates: NodeData[]) {
   return Promise.all(all);
 }
 
-export async function getNotes(take?:number) {
-  const notes = await prisma.note.findMany({ take: take });
-  return notes;
+export async function getNotes({take,query,order}:{take?: number, query?: Prisma.NoteWhereInput,order?:Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]}) {
+    const notes = await prisma.note.findMany({ take: take, where: query,orderBy:order,include: { card: true }});
+    return notes as Array<Note & { card: Card}>;
 }
 
 export async function getNoteByNid(nid: number) {
