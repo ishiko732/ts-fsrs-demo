@@ -1,10 +1,10 @@
 import getFormattedDate from "@/lib/format";
-import Link from "next/link";
 import { getNoteByNid } from "@/lib/note";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import Video from "@/app/components/Video";
 import Audio from "@/app/components/Audio";
+import GoBack from "@/app/components/GoBack";
 
 type Props = {
   params: {
@@ -50,16 +50,14 @@ export default async function Page({ params }: Props) {
               {例文 && <div>例文:{例文}</div>}
               {例文訳 && <div>例文訳:{例文訳}</div>}
               {解説 && <div>解説:{解説}</div>}
-              {発音 && <Audio url={発音}/>}
-              {ビデオ && <Video url={ビデオ}/>}
+              {発音 && <Audio url={発音} />}
+              {ビデオ && <Video url={ビデオ} />}
             </div>
           </div>
           <div className="w-1/4"></div>
         </div>
         <div className="py-4">
-          <button className="btn btn-lg bg-slate-100 text-black hover:text-white">
-            <Link href={"/note"}>Go Back</Link>
-          </button>
+          <GoBack />
         </div>
       </div>
     </>
