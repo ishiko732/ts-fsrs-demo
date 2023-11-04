@@ -14,6 +14,9 @@ model Revlog {
   cid            Int
   grade          Rating
   state          State
+  due            DateTime
+  stability      Float
+  difficulty     Float
   elapsed_days   Int
   scheduled_days Int
   review         DateTime
@@ -62,6 +65,7 @@ enum State {
 }
 
 enum Rating {
+  Manual @map("0")
   Again @map("1")
   Hard  @map("2")
   Good  @map("3")
