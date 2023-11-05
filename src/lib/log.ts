@@ -6,6 +6,9 @@ export async function findLogsByCid(cid: number) {
         where: {
             cid,
         },
+        orderBy:{
+            review:'desc'
+        }
     })
     return logs
 }

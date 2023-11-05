@@ -5,6 +5,8 @@ import GoBack from "@/app/components/GoBack";
 import NoteMsg from "@/app/components/NoteMsg";
 import { Card, Note } from "@prisma/client";
 import FSRSMsg from "@/app/components/FSRSMsg";
+import { findLogsByCid } from "@/lib/log";
+import LogTable from "@/app/components/LogTable";
 type Props = {
   params: {
     nid: string;
@@ -23,7 +25,7 @@ export default async function Page({ params }: Props) {
   if (!note) {
     notFound();
   }
-
+  const logs = await findLogsByCid(note.card.cid);
   return (
     <>
       <div className="flex bg-base-200 flex-col justify-center w-screen h-screen items-center ">
@@ -37,6 +39,7 @@ export default async function Page({ params }: Props) {
         <div className="py-4">
           <GoBack />
         </div>
+        {logs && logs.length > 0 && <LogTable logs={logs} />}
       </div>
     </>
   );

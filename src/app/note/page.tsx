@@ -7,7 +7,7 @@ export const getData = cache(async (start: number) => {
   console.log("cache miss:" + start);
   const notes = await getNotes({
     take: start === 0 ? undefined : start,
-    order: { card: { due: "asc" } },
+    order: { card: { due: "desc" } },
   });
   return notes;
 });
