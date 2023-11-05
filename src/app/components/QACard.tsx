@@ -1,23 +1,21 @@
 import { Card, Note } from "@prisma/client";
 import ScheduleCard from "./ScheduleCard";
 import { useState } from "react";
+import { useCardContext } from "../context/CardContext";
 
-type Props = {
-  note: Note & {
-    card: Card;
-  };
-};
-
-export default function QACard({ note }: Props) {
-    const [open,setOpen]=useState(false)
-    return <>
-        <div>question:{note.question}</div>
-        <div>answer:{note.answer}</div>
-        <div>state:{note.card.state}</div>
-        <button onClick={(e)=>{setOpen(pre=>!pre)}}>toggle</button>
-        <ScheduleCard nid={note.nid} open={open}/>
-    
+export default function QACard() {
+  const { noteBox, currentType, index,setOpen,open } = useCardContext();
+  const {question} = noteBox[currentType][index];
+  return (
+    <>
+      <div className="item-center">
+        <div className="w-full">
+          <span className="flex justify-center items-center text-2xl">
+            {question}
+          </span>
+        </div>
+      </div>
+      <ScheduleCard/>
     </>
-
-
+  );
 }

@@ -20,6 +20,13 @@ export declare module "ts-fsrs" {
     cid: string;
   }
 
+  export const  Grades = [
+    Rating.Again,
+    Rating.Hard,
+    Rating.Good,
+    Rating.Easy,
+  ];
+
 }
 
 interface NodeData{

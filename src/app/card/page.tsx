@@ -28,9 +28,9 @@ export default async function Page() {
   const noteBox = await getData(new Date());
 
   return (
-    <>
+    <div className="flex justify-center flex-col">
       <div>Use client:</div>
       <CardClient noteBox={noteBox}/>
-    </>
+    </div>
   );
 }

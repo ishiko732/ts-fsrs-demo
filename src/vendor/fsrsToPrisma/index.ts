@@ -1,5 +1,5 @@
-import { createEmptyCard,Card as FSRSCard} from "ts-fsrs";
-import { Card, State } from "@prisma/client";
+import { createEmptyCard,Card as FSRSCard,State as FSRSState,Rating as FSRSRating} from "ts-fsrs";
+import { Card, Rating, State } from "@prisma/client";
 import { fixState } from "ts-fsrs/dist/help";
 
 
@@ -34,6 +34,23 @@ export function transferPrismaCardToCard(card: Card): FSRSCard {
     } as FSRSCard;
 }
 
-// export function statePrismaToFSRSState(prisma:State):fsrsState{
-//     return fsrsState[prisma as keyof typeof fsrsState]
-// }
+export function stateFSRSStateToPrisma(state:FSRSState):State{
+    const stateMap: {[key: number]: State} = {
+        0: State.New,
+        1: State.Learning,
+        2: State.Review,
+        3: State.Relearning
+    };
+    return stateMap[state];
+}
+
+export function stateFSRSRatingToPrisma(rating:FSRSRating):Rating{
+    const ratingMap: {[key: number]: Rating} = {
+        0:Rating.Manual,
+        1:Rating.Again,
+        2:Rating.Hard,
+        3:Rating.Good,
+        4:Rating.Easy
+    };
+    return ratingMap[rating];
+}

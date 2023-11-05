@@ -1,12 +1,9 @@
-import getFormattedDate from "@/lib/format";
 import { getNoteByNid } from "@/lib/note";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import GoBack from "@/app/components/GoBack";
 import NoteMsg from "@/app/components/NoteMsg";
 import { Card, Note } from "@prisma/client";
-import { fsrs } from "ts-fsrs";
-import { transferPrismaCardToCard } from "@/vendor/fsrsToPrisma";
 import FSRSMsg from "@/app/components/FSRSMsg";
 type Props = {
   params: {
@@ -30,8 +27,9 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <div className="flex bg-base-200 flex-col justify-center w-screen h-screen items-center ">
-        <div className="bg-slate-100 text-black p-4 w-1/2 h-1/2 rounded-lg shadow-md flex">
+        <div className="bg-slate-100 text-black p-4 w-1/2 h-1/2 rounded-lg shadow-md flex ">
           <NoteMsg note={note} />
+          <div className="divider divider-horizontal"></div>
           <div className="w-1/4 flex flex-col">
             <FSRSMsg card={note.card} />
           </div>

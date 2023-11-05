@@ -3,6 +3,7 @@ import { Card } from "@prisma/client";
 import { fsrs } from "ts-fsrs";
 import { transferPrismaCardToCard } from "@/vendor/fsrsToPrisma";
 import getFormattedDate from "@/lib/format";
+import { findLogsByCid } from "@/lib/log";
 type Props = {
   card: Card;
 };
@@ -13,6 +14,7 @@ export default async function FSRSMsg({ card }: Props) {
     transferPrismaCardToCard(card),
     new Date()
   );
+  const logs = await findLogsByCid(card.cid);
   return (
     <>
       <h2 className="flex justify-center ">FSRS</h2>
@@ -32,11 +34,13 @@ export default async function FSRSMsg({ card }: Props) {
         <div className="text-sm opacity-60">
           <span>D:{card.difficulty.toFixed(2)}</span>
           <span>S:{card.stability.toFixed(2)}</span>
-          <span>
-            R:
-            {f.get_retrievability(transferPrismaCardToCard(card), new Date())}
-          </span>
+          <span>R:{retrievability}</span>
         </div>
+      )}
+      {logs.length > 0 && (
+        <>
+          <hr />
+        </>
       )}
     </>
   );
