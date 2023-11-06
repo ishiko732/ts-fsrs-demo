@@ -5,13 +5,14 @@ import { useCardContext } from "../context/CardContext";
 
 export default function QACard() {
   const { noteBox, currentType, index,setOpen,open } = useCardContext();
-  const {question} = noteBox[currentType][index];
+  if (noteBox.length === 0) return null;
+  const note = noteBox[currentType][index];
   return (
     <>
       <div className="item-center">
         <div className="w-full">
           <span className="flex justify-center items-center text-2xl">
-            {question}
+            {note?.question}
           </span>
         </div>
       </div>

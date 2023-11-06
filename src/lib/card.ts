@@ -30,8 +30,15 @@ export async function updateCard(nid:number,now:Date,grade:Grade){
     }
     const data:RecordLog = await schedulerCard(Number(nid),now);
     const recordItem = data[Number(grade) as Grade]
-    
-    await prisma.card.update({
+    const op1= prisma.control.update({
+        where:{id:1},
+        data:{
+            today_new:{
+                increment:1
+            }
+        }
+    })
+   const op2 =prisma.card.update({
         where:{cid:note.card.cid},
         data:{
             due:recordItem.card.due,
@@ -60,6 +67,6 @@ export async function updateCard(nid:number,now:Date,grade:Grade){
             logs:true
         }
     })
-
+    await prisma.$transaction([op1, op2]);
 }
 

@@ -7,6 +7,7 @@ export default function ScheduleCard() {
   const { open, currentType, index, noteBox, setOpen, setSchedule, schedule } =
     useCardContext();
   const note = noteBox[currentType][index];
+  if (!note)return null;
   const extend = JSON.parse(note.extend as string);
   const 分類 = extend.分類 as string | undefined;
   const 品詞 = extend.品詞 as string | undefined;

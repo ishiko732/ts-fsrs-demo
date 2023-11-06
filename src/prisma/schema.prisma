@@ -71,3 +71,11 @@ enum Rating {
   Good  @map("3")
   Easy  @map("4")
 }
+
+model Control {
+  id Int @id @unique @default(autoincrement())
+  today_new Int @default(0)
+  limit_new Int @default(50)
+  today_rev Int @default(0)
+  limit_rev Int @default(200)
+}
