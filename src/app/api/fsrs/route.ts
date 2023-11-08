@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest) {
   if (!grade&&!isNaN(Number(grade))) {
     return NextResponse.json("grade not found", { status: 400 });
   }
-  const data = await updateCard(Number(nid),new Date(),Number(grade) as Grade);
+  const state = await updateCard(Number(nid),new Date(),Number(grade) as Grade);
 
-  return NextResponse.json({code:0});
+  return NextResponse.json({code:0,next:state});
 }

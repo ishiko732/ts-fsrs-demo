@@ -1,12 +1,9 @@
-import { Card, Note } from "@prisma/client";
 import ScheduleCard from "./ScheduleCard";
-import { useState } from "react";
 import { useCardContext } from "../context/CardContext";
 
 export default function QACard() {
-  const { noteBox, currentType, index,setOpen,open } = useCardContext();
-  if (noteBox.length === 0) return null;
-  const note = noteBox[currentType][index];
+  const { currentType, noteBox } = useCardContext();
+  const note = noteBox[currentType][0];
   return (
     <>
       <div className="item-center">
@@ -16,7 +13,7 @@ export default function QACard() {
           </span>
         </div>
       </div>
-      <ScheduleCard/>
+      <ScheduleCard />
     </>
   );
 }

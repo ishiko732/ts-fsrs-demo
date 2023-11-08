@@ -2,11 +2,12 @@ import React, { useEffect } from "react";
 import { useCardContext } from "../context/CardContext";
 import Video from "./Video";
 import Audio from "./Audio";
+import { Card, Note } from "@prisma/client";
 
 export default function ScheduleCard() {
-  const { open, currentType, index, noteBox, setOpen, setSchedule, schedule } =
+  const { open, currentType, setOpen, setSchedule, schedule,noteBox } =
     useCardContext();
-  const note = noteBox[currentType][index];
+    const note  = noteBox[currentType][0]
   if (!note)return null;
   const extend = JSON.parse(note.extend as string);
   const 分類 = extend.分類 as string | undefined;
@@ -17,10 +18,10 @@ export default function ScheduleCard() {
   const 発音 = extend.発音 as string | undefined;
   const ビデオ = extend.ビデオ as string | undefined;
   useEffect(() => {
-    fetch(`/api/fsrs?nid=${note.nid}&now=`+new Date(), { method: "post" })
+    fetch(`/api/fsrs?nid=${note!.nid}&now=`+new Date(), { method: "post" })
       .then((res) => res.json())
       .then((res) => setSchedule(res));
-  }, [currentType, index]);
+  }, [currentType]);
 
   return (
     open && (
