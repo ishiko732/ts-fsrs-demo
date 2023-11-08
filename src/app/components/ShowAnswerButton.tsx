@@ -31,56 +31,55 @@ function ShowAnswerButton() {
           var change =1; // new -> learning
           switch (currentType) {
             case State.New:
-              // if (noteBox[State.New].length === 1) {
                 // updateCurrentType
-                change =1; // new -> learning
+                change =State.Learning; // new -> learning
                 if (noteBox[State.Learning].length === 0) {
-                  change = 2; // new -> relearning
-                }
-                if (noteBox[State.Relearning].length === 0) {
-                  change = 3; // new -> review
-                }
-              // }
+                  change = State.Relearning; // new -> relearning
+                  if (noteBox[State.Relearning].length === 0) {
+                    change = State.Review; // new -> review
+                  }
+                  if(noteBox[State.Review].length === 0){
+                    change = State.New; // new -> new
+                  }
+                } 
               setNoteBox[State.New]((pre) => [...pre.slice(1)]); //noteBox[State.New].slice(1)
               if (res.next !== State.Review) {
                 setNoteBox[State.Learning]((pre) => [...pre, note!]);
-                change = (change === 1 ? 2 : change);
+                // change = (change === State.Learning ? State.New : change);
               }
               break;
             case State.Learning:
             case State.Relearning:
               setNoteBox[currentType]((pre) =>
-                res.next !== State.Review ? [...pre.slice(0)] : [...pre, note!]
+                res.next === State.Review ? [...pre.slice(1)] : [...pre.slice(1), note!] //noteBox[currentType].slice(0)
               );
-              change =3; // Learning/Relearning -> review
+              change =State.Review; // Learning/Relearning -> review
               if (noteBox[State.Review].length === 0) {
-                change = currentType==1?2:1; // Learning/Relearning -> Relearning/Learning
-              }
-              if (noteBox[State.Learning].length === 0) {
-                change = 0; // Learning/Relearning  -> new
-              }
-              if (noteBox[State.New].length === 0) {
-                change = 2; // Learning/Relearning  -> Learning
-              }
-              if (noteBox[State.Relearning].length === 0) {
-                change = 3; // Learning/Relearning  -> review
+                change = change==State.Review ? currentType == State.Learning?State.Relearning:State.Learning:change; // Learning/Relearning -> Relearning/Learning
+                if (noteBox[currentType == State.Learning?State.Relearning:State.Learning].length === 0) {
+                  change = State.New; // Learning/Relearning  -> New
+                  if (noteBox[State.New].length === 0) {
+                    change = currentType == State.Learning?State.Relearning:State.Learning; // Learning/Relearning  -> Learning
+                  }
+                }
               }
               break;
             case 3:
-              setNoteBox[State.Review]((pre) => [...pre.slice(0)]);
-              change = 1 // review -> learning
+              setNoteBox[State.Review]((pre) => [...pre.slice(1)]);
+              change = State.Learning // review -> learning
               if (noteBox[State.Learning].length === 0) {
-                change = 2; // review-> Relearning
-              }
-              if (noteBox[State.Relearning].length === 0) {
-                change = 0; // Learning/Relearning  -> new
+                change = State.Relearning; // review-> Relearning
+                if  (noteBox[State.Relearning].length === 0) {
+                  change = State.New; // Learning/Relearning  -> new
+                }
               }
               if (res.next !== State.Review) {
                 setNoteBox[State.Relearning]((pre) => [...pre, note!]);
-                change = (change === 2 ? 1 : change);
+                // change = (change === State.Relearning ? 1 : change);
               }
               break;
           }
+          console.log(`change ${State[currentType]} to ${State[change]},Card next State:${State[res.next]}`)
           setCurrentType(change)
           setOpen(false);
         }
