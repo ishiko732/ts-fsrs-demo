@@ -22,65 +22,55 @@ function ShowAnswerButton() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     grade: Grade
   ) => {
-    fetch(`/api/fsrs?nid=${note!.nid}&now=` + new Date() + "&grade=" + grade, {
+    fetch(`/api/fsrs?nid=${note!.nid}&now=${new Date()}&grade=${grade}`, {
       method: "put",
     })
       .then((res) => res.json())
       .then((res) => {
         if (res.code === 0) {
-          var change =1; // new -> learning
+          let change = State.New; // 默认状态转换为New
           switch (currentType) {
             case State.New:
-                // updateCurrentType
-                change =State.Learning; // new -> learning
-                if (noteBox[State.Learning].length === 0) {
-                  change = State.Relearning; // new -> relearning
-                  if (noteBox[State.Relearning].length === 0) {
-                    change = State.Review; // new -> review
-                  }
-                  if(noteBox[State.Review].length === 0){
-                    change = State.New; // new -> new
-                  }
-                } 
-              setNoteBox[State.New]((pre) => [...pre.slice(1)]); //noteBox[State.New].slice(1)
-              if (res.next !== State.Review) {
-                setNoteBox[State.Learning]((pre) => [...pre, note!]);
-                // change = (change === State.Learning ? State.New : change);
+              if (noteBox[State.Learning].length > 0) {
+                change = State.Learning; // new -> learning
+              } else if (noteBox[State.Relearning].length > 0) {
+                change = State.Relearning; // new -> relearning
+              } else if (noteBox[State.Review].length > 0) {
+                change = State.Review; // new -> review
               }
               break;
             case State.Learning:
             case State.Relearning:
-              setNoteBox[currentType]((pre) =>
-                res.next === State.Review ? [...pre.slice(1)] : [...pre.slice(1), note!] //noteBox[currentType].slice(0)
-              );
-              change =State.Review; // Learning/Relearning -> review
-              if (noteBox[State.Review].length === 0) {
-                change = change==State.Review ? currentType == State.Learning?State.Relearning:State.Learning:change; // Learning/Relearning -> Relearning/Learning
-                if (noteBox[currentType == State.Learning?State.Relearning:State.Learning].length === 0) {
-                  change = State.New; // Learning/Relearning  -> New
-                  if (noteBox[State.New].length === 0) {
-                    change = currentType == State.Learning?State.Relearning:State.Learning; // Learning/Relearning  -> Learning
-                  }
-                }
+              if (noteBox[State.Review].length > 0) {
+                change = State.Review; // learning/relearning -> review
+              } else if (noteBox[currentType == State.Learning ? State.Relearning : State.Learning].length > 0) {
+                change = currentType == State.Learning ? State.Relearning : State.Learning; // learning/relearning -> relearning/learning
+              } else if (noteBox[State.New].length > 0) {
+                change = State.New; // learning/relearning -> new
               }
               break;
-            case 3:
-              setNoteBox[State.Review]((pre) => [...pre.slice(1)]);
-              change = State.Learning // review -> learning
-              if (noteBox[State.Learning].length === 0) {
-                change = State.Relearning; // review-> Relearning
-                if  (noteBox[State.Relearning].length === 0) {
-                  change = State.New; // Learning/Relearning  -> new
-                }
-              }
-              if (res.next !== State.Review) {
-                setNoteBox[State.Relearning]((pre) => [...pre, note!]);
-                // change = (change === State.Relearning ? 1 : change);
+            case State.Review:
+              if (noteBox[State.Learning].length > 0) {
+                change = State.Learning; // review -> learning
+              } else if (noteBox[State.Relearning].length > 0) {
+                change = State.Relearning; // review -> relearning
+              } else if (noteBox[State.New].length > 0) {
+                change = State.New; // review -> new
               }
               break;
           }
-          console.log(`change ${State[currentType]} to ${State[change]},Card next State:${State[res.next]}`)
-          setCurrentType(change)
+          
+          // update state and data
+          let updatedNoteBox = [ ...noteBox[currentType] ];
+          updatedNoteBox = updatedNoteBox.slice(1);
+          if (res.next !== State.Review) {
+            setNoteBox[change](pre => [...pre, note!]);
+            // updatedNoteBox[change] = [...updatedNoteBox[change], note!];
+          }
+    
+          console.log(`Change ${State[currentType]} to ${State[change]}, Card next State: ${State[res.next]}`);
+          setNoteBox[currentType](updatedNoteBox);
+          setCurrentType(change);
           setOpen(false);
         }
       });

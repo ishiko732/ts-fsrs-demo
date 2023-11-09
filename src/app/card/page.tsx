@@ -1,5 +1,5 @@
 import { getNotes } from "@/lib/note";
-import { Card, Control, Note, State } from "@prisma/client";
+import { Card, Note, State } from "@prisma/client";
 import React from "react";
 import CardClient from "../components/CardsClient";
 import prisma from "@/lib/prisma";
@@ -23,7 +23,7 @@ export const getData = async (
   const states = [State.New, State.Learning, State.Relearning, State.Review];
   const noteBox = states.map((state) =>
     getNotes({
-      take: state === State.New ? Math.max(0, 100 - count) : undefined,
+      take: state === State.New ? Math.max(0, 50 - count) : undefined,
       query: {
         card: {
           state,
