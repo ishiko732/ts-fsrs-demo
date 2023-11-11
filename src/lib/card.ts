@@ -58,6 +58,7 @@ export async function updateCard(nid:number,now:Date,grade:Grade){
                     stability:recordItem.log.stability,
                     difficulty:recordItem.log.difficulty,
                     elapsed_days:recordItem.log.elapsed_days,
+                    last_elapsed_days:recordItem.log.last_elapsed_days,
                     scheduled_days:recordItem.log.scheduled_days,
                     review:recordItem.log.review,
                 },

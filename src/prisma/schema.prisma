@@ -18,6 +18,7 @@ model Revlog {
   stability      Float
   difficulty     Float
   elapsed_days   Int
+  last_elapsed_days   Int
   scheduled_days Int
   review         DateTime
   card           Card     @relation(fields: [cid], references: [cid])

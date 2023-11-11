@@ -2,8 +2,7 @@
 
 import React from "react";
 import { useCardContext } from "../context/CardContext";
-import { show_diff_message, Grades, Rating, State } from "ts-fsrs";
-import type { Grade } from "ts-fsrs/dist/models";
+import { show_diff_message, Grades, Rating, State,Grade } from "ts-fsrs";
 
 function ShowAnswerButton() {
   const {
