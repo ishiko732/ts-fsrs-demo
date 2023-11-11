@@ -4,7 +4,7 @@ import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
 import { Card, Note, Prisma } from "@prisma/client";
 
 
-export async function addNote(data: NodeData) {
+export async function addNote(data: Partial<NodeData>) {
   const question = data["英単語"];
   const answer = data["意味"];
   if (!question || !answer) {

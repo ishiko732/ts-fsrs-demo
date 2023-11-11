@@ -13,7 +13,7 @@ type Props = {
   };
 };
 
-export const getData = cache(async (nid: string) => {
+const getData = cache(async (nid: string) => {
   const note = (await getNoteByNid(Number(nid))) as
     | ({ card: Card } & Note)
     | null;
