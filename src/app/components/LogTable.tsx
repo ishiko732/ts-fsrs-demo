@@ -24,7 +24,7 @@ async function LogTable({ logs }: Props) {
         </thead>
         <tbody>
           {logs.map((log,index) => (
-            <tr>
+            <tr key={log.lid}>
               <th>{index+1}</th>
               <td>{getFormattedDate(log.review)}</td>
               <td>{log.state}</td>

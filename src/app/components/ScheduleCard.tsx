@@ -2,14 +2,12 @@ import React, { useEffect } from "react";
 import { useCardContext } from "../context/CardContext";
 import Video from "./Video";
 import Audio from "./Audio";
-import { Card, Note } from "@prisma/client";
 
 export default function ScheduleCard() {
-  const { open, currentType, setOpen, setSchedule, schedule,noteBox } =
+  const { open, currentType, setOpen, setSchedule, schedule, noteBox } =
     useCardContext();
-    const note  = noteBox[currentType][0]
-  if (!note)return null;
-  const extend = JSON.parse(note.extend as string);
+  const note = noteBox[currentType][0];
+  const extend = note ? JSON.parse(note.extend as string) : {};
   const 分類 = extend.分類 as string | undefined;
   const 品詞 = extend.品詞 as string | undefined;
   const 例文 = extend.例文 as string | undefined;
@@ -17,11 +15,14 @@ export default function ScheduleCard() {
   const 解説 = extend.解説 as string | undefined;
   const 発音 = extend.発音 as string | undefined;
   const ビデオ = extend.ビデオ as string | undefined;
+
   useEffect(() => {
-    fetch(`/api/fsrs?nid=${note!.nid}&now=`+new Date(), { method: "post" })
-      .then((res) => res.json())
-      .then((res) => setSchedule(res));
-  }, [currentType]);
+    if (note) {
+      fetch(`/api/fsrs?nid=${note.nid}&now=` + new Date(), { method: "post" })
+        .then((res) => res.json())
+        .then((res) => setSchedule(res));
+    }
+  }, [currentType, note, setSchedule]);
 
   return (
     open && (
@@ -32,7 +33,7 @@ export default function ScheduleCard() {
           {品詞 && <span>{`${品詞}`}</span>}
         </div>
         <div className="pt-4 mx-auto">
-          <div>意味:{note.answer}</div>
+          <div>意味:{note?.answer}</div>
           {例文 && <div>例文:{例文}</div>}
           {例文訳 && <div>例文訳:{例文訳}</div>}
           {解説 && <div>解説:{解説}</div>}
