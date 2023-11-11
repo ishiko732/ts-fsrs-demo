@@ -13,6 +13,7 @@ function ShowAnswerButton() {
     schedule,
     noteBox,
     setNoteBox,
+    handleChange
   } = useCardContext();
   const note = noteBox[currentType][0];
   if (!note) return null;
@@ -27,55 +28,7 @@ function ShowAnswerButton() {
       .then((res) => res.json())
       .then((res) => {
         if (res.code === 0) {
-          let change = State.New; // 默认状态转换为New
-          switch (currentType) {
-            case State.New:
-              if (noteBox[State.Learning].length > 0) {
-                change = State.Learning; // new -> learning
-              } else if (noteBox[State.Relearning].length > 0) {
-                change = State.Relearning; // new -> relearning
-              } else if (noteBox[State.Review].length > 0) {
-                change = State.Review; // new -> review
-              }
-              break;
-            case State.Learning:
-            case State.Relearning:
-              if (noteBox[State.Review].length > 0) {
-                change = State.Review; // learning/relearning -> review
-              } else if (noteBox[currentType == State.Learning ? State.Relearning : State.Learning].length > 0) {
-                change = currentType == State.Learning ? State.Relearning : State.Learning; // learning/relearning -> relearning/learning
-              } else if (noteBox[State.New].length > 0) {
-                change = State.New; // learning/relearning -> new
-              }
-              break;
-            case State.Review:
-              if (noteBox[State.Learning].length > 0) {
-                change = State.Learning; // review -> learning
-              } else if (noteBox[State.Relearning].length > 0) {
-                change = State.Relearning; // review -> relearning
-              } else if (noteBox[State.New].length > 0) {
-                change = State.New; // review -> new
-              }
-              break;
-          }
-          
-          // update state and data
-          let updatedNoteBox = [ ...noteBox[currentType] ];
-          updatedNoteBox = updatedNoteBox.slice(1);
-          if (res.next !== State.Review) {
-            if (currentType === State.Learning || currentType === State.Relearning) {
-              setNoteBox[currentType]([updatedNoteBox,note!]);
-            }else{
-              if (currentType === State.New) {
-                setNoteBox[currentType](updatedNoteBox);
-              }
-              setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!]);
-            }
-          }else{
-            setNoteBox[currentType](updatedNoteBox);
-          }
-          console.log(`Change ${State[currentType]} to ${State[change]}, Card next State: ${State[res.next]}`);
-          setCurrentType(change);
+          handleChange(res.next,note);
           setOpen(false);
         }
       });

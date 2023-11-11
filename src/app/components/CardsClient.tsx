@@ -12,7 +12,7 @@ export default function CardClient({
   noteBox: Array<Array<Note & { card: Card }>>;
 }) {
   return (
-    <CardProvider noteBox={noteBox}>
+    <CardProvider noteBox0={noteBox}>
       <QACard />
       <div className="divider"></div>
       <StatusBar />
