@@ -63,12 +63,18 @@ function ShowAnswerButton() {
           let updatedNoteBox = [ ...noteBox[currentType] ];
           updatedNoteBox = updatedNoteBox.slice(1);
           if (res.next !== State.Review) {
-            setNoteBox[change](pre => [...pre, note!]);
-            // updatedNoteBox[change] = [...updatedNoteBox[change], note!];
+            if (currentType === State.Learning || currentType === State.Relearning) {
+              setNoteBox[currentType]([updatedNoteBox,note!]);
+            }else{
+              if (currentType === State.New) {
+                setNoteBox[currentType](updatedNoteBox);
+              }
+              setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!]);
+            }
+          }else{
+            setNoteBox[currentType](updatedNoteBox);
           }
-    
           console.log(`Change ${State[currentType]} to ${State[change]}, Card next State: ${State[res.next]}`);
-          setNoteBox[currentType](updatedNoteBox);
           setCurrentType(change);
           setOpen(false);
         }
