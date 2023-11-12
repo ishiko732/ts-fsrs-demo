@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useCardContext } from "../context/CardContext";
 import { show_diff_message, Grades, Rating, State,Grade } from "ts-fsrs";
 
@@ -15,9 +15,6 @@ function ShowAnswerButton() {
     setNoteBox,
     handleChange
   } = useCardContext();
-  const note = noteBox[currentType][0];
-  if (!note) return null;
-  const color = ["btn-error", "btn-warning", "btn-info", "btn-success"];
   const handleClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     grade: Grade
@@ -33,6 +30,39 @@ function ShowAnswerButton() {
         }
       });
   };
+  const handleKeyPress = useCallback(async (event:React.KeyboardEvent<HTMLElement>) => {
+    // Call updateCalc here
+    if(!open&&event.code === 'Space'){
+      setOpen(true)
+    }else if (open){
+      switch (event.key) {
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+          await handleClick(event as unknown as React.MouseEvent<HTMLButtonElement, MouseEvent>,Number(event.key) as Grade)
+          break;
+      }
+    }
+    console.log(`Key pressed: ${event.key}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    // attach the event listener
+    const handleKeyDown = (event: KeyboardEvent) => {
+      handleKeyPress(event as unknown as React.KeyboardEvent<HTMLElement>);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    // remove the event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyPress]);
+
+  const note = noteBox[currentType][0];
+  if (!note) return null;
+  const color = ["btn-error", "btn-warning", "btn-info", "btn-success"];
   return !open ? (
     <button
       className="btn mt-4"
@@ -40,7 +70,7 @@ function ShowAnswerButton() {
         setOpen(true);
       }}
     >
-      show answer
+      show answer <kbd className={`kbd kbd-sm dark:text-black dark:bg-slate-200`}></kbd>
     </button>
   ) : (
     schedule && (
@@ -57,7 +87,8 @@ function ShowAnswerButton() {
             className={"btn mx-2 " + color[index]}
             onClick={(e) => handleClick(e, (index + 1) as Grade)}
           >
-            {time}
+            <span>{time}</span>
+            <span><kbd className={`kbd kbd-sm dark:text-black dark:bg-slate-200`}>{index+1}</kbd></span>
           </button>
         ))}
       </div>
