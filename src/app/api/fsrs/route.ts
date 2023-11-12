@@ -35,13 +35,13 @@ export async function PUT(request: NextRequest) {
   const nid = searchParams.get("nid");
   const cid = searchParams.get("cid");
   const grade = searchParams.get("grade");
-  const rollabck = searchParams.get("rollback");
+  const rollback = searchParams.get("rollback");
   const reset = searchParams.get("reset");
   if (!nid && !cid) {
     return NextResponse.json("nid/cid not found", { status: 400 });
   }
 
-  if (rollabck&& Boolean(rollabck)){ // rollback
+  if (rollback&& Boolean(Number(rollback))){ // rollback
     const preState = await rollbackCard({
       cid:cid?Number(cid):undefined,
       nid:nid?Number(nid):undefined

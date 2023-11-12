@@ -1,5 +1,5 @@
 import { CardPrisma, Grade, RecordLog, RevlogPrisma, fsrs} from "ts-fsrs";
-import { getNoteByNid } from "./note";
+import { getNoteByCid, getNoteByNid } from "./note";
 import prisma from "./prisma";
 import { stateFSRSRatingToPrisma, stateFSRSStateToPrisma } from "@/vendor/fsrsToPrisma";
 import { findLastLogByCid } from "./log";
@@ -130,7 +130,7 @@ export async function rollbackCard(query:Partial<Query>){
             logs:true
         }
     })
-    return res.state;
+    return await getNoteByCid(cardByPrisma.cid);
 }
 
 

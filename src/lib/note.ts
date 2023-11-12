@@ -61,6 +61,20 @@ export async function getNoteByNid(nid: number) {
     });
     return note;
 }
+
+export async function getNoteByCid(cid: number) {
+  const note = await prisma.note.findFirst({
+      where: {
+          card:{
+            cid
+          },
+      },
+      include: {
+      card: true,
+      },
+  });
+  return note;
+}
 export async function getNoteByQuestion(question: string) {
   const note = await prisma.note.findFirst({
     where: {

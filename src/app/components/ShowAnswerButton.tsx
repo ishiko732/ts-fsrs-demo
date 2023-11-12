@@ -8,12 +8,11 @@ function ShowAnswerButton() {
   const {
     open,
     currentType,
-    setCurrentType,
     setOpen,
     schedule,
     noteBox,
-    setNoteBox,
-    handleChange
+    handleChange,
+    handleRollBack
   } = useCardContext();
   const handleClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -44,9 +43,12 @@ function ShowAnswerButton() {
           break;
       }
     }
-    console.log(`Key pressed: ${event.key}`);
+
+    if ((event.ctrlKey || event.metaKey) && event.key ==='z'){
+      await handleRollBack()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [open]);
   useEffect(() => {
     // attach the event listener
     const handleKeyDown = (event: KeyboardEvent) => {
