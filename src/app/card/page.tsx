@@ -5,7 +5,7 @@ import CardClient from "../components/CardsClient";
 import prisma from "@/lib/prisma";
 import { date_scheduler } from "ts-fsrs";
 
-export const getData = async (
+const getData = async (
   due: Date
 ): Promise<Array<Array<Note & { card: Card }>>> => {
   const now = new Date();
