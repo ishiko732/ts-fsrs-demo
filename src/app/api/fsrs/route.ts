@@ -1,8 +1,7 @@
-import { schedulerCard, updateCard } from "@/lib/card";
+import { forgetCard, rollbackCard, schedulerCard, updateCard } from "@/lib/card";
 import { getNoteByNid } from "@/lib/note";
 import { NextRequest, NextResponse } from "next/server";
-import { Grade, RecordLog } from "ts-fsrs";
-import { fixDate } from "ts-fsrs/dist/help";
+import { Grade, Rating } from "ts-fsrs";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -31,13 +30,24 @@ export async function PUT(request: NextRequest) {
   const searchParams = new URLSearchParams(url.search);
   const nid = searchParams.get("nid");
   const grade = searchParams.get("grade");
+  const rollabck = searchParams.get("rollback");
+  const reset = searchParams.get("reset");
   if (!nid) {
     return NextResponse.json("nid not found", { status: 400 });
+  }
+  if (rollabck&& Boolean(rollabck)){ // rollback
+    const preState = await rollbackCard(Number(nid));
+    return NextResponse.json({code:0,next:preState});
   }
   if (!grade&&!isNaN(Number(grade))) {
     return NextResponse.json("grade not found", { status: 400 });
   }
-  const state = await updateCard(Number(nid),new Date(),Number(grade) as Grade);
+  let data;
+  if(Rating.Manual === Number(grade) as Rating){ // forget
+    data = await forgetCard(Number(nid),new Date(),Boolean(reset));
+  }else{
+    data = await updateCard(Number(nid),new Date(),Number(grade) as Grade);
+  }
 
-  return NextResponse.json({code:0,next:state});
+  return NextResponse.json({code:0,next:data});
 }
