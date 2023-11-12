@@ -1,6 +1,6 @@
 "use client";
 import { Card, Note } from "@prisma/client";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState, useTransition } from "react";
 import {  RecordLog, State } from "ts-fsrs";
 
 type CardContextProps = {
@@ -32,6 +32,7 @@ export function CardProvider({
   children: ReactNode;
   noteBox0: Array<Array<Note & { card: Card }>>;
 }) {
+  const [isPending, startTransition] = useTransition();
   const [NewCard, LearningCard, RelearningCard, ReviewCard] = noteBox0;
   const [NewCardBox,setNewCardBox] = useState(NewCard)
   const [LearningCardBox,setLearningCardBox] = useState(LearningCard)
@@ -55,7 +56,7 @@ export function CardProvider({
 
 
   const handleChange = function(nextState: State,note:Note & { card: Card }){
-    let change = State.New; // 默认状态转换为New
+    let change = State.New; // default State.New
     switch (currentType) {
       case State.New:
         if (noteBox[State.Learning].length > 0) {
@@ -90,20 +91,23 @@ export function CardProvider({
     // update state and data
     let updatedNoteBox:Array<Note & { card: Card }> = [ ...noteBox[currentType] ];
     updatedNoteBox= updatedNoteBox.slice(1);
-    if (nextState !== State.Review) {
-      if (currentType === State.Learning || currentType === State.Relearning) {
-        setNoteBox[currentType]([...updatedNoteBox,note!]);
-      }else{
-        if (currentType === State.New) {
-          setNoteBox[currentType](updatedNoteBox);
+    startTransition(()=>{ 
+      // state update is marked as a transition, a slow re-render did not freeze the user interface.
+      if (nextState !== State.Review) {
+        if (currentType === State.Learning || currentType === State.Relearning) {
+          setNoteBox[currentType]([...updatedNoteBox,note!]);
+        }else{
+          if (currentType === State.New) {
+            setNoteBox[currentType](updatedNoteBox);
+          }
+          setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!]);
         }
-        setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!]);
+      }else{
+        setNoteBox[currentType](updatedNoteBox);
       }
-    }else{
-      setNoteBox[currentType](updatedNoteBox);
-    }
-    console.log(`Change ${State[currentType]} to ${State[change]}, Card next State: ${State[nextState]}`);
-    setCurrentType(change);
+      console.log(`Change ${State[currentType]} to ${State[change]}, Card next State: ${State[nextState]}`);
+      setCurrentType(change);
+    })
     return true;
   }
 
