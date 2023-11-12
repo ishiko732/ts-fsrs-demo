@@ -31,6 +31,13 @@ export default function AddNote() {
     setQueryParam('s', value);
  }
 
+
+  function handleSearchKeyDown(e:React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      handleSearchCloseClick()
+    }
+  }
+
    const saveAddNote = () => {
     let question = questionRef.current?.value
     let answer= answerRef.current?.value
@@ -55,24 +62,30 @@ export default function AddNote() {
             </div>
 
           <div className="flex justify-center item-center gap-4 mt-6">
-          <button className="btn btn-success" onClick={saveAddNote}>Success</button>
+          <button className="btn btn-success" onClick={saveAddNote}>Add</button>
           <button className="btn" onClick={handleAppCloseClick}>Close</button>
           </div>
         </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
       </dialog>
       <dialog id="searchNote" className="modal" ref={searchRef}>
-
         <div className="modal-box">
           <div className="form-control">
             <div className="flex flex-col item-center gap-4">
-              <span className="label-text">Click Enter to search</span>
-              <input type="text" ref={searchTextRef} 
-              placeholder="please entry search word" 
-              className="input input-bordered w-full" 
-              onChange={(e)=>handleChange(e.target.value)}/>
+              <span className="label-text">Click Enter to close</span>
+              <input type="text" ref={searchTextRef}
+              placeholder="please entry search word"
+              className="input input-bordered w-full"
+              onChange={(e)=>handleChange(e.target.value)}
+              onKeyDown={handleSearchKeyDown}/>
             </div>
           </div>
         </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
       </dialog>
 
     </>
