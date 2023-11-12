@@ -1,8 +1,10 @@
 "use client";
-import React, {createRef, Key, KeyboardEventHandler, useEffect, useRef, useState} from "react";
+import React, {createRef, useRef} from "react";
 import { useRouter } from "next/navigation";
+import useQueryParams from "../hooks/useQueryParams";
 
 export default function AddNote() {
+  const { setQueryParam } = useQueryParams();
   const ref = useRef<HTMLDialogElement>(null);
   const questionRef = useRef<HTMLInputElement>(null);
   const answerRef = useRef<HTMLInputElement>(null);
@@ -24,14 +26,11 @@ export default function AddNote() {
   const handleSearchCloseClick = () => {
     searchRef.current?.close();
   };
-  // @ts-ignore
-  const handleSearchKeyDown = (event:KeyboardEventInit<HTMLInputElement>) => {
-    if (event.key === 'Enter')
-    {
-      router.push("/note?s="+searchTextRef.current?.value);
-      handleSearchCloseClick()
-    }
-  };
+
+  function handleChange(value:string) {
+    setQueryParam('s', value);
+ }
+
    const saveAddNote = () => {
     let question = questionRef.current?.value
     let answer= answerRef.current?.value
@@ -67,7 +66,10 @@ export default function AddNote() {
           <div className="form-control">
             <div className="flex flex-col item-center gap-4">
               <span className="label-text">Click Enter to search</span>
-              <input type="text" ref={searchTextRef} placeholder="please entry search word" className="input input-bordered w-full" onKeyDown={handleSearchKeyDown}/>
+              <input type="text" ref={searchTextRef}
+              placeholder="please entry search word"
+              className="input input-bordered w-full"
+              onChange={(e)=>handleChange(e.target.value)}/>
             </div>
           </div>
         </div>
