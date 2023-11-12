@@ -22,7 +22,7 @@ function ShowAnswerButton() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     grade: Grade
   ) => {
-    fetch(`/api/fsrs?nid=${note!.nid}&now=${new Date()}&grade=${grade}`, {
+    fetch(`/api/fsrs?cid=${note.card.cid}&now=${new Date()}&grade=${grade}`, {
       method: "put",
     })
       .then((res) => res.json())

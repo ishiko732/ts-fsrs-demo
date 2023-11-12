@@ -18,7 +18,7 @@ export default function ScheduleCard() {
 
   useEffect(() => {
     if (note) {
-      fetch(`/api/fsrs?nid=${note.nid}&now=` + new Date(), { method: "post" })
+      fetch(`/api/fsrs?cid=${note.card.cid}&now=` + new Date(), { method: "post" })
         .then((res) => res.json())
         .then((res) => setSchedule(res));
     }

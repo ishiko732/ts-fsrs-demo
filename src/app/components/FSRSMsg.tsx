@@ -3,8 +3,7 @@ import { Card, Revlog } from "@prisma/client";
 import { fsrs } from "ts-fsrs";
 import { transferPrismaCardToCard } from "@/vendor/fsrsToPrisma";
 import getFormattedDate from "@/lib/format";
-import { findLogsByCid } from "@/lib/log";
-import { log } from "console";
+import Forget from "./Forget";
 type Props = {
   card: Card;
 };
@@ -37,6 +36,7 @@ export default async function FSRSMsg({ card }: Props) {
           <div>R:{retrievability}</div>
         </div>
       )}
+      <Forget cid={card.cid} className="mt-4"/>
     </>
   );
 }

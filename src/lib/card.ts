@@ -5,13 +5,42 @@ import { stateFSRSRatingToPrisma, stateFSRSStateToPrisma } from "@/vendor/fsrsTo
 import { findLastLogByCid } from "./log";
 
 
-export async function schedulerCard(nid:number,now:Date){
+type Query={
+    nid:number;
+    cid:number;
+}
+
+export async function findCardByNid(nid:number){
     const note=await getNoteByNid(nid)
-    if(!note){  
+    if(!note || !note.card){  
         throw new Error("note not found")
     }
+
+    return note.card as unknown as CardPrisma
+}
+
+export async function findCardByCid(cid:number){
+    const card = await prisma.card.findUnique({
+        where:{
+            cid
+        }
+    })
+    if(!card){
+        throw new Error("card not found")
+    }
+    return card as unknown as CardPrisma
+}
+
+
+export async function schedulerCard(query:Partial<Query>,now:Date){
+    if(!query.nid && !query.cid){
+        throw new Error("nid or cid not found")
+    }
+    const cardByPrisma =query.cid? await findCardByCid(query.cid):query.nid?await findCardByNid(query.nid):null;
+    if(!cardByPrisma){  
+        throw new Error("card not found")
+    }
     const f = fsrs()
-    const cardByPrisma=note.card  as unknown as CardPrisma
     const card={
         ...cardByPrisma,
         // state:statePrismaToFSRSState(cardByPrisma.state),
@@ -22,15 +51,11 @@ export async function schedulerCard(nid:number,now:Date){
 }
 
 
-export async function updateCard(nid:number,now:Date,grade:Grade){
-    const note=await getNoteByNid(nid)
-    if(!note || !note.card){  
-        throw new Error("note not found")
-    }
-    const data:RecordLog = await schedulerCard(Number(nid),now);
+export async function updateCard(cid:number,now:Date,grade:Grade){
+    const data:RecordLog = await schedulerCard({cid},now);
     const recordItem = data[Number(grade) as Grade]
     await prisma.card.update({
-        where:{cid:note.card.cid},
+        where:{cid:cid},
         data:{
             due:recordItem.card.due,
             stability:recordItem.card.stability,
@@ -64,16 +89,18 @@ export async function updateCard(nid:number,now:Date,grade:Grade){
 }
 
 
-export async function rollbackCard(nid:number){
-    const note=await getNoteByNid(nid)
-    if(!note || !note.card){  
-        throw new Error("note not found")
+export async function rollbackCard(query:Partial<Query>){
+    if(!query.nid && !query.cid){
+        throw new Error("nid or cid not found")
     }
-    const log = await findLastLogByCid(note.card.cid)
+    const cardByPrisma =query.cid? await findCardByCid(query.cid):query.nid?await findCardByNid(query.nid):null;
+    if(!cardByPrisma){  
+        throw new Error("card not found")
+    }
+    const log = await findLastLogByCid(cardByPrisma.cid)
     if(!log ){  
         throw new Error("log not found")
     }
-    const cardByPrisma = note.card  as unknown as CardPrisma
     const logByPrisma = {
         ...log,
         rating:log.grade
@@ -82,7 +109,7 @@ export async function rollbackCard(nid:number){
     const backCard = f.rollback(cardByPrisma,logByPrisma) as CardPrisma
 
     const res = await prisma.card.update({
-        where:{cid:note.card.cid},
+        where:{cid:cardByPrisma.cid},
         data:{
             due:backCard.due,
             stability:backCard.stability,
@@ -107,17 +134,23 @@ export async function rollbackCard(nid:number){
 }
 
 
-export async function forgetCard(nid:number,now:Date,reset_count:boolean=false){
-    const note=await getNoteByNid(nid)
-    if(!note || !note.card){  
-        throw new Error("note not found")
+export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
+    const cardByPrisma = await prisma.card.findUnique({
+        where:{
+            cid
+        },
+        include:{
+            logs:true
+        }
+    }) as unknown as CardPrisma|null
+    if (cardByPrisma === null) {
+        throw new Error("card not found")
     }
-    const cardByPrisma = note.card as unknown as CardPrisma
 
     const f = fsrs()
     const recordItem = f.forget(cardByPrisma, now, reset_count)
     await prisma.card.update({
-        where:{cid:note.card.cid},
+        where:{cid},
         data:{
             due:recordItem.card.due,
             stability:recordItem.card.stability,
