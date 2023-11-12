@@ -1,7 +1,7 @@
 import {createEmptyCard, Card, Revlog, State} from "ts-fsrs";
 export declare module "ts-fsrs" {
   interface CardPrisma extends Card {
-    cid: string;
+    cid: number;
     due: Date;
     stability: number;
     difficulty: number;
@@ -17,7 +17,7 @@ export declare module "ts-fsrs" {
   }
   interface RevlogPrisma extends Revlog {
     lid: string;
-    cid: string;
+    cid: number;
     state: State;
     rating: Rating;
     due: Date;
