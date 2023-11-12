@@ -1,5 +1,5 @@
 "use client";
-import React, {createRef, Key, KeyboardEventHandler, useEffect, useRef, useState} from "react";
+import React, {createRef, useRef} from "react";
 import { useRouter } from "next/navigation";
 
 export default function AddNote() {
@@ -24,8 +24,8 @@ export default function AddNote() {
   const handleSearchCloseClick = () => {
     searchRef.current?.close();
   };
-  // @ts-ignore
-  const handleSearchKeyDown = (event:KeyboardEventInit<HTMLInputElement>) => {
+
+  const handleSearchKeyDown = (event:React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter')
     {
       router.push("/note?s="+searchTextRef.current?.value);
