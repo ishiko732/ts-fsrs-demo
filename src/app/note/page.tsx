@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, {cache} from "react";
 import './css/note.css'
 import AddNote from "@/app/components/AddNote";
+import { State } from "@prisma/client";
 
 const getData = cache(async (start: number,searchWord: string) => {
   console.log("cache miss:" + start);
@@ -24,6 +25,21 @@ export default async function Page({
   const searchWord = searchParams["s"] ? searchParams["s"] : "";
   console.log(searchWord)
   const notes = await getData(take,searchWord);
+  var newCnt =0
+  var learningCnt = 0
+  var reviewCnt =0 ;
+  notes.forEach((note) => {switch (note.card.state) {
+    case State.New:
+      newCnt++;
+      break;
+    case State.Learning:
+    case State.Relearning:
+      learningCnt++;
+      break;
+    case State.Review:
+      reviewCnt++;
+      break;
+  }})
 
   return (
     <>
@@ -31,7 +47,7 @@ export default async function Page({
         <div className="w-full note_content">
           <ul className="menu  w-1/2 rounded-box">
             <li className="">
-              <h2 className="menu-title">Notes</h2>
+              <h2 className="menu-title">Notes {`New:${newCnt},Learning:${learningCnt},Review:${reviewCnt}`}</h2>
               <ul className="text-base w-full">
                 {notes.map((note) => (
                   <li key={note.nid} className="w-full">
@@ -41,7 +57,7 @@ export default async function Page({
                           {note.question}
                         </div>
                         <div className="text-sm">
-                          {`next Learning:${getFormattedDate(note.card!.due)}`}
+                          {`(${note.card.state})next Learning:${getFormattedDate(note.card!.due)}`}
                         </div>
                       </div>
                     </Link>
