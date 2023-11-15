@@ -4,6 +4,7 @@ import React from "react";
 import CardClient from "../components/CardsClient";
 import prisma from "@/lib/prisma";
 import { date_scheduler } from "ts-fsrs";
+import Finish from "../components/Finish";
 
 const getData = async (
   due: Date
@@ -40,6 +41,10 @@ const getData = async (
 
 export default async function Page() {
   const noteBox = await getData(new Date());
+  const isFinish = noteBox.every((notes) => notes.length === 0);
+  if(isFinish){
+    return <Finish/>
+  }
   return (
     <div className="flex justify-center flex-col">
       <div>Use client:</div>

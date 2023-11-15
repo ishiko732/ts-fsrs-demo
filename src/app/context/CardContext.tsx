@@ -1,8 +1,9 @@
 "use client";
 import { Card, Note } from "@prisma/client";
-import { createContext, ReactNode, useContext, useRef, useState, useTransition } from "react";
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { RecordLog, State } from "ts-fsrs";
 import { fixDate, fixState } from "ts-fsrs/dist/help";
+import { useRouter } from "next/navigation";
 
 type changeResponse = {
   code: number;
@@ -41,26 +42,36 @@ export function CardProvider({
   noteBox0: Array<Array<Note & { card: Card }>>;
 }) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const [NewCard, LearningCard, RelearningCard, ReviewCard] = noteBox0;
   const [NewCardBox,setNewCardBox] = useState(NewCard)
   const [LearningCardBox,setLearningCardBox] = useState(LearningCard)
   const [RelearningCardBox,setRelearningCardBox] = useState(RelearningCard)
   const [ReviewCardBox,setReviewCardBox] = useState(ReviewCard)
-  const [currentType, setCurrentType] = useState<State>(State.New);
   const [open, setOpen] = useState(false);
   const [schedule,setSchedule] = useState<RecordLog|undefined>(undefined)
-  const noteBox={
-    [State.New]:NewCardBox,
-    [State.Learning]:LearningCardBox,
-    [State.Relearning]:RelearningCardBox,
-    [State.Review]:ReviewCardBox
-  }
-  const setNoteBox={
+  const noteBox = useMemo(() => ({
+    [State.New]: NewCardBox,
+    [State.Learning]: LearningCardBox,
+    [State.Relearning]: RelearningCardBox,
+    [State.Review]: ReviewCardBox
+  }), [NewCardBox, LearningCardBox, RelearningCardBox, ReviewCardBox]);
+  const setNoteBox=useMemo(()=>({
     [State.New]:setNewCardBox,
     [State.Learning]:setLearningCardBox,
     [State.Relearning]:setRelearningCardBox,
     [State.Review]:setReviewCardBox
-  }
+  }),[setNewCardBox,setLearningCardBox,setRelearningCardBox,setReviewCardBox])
+  const [currentType, setCurrentType] = useState<State>(function(){
+    let current = State.New;
+    for(let i=0;i<4;i++){
+      if(noteBox[current].length>0){
+        break
+      }
+      current = (current+1)%4
+    }
+    return current;
+  });
 
   const rollBackRef= useRef<{cid:number,nextState:State}[]>([])
 
@@ -131,7 +142,6 @@ export function CardProvider({
     return true;
   }
 
-
   const handleRollBack = async function(){
     if(rollBackRef.current.length===0){
       return undefined;
@@ -156,6 +166,27 @@ export function CardProvider({
     })
     return rollbackNote;
   }
+
+  useEffect(()=>{
+    let current = currentType;
+    let i =0;
+    for(;i<4;i++){
+      if(noteBox[current].length>0){
+        break
+      }
+      current = (current+1)%4
+    }
+    if(i==4){
+      router.push('/note')
+      console.log("ok")
+    }
+    if(current!==currentType){
+      startTransition(()=>{
+        setCurrentType(current)
+      })
+    }
+
+  },[noteBox,currentType])
 
 
   const value = {
