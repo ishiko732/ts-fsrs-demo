@@ -24,7 +24,7 @@ function ShowAnswerButton() {
       .then((res) => res.json())
       .then((res) => {
         if (res.code === 0) {
-          handleChange(res.next,note);
+          handleChange(res,note);
           setOpen(false);
         }
       });

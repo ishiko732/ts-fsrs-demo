@@ -85,7 +85,10 @@ export async function updateCard(cid:number,now:Date,grade:Grade){
         }
     })
     // await prisma.$transaction([op1, op2]);
-    return recordItem.card.state;
+    return {
+        nextState:recordItem.card.state,
+        nextDue:recordItem.card.due
+    };;
 }
 
 
@@ -179,6 +182,9 @@ export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
             logs:true
         }
     })
-    return recordItem.card.state;
+    return {
+        nextState:recordItem.card.state,
+        nextDue:recordItem.card.due
+    };
 
 }

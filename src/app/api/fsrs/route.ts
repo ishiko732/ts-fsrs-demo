@@ -61,5 +61,5 @@ export async function PUT(request: NextRequest) {
     data = await updateCard(Number(cid),new Date(),Number(grade) as Grade);
   }
 
-  return NextResponse.json({code:0,next:data});
+  return NextResponse.json({code:0,...data});
 }

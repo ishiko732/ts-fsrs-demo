@@ -2,7 +2,13 @@
 import { Card, Note } from "@prisma/client";
 import { createContext, ReactNode, useContext, useRef, useState, useTransition } from "react";
 import { RecordLog, State } from "ts-fsrs";
-import { fixState } from "ts-fsrs/dist/help";
+import { fixDate, fixState } from "ts-fsrs/dist/help";
+
+type changeResponse = {
+  code: number;
+  nextState: State;
+  nextDue?:Date;
+}
 
 type CardContextProps = {
   open: boolean;
@@ -13,7 +19,7 @@ type CardContextProps = {
   setSchedule:React.Dispatch<React.SetStateAction<RecordLog|undefined>>;
   noteBox:{[key in State]:Array<Note & { card: Card }>};
   setNoteBox:{[key in State]:React.Dispatch<React.SetStateAction<Array<Note & { card: Card }>>>};
-  handleChange:(nextState: State,note:Note & { card: Card })=>boolean;
+  handleChange:(res: changeResponse,note:Note & { card: Card })=>boolean;
   handleRollBack:()=>Promise<Note & { card: Card }|undefined>;
 };
 
@@ -58,8 +64,12 @@ export function CardProvider({
 
   const rollBackRef= useRef<{cid:number,nextState:State}[]>([])
 
-  const handleChange = function(nextState: State,note:Note & { card: Card }){
+  const handleChange = function(res: changeResponse,note:Note & { card: Card }){
     let change = State.New; // default State.New
+    const {nextState,nextDue} = res;
+    if(nextDue){
+      note.card.due = nextDue;
+    }
     switch (currentType) {
       case State.New:
         if (noteBox[State.Learning].length > 0) {
@@ -78,6 +88,9 @@ export function CardProvider({
           change = currentType == State.Learning ? State.Relearning : State.Learning; // learning/relearning -> relearning/learning
         } else if (noteBox[State.New].length > 0) {
           change = State.New; // learning/relearning -> new
+        }
+        if (nextDue && (change===State.Learning||change===State.Relearning)) {
+          change = note.card.due.getTime()-new Date().getTime() ? State.New : change;
         }
         break;
       case State.Review:
@@ -98,12 +111,12 @@ export function CardProvider({
       // state update is marked as a transition, a slow re-render did not freeze the user interface.
       if (nextState !== State.Review) {
         if (currentType === State.Learning || currentType === State.Relearning) {
-          setNoteBox[currentType]([...updatedNoteBox,note!]);
+          setNoteBox[currentType]([...updatedNoteBox,note!].toSorted((a,b)=>fixDate(a.card.due).getTime()-fixDate(b.card.due).getTime()));
         }else{
           if (currentType === State.New) {
             setNoteBox[currentType](updatedNoteBox);
           }
-          setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!]);
+          setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!].toSorted((a,b)=>fixDate(a.card.due).getTime()-fixDate(b.card.due).getTime()));
         }
       }else{
         setNoteBox[currentType](updatedNoteBox);
