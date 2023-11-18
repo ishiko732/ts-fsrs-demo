@@ -1,4 +1,4 @@
-import { getNoteByNid } from "@/lib/note";
+import { getNoteByNid, getNotes } from "@/lib/note";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import GoBack from "@/app/components/GoBack";
@@ -13,12 +13,27 @@ type Props = {
   };
 };
 
+export const revalidate = 86400
+
+export async function generateStaticParams() {
+  const notes = await getNotes({
+    order: { card: { due: "desc" } },
+  });
+  if (!notes) return []
+
+  return notes.map((note) => ({
+    note: note.nid
+  }))
+}
+
 const getData = cache(async (nid: string) => {
   const note = (await getNoteByNid(Number(nid))) as
     | ({ card: Card } & Note)
     | null;
   return note;
 });
+
+
 
 export default async function Page({ params }: Props) {
   const note = await getData(params.nid);

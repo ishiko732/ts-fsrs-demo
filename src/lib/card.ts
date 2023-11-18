@@ -23,6 +23,9 @@ export async function findCardByCid(cid:number){
     const card = await prisma.card.findUnique({
         where:{
             cid
+        },
+        include:{
+            note:true,
         }
     })
     if(!card){
@@ -43,6 +46,7 @@ export async function schedulerCard(query:Partial<Query>,now:Date){
     const f = fsrs()
     const card={
         ...cardByPrisma,
+        nid:query.cid||cardByPrisma.note.nid,
         // state:statePrismaToFSRSState(cardByPrisma.state),
         // due:fixDate(cardByPrisma.due),
         last_review:cardByPrisma.last_review?cardByPrisma.last_review:undefined
@@ -87,7 +91,8 @@ export async function updateCard(cid:number,now:Date,grade:Grade){
     // await prisma.$transaction([op1, op2]);
     return {
         nextState:recordItem.card.state,
-        nextDue:recordItem.card.due
+        nextDue:recordItem.card.due,
+        nid:(recordItem.card as CardPrisma&{nid:number}).nid
     };;
 }
 
@@ -143,7 +148,8 @@ export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
             cid
         },
         include:{
-            logs:true
+            logs:true,
+            note:true
         }
     }) as unknown as CardPrisma|null
     if (cardByPrisma === null) {
@@ -184,7 +190,8 @@ export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
     })
     return {
         nextState:recordItem.card.state,
-        nextDue:recordItem.card.due
+        nextDue:recordItem.card.due,
+        nid:cardByPrisma.note.nid as number
     };
 
 }

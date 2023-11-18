@@ -2,6 +2,8 @@ import { forgetCard, rollbackCard, schedulerCard, updateCard } from "@/lib/card"
 import { getNoteByNid } from "@/lib/note";
 import { NextRequest, NextResponse } from "next/server";
 import { Grade, Rating } from "ts-fsrs";
+import { revalidatePath } from 'next/cache'
+
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -26,6 +28,9 @@ export async function POST(request: NextRequest) {
       cid:cid?Number(cid):undefined,
       nid:nid?Number(nid):undefined
     },new Date());
+    if(nid){
+      revalidatePath(`/note/${nid}`)
+    }
     return NextResponse.json(data);
 }
 
@@ -60,6 +65,8 @@ export async function PUT(request: NextRequest) {
   }else{
     data = await updateCard(Number(cid),new Date(),Number(grade) as Grade);
   }
-
+  if(data){
+    revalidatePath(`/note/${data.nid}`)
+  }
   return NextResponse.json({code:0,...data});
 }

@@ -6,6 +6,8 @@ import prisma from "@/lib/prisma";
 import { date_scheduler } from "ts-fsrs";
 import Finish from "../components/Finish";
 
+export const dynamic = 'force-dynamic'
+
 const getData = async (
   due: Date
 ): Promise<Array<Array<Note & { card: Card }>>> => {
@@ -42,10 +44,9 @@ const getData = async (
 export default async function Page() {
   const noteBox = await getData(new Date());
   const isFinish = noteBox.every((notes) => notes.length === 0);
-  if(isFinish){
-    return <Finish/>
-  }
-  return (
+  return isFinish ? (
+    <Finish />
+  ) : (
     <div className="flex justify-center flex-col">
       <div>Use client:</div>
       <CardClient noteBox={noteBox} />
