@@ -1,8 +1,7 @@
 "use client";
 import { Card, Note } from "@prisma/client";
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { RecordLog, State } from "ts-fsrs";
-import { fixDate, fixState } from "ts-fsrs/dist/help";
+import { RecordLog, State, fixDate, fixState } from "ts-fsrs";
 import { useRouter } from "next/navigation";
 
 type changeResponse = {
@@ -186,6 +185,7 @@ export function CardProvider({
       })
     }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[noteBox,currentType])
 
 

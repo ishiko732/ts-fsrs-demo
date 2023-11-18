@@ -1,3 +1,4 @@
+'use client'
 import ScheduleCard from "./ScheduleCard";
 import { useCardContext } from "../context/CardContext";
 

@@ -18,8 +18,8 @@ dependencies:
     specifier: ^18
     version: 18.2.0(react@18.2.0)
   ts-fsrs:
-    specifier: 3.1.0-beta3
-    version: 3.1.0-beta3
+    specifier: 3.1.0-beta7
+    version: 3.1.0-beta7
 
 devDependencies:
   '@types/node':
@@ -834,6 +834,7 @@ packages:
   /dotenv@16.3.1:
     resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
+    dev: true
 
   /electron-to-chromium@1.4.543:
     resolution: {integrity: sha512-t2ZP4AcGE0iKCCQCBx/K2426crYdxD3YU6l0uK2EO3FZH0pbC4pFz/sZm2ruZsND6hQBTcDWWlo/MLpiOdif5g==}
@@ -2508,10 +2509,9 @@ packages:
       typescript: 5.2.2
     dev: true
 
-  /ts-fsrs@3.1.0-beta3:
-    resolution: {integrity: sha512-7IgdLdSUW9rE/Tt83snd1YsEMEj9vAWkKGtxGc1zknOOenlb8T4YouZqNGkRp3iI9NrAMNkhcPWUmmUzsNP+Tw==}
+  /ts-fsrs@3.1.0-beta7:
+    resolution: {integrity: sha512-DVEK+1Y7A9d/YYYrTv2a+ws6u7MdfHK8iPWWxCPMCFZj9ibttYka1/7cGC2Vsa6vha0PW0pHvO0E9fs5pzYJag==}
     dependencies:
-      dotenv: 16.3.1
       seedrandom: 3.0.5
     dev: false
 

@@ -1,4 +1,3 @@
-"use client";
 import { Note, Card } from "@prisma/client";
 import React from "react";
 import QACard from "./QACard";

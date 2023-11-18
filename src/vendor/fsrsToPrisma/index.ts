@@ -1,6 +1,5 @@
-import { createEmptyCard,Card as FSRSCard,State as FSRSState,Rating as FSRSRating} from "ts-fsrs";
+import { createEmptyCard,Card as FSRSCard,State as FSRSState,Rating as FSRSRating, fixState} from "ts-fsrs";
 import { Card, Rating, State } from "@prisma/client";
-import { fixState } from "ts-fsrs/dist/help";
 
 
 interface CardPrismaUnChecked extends Omit<Card, "cid" | "nid" | "last_review"|'state'> {
