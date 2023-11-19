@@ -11,24 +11,3 @@
   bottom:3rem;
   z-index:2;/*设置优先级显示，保证不会被覆盖*/
 }
-.add_icon{
-  width: 48px;
-  height: 48px;
-  display: inline-block;
-  background-image: url("/images/icon/add_unselected.png");
-}
-.search_icon{
-  width: 48px;
-  height: 48px;
-  display: inline-block;
-  /*background-color: #3295ed29;*/
-  background-image: url("/images/icon/search_unselect.png");
-}
-.add_icon:hover{
-  cursor: pointer;
-  background-image: url("/images/icon/add_select.png");
-}
-.search_icon:hover{
-  cursor: pointer;
-  background-image: url("/images/icon/search_select.png");
-}
