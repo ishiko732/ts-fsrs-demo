@@ -1,7 +1,7 @@
 "use client";
 import React, {createRef, useRef} from "react";
 import { useRouter } from "next/navigation";
-import useQueryParams from "../hooks/useQueryParams";
+import useQueryParams from "@/app/hooks/useQueryParams";
 
 export default function AddNote() {
   const { setQueryParam } = useQueryParams();
@@ -17,7 +17,7 @@ export default function AddNote() {
     ref.current?.showModal();
   };
   const handleAppCloseClick = () => {
-    ref.current?.close();
+    ref.current?.close()
   };
 
   const handleSearchOpenClick = () => {
@@ -41,7 +41,7 @@ export default function AddNote() {
    const saveAddNote = () => {
     let question = questionRef.current?.value
     let answer= answerRef.current?.value
-     fetch(`/api/addNote`, { method: "post",body:JSON.stringify({英単語: question, 意味: answer}) })
+     fetch(`/api/note`, { method: "post",body:JSON.stringify({英単語: question, 意味: answer}) })
        .then((res) =>console.log( res.json()))
     handleAppCloseClick()
   };
