@@ -100,7 +100,7 @@ export function CardProvider({
           change = State.New; // learning/relearning -> new
         }
         if (nextDue && (change===State.Learning||change===State.Relearning)) {
-          change = note.card.due.getTime()-new Date().getTime() ? State.New : change;
+          change = fixDate(note.card.due).getTime()-new Date().getTime()>0 ? State.New : change;
         }
         break;
       case State.Review:
@@ -111,22 +111,24 @@ export function CardProvider({
         } else if (noteBox[State.New].length > 0) {
           change = State.New; // review -> new
         }
+        change = change===State.Learning && noteBox[State.Learning].length>0&& fixDate(noteBox[State.Learning][0].card.due).getTime()-new Date().getTime()>0 ? State.New : change;
+        change = change===State.Relearning && noteBox[State.Relearning].length>0&& fixDate(noteBox[State.Relearning][0].card.due).getTime()-new Date().getTime()>0 ? State.Review : change;
         break;
     }
     
     // update state and data
     let updatedNoteBox:Array<Note & { card: Card }> = [ ...noteBox[currentType] ];
-    updatedNoteBox= updatedNoteBox.slice(1);
+    updatedNoteBox= updatedNoteBox.slice(1).toSorted((a,b)=>a.card.due.getTime()-b.card.due.getTime());
     startTransition(()=>{ 
       // state update is marked as a transition, a slow re-render did not freeze the user interface.
       if (nextState !== State.Review) {
         if (currentType === State.Learning || currentType === State.Relearning) {
-          setNoteBox[currentType]([...updatedNoteBox,note!].toSorted((a,b)=>fixDate(a.card.due).getTime()-fixDate(b.card.due).getTime()));
+          setNoteBox[currentType]([...updatedNoteBox,note!]);
         }else{
           if (currentType === State.New) {
             setNoteBox[currentType](updatedNoteBox);
           }
-          setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!].toSorted((a,b)=>fixDate(a.card.due).getTime()-fixDate(b.card.due).getTime()));
+          setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!]);
         }
       }else{
         setNoteBox[currentType](updatedNoteBox);
@@ -176,7 +178,7 @@ export function CardProvider({
       current = (current+1)%4
     }
     if(i==4){
-      router.push('/note')
+      router.refresh();
       console.log("ok")
     }
     if(current!==currentType){
