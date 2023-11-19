@@ -14,14 +14,15 @@ const getData = async (
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const nextDay = date_scheduler(startOfDay, 1, true);
-  const count = await prisma.card.count({
+  const count = await prisma.revlog.count({
     where: {
-      last_review: {
+      review: {
         gte: startOfDay,
         lt: nextDay,
       },
+      state: State.New
     },
-  });
+  }); // get current day new card count
   console.log(count);
   const states = [State.New, State.Learning, State.Relearning, State.Review];
   const noteBox = states.map((state) =>
