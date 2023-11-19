@@ -22,7 +22,7 @@ export async function generateStaticParams() {
   if (!notes) return []
 
   return notes.map((note) => ({
-    note: note.nid
+    nid: String(note.nid)
   }))
 }
 
