@@ -111,21 +111,23 @@ export function CardProvider({
         } else if (noteBox[State.New].length > 0) {
           change = State.New; // review -> new
         }
-        change = change===State.Learning && noteBox[State.Learning].length>0&& fixDate(noteBox[State.Learning][0].card.due).getTime()-new Date().getTime()>0 ? State.New : change;
-        change = change===State.Relearning && noteBox[State.Relearning].length>0&& fixDate(noteBox[State.Relearning][0].card.due).getTime()-new Date().getTime()>0 ? State.Review : change;
         break;
     }
-    
+    change = change===State.Learning && noteBox[State.Learning].length>0&& fixDate(noteBox[State.Learning][0].card.due).getTime()-new Date().getTime()>0 ? State.Review : change;
+    change = change===State.Relearning && noteBox[State.Relearning].length>0&& fixDate(noteBox[State.Relearning][0].card.due).getTime()-new Date().getTime()>0 ? State.New : change;
+    // console.log(State[currentType],State[change],noteBox[State.Learning].length>0&& fixDate(noteBox[State.Learning][0].card.due).getTime()-new Date().getTime()>0,noteBox[State.Relearning].length>0&&fixDate(noteBox[State.Relearning][0].card.due).getTime()-new Date().getTime()>0 )
+
     // update state and data
     let updatedNoteBox:Array<Note & { card: Card }> = [ ...noteBox[currentType] ];
-    updatedNoteBox= updatedNoteBox.slice(1).toSorted((a,b)=>a.card.due.getTime()-b.card.due.getTime());
+    updatedNoteBox = updatedNoteBox.slice(1);
+    updatedNoteBox = updatedNoteBox.toSorted((a,b)=>fixDate(a.card.due).getTime()-fixDate(b.card.due).getTime())
     startTransition(()=>{ 
       // state update is marked as a transition, a slow re-render did not freeze the user interface.
       if (nextState !== State.Review) {
         if (currentType === State.Learning || currentType === State.Relearning) {
           setNoteBox[currentType]([...updatedNoteBox,note!]);
         }else{
-          if (currentType === State.New) {
+          if (currentType === State.New || currentType === State.Review) {
             setNoteBox[currentType](updatedNoteBox);
           }
           setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!]);
