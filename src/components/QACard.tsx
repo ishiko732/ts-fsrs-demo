@@ -1,6 +1,6 @@
 'use client'
 import ScheduleCard from "./ScheduleCard";
-import { useCardContext } from "../context/CardContext";
+import { useCardContext } from "@/context/CardContext";
 
 export default function QACard() {
   const { currentType, noteBox } = useCardContext();

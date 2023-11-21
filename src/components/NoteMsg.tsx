@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Note } from "@prisma/client";
-import Video from "@/app/components/Video";
-import Audio from "@/app/components/Audio";
+import Video from "@/components/Video";
+import Audio from "@/components/Audio";
 type Props = {
   note: {
     card: Card;

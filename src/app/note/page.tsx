@@ -3,7 +3,7 @@ import {getNotes} from "@/lib/note";
 import Link from "next/link";
 import React, {cache} from "react";
 import './css/note.css'
-import AddNote from "@/app/components/AddNote";
+import AddNote from "@/components/AddNote";
 import { State } from "@prisma/client";
 
 const getData = cache(async (start: number,searchWord: string) => {

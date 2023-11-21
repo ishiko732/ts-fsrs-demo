@@ -1,10 +1,10 @@
 import { getNotes } from "@/lib/note";
 import { Card, Note, State } from "@prisma/client";
 import React from "react";
-import CardClient from "../components/CardsClient";
+import CardClient from "@/components/CardsClient";
 import prisma from "@/lib/prisma";
 import { date_scheduler } from "ts-fsrs";
-import Finish from "../components/Finish";
+import Finish from "@/components/Finish";
 
 export const dynamic = 'force-dynamic'
 

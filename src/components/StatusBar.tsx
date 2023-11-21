@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useCardContext } from "../context/CardContext";
+import { useCardContext } from "@/context/CardContext";
 import { State } from "ts-fsrs";
 
 export default function StatusBar() {

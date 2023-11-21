@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef } from "react";
-import { useCardContext } from "../context/CardContext";
+import { useCardContext } from "@/context/CardContext";
 import { show_diff_message, Grades, Rating, State,Grade } from "ts-fsrs";
 
 function ShowAnswerButton() {

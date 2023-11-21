@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect } from "react";
-import { useCardContext } from "../context/CardContext";
+import { useCardContext } from "@/context/CardContext";
 import Video from "./Video";
 import Audio from "./Audio";
 

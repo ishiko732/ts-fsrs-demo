@@ -1,12 +1,12 @@
 import { getNoteByNid, getNotes } from "@/lib/note";
 import { cache } from "react";
 import { notFound } from "next/navigation";
-import GoBack from "@/app/components/GoBack";
-import NoteMsg from "@/app/components/NoteMsg";
+import GoBack from "@/components/GoBack";
+import NoteMsg from "@/components/NoteMsg";
 import { Card, Note } from "@prisma/client";
-import FSRSMsg from "@/app/components/FSRSMsg";
+import FSRSMsg from "@/components/FSRSMsg";
 import { findLogsByCid } from "@/lib/log";
-import LogTable from "@/app/components/LogTable";
+import LogTable from "@/components/LogTable";
 type Props = {
   params: {
     nid: string;

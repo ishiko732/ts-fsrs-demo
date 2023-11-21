@@ -1,7 +1,7 @@
 "use client";
 import React, {createRef, useRef} from "react";
 import { useRouter } from "next/navigation";
-import useQueryParams from "@/app/hooks/useQueryParams";
+import useQueryParams from "@/hooks/useQueryParams";
 
 export default function AddNote() {
   const { setQueryParam } = useQueryParams();
