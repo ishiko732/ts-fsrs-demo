@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TS-FSRS-Demo
 
-## Getting Started
+## introduction
 
-First, run the development server:
+Interval Repeat Flashcard Demo with Basic Simple Features Designed based on Next.js App Router, ts-fsrs, and Prisma.
+
+use packages:
+
+````
+- prisma (global) npm install -g prisma
+- dotenv (global) npm install -g dotenv
+- next.js (>= 13.4.0)
+- ts-fsrs (>= 3.1.1)
+- tailwindcss (>= 3)
+- daisyui (>= 3.9.0)
+````
+
+## Environment Variables
+
+ An environment variable is a key value pair of string data that is stored on your machine's local environment. Refer to our [Environment variables reference documentation](https://www.prisma.io/docs/reference/api-reference/environment-variables-reference) for specific details.
+
+> Ref(prisma docs): [https://www.prisma.io/docs/guides/development-environment/environment-variables](https://www.prisma.io/docs/guides/development-environment/environment-variables)
+
+ `.env.local`  
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+DATABASE_URL="mysql://username:password@localhost:3306/fsrsDemo"
+DATABASE_URL_WITH_SCHEMA=${DATABASE_URL}?schema=fsrsDemo
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How to run?
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Configure the database environment and use `npm run dbpush`
+- Copy the [public/プログラミング必須英単語600+.json](https://github.com/ishiko732/ts-fsrs-demo/blob/main/public/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E5%BF%85%E9%A0%88%E8%8B%B1%E5%8D%98%E8%AA%9E600%2B.json)  content and request the `/api/refresh` endpoint to load the data
+- Run demo
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+npm run dev # or yarn dev/ pnpm dev/ bun dev
+```
 
-## Learn More
+- Open [localhost:3000](http://localhost:3000)
 
-To learn more about Next.js, take a look at the following resources:
+## Display
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Home
+![home](images/home.png)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+> Tip: ts-fsrs version:3.1.1
 
-## Deploy on Vercel
+### Notes
+![Notes](images/notes.png)
+> You can view the added note information and status here, and click on each note to enter the detailed note page.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![note detail](images/detail.png)
+![note forget](images/forget.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+> You can view detailed information about the note on this page, and you can click "forget" to reset the learning status of that card.
+
+### Review
+
+![question](images/question-font.png)
+![show answer](images/answer.png)
+> You can perform review operations on the review page, and it is possible to display the answer using the keyboard. You can also schedule the timing and use `Ctrl+Z` or `⌘+Z` to undo or revert the operation.
+
+![finish](images/finish.png) 
+> After completing the review, you will be prompted accordingly.
+
+## Build
+You can compile the demo for better performance by using `npm run build`, and then start the project using `npm run start`.
+![build demo](images/build.png)
