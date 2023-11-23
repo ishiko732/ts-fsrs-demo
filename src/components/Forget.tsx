@@ -1,26 +1,26 @@
-
-'use client'
-import { useRouter } from "next/navigation";
-import React from 'react'
+import { forgetCard } from "@/lib/card";
+import { revalidatePath } from "next/cache";
+import React from "react";
 
 type Props = {
-    cid: Number;
-    className?: string;
+  cid: Number;
+  className?: string;
+};
+
+export default function Forget({ cid, className }: Props) {
+  const forgetAction = async () => {
+    "use server";
+    const data = await forgetCard(Number(cid), new Date(), true);
+    if (data) {
+      revalidatePath(`/note/${data.nid}`);
+    }
   };
 
-export default function Forget({cid,className}:Props) {
-    const router = useRouter();
-    const handleClick = async (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-      ) => {
-        fetch(`/api/fsrs?cid=${cid}&grade=0&reset=1`, {
-          method: "put",
-        })
-          .then(() => router.refresh())
-      };
   return (
-    <button className={"btn "+className} onClick={handleClick}>
-    Forget
-  </button>
-  )
+    <form action={forgetAction} className="flex justify-center">
+      <button className={"btn " + className} type="submit">
+        Forget
+      </button>
+    </form>
+  );
 }
