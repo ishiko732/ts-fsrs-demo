@@ -52,3 +52,9 @@ interface NodeData{
     '発音':string;
     'ビデオ':string;
 }
+
+interface NoteFormData{
+  question: string;
+  answer: string;
+  extend: string;
+}
