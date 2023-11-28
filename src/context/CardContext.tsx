@@ -155,12 +155,17 @@ export function CardProvider({
                               .then(res=>res.next) as Note & { card: Card }
     startTransition(()=>{
       const state= fixState(rollbackNote.card.state) // prisma State -> FSRS State
+      // state = rollback state
       if(nextState !== State.Review){
-        const updatNoteBox = noteBox[nextState].slice(1)
-        if (nextState===state){
+        const updatNoteBox = noteBox[nextState].filter(note=>note.card.cid!==cid); // filter out the rollback note
+        console.log(`Rollback ${State[nextState]} to ${State[state]}`);
+        if (nextState===state){ // learning === learning or relearning === relearning
           setNoteBox[state]([rollbackNote,...updatNoteBox]);
         }else{
           setNoteBox[nextState]([...updatNoteBox]);
+          if(state===State.Review || state===State.New){
+            setNoteBox[state](pre => [rollbackNote,...pre]);
+          }
         }
       }else{
         setNoteBox[state](pre => [rollbackNote,...pre]);
