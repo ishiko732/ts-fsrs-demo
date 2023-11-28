@@ -8,9 +8,7 @@ import Finish from "@/components/Finish";
 
 export const dynamic = 'force-dynamic'
 
-const getData = async (
-  due: Date
-): Promise<Array<Array<Note & { card: Card }>>> => {
+const getData = async (): Promise<Array<Array<Note & { card: Card }>>> => {
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(),4, 0, 0, 0);
   const nextDay = date_scheduler(startOfDay, 1, true);
@@ -31,7 +29,7 @@ const getData = async (
       query: {
         card: {
           state,
-          due: state === State.Review ? { lte: due } : undefined,
+          due: state === State.Review ? { lte: startOfDay } : undefined,
         },
       },
       order:
@@ -43,7 +41,7 @@ const getData = async (
 };
 
 export default async function Page() {
-  const noteBox = await getData(new Date());
+  const noteBox = await getData();
   const isFinish = noteBox.every((notes) => notes.length === 0);
   return isFinish ? (
     <Finish />
