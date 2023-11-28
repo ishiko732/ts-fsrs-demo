@@ -2,6 +2,7 @@
 import React, {createRef, useRef} from "react";
 import { useRouter } from "next/navigation";
 import useQueryParams from "@/hooks/useQueryParams";
+import Menu from "./menu";
 
 export default function AddNote() {
   const { setQueryParam } = useQueryParams();
@@ -47,6 +48,7 @@ export default function AddNote() {
   };
   return (
     <>
+      <Menu/>
       <div className="operator-option">
         <i className="w-12 h-12 inline-block hover:cursor-pointer" onClick={handleAddOpenClick}>
         <svg width="96" height="96" className={"w-6 h-6 hover:fill-amber-400 dark:fill-white"} xmlns="http://www.w3.org/2000/svg" ><path d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"/></svg>
