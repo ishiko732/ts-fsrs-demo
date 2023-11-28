@@ -1,14 +1,12 @@
 import { getNotes } from "@/lib/note";
 import { Card, Note, State } from "@prisma/client";
-import React from "react";
+import { cache } from "react";
 import CardClient from "@/components/CardsClient";
 import prisma from "@/lib/prisma";
 import { date_scheduler } from "ts-fsrs";
 import Finish from "@/components/Finish";
 
-export const dynamic = 'force-dynamic'
-
-const getData = async (): Promise<Array<Array<Note & { card: Card }>>> => {
+const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => {
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(),4, 0, 0, 0);
   const nextDay = date_scheduler(startOfDay, 1, true);
@@ -38,7 +36,7 @@ const getData = async (): Promise<Array<Array<Note & { card: Card }>>> => {
   );
 
   return Promise.all(noteBox);
-};
+});
 
 export default async function Page() {
   const noteBox = await getData();
