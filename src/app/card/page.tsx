@@ -12,7 +12,7 @@ const getData = async (
   due: Date
 ): Promise<Array<Array<Note & { card: Card }>>> => {
   const now = new Date();
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(),4, 0, 0, 0);
   const nextDay = date_scheduler(startOfDay, 1, true);
   const count = await prisma.revlog.count({
     where: {
