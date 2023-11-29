@@ -18,7 +18,7 @@ export default function MenuItem({
 }: Props) {
   return (
     <>
-      <li onClick={onClick} className="max-w-[54px] max-h-6">
+      <li onClick={onClick} className="max-w-[54px] max-h-10">
         <a className={clsx("tooltip tooltip-right", className)} data-tip={tip}>
           {children}
         </a>
