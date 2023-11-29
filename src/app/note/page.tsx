@@ -2,9 +2,8 @@ import getFormattedDate from "@/lib/format";
 import {getNotes} from "@/lib/note";
 import Link from "next/link";
 import React, {cache} from "react";
-import './css/note.css'
-import AddNote from "@/components/AddNote";
 import { State } from "@prisma/client";
+import Menu from "@/components/menu";
 
 const getData = cache(async (start: number,searchWord: string) => {
   console.log("cache miss:" + start);
@@ -43,8 +42,8 @@ export default async function Page({
 
   return (
     <>
-      <div className="w-full note_content bg-base-200">
-        <div className="w-full note_content">
+      <div className="w-full flex flex-wrap justify-center bg-base-200">
+        <div className="w-full flex flex-wrap justify-center ">
           <ul className="menu  w-1/2 rounded-box">
             <li className="">
               <h2 className="menu-title">Notes {`New:${newCnt},Learning:${learningCnt},Review:${reviewCnt}`}</h2>
@@ -67,7 +66,7 @@ export default async function Page({
             </li>
           </ul>
         </div>
-        <AddNote/>
+        <Menu/>
       </div>
 
     </>
