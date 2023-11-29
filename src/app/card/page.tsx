@@ -6,6 +6,8 @@ import prisma from "@/lib/prisma";
 import { date_scheduler } from "ts-fsrs";
 import Finish from "@/components/Finish";
 
+export const dynamic = 'force-dynamic'
+
 const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => {
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(),4, 0, 0, 0);
