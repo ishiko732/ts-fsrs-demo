@@ -31,9 +31,7 @@ const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => 
           state,
           due: state === State.Review ? { lte: startOfDay } : undefined,
         },
-      },
-      order:
-        state === State.Review ? { card: { last_review: "desc" } } : undefined,
+      }
     })
   );
 
@@ -41,7 +39,7 @@ const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => 
 });
 
 export default async function Page() {
-  const noteBox = await getData();
+  const noteBox = (await getData()).map((noteBox) =>noteBox.sort(()=>Math.random()-Math.random()))
   const isFinish = noteBox.every((notes) => notes.length === 0);
   return isFinish ? (
     <Finish />
