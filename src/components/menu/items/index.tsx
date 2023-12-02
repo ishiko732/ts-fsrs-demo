@@ -8,8 +8,9 @@ type Props = {
   onClick?:
     | ((e: React.MouseEvent<HTMLElement, MouseEvent>) => void)
     | (() => void);
-  formAction?: (formData: FormData) => void;
+  formAction?: ((formData: FormData) => void) | string | undefined;
   dialog?: React.ReactNode;
+  disable?: true;
 };
 
 export default async function MenuItem({
@@ -19,7 +20,11 @@ export default async function MenuItem({
   onClick,
   formAction,
   dialog,
+  disable,
 }: Props) {
+  if (disable !== undefined) {
+    return null;
+  }
   return formAction && !onClick ? (
     <form action={formAction}>
       <MenuItemContent
@@ -48,7 +53,7 @@ async function MenuItemContent({
   children,
   onClick,
   dialog,
-}: Partial<Props>) {
+}: Props) {
   return (
     <>
       <li onClick={onClick} className="max-w-[54px] max-h-10">
