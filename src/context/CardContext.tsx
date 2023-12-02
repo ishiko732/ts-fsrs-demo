@@ -3,6 +3,7 @@ import { Card, Note } from "@prisma/client";
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { RecordLog, State, fixDate, fixState } from "ts-fsrs";
 import { useRouter } from "next/navigation";
+import { StateBox } from "@/types";
 
 type changeResponse = {
   code: number;
@@ -13,12 +14,12 @@ type changeResponse = {
 type CardContextProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  currentType: State;
-  setCurrentType: React.Dispatch<React.SetStateAction<State>>;
+  currentType: StateBox;
+  setCurrentType: React.Dispatch<React.SetStateAction<StateBox>>;
   schedule:RecordLog|undefined;
   setSchedule:React.Dispatch<React.SetStateAction<RecordLog|undefined>>;
-  noteBox:{[key in State]:Array<Note & { card: Card }>};
-  setNoteBox:{[key in State]:React.Dispatch<React.SetStateAction<Array<Note & { card: Card }>>>};
+  noteBox:{[key in StateBox]:Array<Note & { card: Card }>};
+  setNoteBox:{[key in StateBox]:React.Dispatch<React.SetStateAction<Array<Note & { card: Card }>>>};
   handleChange:(res: changeResponse,note:Note & { card: Card })=>boolean;
   handleRollBack:()=>Promise<Note & { card: Card }|undefined>;
 };
@@ -44,79 +45,48 @@ export function CardProvider({
   const router = useRouter();
   const [NewCard, LearningCard, RelearningCard, ReviewCard] = noteBox0;
   const [NewCardBox,setNewCardBox] = useState(NewCard)
-  const [LearningCardBox,setLearningCardBox] = useState(LearningCard)
-  const [RelearningCardBox,setRelearningCardBox] = useState(RelearningCard)
+  const [LearningCardBox,setLearningCardBox] = useState(() => {
+    const l = []
+    if (LearningCard){
+      l.push(...LearningCard)
+    }
+    if(RelearningCard){
+      l.push(...RelearningCard)
+    }
+    return l
+  })
   const [ReviewCardBox,setReviewCardBox] = useState(ReviewCard)
   const [open, setOpen] = useState(false);
   const [schedule,setSchedule] = useState<RecordLog|undefined>(undefined)
   const noteBox = useMemo(() => ({
     [State.New]: NewCardBox,
     [State.Learning]: LearningCardBox,
-    [State.Relearning]: RelearningCardBox,
     [State.Review]: ReviewCardBox
-  }), [NewCardBox, LearningCardBox, RelearningCardBox, ReviewCardBox]);
+  }), [NewCardBox, LearningCardBox, ReviewCardBox]);
   const setNoteBox=useMemo(()=>({
     [State.New]:setNewCardBox,
     [State.Learning]:setLearningCardBox,
-    [State.Relearning]:setRelearningCardBox,
     [State.Review]:setReviewCardBox
-  }),[setNewCardBox,setLearningCardBox,setRelearningCardBox,setReviewCardBox])
-  const [currentType, setCurrentType] = useState<State>(function(){
-    let current = State.New;
-    for(let i=0;i<4;i++){
+  }),[setNewCardBox, setLearningCardBox, setReviewCardBox])
+  const [currentType, setCurrentType] = useState<StateBox>(() => {
+    let current:StateBox = State.New;
+    for(let i=0;i<3;i++){
       if(noteBox[current].length>0){
         break
       }
-      current = (current+1)%4
+      current = (current+1)%3
     }
     return current;
   });
 
-  const rollBackRef= useRef<{cid:number,nextState:State}[]>([])
+  const rollBackRef= useRef<{cid:number,nextStateBox:StateBox}[]>([])
 
   const handleChange = function(res: changeResponse,note:Note & { card: Card }){
-    let change = State.New; // default State.New
     const {nextState,nextDue} = res;
     if(nextDue){
       note.card.due = nextDue;
     }
-    switch (currentType) {
-      case State.New:
-        if (noteBox[State.Learning].length > 0) {
-          change = State.Learning; // new -> learning
-        } else if (noteBox[State.Relearning].length > 0) {
-          change = State.Relearning; // new -> relearning
-        } else if (noteBox[State.Review].length > 0) {
-          change = State.Review; // new -> review
-        }
-        break;
-      case State.Learning:
-      case State.Relearning:
-        if (noteBox[State.Review].length > 0) {
-          change = State.Review; // learning/relearning -> review
-        } else if (noteBox[currentType == State.Learning ? State.Relearning : State.Learning].length > 0) {
-          change = currentType == State.Learning ? State.Relearning : State.Learning; // learning/relearning -> relearning/learning
-        } else if (noteBox[State.New].length > 0) {
-          change = State.New; // learning/relearning -> new
-        }
-        if (nextDue && (change===State.Learning||change===State.Relearning)) {
-          change = fixDate(note.card.due).getTime()-new Date().getTime()>0 ? State.New : change;
-        }
-        break;
-      case State.Review:
-        if (noteBox[State.Learning].length > 0) {
-          change = State.Learning; // review -> learning
-        } else if (noteBox[State.Relearning].length > 0) {
-          change = State.Relearning; // review -> relearning
-        } else if (noteBox[State.New].length > 0) {
-          change = State.New; // review -> new
-        }
-        break;
-    }
-    change = change===State.Learning && noteBox[State.Learning].length>0&& fixDate(noteBox[State.Learning][0].card.due).getTime()-new Date().getTime()>0 ? State.Review : change;
-    change = change===State.Relearning && noteBox[State.Relearning].length>0&& fixDate(noteBox[State.Relearning][0].card.due).getTime()-new Date().getTime()>0 ? State.New : change;
-    // console.log(State[currentType],State[change],noteBox[State.Learning].length>0&& fixDate(noteBox[State.Learning][0].card.due).getTime()-new Date().getTime()>0,noteBox[State.Relearning].length>0&&fixDate(noteBox[State.Relearning][0].card.due).getTime()-new Date().getTime()>0 )
-
+    const change = updateStateBox(noteBox,currentType);
     // update state and data
     let updatedNoteBox:Array<Note & { card: Card }> = [ ...noteBox[currentType] ];
     updatedNoteBox = updatedNoteBox.slice(1);
@@ -124,20 +94,21 @@ export function CardProvider({
     startTransition(()=>{ 
       // state update is marked as a transition, a slow re-render did not freeze the user interface.
       if (nextState !== State.Review) {
-        if (currentType === State.Learning || currentType === State.Relearning) {
+        if (currentType === State.Learning) {
           setNoteBox[currentType]([...updatedNoteBox,note!]);
+          console.log([...updatedNoteBox,note!])
         }else{
           if (currentType === State.New || currentType === State.Review) {
             setNoteBox[currentType](updatedNoteBox);
           }
-          setNoteBox[currentType===State.Review ? State.Relearning: State.Learning](pre => [...pre, note!]);
+          setNoteBox[State.Learning](pre => [...pre, note!]);
         }
       }else{
         setNoteBox[currentType](updatedNoteBox);
       }
       rollBackRef.current.push({
         cid:note.card.cid,
-        nextState:nextState
+        nextStateBox:nextState===State.Relearning? State.Learning: nextState
       });
       console.log(`Change ${State[currentType]} to ${State[change]}, Card next State: ${State[nextState]},current rollback length ${rollBackRef.current.length}`);
       setCurrentType(change);
@@ -149,20 +120,23 @@ export function CardProvider({
     if(rollBackRef.current.length===0){
       return undefined;
     }
-    const {cid,nextState}  = rollBackRef.current.pop()!;
+    const {cid, nextStateBox}  = rollBackRef.current.pop()!;
     const rollbackNote =await fetch(`/api/fsrs?cid=${cid}&rollback=1`,{method:'PUT'})
                               .then(res =>res.json())
                               .then(res=>res.next) as Note & { card: Card }
     startTransition(()=>{
-      const state= fixState(rollbackNote.card.state) // prisma State -> FSRS State
+      let state = fixState(rollbackNote.card.state) // prisma State -> FSRS State
+      if (state === State.Relearning){
+        state = State.Learning
+      }
       // state = rollback state
-      if(nextState !== State.Review){
-        const updatNoteBox = noteBox[nextState].filter(note=>note.card.cid!==cid); // filter out the rollback note
-        console.log(`Rollback ${State[nextState]} to ${State[state]}`);
-        if (nextState===state){ // learning === learning or relearning === relearning
+      if(nextStateBox !== State.Review){
+        const updatNoteBox = noteBox[nextStateBox].filter(note=>note.card.cid!==cid); // filter out the rollback note
+        console.log(`Rollback Box:${State[nextStateBox]} to ${State[state]}`);
+        if (nextStateBox===state){ // learning === learning or relearning === relearning
           setNoteBox[state]([rollbackNote,...updatNoteBox]);
         }else{
-          setNoteBox[nextState]([...updatNoteBox]);
+          setNoteBox[nextStateBox]([...updatNoteBox]);
           if(state===State.Review || state===State.New){
             setNoteBox[state](pre => [rollbackNote,...pre]);
           }
@@ -176,21 +150,14 @@ export function CardProvider({
   }
 
   useEffect(()=>{
-    let current = currentType;
-    let i =0;
-    for(;i<4;i++){
-      if(noteBox[current].length>0){
-        break
-      }
-      current = (current+1)%4
-    }
-    if(i==4){
+    const {finished,transferState} = checkFinished(noteBox,currentType)
+    if(finished){
       router.refresh();
       console.log("ok")
     }
-    if(current!==currentType){
+    if(transferState !== currentType){
       startTransition(()=>{
-        setCurrentType(current)
+        setCurrentType(transferState)
       })
     }
 
@@ -211,4 +178,52 @@ export function CardProvider({
     handleRollBack
   };
   return <CardContext.Provider value={value}>{children}</CardContext.Provider>;
+}
+
+function RandomNewOrReviewState(){
+  return Math.random()>0.5? State.Review: State.New
+}
+
+function updateStateBox(noteBox: { [key in StateBox]: Array<Note & { card: Card }> },currentType:StateBox){
+  let change:StateBox = State.New; // default State.New
+  switch (currentType) {
+    case State.New:
+      if (noteBox[State.Learning].length > 0) {
+        change = State.Learning; // new -> learning
+      } else if (noteBox[State.Review].length > 0) {
+        change = State.Review; // new -> review
+      }
+      break;
+    case State.Learning:
+      if (noteBox[State.Review].length > 0) {
+        change = State.Review; // learning/relearning -> review
+      } else if (noteBox[State.New].length > 0) {
+        change = State.New; // learning/relearning -> new
+      }
+      break;
+    case State.Review:
+      if (noteBox[State.Learning].length > 0) {
+        change = State.Learning; // review -> learning
+      } else if (noteBox[State.New].length > 0) {
+        change = State.New; // review -> new
+      }
+      break;
+  }
+  change = change===State.Learning && noteBox[State.Learning].length>0&& fixDate(noteBox[State.Learning][0].card.due).getTime()-new Date().getTime()>0 ? RandomNewOrReviewState() : change;
+  return change
+}
+
+const checkFinished=(noteBox: { [key in StateBox]: Array<Note & { card: Card }> },currentType:StateBox) => {
+  let current:StateBox = currentType;
+  let i =0;
+  for(;i<3;i++){
+    if(noteBox[current].length>0){
+      break
+    }
+    current = (current+1)%3
+  }
+  return {
+    finished: i === 3,
+    transferState: current
+  };
 }

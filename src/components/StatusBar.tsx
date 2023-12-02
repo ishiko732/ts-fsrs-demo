@@ -5,8 +5,6 @@ import { State } from "ts-fsrs";
 
 export default function StatusBar() {
   const { noteBox, currentType } = useCardContext();
-  const learning =
-    noteBox[State.Learning].length + noteBox[State.Relearning].length;
   return (
     <div className="flex justify-center text-white">
       <div className={"badge badge-info gap-2 m-1 p-4 text-white"}>
@@ -19,10 +17,10 @@ export default function StatusBar() {
         )}
       </div>
       <div className="badge badge-error gap-2 m-1 p-4 text-white">
-        {currentType === State.Learning || currentType === State.Relearning ? (
-          <span className="underline underline-offset-4">{learning}</span>
+        {currentType === State.Learning ? (
+          <span className="underline underline-offset-4">{noteBox[State.Learning].length}</span>
         ) : (
-          learning
+          noteBox[State.Learning].length
         )}
       </div>
       <div className="badge badge-success gap-2 m-1 p-4 text-white">
