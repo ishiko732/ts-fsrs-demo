@@ -2,26 +2,15 @@ import { getNotes } from "@/lib/note";
 import { Card, Note, State } from "@prisma/client";
 import { cache } from "react";
 import CardClient from "@/components/CardsClient";
-import prisma from "@/lib/prisma";
-import { date_scheduler } from "ts-fsrs";
 import Finish from "@/components/Finish";
+import { getTodayLearnedNewCardCount } from "@/lib/log";
 
 export const dynamic = 'force-dynamic'
 
 const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => {
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(),4, 0, 0, 0);
-  const nextDay = date_scheduler(startOfDay, 1, true);
-  const count = await prisma.revlog.count({
-    where: {
-      review: {
-        gte: startOfDay,
-        lt: nextDay,
-      },
-      state: State.New
-    },
-  }); // get current day new card count
-  console.log(count);
+  const count = await getTodayLearnedNewCardCount(startOfDay)
   const states = [State.New, State.Learning, State.Relearning, State.Review];
   const noteBox = states.map((state) =>
     getNotes({
