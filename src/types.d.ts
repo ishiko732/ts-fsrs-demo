@@ -66,3 +66,13 @@ export type StateBox = ExcludeReLearning<State>;
 // 2: Review
 
 type ExcludeReLearning<T> = Exclude<T, State.Relearning>;
+
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      DATABASE_URL: string;
+      NewCardLimit: string;
+    }
+  }
+}

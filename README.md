@@ -26,6 +26,7 @@ use packages:
 ```bash
 DATABASE_URL="mysql://username:password@localhost:3306/fsrsDemo"
 DATABASE_URL_WITH_SCHEMA=${DATABASE_URL}?schema=fsrsDemo
+NewCardLimit=50
 ```
 
 ## How to run?
