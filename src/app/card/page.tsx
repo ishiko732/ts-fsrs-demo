@@ -34,8 +34,7 @@ export default async function Page() {
   return isFinish ? (
     <Finish />
   ) : (
-    <div className="flex justify-center flex-col">
-      <div>Use client:</div>
+    <div className="flex justify-center flex-col py-8">
       <CardClient noteBox={noteBox} />
     </div>
   );
