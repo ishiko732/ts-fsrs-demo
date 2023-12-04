@@ -5,11 +5,49 @@ type Props = {
   tip?: string;
   className?: string;
   children: React.ReactNode;
-  onClick?: ((e: React.MouseEvent<HTMLElement, MouseEvent>) => void)|(()=>void);
+  onClick?:
+    | ((e: React.MouseEvent<HTMLElement, MouseEvent>) => void)
+    | (() => void);
+  formAction?: ((formData: FormData) => void) | string | undefined;
   dialog?: React.ReactNode;
+  disable?: true;
 };
 
-export default function MenuItem({
+export default async function MenuItem({
+  tip,
+  className,
+  children,
+  onClick,
+  formAction,
+  dialog,
+  disable,
+}: Props) {
+  if (disable !== undefined) {
+    return null;
+  }
+  return formAction && !onClick ? (
+    <form action={formAction}>
+      <MenuItemContent
+        tip={tip}
+        className={className}
+        onClick={onClick}
+        dialog={dialog}
+      >
+        {children}
+      </MenuItemContent>
+    </form>
+  ) : (
+    <MenuItemContent
+      tip={tip}
+      className={className}
+      onClick={onClick}
+      dialog={dialog}
+    >
+      {children}
+    </MenuItemContent>
+  );
+}
+async function MenuItemContent({
   tip,
   className,
   children,

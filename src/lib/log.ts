@@ -1,5 +1,6 @@
-import { Card, Note, Prisma,Revlog } from "@prisma/client";
+import { Card, Note, Prisma,Revlog, State } from "@prisma/client";
 import prisma from "./prisma";
+import { date_scheduler } from "ts-fsrs";
 
 export async function findLogsByCid(cid: number) {
     const logs = await prisma.revlog.findMany({
@@ -32,4 +33,19 @@ export async function deleteLogByLid(lid:string){
         }
     })
     return log
+}
+
+export async function getTodayLearnedNewCardCount(startOfDay: Date){
+    const nextDay = date_scheduler(startOfDay, 1, true);
+    const count = await prisma.revlog.count({
+      where: {
+        review: {
+          gte: startOfDay,
+          lt: nextDay,
+        },
+        state: State.New
+      },
+    }); // get current day new card count
+    console.log(count);
+    return count;
 }
