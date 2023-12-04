@@ -8,8 +8,8 @@ async function ServerTest() {
   };
 
   return (
-    <MenuItem tip="Server Test" formAction={submit} disable>
-      <button className="btn btn-xs" type="submit">
+    <MenuItem tip="Server Test" formAction={submit}>
+      <button className="btn btn-square btn-xs" type="submit">
         TEST
       </button>
     </MenuItem>
