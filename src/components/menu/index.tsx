@@ -35,8 +35,8 @@ async function dynamicReactNodes() {
     .map((filename) => {
       const Item = dynamic(() => import(`./items/${path.basename(filename)}`), {
         loading: () => (
-          <li>
-            <span className="loading loading-spinner loading-md"></span>
+          <li className="w-[54px] h-10">
+            <span className="flex mx-auto my-auto loading loading-spinner loading-xs"></span>
           </li>
         ),
       });
