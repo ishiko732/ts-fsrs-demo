@@ -9,7 +9,7 @@ function ClientTest() {
   }
 
   return (
-    <MenuItem tip="Client Test" onClick={handleClick}>
+    <MenuItem tip="Client Test" onClick={handleClick} disable={process.env.NODE_ENV === "production"}>
       <button className="btn btn-xs btn-square" type="submit">
         {cnt}
       </button>

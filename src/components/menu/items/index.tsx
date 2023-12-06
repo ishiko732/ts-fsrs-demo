@@ -10,7 +10,7 @@ type Props = {
     | (() => void);
   formAction?: ((formData: FormData) => void) | string | undefined;
   dialog?: React.ReactNode;
-  disable?: true;
+  disable?: boolean;
 };
 
 export default async function MenuItem({
@@ -22,7 +22,7 @@ export default async function MenuItem({
   dialog,
   disable,
 }: Props) {
-  if (disable !== undefined) {
+  if (disable === true) {
     return null;
   }
   return formAction && !onClick ? (

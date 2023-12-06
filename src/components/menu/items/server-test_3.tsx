@@ -8,7 +8,7 @@ async function ServerTest() {
   };
 
   return (
-    <MenuItem tip="Server Test" formAction={submit}>
+    <MenuItem tip="Server Test" formAction={submit} disable={process.env.NODE_ENV === "production"}>
       <button className="btn btn-square btn-xs" type="submit">
         TEST
       </button>
