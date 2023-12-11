@@ -86,7 +86,7 @@ export function CardProvider({
     if(nextDue){
       note.card.due = nextDue;
     }
-    const change = updateStateBox(noteBox,currentType);
+    const change = updateStateBox(noteBox, currentType, nextDue);
     // update state and data
     let updatedNoteBox:Array<Note & { card: Card }> = [ ...noteBox[currentType] ];
     updatedNoteBox = updatedNoteBox.slice(1);
@@ -180,11 +180,17 @@ export function CardProvider({
   return <CardContext.Provider value={value}>{children}</CardContext.Provider>;
 }
 
-function RandomNewOrReviewState(){
-  return Math.random()>0.5? State.Review: State.New
+function RandomNewOrReviewState(noteBox: { [key in StateBox]: Array<Note & { card: Card }> }){
+  if (noteBox[State.New].length === 0 ) {
+    return State.Review;
+  }else if (noteBox[State.Review].length === 0 ) {
+    return State.New;
+  }else{
+    return Math.random()>0.5? State.Review: State.New
+  }
 }
 
-function updateStateBox(noteBox: { [key in StateBox]: Array<Note & { card: Card }> },currentType:StateBox){
+function updateStateBox(noteBox: { [key in StateBox]: Array<Note & { card: Card }> },currentType:StateBox,nextDue?:Date){
   let change:StateBox = State.New; // default State.New
   switch (currentType) {
     case State.New:
@@ -199,6 +205,8 @@ function updateStateBox(noteBox: { [key in StateBox]: Array<Note & { card: Card 
         change = State.Review; // learning/relearning -> review
       } else if (noteBox[State.New].length > 0) {
         change = State.New; // learning/relearning -> new
+      }else {
+        change = State.Learning; // learning/relearning -> learning/relearning
       }
       break;
     case State.Review:
@@ -206,10 +214,12 @@ function updateStateBox(noteBox: { [key in StateBox]: Array<Note & { card: Card 
         change = State.Learning; // review -> learning
       } else if (noteBox[State.New].length > 0) {
         change = State.New; // review -> new
+      } else {
+        change = State.Review; // review -> review
       }
       break;
   }
-  change = change===State.Learning && noteBox[State.Learning].length>0&& fixDate(noteBox[State.Learning][0].card.due).getTime()-new Date().getTime()>0 ? RandomNewOrReviewState() : change;
+  change = change===State.Learning && noteBox[State.Learning].length>0&& fixDate(noteBox[State.Learning][0].card.due).getTime()-new Date().getTime()>0 ? RandomNewOrReviewState(noteBox) : change;
   return change
 }
 
@@ -218,6 +228,12 @@ const checkFinished=(noteBox: { [key in StateBox]: Array<Note & { card: Card }> 
   let i =0;
   for(;i<3;i++){
     if(noteBox[current].length>0){
+      if(current===State.Learning){
+        const due = fixDate(noteBox[current][0].card.due);
+        if(due.getTime()-new Date().getTime()>0){
+          break
+        }
+      }
       break
     }
     current = (current+1)%3
