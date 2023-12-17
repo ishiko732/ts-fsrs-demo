@@ -39,6 +39,13 @@ export declare module "ts-fsrs" {
 }
 
 interface NodeData{
+  question:string;
+  answer:string;
+  extend:string;
+  source:string;
+}
+
+interface ProgeigoNodeData{
     '🔒Row ID':string;
     '$rowIndex':number;
     'column1':string;
