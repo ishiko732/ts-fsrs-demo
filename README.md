@@ -50,7 +50,7 @@ dotenv -e .env.local -- npx prisma db push
 update data:
 ```sql
 update Note n
-set n.source = 'プログラミング必須英単語600+'
+set n.source = 'プログラミング必須英単語600+' and n.uid=1
 ```
 ## Display
 
