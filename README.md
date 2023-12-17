@@ -41,6 +41,17 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 
 - Open [localhost:3000](http://localhost:3000)
 
+## migration to TS-FSRS-DEMO V2
+migration:
+```bash
+dotenv -e .env.local -- npx prisma db push
+```
+
+update data:
+```sql
+update Note n
+set n.source = 'プログラミング必須英単語600+'
+```
 ## Display
 
 ### Home
