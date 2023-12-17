@@ -6,7 +6,6 @@ datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
-  
 }
 
 model Revlog {
@@ -50,12 +49,33 @@ model Parameters {
   enable_fuzz       Boolean @default(false)
 }
 
+model User {
+  uid      Int           @id @unique @default(autoincrement())
+  name     String        @unique
+  password String
+  email    String        @unique
+  notes    UserNoteRel[]
+}
+
+model UserNoteRel {
+  uid  Int
+  nid  Int
+  user User @relation(fields: [uid], references: [uid])
+  note Note @relation(fields: [nid], references: [nid])
+
+  @@id([uid, nid])
+  @@index([uid], name: "idx_user_note_rel_nid")
+  @@index([nid], name: "idx_user_note_rel_uid")
+}
+
 model Note {
   nid      Int @id @unique @default(autoincrement())
   question String @default("")
   answer   String @default("")
+  source   String @default("")
   extend   Json
   card     Card?
+  UserNoteRel UserNoteRel[]
 }
 
 enum State {
