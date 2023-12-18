@@ -13,7 +13,7 @@
     "prismaGen": "dotenv -e .env.local -- npx prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "5.4.2",
+    "@prisma/client": "5.7.0",
     "clsx": "^2.0.0",
     "next": "14.0.3",
     "next-auth": "^4.24.5",

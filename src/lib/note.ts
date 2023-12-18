@@ -41,7 +41,7 @@ export async function addNote(data: Partial<NodeData>) {
       });
 }
 
-export async function addProgeigoNote(data: ProgeigoNodeData) {
+export async function addProgeigoNote(uid:number,data: ProgeigoNodeData) {
   const question = data.英単語;
   const answer = data.意味;
   if (!question || !answer) {
@@ -56,9 +56,11 @@ export async function addProgeigoNote(data: ProgeigoNodeData) {
   return _note
     ? prisma.note.update({
         where: {
+          uid:uid,
           nid: _note ? _note.nid : undefined,
         },
         data: {
+          uid,
           question,
           answer,
           extend: JSON.stringify(data),
@@ -66,6 +68,7 @@ export async function addProgeigoNote(data: ProgeigoNodeData) {
       })
     : prisma.note.create({
         data: {
+          uid,
           question,
           answer,
           extend: JSON.stringify(data),
@@ -78,8 +81,8 @@ export async function addProgeigoNote(data: ProgeigoNodeData) {
       });
 }
 
-export async function addProgeigoNotes(dates: ProgeigoNodeData[]) {
-  const all = dates.map((note) => addProgeigoNote(note));
+export async function addProgeigoNotes(uid:number,dates: ProgeigoNodeData[]) {
+  const all = dates.map((note) => addProgeigoNote(uid,note));
   return Promise.all(all);
 }
 
