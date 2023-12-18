@@ -8,21 +8,25 @@ export const options: NextAuthOptions = {
   providers: [
     GitHubProvider({
       async profile(profile: GithubProfile) {
-        console.log(profile)
+        // console.log(profile);
+        const user = await initUser(profile);
         const githubProfile = {
           ...profile,
+          name: profile.name ?? profile.login,
           role:
             profile.id === (Number(process.env.GITHUB_ADMIN_ID) ?? 62931549)
               ? "admin"
               : "user",
-          id: profile.id.toString(),
+          id: user.uid.toString(),
           image: profile.avatar_url,
         };
-        await initUser(profile)
         return githubProfile;
       },
       clientId: process.env.GITHUB_ID as string,
       clientSecret: process.env.GITHUB_SECRET as string,
+      httpOptions:{
+        timeout:60000
+      }
     }),
     // CredentialsProvider({
     //   id: "custom-login",
@@ -68,13 +72,17 @@ export const options: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
-        console.log(user);
+        token.sub = user.id;
       }
       return token;
     },
     // If you want to use the role in client components
     async session({ session, token }) {
-      if (session?.user) session.user.role = token.role;
+      if (session?.user) {
+        session.user.role = token.role
+        if(token.sub)
+        session.user.id=token.sub
+      };
       return session;
     },
   },

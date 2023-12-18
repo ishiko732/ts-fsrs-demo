@@ -8,6 +8,7 @@ type Props = {
 };
 
 export default function UserBar({ user }: Props) {
+  console.log(user)
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">

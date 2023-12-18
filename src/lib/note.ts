@@ -50,7 +50,7 @@ export async function addProgeigoNote(uid:number,data: ProgeigoNodeData) {
 
   const fc = createEmptyCardByPrisma();
   const _note = await prisma.note.findFirst({
-    where: { question },
+    where: { question,uid },
     select: { nid: true },
   });
   return _note
@@ -86,8 +86,11 @@ export async function addProgeigoNotes(uid:number,dates: ProgeigoNodeData[]) {
   return Promise.all(all);
 }
 
-export async function getNotes({take,query,order}:{take?: number, query?: Prisma.NoteWhereInput,order?:Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]}) {
-    const notes = await prisma.note.findMany({ take: take, where: query,orderBy:order,include: { card: true }});
+export async function getNotes({uid,take,query,order}:{uid: number, take?: number, query?: Prisma.NoteWhereInput,order?:Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]}) {
+    const notes = await prisma.note.findMany({ take: take, where: {
+      uid,
+      ...query
+    },orderBy:order,include: { card: true }});
     return notes as Array<Note & { card: Card}>;
 }
 
