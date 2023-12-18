@@ -32,7 +32,6 @@ NewCardLimit=50
 ## How to run?
 
 - Configure the database environment and use `npm run dbpush`
-- Copy the [public/プログラミング必須英単語600+.json](https://github.com/ishiko732/ts-fsrs-demo/blob/main/public/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%E5%BF%85%E9%A0%88%E8%8B%B1%E5%8D%98%E8%AA%9E600%2B.json)  content and request the `/api/refresh` endpoint to load the data
 - Run demo
 
 ```bash
@@ -40,18 +39,8 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 ```
 
 - Open [localhost:3000](http://localhost:3000)
+- Sign In
 
-## migration to TS-FSRS-DEMO V2
-migration:
-```bash
-dotenv -e .env.local -- npx prisma db push
-```
-
-update data:
-```sql
-update Note n
-set n.source = 'プログラミング必須英単語600+' and n.uid=1
-```
 ## Display
 
 ### Home
