@@ -4,10 +4,17 @@ import { cache } from "react";
 import CardClient from "@/components/CardsClient";
 import Finish from "@/components/Finish";
 import { getTodayLearnedNewCardCount } from "@/lib/log";
+import { options } from "@/auth/api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth/next";
+import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic'
 
 const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => {
+  const session = await getServerSession(options);
+  if (!session) {
+    redirect('/api/auth/signin?callbackUrl=/card')
+  }
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(),4, 0, 0, 0);
   const count = await getTodayLearnedNewCardCount(startOfDay)
@@ -15,6 +22,7 @@ const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => 
   const limit = !isNaN(Number(process.env.NewCardLimit)) ? Number(process.env.NewCardLimit) : 50
   const noteBox = states.map((state) =>
     getNotes({
+      uid: Number(session.user.id),
       take: state === State.New ? Math.max(0, limit- count) : undefined,
       query: {
         card: {

@@ -1,29 +1,33 @@
 import { getNoteByNid, getNotes } from "@/lib/note";
 import { cache } from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import GoBack from "@/components/GoBack";
 import NoteMsg from "@/components/NoteMsg";
 import { Card, Note } from "@prisma/client";
 import FSRSMsg from "@/components/FSRSMsg";
 import { findLogsByCid } from "@/lib/log";
 import LogTable from "@/components/LogTable";
+import { options } from "@/auth/api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth/next";
 type Props = {
   params: {
     nid: string;
   };
 };
 
-export const revalidate = 86400
+export const revalidate = 86400;
 
+//SSG admin
 export async function generateStaticParams() {
   const notes = await getNotes({
+    uid: 1,
     order: { card: { due: "desc" } },
   });
-  if (!notes) return []
+  if (!notes) return [];
 
   return notes.map((note) => ({
-    nid: String(note.nid)
-  }))
+    nid: String(note.nid),
+  }));
 }
 
 const getData = cache(async (nid: string) => {
@@ -33,12 +37,14 @@ const getData = cache(async (nid: string) => {
   return note;
 });
 
-
-
 export default async function Page({ params }: Props) {
   const note = await getData(params.nid);
   if (!note) {
     notFound();
+  }
+  const session = await getServerSession(options);
+  if (note.uid !== 1 && (!session || note.uid !== Number(session?.user.id))) {
+    redirect("/denied");
   }
   const logs = await findLogsByCid(note.card.cid);
   return (

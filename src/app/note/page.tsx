@@ -4,10 +4,18 @@ import Link from "next/link";
 import React, {cache} from "react";
 import { State } from "@prisma/client";
 import Menu from "@/components/menu";
+import { options } from "@/auth/api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth/next";
+
 
 const getData = cache(async (start: number,searchWord: string) => {
   console.log("cache miss:" + start);
+  const session = await getServerSession(options);
+  if (!session?.user) {
+    return [];
+  }
   const notes = await getNotes({
+    uid:Number(session.user.id),
     take: start === 0 ? undefined : start,
     query:{question:{contains:searchWord}},
     order: { card: { due: "desc" } },
@@ -22,7 +30,6 @@ export default async function Page({
 }) {
   const take = searchParams["take"] ? Number(searchParams["take"]) : 0;
   const searchWord = searchParams["s"] ? searchParams["s"] : "";
-  console.log(searchWord)
   const notes = await getData(take,searchWord);
   var newCnt =0
   var learningCnt = 0
