@@ -1,15 +1,15 @@
 import type { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { GithubProfile } from "next-auth/providers/github";
-import prisma from "@/lib/prisma";
+import { initUser } from "./init";
 
 export const options: NextAuthOptions = {
   // debug: process.env.NODE_ENV !== "production",
   providers: [
     GitHubProvider({
-      profile(profile: GithubProfile) {
-        // console.log(profile)
-        const githubProfile= {
+      async profile(profile: GithubProfile) {
+        console.log(profile)
+        const githubProfile = {
           ...profile,
           role:
             profile.id === (Number(process.env.GITHUB_ADMIN_ID) ?? 62931549)
@@ -18,8 +18,7 @@ export const options: NextAuthOptions = {
           id: profile.id.toString(),
           image: profile.avatar_url,
         };
-
-        
+        await initUser(profile)
         return githubProfile;
       },
       clientId: process.env.GITHUB_ID as string,
