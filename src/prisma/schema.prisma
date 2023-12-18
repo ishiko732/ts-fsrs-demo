@@ -53,6 +53,8 @@ model User {
   uid      Int           @id @unique @default(autoincrement())
   name     String        @unique
   password String
+  oauthId  String        
+  oauthType String       @default("local")
   email    String        @unique
   notes    Note[]
 }

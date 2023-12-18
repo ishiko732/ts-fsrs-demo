@@ -80,6 +80,9 @@ declare global {
     interface ProcessEnv {
       DATABASE_URL: string;
       NewCardLimit: string;
+      GITHUB_ID: string;
+      GITHUB_SECRET: string;
+      GITHUB_ADMIN_ID: string;
     }
   }
 }
