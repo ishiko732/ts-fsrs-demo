@@ -53,6 +53,7 @@ export async function initUserAndFSRS(profile: GithubProfile) {
 
 // init progeigo dates
 export async function initProgeigoDates(uid: number) {
+  console.log("init dates")
   const dates: ProgeigoNodeData[] = progeigo.data.英単語.map(
     (node) => node.data
   ) as ProgeigoNodeData[];
