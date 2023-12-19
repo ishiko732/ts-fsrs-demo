@@ -88,8 +88,9 @@ function ShowAnswerButton() {
             key={Rating[(index + 1) as Grade]}
             className={"btn mx-2 " + color[index]}
             onClick={(e) => handleClick(e, (index + 1) as Grade)}
+            title={time}
           >
-            <span>{time}</span>
+            <span>{Rating[(index+1)as Grade]}</span>
             <span><kbd className={`kbd kbd-sm dark:text-black dark:bg-slate-200`}>{index+1}</kbd></span>
           </button>
         ))}
