@@ -4,7 +4,7 @@ import prisma from "./prisma";
 import { stateFSRSRatingToPrisma, stateFSRSStateToPrisma } from "@/vendor/fsrsToPrisma";
 import { findLastLogByCid } from "./log";
 import { getFSRSParamsByCid } from "./fsrs";
-import { isAdminOrSelf } from "@/app/(auth)/api/auth/[...nextauth]/session";
+import { isAdminOrSelf } from "@/auth/api/auth/[...nextauth]/session";
 
 
 type Query={
