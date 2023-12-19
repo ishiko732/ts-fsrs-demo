@@ -7,8 +7,7 @@ type Props = {
   user?: User;
 };
 
-export default function UserBar({ user }: Props) {
-  console.log(user)
+export default async function UserBar({ user }: Props) {
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
