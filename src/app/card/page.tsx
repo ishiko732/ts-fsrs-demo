@@ -4,14 +4,13 @@ import { cache } from "react";
 import CardClient from "@/components/CardsClient";
 import Finish from "@/components/Finish";
 import { getTodayLearnedNewCardCount } from "@/lib/log";
-import { options } from "@/auth/api/auth/[...nextauth]/options";
-import { getServerSession } from "next-auth/next";
+import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
 import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic'
 
 const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => {
-  const session = await getServerSession(options);
+  const session = await getAuthSession();
   if (!session) {
     redirect('/api/auth/signin?callbackUrl=/card')
   }

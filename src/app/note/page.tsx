@@ -4,13 +4,12 @@ import Link from "next/link";
 import React, {cache} from "react";
 import { State } from "@prisma/client";
 import Menu from "@/components/menu";
-import { options } from "@/auth/api/auth/[...nextauth]/options";
-import { getServerSession } from "next-auth/next";
+import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
 
 
 const getData = cache(async (start: number,searchWord: string) => {
   console.log("cache miss:" + start);
-  const session = await getServerSession(options);
+  const session = await getAuthSession()
   if (!session?.user) {
     return [];
   }

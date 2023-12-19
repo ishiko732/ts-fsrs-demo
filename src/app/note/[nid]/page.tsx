@@ -7,8 +7,7 @@ import { Card, Note } from "@prisma/client";
 import FSRSMsg from "@/components/FSRSMsg";
 import { findLogsByCid } from "@/lib/log";
 import LogTable from "@/components/LogTable";
-import { options } from "@/auth/api/auth/[...nextauth]/options";
-import { getServerSession } from "next-auth/next";
+import { isSelf } from "@/auth/api/auth/[...nextauth]/session";
 type Props = {
   params: {
     nid: string;
@@ -42,8 +41,8 @@ export default async function Page({ params }: Props) {
   if (!note) {
     notFound();
   }
-  const session = await getServerSession(options);
-  if (note.uid !== 1 && (!session || note.uid !== Number(session?.user.id))) {
+  const own = await isSelf(note.uid);
+  if (note.uid !== 1 && !own) {
     redirect("/denied");
   }
   const logs = await findLogsByCid(note.card.cid);
