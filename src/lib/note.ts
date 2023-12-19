@@ -4,13 +4,13 @@ import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
 import { Card, Note, Prisma } from "@prisma/client";
 
 
-export async function addNote(data: Partial<NodeData>) {
+export async function addNote(data: Partial<NodeData>&{uid:number}) {
   const question = data.question;
   const answer = data.answer;
   if (!question || !answer) {
     return false;
   }
-
+  const uid = data.uid
   const fc = createEmptyCardByPrisma();
   const _note = await prisma.note.findFirst({
     where: { question },
@@ -19,6 +19,7 @@ export async function addNote(data: Partial<NodeData>) {
   return _note
     ? prisma.note.update({
         where: {
+          uid,
           nid: _note ? _note.nid : undefined,
         },
         data: {
@@ -29,6 +30,7 @@ export async function addNote(data: Partial<NodeData>) {
       })
     : prisma.note.create({
         data: {
+          uid,
           question,
           answer,
           extend: data.extend?JSON.stringify(data.extend):"",
