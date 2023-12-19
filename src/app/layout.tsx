@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import AuthProvider from "@/context/AuthProvider";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   title: 'ts-fsrs demo',
@@ -17,6 +18,7 @@ export default async function RootLayout({
       <body>
         <AuthProvider>
           {children}
+          <SpeedInsights />
         </AuthProvider>
       </body>
     </html>
