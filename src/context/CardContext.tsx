@@ -74,7 +74,7 @@ export function CardProvider({
       if(noteBox[current].length>0){
         break
       }
-      current = (current+1)%3
+      current = (current+1)%3 as StateBox
     }
     return current;
   });
