@@ -14,21 +14,6 @@ type Props = {
   };
 };
 
-export const revalidate = 86400;
-
-//SSG admin
-export async function generateStaticParams() {
-  const notes = await getNotes({
-    uid: 1,
-    order: { card: { due: "desc" } },
-  });
-  if (!notes) return [];
-
-  return notes.map((note) => ({
-    nid: String(note.nid),
-  }));
-}
-
 const getData = cache(async (nid: string) => {
   const note = (await getNoteByNid(Number(nid))) as
     | ({ card: Card } & Note)
@@ -42,7 +27,7 @@ export default async function Page({ params }: Props) {
     notFound();
   }
   const own = await isSelf(note.uid);
-  if (note.uid !== 1 && !own) {
+  if (!own) {
     redirect("/denied");
   }
   const logs = await findLogsByCid(note.card.cid);
