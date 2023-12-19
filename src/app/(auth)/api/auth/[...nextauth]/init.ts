@@ -14,6 +14,7 @@ interface OauthUser {
   oauthType: string;
 }
 
+// find user by oauthId and oauthType
 export async function findOauthUser(profile: OauthUser) {
   return prisma.user.findFirst({
     where: {
@@ -23,6 +24,7 @@ export async function findOauthUser(profile: OauthUser) {
   });
 }
 
+// init user and fsrs config
 export async function initUserAndFSRS(profile: GithubProfile) {
   return prisma.parameters.create({
     data: {
@@ -49,6 +51,7 @@ export async function initUserAndFSRS(profile: GithubProfile) {
   });
 }
 
+// init progeigo dates
 export async function initProgeigoDates(uid: number) {
   const dates: ProgeigoNodeData[] = progeigo.data.英単語.map(
     (node) => node.data
@@ -56,6 +59,7 @@ export async function initProgeigoDates(uid: number) {
   const ret = await addProgeigoNotes(uid, dates);
 }
 
+// find or init user
 export async function initUser(profile: GithubProfile) {
   const user = await findOauthUser({
     oauthId: profile.id.toString(),
