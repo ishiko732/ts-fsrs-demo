@@ -43,7 +43,7 @@ export async function addNote(data: Partial<NodeData>&{uid:number}) {
       });
 }
 
-export async function addProgeigoNote(uid:number,data: ProgeigoNodeData) {
+export async function initProgeigoNote(uid:number,data: ProgeigoNodeData) {
   const question = data.英単語;
   const answer = data.意味;
   if (!question || !answer) {
@@ -51,24 +51,7 @@ export async function addProgeigoNote(uid:number,data: ProgeigoNodeData) {
   }
 
   const fc = createEmptyCardByPrisma();
-  const _note = await prisma.note.findFirst({
-    where: { question,uid },
-    select: { nid: true },
-  });
-  return _note
-    ? prisma.note.update({
-        where: {
-          uid:uid,
-          nid: _note ? _note.nid : undefined,
-        },
-        data: {
-          uid,
-          question,
-          answer,
-          extend: JSON.stringify(data),
-        },
-      })
-    : prisma.note.create({
+  return prisma.note.create({
         data: {
           uid,
           question,
@@ -83,8 +66,8 @@ export async function addProgeigoNote(uid:number,data: ProgeigoNodeData) {
       });
 }
 
-export async function addProgeigoNotes(uid:number,dates: ProgeigoNodeData[]) {
-  const all = dates.map((note) => addProgeigoNote(uid,note));
+export async function initProgeigoNotes(uid:number,dates: ProgeigoNodeData[]) {
+  const all = dates.map((note) => initProgeigoNote(uid,note));
   return Promise.all(all);
 }
 

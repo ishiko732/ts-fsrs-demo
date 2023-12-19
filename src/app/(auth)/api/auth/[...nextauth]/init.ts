@@ -7,7 +7,7 @@ import {
   default_w,
 } from "ts-fsrs";
 import progeigo from "@/../public/プログラミング必須英単語600+.json" assert { type: "json" };
-import { addProgeigoNotes } from "@/lib/note";
+import { initProgeigoNotes } from "@/lib/note";
 import { ProgeigoNodeData } from "@/types";
 interface OauthUser {
   oauthId: string;
@@ -57,7 +57,7 @@ export async function initProgeigoDates(uid: number) {
   const dates: ProgeigoNodeData[] = progeigo.data.英単語.map(
     (node) => node.data
   ) as ProgeigoNodeData[];
-  const ret = await addProgeigoNotes(uid, dates);
+  return initProgeigoNotes(uid, dates);
 }
 
 // find or init user
@@ -68,7 +68,7 @@ export async function initUser(profile: GithubProfile) {
   });
   if (!user) {
     const _user = await initUserAndFSRS(profile);
-    initProgeigoDates(_user.uid);
+    await initProgeigoDates(_user.uid);
     return _user;
   }
   return user;
