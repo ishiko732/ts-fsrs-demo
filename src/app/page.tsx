@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { FSRSVersion } from "ts-fsrs";
-import { options } from "@/auth/api/auth/[...nextauth]/options";
-import { getServerSession } from "next-auth/next";
 import UserBar from "@/auth/components/UserBar";
+import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
 
 export default async function Home() {
-  const session = await getServerSession(options);
+  const session = await getAuthSession()
   return (
     <>
       <UserBar user={session?.user} />
@@ -27,7 +26,7 @@ export default async function Home() {
           <Link href={session?.user ? "/note" : "/api/auth/signin"}>
             <button className="btn btn-outline mx-4">Go to Notes</button>
           </Link>
-          <Link href={session?.user ? "/note" : "/api/auth/signin"}>
+          <Link href={session?.user ? "/card" : "/api/auth/signin"}>
             <button className="btn btn-outline mx-4">Go to Review</button>
           </Link>
         </div>
