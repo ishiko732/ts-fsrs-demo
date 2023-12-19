@@ -6,7 +6,7 @@ import {
   default_request_retention,
   default_w,
 } from "ts-fsrs";
-import progeigo from "@/../public/プログラミング必須英単語600+.json";
+import progeigo from "@/../public/プログラミング必須英単語600+.json" assert { type: "json" };
 import { addProgeigoNotes } from "@/lib/note";
 import { ProgeigoNodeData } from "@/types";
 interface OauthUser {
