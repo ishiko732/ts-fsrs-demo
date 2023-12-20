@@ -33,7 +33,7 @@ export default function ScheduleCard() {
           {分類 && 品詞 && <span>|</span>}
           {品詞 && <span>{`${品詞}`}</span>}
         </div>
-        <div className="pt-4 mx-auto max-w-5xl">
+        <div className="pt-4 mx-auto max-w-5xl px-4">
           <div>意味:{note?.answer}</div>
           {例文 && <div>例文:{例文}</div>}
           {例文訳 && <div>例文訳:{例文訳}</div>}

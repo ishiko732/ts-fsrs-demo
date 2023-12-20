@@ -76,7 +76,7 @@ function ShowAnswerButton() {
     </button>
   ) : (
     schedule && (
-      <div className="flex justify-center pt-4">
+      <div className="flex justify-center pt-6">
         {Grades.map((grade: Grade) =>
           show_diff_message(
             schedule[grade].card.due,
@@ -86,12 +86,12 @@ function ShowAnswerButton() {
         ).map((time: string, index: number) => (
           <button
             key={Rating[(index + 1) as Grade]}
-            className={"btn mx-2 " + color[index]}
+            className={"btn mx-2 btn-sm " + color[index]}
             onClick={(e) => handleClick(e, (index + 1) as Grade)}
             title={time}
           >
             <span>{Rating[(index+1)as Grade]}</span>
-            <span><kbd className={`kbd kbd-sm dark:text-black dark:bg-slate-200`}>{index+1}</kbd></span>
+            <span className="hidden sm:inline"><kbd className={`kbd kbd-sm dark:text-black dark:bg-slate-200`}>{index+1}</kbd></span>
           </button>
         ))}
       </div>
