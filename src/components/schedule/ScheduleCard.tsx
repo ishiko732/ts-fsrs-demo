@@ -1,8 +1,8 @@
 'use client'
 import React, { useEffect } from "react";
 import { useCardContext } from "@/context/CardContext";
-import Video from "./Video";
-import Audio from "./Audio";
+import Video from "../card/Video";
+import Audio from "../card/Audio";
 
 export default function ScheduleCard() {
   const { open, currentType, setOpen, setSchedule, schedule, noteBox } =

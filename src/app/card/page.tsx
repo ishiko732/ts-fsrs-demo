@@ -1,7 +1,7 @@
 import { getNotes } from "@/lib/note";
 import { Card, Note, State } from "@prisma/client";
 import { cache } from "react";
-import CardClient from "@/components/CardsClient";
+import CardClient from "@/components/schedule/CardsClient";
 import Finish from "@/components/Finish";
 import { getTodayLearnedNewCardCount } from "@/lib/log";
 import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
