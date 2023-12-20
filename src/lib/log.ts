@@ -48,7 +48,6 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
             select card_limit from Parameters where uid=${Number(uid)}`                
 
     const [count,limit]=await Promise.all([p_count,p_limit])
-    console.log(count,limit)
     return {
         todayCount: Number(count[0].total),
         limit: Number(limit[0].card_limit) ?? 50
