@@ -39,13 +39,13 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
     const nextDay = date_scheduler(startOfDay, 1, true);
     const p_count =prisma.
         $queryRaw<{total:bigint}[]>`
-            select count(lid) as total from Revlog
-            where review >= ${startOfDay} and review < ${nextDay} and 
+            select count(cid) as total from Revlog
+            where state=${State.New} and review >= ${startOfDay} and review < ${nextDay} and 
             cid in 
                 (select cid from Card where nid in 
                                                 (select nid from Note where uid=${Number(uid)}))`
     // get current day new card count
-    const p_limit = prisma.$queryRaw<{card_limit:number}[]>`
+    const p_limit = prisma.$queryRaw<{card_limit:bigint}[]>`
             select card_limit from Parameters where uid=${Number(uid)}`                
 
     const [count,limit]=await Promise.all([p_count,p_limit])
