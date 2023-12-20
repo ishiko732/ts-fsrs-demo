@@ -11,7 +11,7 @@ type Props = {
 export default async function UserBar({ user }: Props) {
   return (
     <div className="navbar bg-base-100">
-      <div className="flex-1">
+      <div className="sm:flex-1">
         <Link className="btn btn-ghost text-xl hidden sm:flex" href={"#"}>TS-FSRS-DEMO</Link>
         <Github name="ishiko732/ts-fsrs-demo" />
         <ToggleTheme/>
@@ -19,7 +19,7 @@ export default async function UserBar({ user }: Props) {
       {user ? (
         <>
           <div className="pr-4 btn btn-ghost text-xl"> {user.name}</div>
-          <div className="flex-none">
+          <div className="sm:flex-none">
             <div className="dropdown dropdown-end">
               <div
                 tabIndex={0}
