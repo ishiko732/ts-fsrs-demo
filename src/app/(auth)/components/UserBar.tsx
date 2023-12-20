@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { User } from "next-auth";
 import Link from "next/link";
 import Github from "@/components/Github";
+import ToggleTheme from "./toggleTheme";
 
 type Props = {
   user?: User;
@@ -11,8 +12,9 @@ export default async function UserBar({ user }: Props) {
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">TS-FSRS-DEMO</a>
+        <Link className="btn btn-ghost text-xl" href={"#"}>TS-FSRS-DEMO</Link>
         <Github name="ishiko732/ts-fsrs-demo" />
+        <ToggleTheme/>
       </div>
       {user ? (
         <>

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import AuthProvider from "@/context/AuthProvider";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
+import ThemesProvider from "@/context/ThemesProvider";
 
 export const metadata: Metadata = {
   title: 'ts-fsrs demo',
@@ -15,12 +16,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <AuthProvider>
-          {children}
-          <SpeedInsights />
-          <Analytics />
+          <ThemesProvider>
+            {children}
+            <SpeedInsights />
+            <Analytics />
+          </ThemesProvider>
         </AuthProvider>
       </body>
     </html>
