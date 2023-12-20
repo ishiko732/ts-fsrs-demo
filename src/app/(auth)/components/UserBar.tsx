@@ -12,7 +12,7 @@ export default async function UserBar({ user }: Props) {
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
-        <Link className="btn btn-ghost text-xl" href={"#"}>TS-FSRS-DEMO</Link>
+        <Link className="btn btn-ghost text-xl hidden sm:flex" href={"#"}>TS-FSRS-DEMO</Link>
         <Github name="ishiko732/ts-fsrs-demo" />
         <ToggleTheme/>
       </div>
@@ -60,7 +60,7 @@ export default async function UserBar({ user }: Props) {
       ) : (
         <div className="flex-none">
           <Link href={"/api/auth/signin"}>
-            <button className="btn btn-outline mr-4">Sign In</button>
+            <button className="btn btn-outline mr-6 p-2">Sign In</button>
           </Link>
         </div>
       )}
