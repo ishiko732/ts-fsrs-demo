@@ -30,7 +30,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
-    "daisyui": "^3.9.2",
+    "daisyui": "^4.4.22",
     "dotenv-cli": "^7.3.0",
     "eslint": "^8",
     "eslint-config-next": "13.5.4",

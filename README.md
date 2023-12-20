@@ -9,10 +9,10 @@ use packages:
 ````
 - prisma (global) npm install -g prisma
 - dotenv (global) npm install -g dotenv
-- next.js (>= 13.4.0)
-- ts-fsrs (>= 3.1.1)
+- next.js (>= 14.2.0)
+- ts-fsrs (>= 3.2.1)
 - tailwindcss (>= 3)
-- daisyui (>= 3.9.0)
+- daisyui (>= 4.4.22)
 ````
 
 ## Environment Variables

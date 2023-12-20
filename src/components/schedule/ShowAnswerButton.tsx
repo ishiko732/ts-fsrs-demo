@@ -67,12 +67,13 @@ function ShowAnswerButton() {
   const color = ["btn-error", "btn-warning", "btn-info", "btn-success"];
   return !open ? (
     <button
-      className="btn mt-4"
+      className="btn mt-4 tooltip tooltip-bottom"
       onClick={() => {
         setOpen(true);
       }}
+      data-tip="Press Space to show answer"
     >
-      show answer <kbd className={`kbd kbd-sm dark:text-black dark:bg-slate-200`}></kbd>
+      show answer
     </button>
   ) : (
     schedule && (
@@ -86,9 +87,9 @@ function ShowAnswerButton() {
         ).map((time: string, index: number) => (
           <button
             key={Rating[(index + 1) as Grade]}
-            className={"btn mx-2 btn-sm " + color[index]}
+            className={"btn mx-2 btn-sm tooltip tooltip-bottom " + color[index]}
             onClick={(e) => handleClick(e, (index + 1) as Grade)}
-            title={time}
+            data-tip={time}
           >
             <span>{Rating[(index+1)as Grade]}</span>
             <span className="hidden sm:inline"><kbd className={`kbd kbd-sm dark:text-black dark:bg-slate-200`}>{index+1}</kbd></span>
