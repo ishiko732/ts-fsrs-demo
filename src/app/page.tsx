@@ -23,12 +23,12 @@ export default async function Home() {
             </Link>
           </div>
           <div className="divider">USE</div>
-          <div className=" items-center">
+          <div className="items-center">
             <Link href={session?.user ? "/note" : "/api/auth/signin"}>
-              <button className="btn btn-outline m-4 p-4 w-full sm:w-auto">Go to Notes</button>
+              <button className="btn btn-outline m-2 w-full sm:w-auto">Go to Notes</button>
             </Link>
             <Link href={session?.user ? "/card" : "/api/auth/signin"}>
-              <button className="btn btn-outline m-4 p-4 w-full sm:w-auto">Go to Review</button>
+              <button className="btn btn-outline m-2 py-4 w-full sm:w-auto">Go to Review</button>
             </Link>
           </div>
         </main>
