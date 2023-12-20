@@ -17,13 +17,12 @@ const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => 
   const uid = Number(session.user.id)
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0);
-  const count = await getTodayLearnedNewCardCount(uid, startOfDay)
+  const {todayCount, limit} = await getTodayLearnedNewCardCount(uid, startOfDay)
   const states = [State.New, State.Learning, State.Relearning, State.Review];
-  const limit = !isNaN(Number(process.env.NewCardLimit)) ? Number(process.env.NewCardLimit) : 50
   const noteBox = states.map((state) =>
     getNotes({
       uid: uid,
-      take: state === State.New ? Math.max(0, limit - count) : undefined,
+      take: state === State.New ? Math.max(0, limit - todayCount) : undefined,
       query: {
         card: {
           state,
@@ -32,7 +31,7 @@ const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => 
       }
     })
   );
-
+  
   return Promise.all(noteBox);
 });
 

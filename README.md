@@ -26,7 +26,6 @@ use packages:
 ```bash
 DATABASE_URL="mysql://username:password@localhost:3306/fsrsDemo"
 DATABASE_URL_WITH_SCHEMA=${DATABASE_URL}?schema=fsrsDemo
-NewCardLimit=50
 ```
 
 ## How to run?
@@ -46,7 +45,7 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 ### Home
 ![home](images/home.png)
 
-> Tip: ts-fsrs version:3.1.1
+> Tip: ts-fsrs version:3.2.2
 
 ### Notes
 ![Notes](images/notes.png)

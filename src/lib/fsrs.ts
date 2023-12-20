@@ -5,7 +5,8 @@ import { Parameters } from "@prisma/client";
 
 export type ParametersType = {
     params: FSRSParameters
-    uid: number
+    uid: number,
+    card_limit: number
 }
 
 export async function getFSRSParamsByUid(uid: number): Promise<ParametersType> {
@@ -49,6 +50,7 @@ function processArrayParameters(params: Parameters[]): ParametersType {
     })
     return {
         params: fsrsParameters,
-        uid: params[0].uid
+        uid: params[0].uid,
+        card_limit: params[0].card_limit ?? 50
     }
 }

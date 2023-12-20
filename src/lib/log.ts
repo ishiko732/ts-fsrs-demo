@@ -37,7 +37,7 @@ export async function deleteLogByLid(lid:string){
 
 export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
     const nextDay = date_scheduler(startOfDay, 1, true);
-    const count =await prisma.
+    const p_count =prisma.
         $queryRaw<{total:bigint}[]>`
             select count(lid) as total from Revlog
             where review >= ${startOfDay} and review < ${nextDay} and 
@@ -45,5 +45,12 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
                 (select cid from Card where nid in 
                                                 (select nid from Note where uid=${Number(uid)}))`
     // get current day new card count
-    return Number(count[0].total);
+    const p_limit = prisma.$queryRaw<{card_limit:number}[]>`
+            select card_limit from Parameters where uid=${Number(uid)}`                
+
+    const [count,limit]=await Promise.all([p_count,p_limit])
+    return {
+        todayCount: Number(count[0].total),
+        limit: limit[0].card_limit ?? 50
+    };
 }

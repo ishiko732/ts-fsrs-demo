@@ -47,6 +47,7 @@ model Parameters {
   maximum_interval  Int     @default(36500)
   w                 Json
   enable_fuzz       Boolean @default(false)
+  card_limit        Int     @default(50)
   user              User?
 }
 
