@@ -42,7 +42,7 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
             select count(log.cid) as total from Revlog log
             left join Card c on c.cid = log.cid
             left join Note n on n.nid = c.nid
-            where log.state=${State.New} and log.review >= ${startOfDay} and log.review < ${nextDay}`
+            where n.uid=${uid} and log.state=${State.New} and log.review >= ${startOfDay} and log.review < ${nextDay}`
     // get current day new card count
     const p_limit = prisma.$queryRaw<{card_limit:bigint}[]>`
             select card_limit from Parameters where uid=${Number(uid)}`                
