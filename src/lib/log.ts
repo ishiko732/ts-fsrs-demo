@@ -51,6 +51,6 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
     const [count,limit]=await Promise.all([p_count,p_limit])
     return {
         todayCount: Number(count[0].total),
-        limit: limit[0].card_limit ?? 50
+        limit: Number(limit[0].card_limit) ?? 50
     };
 }
