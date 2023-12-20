@@ -1,6 +1,5 @@
-import { Card, Note, Prisma,Revlog, State } from "@prisma/client";
 import prisma from "./prisma";
-import { date_scheduler } from "ts-fsrs";
+import { date_scheduler,State } from "ts-fsrs";
 
 export async function findLogsByCid(cid: number) {
     const logs = await prisma.revlog.findMany({
@@ -42,7 +41,7 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
             select count(log.cid) as total from Revlog log
             left join Card c on c.cid = log.cid
             left join Note n on n.nid = c.nid
-            where n.uid=${uid} and log.state=${State.New} and log.review >= ${startOfDay} and log.review < ${nextDay}`
+            where n.uid=${uid} and log.state='${State.New}' and log.review >= ${startOfDay} and log.review < ${nextDay}`
     // get current day new card count
     const p_limit = prisma.$queryRaw<{card_limit:bigint}[]>`
             select card_limit from Parameters where uid=${Number(uid)}`                
