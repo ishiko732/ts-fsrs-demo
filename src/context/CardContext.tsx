@@ -4,6 +4,7 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useSt
 import { RecordLog, State, fixDate, fixState } from "ts-fsrs";
 import { useRouter } from "next/navigation";
 import { StateBox } from "@/types";
+import debounce from "@/lib/debounce";
 
 type changeResponse = {
   code: number;
@@ -116,7 +117,7 @@ export function CardProvider({
     return true;
   }
 
-  const handleRollBack = async function(){
+  const _handleRollBack = async function(){
     if(rollBackRef.current.length===0){
       return undefined;
     }
@@ -148,6 +149,7 @@ export function CardProvider({
     })
     return rollbackNote;
   }
+  const handleRollBack= debounce(_handleRollBack);
 
   useEffect(()=>{
     const {finished,transferState} = checkFinished(noteBox,currentType)

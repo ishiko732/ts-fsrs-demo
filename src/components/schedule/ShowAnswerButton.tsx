@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useCardContext } from "@/context/CardContext";
 import { show_diff_message, Grades, Rating, State,Grade } from "ts-fsrs";
+import debounce from "@/lib/debounce";
 
 function ShowAnswerButton() {
   const {
@@ -14,21 +15,19 @@ function ShowAnswerButton() {
     handleChange,
     handleRollBack
   } = useCardContext();
-  const handleClick = async (
+  const handleClick = debounce(async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     grade: Grade
   ) => {
-    fetch(`/api/fsrs?cid=${note.card.cid}&now=${new Date()}&grade=${grade}`, {
+    const res = await fetch(`/api/fsrs?cid=${note.card.cid}&now=${new Date()}&grade=${grade}`, {
       method: "put",
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code === 0) {
-          handleChange(res,note);
-          setOpen(false);
-        }
-      });
-  };
+    }).then((res) => res.json())
+    if (res.code === 0) {
+      handleChange(res,note);
+      setOpen(false);
+    }
+  });
+
   const handleKeyPress = useCallback(async (event:React.KeyboardEvent<HTMLElement>) => {
     // Call updateCalc here
     if(!open&&event.code === 'Space'){
