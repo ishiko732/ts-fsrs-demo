@@ -1,6 +1,7 @@
-import { FSRSParameters, generatorParameters } from "ts-fsrs";
+import { FSRSParameters, default_w, generatorParameters } from "ts-fsrs";
 import prisma from "./prisma";
 import { Parameters } from "@prisma/client";
+import { FSRSPutParams } from "@/types";
 
 
 export type ParametersType = {
@@ -53,4 +54,23 @@ function processArrayParameters(params: Parameters[]): ParametersType {
         uid: params[0].uid,
         card_limit: params[0].card_limit ?? 50
     }
+}
+
+
+export async function updateParameters(params: FSRSPutParams) {
+    if (params.w.length !== default_w.length) {
+        params.w = default_w
+    }
+    return prisma.parameters.update({
+        where: {
+            uid: params.uid
+        },
+        data: {
+            request_retention: params.request_retention,
+            maximum_interval: params.maximum_interval,
+            w: JSON.stringify(params.w),
+            enable_fuzz: params.enable_fuzz,
+            card_limit: params.card_limit
+        }
+    })
 }

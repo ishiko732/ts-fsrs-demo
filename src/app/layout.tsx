@@ -4,6 +4,7 @@ import AuthProvider from "@/context/AuthProvider";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import ThemesProvider from "@/context/ThemesProvider";
+import Drawer from "@/components/Drawer";
 
 export const metadata: Metadata = {
   title: 'ts-fsrs demo',
@@ -20,7 +21,9 @@ export default async function RootLayout({
       <body>
         <AuthProvider>
           <ThemesProvider>
-            {children}
+            <Drawer>
+              {children}
+            </Drawer>
             <SpeedInsights />
             <Analytics />
           </ThemesProvider>

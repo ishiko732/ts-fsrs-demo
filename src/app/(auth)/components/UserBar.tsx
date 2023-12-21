@@ -42,7 +42,7 @@ export default async function UserBar({ user }: Props) {
                 className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
               >
                 <li>
-                  <Link href="/settings">Settings</Link>
+                  <label htmlFor="fsrsSetting" className="drawer-button">Settings</label>
                 </li>
                 <li>
                   <Link href="/api/auth/signout">Logout</Link>

@@ -75,6 +75,15 @@ export type StateBox = ExcludeReLearning<State>;
 type ExcludeReLearning<T> = Exclude<T, State.Relearning>;
 
 
+export type FSRSPutParams={
+  uid: number;
+  request_retention: number;
+  maximum_interval: number;
+  w: number[];
+  enable_fuzz: boolean;
+  card_limit: number;
+}
+
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
