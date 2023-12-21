@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   }
   const ret = await addNote({
     ...json,
-    uid:Number(session.user.id)
+    uid:Number(session.user!!.id)
   });
   return NextResponse.json({ count: 1 }, { status: 200 });
 }
