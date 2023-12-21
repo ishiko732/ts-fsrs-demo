@@ -14,7 +14,7 @@ export default async function UserBar({ user }: Props) {
       <div className="sm:flex-1">
         <Link className="btn btn-ghost text-xl hidden sm:flex" href={"#"}>TS-FSRS-DEMO</Link>
         <Github name="ishiko732/ts-fsrs-demo" />
-        <ToggleTheme/>
+        {!user ? <ToggleTheme /> : null}
       </div>
       {user ? (
         <>
@@ -47,7 +47,12 @@ export default async function UserBar({ user }: Props) {
                 <li>
                   <Link href="/api/auth/signout">Logout</Link>
                 </li>
+                <div className="divider">theme</div>
+                <div className="flex justify-center items-center">
+                  <ToggleTheme />
+                </div>
               </ul>
+
             </div>
           </div>
         </>
