@@ -33,8 +33,8 @@ dependencies:
     specifier: ^18
     version: 18.2.0(react@18.2.0)
   ts-fsrs:
-    specifier: latest
-    version: 3.2.2
+    specifier: 3.2.3
+    version: 3.2.3
 
 devDependencies:
   '@types/node':
@@ -2649,8 +2649,8 @@ packages:
       typescript: 5.2.2
     dev: true
 
-  /ts-fsrs@3.2.2:
-    resolution: {integrity: sha512-W6lbGpKGFRv3e4dr1E7s8RQ4nx7SHY3Pbo5+O/qt9XQrQ/ZwdQ+SGOqvVrknDEfwy2/7U3i8T4E5I7bIJCm9Hw==}
+  /ts-fsrs@3.2.3:
+    resolution: {integrity: sha512-DyeBaCwp35tS0BsOstQ+j9NvlaCdKykRJ98feYmoAWr0hMWGFsrOsZgx4C4GolzL6/Nvt1LBcon1ggrSKkbk8Q==}
     engines: {node: '>=16.0.0'}
     dependencies:
       seedrandom: 3.0.5
