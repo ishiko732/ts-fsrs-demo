@@ -14,7 +14,7 @@ const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => 
   if (!session) {
     redirect('/api/auth/signin?callbackUrl=/card')
   }
-  const uid = Number(session.user.id)
+  const uid = Number(session.user!!.id)
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0);
   const {todayCount, limit} = await getTodayLearnedNewCardCount(uid, startOfDay)
