@@ -18,7 +18,7 @@ function AddNoteDialog({
     let answer = answerRef.current?.value;
     fetch(`/api/note`, {
       method: "post",
-      body: JSON.stringify({ 英単語: question, 意味: answer }),
+      body: JSON.stringify({ question, answer }),
     }).then((res) => console.log(res.json()));
     handleAppCloseClick();
   };
