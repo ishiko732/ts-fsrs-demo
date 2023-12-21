@@ -1,10 +1,15 @@
 import { options } from "@/auth/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth/next";
+import type { User } from "next-auth";
 
+type SessionProps = {
+    expires: string;
+    user?: User;
+};
 
 export async function getAuthSession() {
     const session = await getServerSession(options);
-    return session;
+    return session as SessionProps | null;
 }
 
 
