@@ -86,7 +86,7 @@ function ShowAnswerButton() {
         ).map((time: string, index: number) => (
           <button
             key={Rating[(index + 1) as Grade]}
-            className={"btn mx-2 btn-sm tooltip tooltip-bottom " + color[index]}
+            className={"btn mx-2 btn-sm md:btn-md tooltip tooltip-bottom " + color[index]}
             onClick={(e) => handleClick(e, (index + 1) as Grade)}
             data-tip={time}
           >

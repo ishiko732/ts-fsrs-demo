@@ -3,6 +3,7 @@ import type { User } from "next-auth";
 import Link from "next/link";
 import Github from "@/components/Github";
 import ToggleTheme from "./toggleTheme";
+import OpenSetting from "@/components/settings/OpenSetting";
 
 type Props = {
   user?: User;
@@ -20,7 +21,7 @@ export default async function UserBar({ user }: Props) {
         <div>
           <div className="pr-4 btn btn-ghost text-xl"> {user.name}</div>
           <div className="sm:flex-non">
-            <div className="dropdown dropdown-end">
+            <div className="dropdown dropdown-end" id = "toggleShow">
               <div
                 tabIndex={0}
                 role="button"
@@ -38,11 +39,11 @@ export default async function UserBar({ user }: Props) {
                 </div>
               </div>
               <ul
-                tabIndex={0}
+              tabIndex={0}
                 className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
               >
                 <li>
-                  <label htmlFor="fsrsSetting" className="drawer-button">Settings</label>
+                  <OpenSetting/>
                 </li>
                 <li>
                   <Link href="/api/auth/signout">Logout</Link>
