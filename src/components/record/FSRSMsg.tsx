@@ -16,7 +16,7 @@ export default async function FSRSMsg({ card }: Props) {
   );
   return (
     <>
-      <h2 className="flex justify-center ">FSRS</h2>
+      <h2 className="flex justify-center text-lg">FSRS</h2>
       <div className="text-sm opacity-60">Current State:{card.state}</div>
       <div className="text-sm opacity-60">
         Next Review:{getFormattedDate(card.due)}
@@ -36,7 +36,7 @@ export default async function FSRSMsg({ card }: Props) {
           <div>R:{retrievability}</div>
         </div>
       )}
-      <Forget cid={card.cid} className="mt-4"/>
+      <Forget cid={card.cid} className="mt-4" />
     </>
   );
 }

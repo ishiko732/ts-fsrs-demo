@@ -18,7 +18,7 @@ export default async function NoteMsg({ note }: Props) {
   const 発音 = extend.発音 as string | undefined;
   const ビデオ = extend.ビデオ as string | undefined;
   return (
-    <div className="item-center w-3/4">
+    <div className="item-center sm:w-3/4">
       <div className="w-full">
         <span className="flex justify-center items-center text-2xl">
           {note.question}

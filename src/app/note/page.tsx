@@ -74,7 +74,7 @@ export default async function Page({
   );
 
   return (
-    <>
+    <div className="bg-base-200 h-screen">
       <div className="w-full sm:flex sm:flex-wrap sm:justify-center bg-base-200">
       <div className="menu-title flex justify-start text-lg">
         Notes {`New:${newCnt},Learning:${learningCnt},Review:${reviewCnt}`}
@@ -117,6 +117,6 @@ export default async function Page({
               </ul>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -32,20 +32,20 @@ export default async function Page({ params }: Props) {
   }
   const logs = await findLogsByCid(note.card.cid);
   return (
-    <>
-      <div className="flex bg-base-200 flex-col justify-center w-screen h-screen items-center ">
-        <div className="bg-slate-100 text-black p-4 w-1/2 h-1/2 rounded-lg shadow-md flex ">
+    <div className="">
+      <div className="flex flex-col justify-center w-full h-screen items-center overflow-y-auto py-4">
+        <div className="overflow-y-auto p-4 sm:w-1/2 max-h-1/2 rounded-lg shadow-md sm:flex">
           <NoteMsg note={note} />
-          <div className="divider divider-horizontal"></div>
-          <div className="w-1/4 flex flex-col">
+          <div className="py-4 sm:py-0 divider divider-horizontal"></div>
+          <div className="w-full sm:w-1/4 sm:flex sm:flex-col">
             <FSRSMsg card={note.card} />
           </div>
         </div>
+        {logs && logs.length > 0 && <LogTable logs={logs} />}
         <div className="py-4">
           <GoBack />
         </div>
-        {logs && logs.length > 0 && <LogTable logs={logs} />}
       </div>
-    </>
+    </div>
   );
 }
