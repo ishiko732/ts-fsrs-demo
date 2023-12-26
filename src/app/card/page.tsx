@@ -9,7 +9,14 @@ import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic'
 
-const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => {
+type DataResponse = {
+  uid: number;
+  now: Date;
+  limit: number;
+  noteBox0: Array<Array<Note & { card: Card }>>;
+};
+
+const getData = cache(async (): Promise<DataResponse> => {
   const session = await getAuthSession();
   if (!session) {
     redirect('/api/auth/signin?callbackUrl=/card')
@@ -31,17 +38,24 @@ const getData = cache(async (): Promise<Array<Array<Note & { card: Card }>>> => 
       }
     })
   );
-  
-  return Promise.all(noteBox);
+  const noteBox0 = await Promise.all(noteBox);
+  return {
+    uid,
+    now,
+    limit,
+    noteBox0:noteBox0
+  };
 });
 
 export default async function Page() {
-  const noteBox = (await getData()).map((noteBox) => noteBox.sort(() => Math.random() - Math.random()))
+  const { uid, now, limit, noteBox0 } = await getData();
+  const noteBox = noteBox0.map((noteBox) => noteBox.sort(() => Math.random() - Math.random()))
   const isFinish = noteBox.every((notes) => notes.length === 0);
   return isFinish ? (
     <Finish />
   ) : (
     <div className="flex justify-center flex-col py-8">
+      {uid===3? <div>Start Time:{now.toISOString()},limit:{limit}</div>:null}
       <CardClient noteBox={noteBox} />
     </div>
   );
