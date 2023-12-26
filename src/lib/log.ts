@@ -40,7 +40,7 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
     const endTIme = nextDay;
     const p_count =prisma.
         $queryRawUnsafe<{total:bigint}[]>(`
-            select count(log.cid)::int as total from Revlog log
+            select count(log.cid) as total from Revlog log
             left join Card c on c.cid = log.cid
             left join Note n on n.nid = c.nid
             where n.uid=$1 and log.state='0' and log.review between $2 and $3`,Number(uid),firstTime,endTIme)
