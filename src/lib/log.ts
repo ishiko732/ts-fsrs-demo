@@ -1,5 +1,5 @@
 import prisma from "./prisma";
-import { date_scheduler } from "ts-fsrs";
+import { date_scheduler, formatDate } from "ts-fsrs";
 
 export async function findLogsByCid(cid: number) {
     const logs = await prisma.revlog.findMany({
@@ -36,8 +36,8 @@ export async function deleteLogByLid(lid:string){
 
 export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
     const nextDay = date_scheduler(startOfDay, 1, true);
-    const firstTime = `${startOfDay.getFullYear()}-${startOfDay.getMonth() + 1}-${startOfDay.getDate()} 00:00:00`
-    const endTIme = `${nextDay.getFullYear()}-${nextDay.getMonth() + 1}-${nextDay.getDate()} 00:00:00`
+    const firstTime = formatDate(startOfDay);
+    const endTIme = formatDate(nextDay)
     const p_count =prisma.
         $queryRaw<{total:bigint}[]>`
             select count(log.cid) as total from Revlog log
