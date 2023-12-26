@@ -36,8 +36,8 @@ export async function deleteLogByLid(lid:string){
 
 export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
     const nextDay = date_scheduler(startOfDay, 1, true);
-    const firstTime = formatDate(startOfDay);
-    const endTIme = formatDate(nextDay)
+    const firstTime = startOfDay.getTime();
+    const endTIme = nextDay.getTime()
     const p_count =prisma.
         $queryRaw<{total:bigint}[]>`
             select count(log.cid) as total from Revlog log
