@@ -1,5 +1,5 @@
 import prisma from "./prisma";
-import { date_scheduler, formatDate } from "ts-fsrs";
+import { date_scheduler } from "ts-fsrs";
 
 export async function findLogsByCid(cid: number) {
     const logs = await prisma.revlog.findMany({
@@ -47,7 +47,7 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
     // log.state = State.New
     // get current day new card count
     const p_limit = prisma.$queryRaw<{card_limit:bigint}[]>`
-            select card_limit::int from Parameters where uid=${Number(uid)}`                
+            select card_limit from Parameters where uid=${Number(uid)}`                
 
     const [count,limit]=await Promise.all([p_count,p_limit])
     return {
