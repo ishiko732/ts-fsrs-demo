@@ -36,12 +36,14 @@ export async function deleteLogByLid(lid:string){
 
 export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
     const nextDay = date_scheduler(startOfDay, 1, true);
+    const firstTime = `${startOfDay.getFullYear()}-${startOfDay.getMonth() + 1}-${startOfDay.getDate()} 00:00:00`
+    const endTIme = `${nextDay.getFullYear()}-${nextDay.getMonth() + 1}-${nextDay.getDate()} 00:00:00`
     const p_count =prisma.
         $queryRaw<{total:bigint}[]>`
             select count(log.cid) as total from Revlog log
             left join Card c on c.cid = log.cid
             left join Note n on n.nid = c.nid
-            where n.uid=${uid} and log.state='0' and log.review >= ${startOfDay} and log.review < ${nextDay}`
+            where n.uid=${Number(uid)} and log.state='0' and log.review >= ${firstTime} and log.review < ${endTIme}`
     // log.state = State.New
     // get current day new card count
     const p_limit = prisma.$queryRaw<{card_limit:bigint}[]>`
