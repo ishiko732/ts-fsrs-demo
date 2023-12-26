@@ -39,15 +39,15 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date){
     const firstTime = startOfDay;
     const endTIme = nextDay;
     const p_count =prisma.
-        $queryRaw<{total:bigint}[]>`
-            select count(log.cid) as total from Revlog log
+        $queryRawUnsafe<{total:bigint}[]>(`
+            select count(log.cid)::int as total from Revlog log
             left join Card c on c.cid = log.cid
             left join Note n on n.nid = c.nid
-            where n.uid=${Number(uid)} and log.state='0' and log.review between ${firstTime} and ${endTIme}`
+            where n.uid=$1 and log.state='0' and log.review between $2 and $3`,Number(uid),firstTime,endTIme)
     // log.state = State.New
     // get current day new card count
     const p_limit = prisma.$queryRaw<{card_limit:bigint}[]>`
-            select card_limit from Parameters where uid=${Number(uid)}`                
+            select card_limit::int from Parameters where uid=${Number(uid)}`                
 
     const [count,limit]=await Promise.all([p_count,p_limit])
     return {
