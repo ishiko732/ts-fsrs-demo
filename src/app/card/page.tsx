@@ -6,6 +6,7 @@ import Finish from "@/components/Finish";
 import { getTodayLearnedNewCardCount } from "@/lib/log";
 import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
 import { redirect } from "next/navigation";
+import { date_scheduler } from "ts-fsrs";
 
 export const dynamic = 'force-dynamic'
 
@@ -22,9 +23,12 @@ const getData = cache(async (): Promise<DataResponse> => {
     redirect('/api/auth/signin?callbackUrl=/card')
   }
   const uid = Number(session.user!!.id)
-  const now = new Date();
+  let now = new Date();
+  if (now.getHours() < 4) {
+    now = date_scheduler(now, -1, true);
+  }
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0);
-  const {todayCount, limit} = await getTodayLearnedNewCardCount(uid, startOfDay)
+  const { todayCount, limit } = await getTodayLearnedNewCardCount(uid, startOfDay)
   const states = [State.New, State.Learning, State.Relearning, State.Review];
   const noteBox = states.map((state) =>
     getNotes({
