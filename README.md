@@ -26,6 +26,9 @@ use packages:
 ```bash
 DATABASE_URL="mysql://username:password@localhost:3306/fsrsDemo"
 DATABASE_URL_WITH_SCHEMA=${DATABASE_URL}?schema=fsrsDemo
+
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=**** # openssl rand -base64 32
 ```
 
 ## How to run?
@@ -45,7 +48,7 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 ### Home
 ![home](images/home.png)
 
-> Tip: ts-fsrs version:3.2.2
+> Tip: ts-fsrs version:3.3.0
 
 ### Notes
 ![Notes](images/notes.png)
@@ -64,6 +67,16 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 
 ![finish](images/finish.png) 
 > After completing the review, you will be prompted accordingly.
+
+## Settings
+
+
+![user-bar](images/user-bar.png)
+> Click on the avatar, and you can set up, log out, and adjust the theme.
+
+![FSRS Settings](images/settings.png)
+> You can customize the parameters of your FSRS params
+
 
 ## Build
 You can compile the demo for better performance by using `npm run build`, and then start the project using `npm run start`.
