@@ -23,6 +23,7 @@ type CardContextProps = {
   setNoteBox:{[key in StateBox]:React.Dispatch<React.SetStateAction<Array<Note & { card: Card }>>>};
   handleChange:(res: changeResponse,note:Note & { card: Card })=>boolean;
   handleRollBack:()=>Promise<Note & { card: Card }|undefined>;
+  rollbackAble:boolean;
 };
 
 const CardContext = createContext<CardContextProps | undefined>(undefined);
@@ -81,6 +82,7 @@ export function CardProvider({
   });
 
   const rollBackRef= useRef<{cid:number,nextStateBox:StateBox}[]>([])
+  const [rollbackAble,setRollbackAble] = useState(false)
 
   const handleChange = function(res: changeResponse,note:Note & { card: Card }){
     const {nextState,nextDue} = res;
@@ -111,6 +113,9 @@ export function CardProvider({
         cid:note.card.cid,
         nextStateBox:nextState===State.Relearning? State.Learning: nextState
       });
+      if(rollBackRef.current.length>0 && rollbackAble===false){
+        setRollbackAble(true)
+      }
       console.log(`Change ${State[currentType]} to ${State[change]}, Card next State: ${State[nextState]},current rollback length ${rollBackRef.current.length}`);
       setCurrentType(change);
     })
@@ -147,6 +152,9 @@ export function CardProvider({
       }
       setCurrentType(state);
     })
+    if(rollBackRef.current.length===0){
+      setRollbackAble(false)
+    }
     return rollbackNote;
   }
   const handleRollBack= debounce(_handleRollBack);
@@ -187,7 +195,8 @@ export function CardProvider({
     noteBox:noteBox,
     setNoteBox:setNoteBox,
     handleChange,
-    handleRollBack
+    handleRollBack,
+    rollbackAble
   };
   return <CardContext.Provider value={value}>{children}</CardContext.Provider>;
 }

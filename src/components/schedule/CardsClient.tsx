@@ -4,6 +4,7 @@ import QACard from "./QACard";
 import { CardProvider } from "@/context/CardContext";
 import ShowAnswerButton from "./ShowAnswerButton";
 import StatusBar from "./StatusBar";
+import RollbackButton from "./rollbackButton";
 
 export default function CardClient({
   noteBox,
@@ -16,6 +17,7 @@ export default function CardClient({
       <div className="divider"></div>
       <StatusBar />
       <ShowAnswerButton />
+      <RollbackButton />
     </CardProvider>
   );
 }
