@@ -166,6 +166,16 @@ export function CardProvider({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[noteBox,currentType])
 
+  // get schedule
+  useEffect(() => {
+    const note=noteBox[currentType][0]
+    if (note) {
+      fetch(`/api/fsrs?cid=${note.card.cid}&now=` + new Date(), { method: "post" })
+        .then((res) => res.json())
+        .then((res) => setSchedule(res));
+    }
+  }, [currentType,noteBox, setSchedule]);
+
 
   const value = {
     open,

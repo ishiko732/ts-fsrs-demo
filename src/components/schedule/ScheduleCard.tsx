@@ -17,14 +17,6 @@ export default function ScheduleCard() {
   const 発音 = extend.発音 as string | undefined;
   const ビデオ = extend.ビデオ as string | undefined;
 
-  useEffect(() => {
-    if (note) {
-      fetch(`/api/fsrs?cid=${note.card.cid}&now=` + new Date(), { method: "post" })
-        .then((res) => res.json())
-        .then((res) => setSchedule(res));
-    }
-  }, [currentType, note, setSchedule]);
-
   return (
     open && (
       <>
