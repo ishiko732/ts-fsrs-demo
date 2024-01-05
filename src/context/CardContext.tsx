@@ -155,6 +155,9 @@ export function CardProvider({
     if(rollBackRef.current.length===0){
       setRollbackAble(false)
     }
+    if(open){
+      setOpen(false)
+    }
     return rollbackNote;
   }
   const handleRollBack= debounce(_handleRollBack);
