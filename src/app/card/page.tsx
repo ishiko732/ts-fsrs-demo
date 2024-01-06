@@ -52,14 +52,13 @@ const getData = cache(async (): Promise<DataResponse> => {
 });
 
 export default async function Page() {
-  const { uid, now, todayCount, noteBox0 } = await getData();
+  const { noteBox0 } = await getData();
   const noteBox = noteBox0.map((noteBox) => noteBox.sort(() => Math.random() - Math.random()))
   const isFinish = noteBox.every((notes) => notes.length === 0);
   return isFinish ? (
     <Finish />
   ) : (
     <div className="flex justify-center flex-col py-8">
-      {uid===3? <div>Start Time:{now.toISOString()},todayCount:{todayCount}</div>:null}
       <CardClient noteBox={noteBox} />
     </div>
   );
