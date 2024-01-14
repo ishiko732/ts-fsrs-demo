@@ -30,13 +30,15 @@ export async function getFSRSParamsByNid(nid: number): Promise<ParametersType> {
 
 export async function getFSRSParamsByCid(cid: number): Promise<ParametersType> {
     const params: Parameters[] = await prisma.
-        $queryRaw<Parameters[]>`select * from Parameters where uid=(select uid from Note where nid in (select nid from Card where cid=${Number(cid)}))`
+        $queryRaw<Parameters[]>`
+        select * from Parameters 
+        where uid=(select uid from Note 
+                   where nid in (select nid from Card where cid=${Number(cid)}))`
     if (!params) {
         throw new Error("card not found")
     }
     return processArrayParameters(params)
 }
-
 
 
 function processArrayParameters(params: Parameters[]): ParametersType {

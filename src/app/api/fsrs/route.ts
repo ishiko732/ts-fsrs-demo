@@ -36,9 +36,7 @@ export async function POST(request: NextRequest) {
       cid: cid ? Number(cid) : undefined,
       nid: nid ? Number(nid) : undefined
     }, new Date());
-    if (nid) {
-      revalidatePath(`/note/${nid}`)
-    }
+    
     return NextResponse.json(data);
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 400 });

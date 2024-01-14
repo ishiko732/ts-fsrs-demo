@@ -1,4 +1,5 @@
-import { createEmptyCard,Card as FSRSCard,State as FSRSState,Rating as FSRSRating, fixState} from "ts-fsrs";
+import { createEmptyCard,Card as FSRSCard,State as FSRSState,Rating as FSRSRating, fixState} 
+    from "ts-fsrs";
 import { Card, Rating, State } from "@prisma/client";
 
 

@@ -41,7 +41,8 @@ export async function schedulerCard(query:Partial<Query>,now:Date){
     if(!query.nid && !query.cid){
         throw new Error("nid or cid not found")
     }
-    const cardByPrisma =query.cid? await findCardByCid(query.cid):query.nid?await findCardByNid(query.nid):null;
+    const cardByPrisma = query.cid? await findCardByCid(query.cid): 
+                                query.nid ? await findCardByNid(query.nid): null;
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
@@ -108,7 +109,8 @@ export async function rollbackCard(query:Partial<Query>){
     if(!query.nid && !query.cid){
         throw new Error("nid or cid not found")
     }
-    const cardByPrisma =query.cid? await findCardByCid(query.cid):query.nid?await findCardByNid(query.nid):null;
+    const cardByPrisma =query.cid? await findCardByCid(query.cid): 
+                                query.nid? await findCardByNid(query.nid): null;
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
@@ -156,18 +158,7 @@ export async function rollbackCard(query:Partial<Query>){
 
 
 export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
-    const cardByPrisma = await prisma.card.findUnique({
-        where:{
-            cid
-        },
-        include:{
-            logs:true,
-            note:true
-        }
-    }) as unknown as CardPrisma|null
-    if (cardByPrisma === null) {
-        throw new Error("card not found")
-    }
+    const cardByPrisma = await findCardByCid(cid);
 
     const {params,uid} = await getFSRSParamsByCid(cardByPrisma.cid)
     const permission = await isAdminOrSelf(uid)
@@ -211,5 +202,4 @@ export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
         nextDue:recordItem.card.due,
         nid:cardByPrisma.note.nid as number
     };
-
 }
