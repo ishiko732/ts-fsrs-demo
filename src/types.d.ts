@@ -1,4 +1,4 @@
-import {createEmptyCard, Card, Revlog, State} from "ts-fsrs";
+import {Card, Revlog, State} from "ts-fsrs";
 export declare module "ts-fsrs" {
   interface CardPrisma extends Card {
     cid: number;
