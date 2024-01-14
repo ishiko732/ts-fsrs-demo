@@ -28,14 +28,6 @@ export declare module "ts-fsrs" {
     scheduled_days: number;
     review:Date;
   }
-
-  export const  Grades = [
-    Rating.Again,
-    Rating.Hard,
-    Rating.Good,
-    Rating.Easy,
-  ];
-
 }
 
 interface NodeData{
@@ -88,7 +80,6 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       DATABASE_URL: string;
-      NewCardLimit: string;
       GITHUB_ID: string;
       GITHUB_SECRET: string;
       GITHUB_ADMIN_ID: string;
