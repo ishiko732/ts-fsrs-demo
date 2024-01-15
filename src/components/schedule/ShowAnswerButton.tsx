@@ -12,21 +12,10 @@ function ShowAnswerButton() {
     setOpen,
     schedule,
     noteBox,
-    handleChange,
+    handleSchdule,
     handleRollBack
   } = useCardContext();
-  const handleClick = debounce(async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    grade: Grade
-  ) => {
-    const res = await fetch(`/api/fsrs?cid=${note.card.cid}&now=${new Date()}&grade=${grade}`, {
-      method: "put",
-    }).then((res) => res.json())
-    if (res.code === 0) {
-      handleChange(res,note);
-      setOpen(false);
-    }
-  });
+
 
   const handleKeyPress = useCallback(async (event:React.KeyboardEvent<HTMLElement>) => {
     // Call updateCalc here
@@ -38,7 +27,7 @@ function ShowAnswerButton() {
         case '2':
         case '3':
         case '4':
-          await handleClick(event as unknown as React.MouseEvent<HTMLButtonElement, MouseEvent>,Number(event.key) as Grade)
+          await handleSchdule(Number(event.key) as Grade)
           break;
       }
     }
@@ -87,7 +76,7 @@ function ShowAnswerButton() {
           <button
             key={Rating[(index + 1) as Grade]}
             className={"btn mx-2 btn-sm md:btn-md tooltip tooltip-bottom " + color[index]}
-            onClick={(e) => handleClick(e, (index + 1) as Grade)}
+            onClick={async(e) => await handleSchdule( (index + 1) as Grade)}
             data-tip={time}
           >
             <span>{Rating[(index+1)as Grade]}</span>

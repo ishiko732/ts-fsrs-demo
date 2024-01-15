@@ -1,7 +1,7 @@
 "use client";
 import { Card, Note } from "@prisma/client";
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { RecordLog, State, fixDate, fixState } from "ts-fsrs";
+import { Grade, RecordLog, State, fixDate, fixState } from "ts-fsrs";
 import { useRouter } from "next/navigation";
 import { StateBox } from "@/types";
 import debounce from "@/lib/debounce";
@@ -21,7 +21,7 @@ type CardContextProps = {
   setSchedule:React.Dispatch<React.SetStateAction<RecordLog|undefined>>;
   noteBox:{[key in StateBox]:Array<Note & { card: Card }>};
   setNoteBox:{[key in StateBox]:React.Dispatch<React.SetStateAction<Array<Note & { card: Card }>>>};
-  handleChange:(res: changeResponse,note:Note & { card: Card })=>boolean;
+  handleSchdule:(grade: Grade)=>Promise<boolean>;
   handleRollBack:()=>Promise<Note & { card: Card }|undefined>;
   rollbackAble:boolean;
 };
@@ -122,6 +122,18 @@ export function CardProvider({
     return true;
   }
 
+  const handleSchdule = debounce(async (grade: Grade) => {
+    const note = noteBox[currentType][0];
+    const res = await fetch(`/api/fsrs?cid=${note.card.cid}&now=${new Date()}&grade=${grade}`, {
+      method: "put",
+    }).then((res) => res.json())
+    if (res.code === 0) {
+      handleChange(res,note);
+      setOpen(false);
+    }
+    return res.code === 0?true: false;
+  });
+
   const _handleRollBack = async function(){
     if(rollBackRef.current.length===0){
       return undefined;
@@ -197,7 +209,7 @@ export function CardProvider({
     setSchedule,
     noteBox:noteBox,
     setNoteBox:setNoteBox,
-    handleChange,
+    handleSchdule,
     handleRollBack,
     rollbackAble
   };
