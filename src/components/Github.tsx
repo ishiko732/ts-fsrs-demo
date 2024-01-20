@@ -2,7 +2,9 @@ import Link from "next/link";
 
 export default function Github({ name = "ishiko732" }: { name: string }) {
   return (
-    <Link href={`https://github.com/${name}`} target={"_blank"} className="inline-flex pl-1">
+    <Link href={`https://github.com/${name}`} target={"_blank"} className="inline-flex pl-1"
+        aria-label={name}
+      >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
