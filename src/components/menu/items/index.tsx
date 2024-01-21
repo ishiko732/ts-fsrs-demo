@@ -25,7 +25,7 @@ export default async function MenuItem({
   if (disable === true) {
     return null;
   }
-  return formAction && !onClick ? (
+  return formAction ? (
     <form action={formAction}>
       <MenuItemContent
         tip={tip}

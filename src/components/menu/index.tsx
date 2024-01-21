@@ -2,26 +2,21 @@ import React from "react";
 import dynamic from "next/dynamic";
 import path from "path";
 import fs from "fs";
-
-function getNoteNumber(filename:string) {
-  const match = filename.match(/_([0-9]+)\.tsx$/);
-  return match ? parseInt(match[1]) : Infinity;
-}
+import Configs from "./menu.config";
 
 function comparator(a: string, b: string) {
-  const noteNumberA = getNoteNumber(a);
-  const noteNumberB = getNoteNumber(b);
-  if (noteNumberA !== Infinity && noteNumberB !== Infinity) {
-    return noteNumberA - noteNumberB;
-  } else if (noteNumberA !== Infinity) {
+  const sortA = Configs[a]?.sort ?? Infinity;
+  const sortB = Configs[b]?.sort ?? Infinity;
+  if (sortA !== Infinity && sortB !== Infinity) {
+    return sortA - sortB;
+  } else if (sortA !== Infinity) {
     return -1;
-  } else if (noteNumberB !== Infinity) {
+  } else if (sortB !== Infinity) {
     return 1;
   } else {
     return a.localeCompare(b);
   }
 }
-
 
 async function dynamicReactNodes() {
   const itemsDir = path.join(process.cwd(), "src/components/menu/items");
@@ -31,6 +26,7 @@ async function dynamicReactNodes() {
       (filename) =>
         path.extname(filename) === ".tsx" && filename !== "index.tsx"
     )
+    .filter((filename) => Configs[filename]?.filter ?? true)
     .sort(comparator)
     .map((filename) => {
       const Item = dynamic(() => import(`./items/${path.basename(filename)}`), {
