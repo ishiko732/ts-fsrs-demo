@@ -35,5 +35,4 @@ const Configs: Configs = {
   [`${searchNote.component}`]: searchNote,
   ...Test.reduce((acc, cur) => ({ ...acc, [cur.component]: cur }), {}),
 };
-console.log(Configs)
 export default Configs;
