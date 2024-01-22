@@ -19,7 +19,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { language, id }: { language: string; id: string }
+  {params}: { params: { language: string,id:string }}
 ) {
   const token = request.headers.get("authorization");
   const formData = await request.formData();
@@ -31,8 +31,8 @@ export async function PATCH(
     return NextResponse.json({ error: "token not found" }, { status: 401 });
   }
   const data = await changeLingqStatus({
-    language: language as languageCode,
-    id: Number(id),
+    language: params.language as languageCode,
+    id: Number(params.id),
     token,
     status,
     extended_status,
