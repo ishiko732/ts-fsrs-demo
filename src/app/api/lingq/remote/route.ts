@@ -16,6 +16,6 @@ export async function POST(request: NextRequest) {
     if (!remoteMethod) {
         return NextResponse.json({ error: "method not found" }, { status: 400 });
     }
-    const data = await LingqRequest(remoteURL, token, { method: remoteMethod, body: JSON.stringify(await request.json()) })
+    const data = await LingqRequest(remoteURL, token, { method: remoteMethod, body: request.body })
     return NextResponse.json(data)
 }
