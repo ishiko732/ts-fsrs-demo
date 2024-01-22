@@ -22,9 +22,9 @@ export async function PATCH(
   {params}: { params: { language: string,id:string }}
 ) {
   const token = request.headers.get("authorization");
-  const formData = await request.json();
-  const status = formData["status"] as unknown as LingqStatus;
-  const extended_status = formData["extended_status"] as unknown as LingqExtendedStatus;
+  const formData = await request.formData();
+  const status = Number(formData.get("status"))  as LingqStatus;
+  const extended_status = Number(formData.get("extended_status")) as LingqExtendedStatus;
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });
   }
