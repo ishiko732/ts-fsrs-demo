@@ -83,6 +83,7 @@ declare global {
       GITHUB_ID: string;
       GITHUB_SECRET: string;
       GITHUB_ADMIN_ID: string;
+      REMOTE_LENGQ_URL: string;
     }
   }
 }
