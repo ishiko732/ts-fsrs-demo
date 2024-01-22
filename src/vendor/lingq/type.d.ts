@@ -38,6 +38,13 @@ type languageCode =
     | "ru"
     | "sv";
 
+type Contexts = {
+    count: number,
+    next: string | null,
+    previous: string | null,
+    results: Context[]
+}
+
 type Context = {
     id: number,
     url: string,
@@ -59,10 +66,10 @@ type Lingqs = {
 }
 
 enum LingqStatus {
-    Rating1 = 0,
-    Rating2 = 1,
-    Rating3 = 2,
-    Rating4 = 3,
+    New = 0,
+    Recognized = 1,
+    Familiar = 2,
+    Learned = 3,
 }
 
 enum LingqExtendedStatus {
