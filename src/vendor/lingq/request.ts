@@ -25,13 +25,17 @@ export async function request<T>(path: string, token: string, options: RequestIn
             }
         }
         options.body = undefined;
-    } else if ((options.method === 'PATCH' || options.method === 'POST' || options.method === 'PUT')) {
+    } else if ((options.method === 'PATCH' || options.method === 'POST' || options.method === 'PUT') && options.body != null) {
         const params = JSON.parse(options.body as string) as { [key: string]: string };
         const formData = new FormData()
         for (const [key, value] of Object.entries(params)) {
             if (value) formData.append(key, value);
         }
         options.body = formData;
+        options.headers = {
+            ...options.headers,
+            'Content-Type': 'multipart/form-data',
+        }
     }
     const response = await fetch(url.toString(), {
         ...options,
