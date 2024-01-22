@@ -1,9 +1,23 @@
 
 const BaseUrl = 'https://www.lingq.com/api/';
 
+async function streamToString(stream: ReadableStream) {
+    const reader = stream.getReader();
+    let body = '';
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        body += new TextDecoder("utf-8").decode(value);
+    }
+    return body.length > 0 ? body : null;
+}
+
 export async function request<T>(path: string, token: string, options: RequestInit = {}): Promise<T> {
     const url = new URL(path, BaseUrl);
-    if ((options.method === 'GET' || options.method === 'HEAD') && options.body != null) {
+    if (options.body != null && options.body instanceof ReadableStream) {
+        options.body = await streamToString(options.body);
+    }
+    if ((options.method === 'GET' || options.method === 'HEAD')) {
         if (options.body != null) {
             const params = JSON.parse(options.body as string) as { [key: string]: string };
             for (const [key, value] of Object.entries(params)) {
@@ -11,7 +25,7 @@ export async function request<T>(path: string, token: string, options: RequestIn
             }
         }
         options.body = undefined;
-    } else if ((options.method === 'PATCH' || options.method === 'POST' || options.method === 'PUT') && options.body != null) {
+    } else if ((options.method === 'PATCH' || options.method === 'POST' || options.method === 'PUT')) {
         const params = JSON.parse(options.body as string) as { [key: string]: string };
         const formData = new FormData()
         for (const [key, value] of Object.entries(params)) {
