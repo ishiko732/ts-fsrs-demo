@@ -8,7 +8,7 @@ export async function GET(
   const url = new URL(request.url);
   const page_size = url.searchParams.get("page_size");
   const page = url.searchParams.get("page");
-  const token = request.headers.get("authorization");
+  const token = request.headers.get("Authorization");
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });
   }

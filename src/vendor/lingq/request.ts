@@ -44,7 +44,7 @@ export async function request<T>(path: string, token: string, options: RequestIn
 }
 
 
-export async function getLingqContext({ language, page_size, page, token }: { language: languageCode, page_size?: number, page?: number, token: string }): Promise<Contexts> {
+export async function getLingqContext({ language, page_size, page, token }: { language?: languageCode, page_size?: number, page?: number, token: string }): Promise<Contexts> {
     return request<Contexts>('v2/contexts/', token, { body: JSON.stringify({ language, page_size, page }), method: 'GET' });
 }
 
