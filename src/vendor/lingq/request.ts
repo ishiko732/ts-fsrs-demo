@@ -3,13 +3,13 @@ const BaseUrl = 'https://www.lingq.com/api/';
 
 export async function request<T>(path: string, token: string, options: RequestInit = {}): Promise<T> {
     const url = new URL(path, BaseUrl);
-    if (options.method === 'GET' && options.body !== undefined) {
+    if (options.method === 'GET' && options.body !== undefined && typeof options.body === 'string') {
         const params = JSON.parse(options.body as string) as { [key: string]: string };
         for (const [key, value] of Object.entries(params)) {
             if(value) url.searchParams.append(key, value);
         }
         options.body = undefined;
-    } else if ((options.method === 'PATCH' || options.method === 'POST') && options.body !== undefined) {
+    } else if ((options.method === 'PATCH' || options.method === 'POST') && options.body !== undefined && typeof options.body === 'string') {
         const params = JSON.parse(options.body as string) as { [key: string]: string };
         const formData = new FormData()
         for (const [key, value] of Object.entries(params)) {
