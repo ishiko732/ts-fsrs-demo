@@ -1,5 +1,7 @@
 
-const BaseUrl = 'https://www.lingq.com/api/';
+const BaseUrl = process.env.NODE_ENV === 'production' ? 
+    'https://www.lingq.com/api/' : 
+    'http://localhost:3000/api/lingq/local/';
 
 async function streamToString(stream: ReadableStream) {
     const reader = stream.getReader();
@@ -33,7 +35,7 @@ export async function request<T>(path: string, token: string, options: RequestIn
             'Accept': 'application/json',
             'Authorization': `Token ${token}`,
             ...options.headers,
-        },
+        }
     });
     if (!response.ok) {
         throw new Error(response.statusText);
@@ -41,35 +43,9 @@ export async function request<T>(path: string, token: string, options: RequestIn
     return response.json();
 }
 
-export async function remoteRequest<T>(url: string, token: string, options: RequestInit = {}): Promise<T> {
-    if (process.env.NODE_ENV === 'production') {
-        return request<T>(url, token, options);
-    }
 
-    const redirectURL = new URL(process.env.REMOTE_LENGQ_URL)
-    redirectURL.searchParams.set("url", url);
-    redirectURL.searchParams.set("method", options.method!!);
-    if (options.body != null && options.body instanceof ReadableStream) {
-        options.body = await streamToString(options.body) as string;
-    }
-    const response = await fetch(redirectURL.toString(), {
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Token ${token}`,
-        },
-        body: options.body as string|null,
-        method: 'POST',
-    });
-    if (!response.ok) {
-        console.log(response.status)
-        throw new Error(response.statusText);
-    }
-    return null as T;
-}
-
-export async function getLingqContext({ page_size, page, token }: { language: languageCode, page_size?: number, page?: number, token: string }): Promise<Contexts> {
-    return request<Contexts>('v2/contexts/', token, { body: JSON.stringify({ page_size, page }), method: 'GET' });
+export async function getLingqContext({ language, page_size, page, token }: { language: languageCode, page_size?: number, page?: number, token: string }): Promise<Contexts> {
+    return request<Contexts>('v2/contexts/', token, { body: JSON.stringify({ language, page_size, page }), method: 'GET' });
 }
 
 

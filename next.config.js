@@ -10,6 +10,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/lingq/local/:path*',
+        destination: 'https://fsrs.parallelveil.com/api/lingq/:path*',
+      },
+    ]
+  },
 };
 
 module.exports = nextConfig;
