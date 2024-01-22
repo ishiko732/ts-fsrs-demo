@@ -3,14 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { language_code, id }: { language_code: string; id: string }
+  { language, id }: { language: string; id: string }
 ) {
   const token = request.headers.get("authorization");
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });
   }
   const data = await getLingq({
-    language: language_code as languageCode,
+    language: language as languageCode,
     id: Number(id),
     token,
   });
@@ -19,7 +19,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { language_code, id }: { language_code: string; id: string }
+  { language, id }: { language: string; id: string }
 ) {
   const token = request.headers.get("authorization");
   const formData = await request.formData();
@@ -31,7 +31,7 @@ export async function PATCH(
     return NextResponse.json({ error: "token not found" }, { status: 401 });
   }
   const data = await changeLingqStatus({
-    language: language_code as languageCode,
+    language: language as languageCode,
     id: Number(id),
     token,
     status,

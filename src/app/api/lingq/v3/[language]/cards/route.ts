@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { language_code }: { language_code: string }
+  { language }: { language: string }
 ) {
   const url = new URL(request.url);
   const page_size = url.searchParams.get("page_size");
@@ -12,8 +12,9 @@ export async function GET(
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });
   }
+  console.log(url.toString())
   const data = await getLingqs({
-    language: language_code as languageCode,
+    language: language as languageCode,
     page_size: page_size ? Number(page_size) : undefined,
     page: page ? Number(page) : undefined,
     token,
