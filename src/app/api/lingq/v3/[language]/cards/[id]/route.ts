@@ -3,15 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { language, id }: { language: string; id: string }
+  {params}: { params: { language: string,id:string }}
 ) {
   const token = request.headers.get("authorization");
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });
   }
   const data = await getLingq({
-    language: language as languageCode,
-    id: Number(id),
+    language: params.language as languageCode,
+    id: Number(params.id),
     token,
   });
   return NextResponse.json(data);
