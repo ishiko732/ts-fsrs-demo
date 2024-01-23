@@ -9,7 +9,7 @@ export default async function Drawer({children}:{children:React.ReactNode}){
         <div className="drawer-content">
             {children}
         </div> 
-        <div className="drawer-side overflow-x-hidden overflow-y-auto">
+        <div className="drawer-side overflow-x-hidden overflow-y-auto hide-scrollbar">
             <label htmlFor="fsrsSetting" aria-label="close sidebar" className="drawer-overlay"></label>
             <div className="p-4 w-full sm:w-5/12 sm:min-h-full bg-base-200 text-base-content">
             <FSRSSetting/>
