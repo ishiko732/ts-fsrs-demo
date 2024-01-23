@@ -84,6 +84,8 @@ declare global {
       GITHUB_ID: string;
       GITHUB_SECRET: string;
       GITHUB_ADMIN_ID: string;
+      LINGQ_KEY: string;
+      CRON_SECRET: string;
     }
   }
 }
