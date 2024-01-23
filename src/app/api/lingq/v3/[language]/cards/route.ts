@@ -12,7 +12,6 @@ export async function GET(
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });
   }
-  console.log(url.toString())
   const data = await getLingqs({
     language: params.language as languageCode,
     page_size: page_size ? Number(page_size) : undefined,
