@@ -1,6 +1,7 @@
 import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
 import { getFSRSParamsByUid, updateParameters } from "@/lib/fsrs";
 import ConfigButtonGroup from "./ConfigButtonGroup";
+import Link from "next/link";
 
 export default async function FSRSSetting() {
 
@@ -71,12 +72,12 @@ export default async function FSRSSetting() {
                 defaultValue={params.card_limit} />
             <div className="label text-xs">Represents the maximum limit of new cards that can be learned today.</div>
 
-            <label htmlFor="lingq_token" className="pr-4">lingq_token:</label>
+            <label htmlFor="lingq_token" className="pr-4">lingq_token:<Link className="btn btn-xs" target="_blank" href={"https://www.lingq.com/accounts/apikey/"}>Get Key</Link></label>
             <input name="lingq_token" className="input input-bordered w-full"
                 type="text"
                 aria-label="lingq token"
                 defaultValue={params.lingq_token ?? undefined} />
-            <div className="label text-xs">Associate lingq’s card for FSRS scheduling</div>
+            <div className="label text-xs">Associate lingq’s card for FSRS scheduling.</div>
         </div>
 
         <div className="mt-2 flex items-center justify-end gap-x-4">
