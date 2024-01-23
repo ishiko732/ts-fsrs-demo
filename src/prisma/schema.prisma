@@ -49,6 +49,8 @@ model Parameters {
   enable_fuzz       Boolean @default(false)
   card_limit        Int     @default(50)
   user              User?
+  lingq_token       String?
+  lingq_counter     String?
 }
 
 model User {

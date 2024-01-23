@@ -18,13 +18,15 @@ export default async function FSRSSetting() {
         const w = JSON.parse(formData.get('w') as string)
         const enable_fuzz = formData.get('enable_fuzz') === 'on' ? true : false
         const card_limit = Number(Number(formData.get('card_limit')).toFixed(0))
+        const lingq_token = formData.get('lingq_token') ? String(formData.get('lingq_token')) : null
         const data = {
             request_retention,
             maximum_interval,
             w,
             enable_fuzz,
             card_limit,
-            uid
+            uid,
+            lingq_token
         }
         return await updateParameters(data);
     }
@@ -56,7 +58,7 @@ export default async function FSRSSetting() {
             <div className="flex py-4">
                 <label htmlFor="enable_fuzz" className="pr-4">enable_fuzz:</label>
                 <input name='enable_fuzz'
-                    type="checkbox" className="toggle toggle-info" 
+                    type="checkbox" className="toggle toggle-info"
                     aria-label="enable fuzz"
                     defaultChecked={params.params.enable_fuzz} />
             </div>
@@ -69,10 +71,16 @@ export default async function FSRSSetting() {
                 defaultValue={params.card_limit} />
             <div className="label text-xs">Represents the maximum limit of new cards that can be learned today.</div>
 
+            <label htmlFor="lingq_token" className="pr-4">lingq_token:</label>
+            <input name="lingq_token" className="input input-bordered w-full"
+                type="text"
+                aria-label="lingq token"
+                defaultValue={params.lingq_token ?? undefined} />
+            <div className="label text-xs">Associate lingq’s card for FSRS scheduling</div>
         </div>
 
         <div className="mt-2 flex items-center justify-end gap-x-4">
-            <ConfigButtonGroup/>
+            <ConfigButtonGroup />
         </div>
     </form>
 }
