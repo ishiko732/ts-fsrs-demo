@@ -74,6 +74,7 @@ export type FSRSPutParams={
   w: number[];
   enable_fuzz: boolean;
   card_limit: number;
+  lingq_token: string| null;
 }
 
 declare global {

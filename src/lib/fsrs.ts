@@ -2,12 +2,14 @@ import { FSRSParameters, default_w, generatorParameters } from "ts-fsrs";
 import prisma from "./prisma";
 import { Parameters } from "@prisma/client";
 import { FSRSPutParams } from "@/types";
+import { decryptLingqKey, encryptLingqKey } from "@/vendor/lingq/crypt";
 
 
 export type ParametersType = {
     params: FSRSParameters
     uid: number,
-    card_limit: number
+    card_limit: number,
+    lingq_token: string | null
 }
 
 export async function getFSRSParamsByUid(uid: number): Promise<ParametersType> {
@@ -41,7 +43,7 @@ export async function getFSRSParamsByCid(cid: number): Promise<ParametersType> {
 }
 
 
-function processArrayParameters(params: Parameters[]): ParametersType {
+async function processArrayParameters(params: Parameters[]): Promise<ParametersType> {
     if (!params) {
         throw new Error("card not found")
     }
@@ -51,10 +53,16 @@ function processArrayParameters(params: Parameters[]): ParametersType {
         w: JSON.parse(params[0].w as string),
         enable_fuzz: params[0].enable_fuzz
     })
+    let lingq_token = null
+    if (params[0].lingq_token && params[0].lingq_counter && params[0].lingq_token.length > 0) {
+        lingq_token = await decryptLingqKey(params[0].lingq_token, params[0].lingq_counter)
+    }
+
     return {
         params: fsrsParameters,
         uid: params[0].uid,
-        card_limit: params[0].card_limit ?? 50
+        card_limit: params[0].card_limit ?? 50,
+        lingq_token: lingq_token
     }
 }
 
@@ -62,6 +70,13 @@ function processArrayParameters(params: Parameters[]): ParametersType {
 export async function updateParameters(params: FSRSPutParams) {
     if (params.w.length !== default_w.length) {
         params.w = default_w
+    }
+
+    let counter = null, token = null
+    if (params.lingq_token && params.lingq_token.length > 0) {
+        const { lingq_token, lingq_counter } = await encryptLingqKey(params.lingq_token)
+        token = lingq_token
+        counter = lingq_counter
     }
     return prisma.parameters.update({
         where: {
@@ -72,7 +87,9 @@ export async function updateParameters(params: FSRSPutParams) {
             maximum_interval: params.maximum_interval,
             w: JSON.stringify(params.w),
             enable_fuzz: params.enable_fuzz,
-            card_limit: params.card_limit
+            card_limit: params.card_limit,
+            lingq_token: token,
+            lingq_counter: counter
         }
     })
 }
