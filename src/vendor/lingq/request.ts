@@ -1,7 +1,7 @@
 
 const BaseUrl = process.env.NODE_ENV === 'production' ? 
     'https://www.lingq.com/api/' : 
-    'http://localhost:3000/api/lingq/local/';
+    'https://fsrs.parallelveil.com/api/lingq/';
 
 async function streamToString(stream: ReadableStream) {
     const reader = stream.getReader();
@@ -28,12 +28,13 @@ export async function request<T>(path: string, token: string, options: RequestIn
         }
         options.body = undefined;
     }
+    const Authorization =  process.env.NODE_ENV === 'production' ? `Token ${token}` : token;
     const response = await fetch(url.toString(), {
         ...options,
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Token ${token}`,
+            Authorization,
             ...options.headers,
         }
     });
