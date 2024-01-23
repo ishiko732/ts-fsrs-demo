@@ -70,11 +70,12 @@ model Note {
   question String @default("")
   answer   String @default("")
   source   String @default("")
+  sourceId String?
   extend   Json
   card     Card?
   user     User?  @relation(fields: [uid], references: [uid])
-
   @@index([uid])
+  @@index([sourceId,source])
 }
 
 enum State {

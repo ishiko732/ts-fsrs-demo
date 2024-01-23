@@ -46,6 +46,21 @@ type Contexts = {
 }
 
 type Context = {
+    pk: number,
+    url: string,
+    language: LangeuageContext,
+    repetition_lingqs: number,
+    lotd_dates: string[],
+    email_notifications: { [key: string]: string },
+    site_notifications: { [key: string]: string },
+    feed_levels: any,
+    use_feed: any,
+    intense: string,
+    streak_days: number,
+    apple_level: number
+}
+
+type LangeuageContext = {
     id: number,
     url: string,
     code: languageCode,
