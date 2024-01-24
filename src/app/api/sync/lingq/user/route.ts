@@ -1,9 +1,9 @@
-import { getLingqLanguageCode, syncUser } from '@/vendor/lingq/sync';
+import { SyncWaitUser, getLingqLanguageCode, syncUser } from '@/vendor/lingq/sync';
 import { kv } from "@vercel/kv";
 import type { NextRequest } from 'next/server';
 
 
-const globalForLingq = global as unknown as { syncUser?: string };
+const globalForLingq = global as unknown as { syncUser?: SyncWaitUser[] };
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   if (process.env.NODE_ENV === 'production') {
     await kv.set('lingq:syncUser', JSON.stringify(data));
   } else {
-    globalForLingq.syncUser = JSON.stringify(data);
+    globalForLingq.syncUser = data;
   }
   return Response.json({ success: true });
 }
