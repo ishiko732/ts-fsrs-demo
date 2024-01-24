@@ -5,8 +5,9 @@ import { Grade, RecordLog, State, fixDate, fixState } from "ts-fsrs";
 import { useRouter } from "next/navigation";
 import { StateBox } from "@/types";
 import debounce from "@/lib/debounce";
+import callHandler from "@/components/source/call";
 
-type changeResponse = {
+export type changeResponse = {
   code: number;
   nextState: State;
   nextDue?:Date;
@@ -118,6 +119,7 @@ export function CardProvider({
       }
       console.log(`Change ${State[currentType]} to ${State[change]}, Card next State: ${State[nextState]},current rollback length ${rollBackRef.current.length}`);
       setCurrentType(change);
+      callHandler(note, res);
     })
     return true;
   }

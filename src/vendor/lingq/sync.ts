@@ -69,6 +69,7 @@ async function syncLingqs(user: DecryptSyncUser, lang: languageCode, next?: numb
                         words: lingq.words,
                         hints: lingq.hints,
                         tags: lingq.tags,
+                        lang: lang
                     }),
                     card: {
                         create: fc
