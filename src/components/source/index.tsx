@@ -6,11 +6,7 @@ import { HitsuAnswer } from "./Hitsu";
 import { Question as LingqQuestion, Answer as LingqAnswer } from "./Lingq";
 
 export function Question({ open, note }: { open: boolean, note: SourceNote }) {
-    const source = note?.source
-    if (!source) {
-        return <DefaultQuestion note={note} />;
-    }
-    switch (source) {
+    switch (note.source) {
         case "lingq":
             return <LingqQuestion open={open} note={note} />;
         default:
@@ -19,11 +15,7 @@ export function Question({ open, note }: { open: boolean, note: SourceNote }) {
 }
 
 export function Answer({ open, note }: { open: boolean, note: SourceNote }) {
-    const source = note?.source
-    if (!source) {
-        return <DefaultAnswer open={open} note={note} />;
-    }
-    switch (source) {
+    switch (note.source) {
         case "プログラミング必須英単語600+":
             return <HitsuAnswer open={open} note={note} />;
         case "lingq":
@@ -38,6 +30,9 @@ export function QACard() {
     const { open, currentType, noteBox } =
         useCardContext();
     const note = noteBox[currentType][0];
+    if (!note) {
+        return null
+    }
     return (
         <>
             <Question open={open} note={note} />
