@@ -29,10 +29,11 @@ export default async function FSRSSetting() {
             uid,
             lingq_token
         }
-        return await updateParameters(data);
+        await updateParameters(data);
+        return true;
     }
 
-    return <form action={submit} method="POST">
+    return <form action={submit}>
         <h1 className="divider flex justify-center items-center text-md">Settings({username})</h1>
         <div>
             <label htmlFor="request_retention" className="pr-4">request_retention:</label>
