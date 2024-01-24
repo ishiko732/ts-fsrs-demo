@@ -1,23 +1,25 @@
 'use client'
 import { useCardContext } from "@/context/CardContext";
-import { Answer as DefaultAnswer, Question as DefaultQuestion, DisplayMsg as DefaultDisplayMsg } from "./default";
+import { Question as DefaultQuestion, Answer as DefaultAnswer } from "./default";
 import { Card, Note } from "@prisma/client";
 import { HitsuAnswer } from "./Hitsu";
-export function Question() {
-    const { currentType, noteBox } = useCardContext();
-    const note = noteBox[currentType][0];
-    return (
-        <DefaultQuestion note={note} />
-    )
+import { Question as LingqQuestion, Answer as LingqAnswer } from "./Lingq";
+
+export function Question({ open, note }: { open: boolean, note: SourceNote }) {
+    switch (note.source) {
+        case "lingq":
+            return <LingqQuestion open={open} note={note} />;
+        default:
+            return <DefaultQuestion note={note} />;
+    }
 }
 
-export function Answer() {
-    const { open, currentType, noteBox } =
-        useCardContext();
-    const note = noteBox[currentType][0];
+export function Answer({ open, note }: { open: boolean, note: SourceNote }) {
     switch (note.source) {
         case "プログラミング必須英単語600+":
             return <HitsuAnswer open={open} note={note} />;
+        case "lingq":
+            return <LingqAnswer open={open} note={note} />;
         default:
             return <DefaultAnswer open={open} note={note} />;
     }
@@ -25,10 +27,13 @@ export function Answer() {
 
 
 export function QACard() {
+    const { open, currentType, noteBox } =
+        useCardContext();
+    const note = noteBox[currentType][0];
     return (
         <>
-            <Question />
-            <Answer />
+            <Question open={open} note={note} />
+            <Answer open={open} note={note} />
         </>
     );
 }
