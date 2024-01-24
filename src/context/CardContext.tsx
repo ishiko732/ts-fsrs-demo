@@ -119,7 +119,7 @@ export function CardProvider({
       }
       console.log(`Change ${State[currentType]} to ${State[change]}, Card next State: ${State[nextState]},current rollback length ${rollBackRef.current.length}`);
       setCurrentType(change);
-      callHandler(note, res);
+      callHandler({...note}, res);
     })
     return true;
   }

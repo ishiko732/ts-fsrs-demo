@@ -6,7 +6,10 @@ export default async function handler(
   note: SourceNote,
   res: changeResponse
 ): Promise<void> {
-  const source = note.source;
+  const source = note?.source;
+  if (!source) {
+    return;
+  }
   switch (source) {
     case "lingq":
         return LingqCallHandler(note, res);
