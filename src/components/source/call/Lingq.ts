@@ -39,19 +39,18 @@ export default async function LingqCallHandler(
   }
 
   const token = await getLingqToken();
-  const formData = new FormData();
-  formData.append("status", status.toString());
-  formData.append("extended_status", extended_status.toString());
-
-  const response = await fetch(`/api/lingq/v3/${language}/cards/${sourceId}`, {
-    method: "PATCH",
-    headers: {
-      Authorization: token,
-    },
-    body: formData,
-  });
-
-  console.log(response);
+  if(token){
+    const formData = new FormData();
+    formData.append("status", status.toString());
+    formData.append("extended_status", extended_status.toString());
+    await fetch(`/api/lingq/v3/${language}/cards/${sourceId}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: token,
+      },
+      body: formData,
+    });
+  }
 }
 
 async function getLingqToken() {
@@ -61,8 +60,10 @@ async function getLingqToken() {
     const key = await fetch("/api/lingq/key", {
       method: "POST",
     }).then((res) => res.json());
-    globalForLingqToken.lingqToken = key.lingqKey;
-    return globalForLingqToken.lingqToken!!;
+    if(!key.lingqKey){
+        globalForLingqToken.lingqToken = key.lingqKey;
+    }
+    return globalForLingqToken.lingqToken;
   }
   return token;
 }
