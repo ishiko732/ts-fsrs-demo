@@ -6,7 +6,11 @@ import { HitsuAnswer } from "./Hitsu";
 import { Question as LingqQuestion, Answer as LingqAnswer } from "./Lingq";
 
 export function Question({ open, note }: { open: boolean, note: SourceNote }) {
-    switch (note.source) {
+    const source = note?.source
+    if (!source) {
+        return <DefaultQuestion note={note} />;
+    }
+    switch (source) {
         case "lingq":
             return <LingqQuestion open={open} note={note} />;
         default:
@@ -15,7 +19,11 @@ export function Question({ open, note }: { open: boolean, note: SourceNote }) {
 }
 
 export function Answer({ open, note }: { open: boolean, note: SourceNote }) {
-    switch (note.source) {
+    const source = note?.source
+    if (!source) {
+        return <DefaultAnswer open={open} note={note} />;
+    }
+    switch (source) {
         case "プログラミング必須英単語600+":
             return <HitsuAnswer open={open} note={note} />;
         case "lingq":
