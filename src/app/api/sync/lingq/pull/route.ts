@@ -2,7 +2,7 @@ import { SyncWaitUser, syncLingqs } from '@/vendor/lingq/sync';
 import { kv } from "@vercel/kv";
 import type { NextRequest } from 'next/server';
 
-const globalForLingq = global as unknown as { syncUser?: string };
+const globalForLingq = global as unknown as { syncUser?: SyncWaitUser[] };
 
 
 export async function GET(request: NextRequest) {
@@ -14,14 +14,12 @@ export async function GET(request: NextRequest) {
     }
     let users = null
     if (process.env.NODE_ENV === 'production') {
-        users = await kv.get('lingq:syncUser');
+        users = await kv.get<SyncWaitUser[]>('lingq:syncUser');
     } else {
         users = globalForLingq.syncUser;
     }
 
-    if (users) {
-        users = JSON.parse(users as string) as SyncWaitUser[];
-    } else {
+    if (!users) {
         return Response.json({ success: false });
     }
 
