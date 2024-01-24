@@ -2,7 +2,7 @@
 import { useCardContext } from "@/context/CardContext";
 import { Answer as DefaultAnswer, Question as DefaultQuestion, DisplayMsg as DefaultDisplayMsg } from "./default";
 import { Card, Note } from "@prisma/client";
-import { HitsuAnswer, HitsuDisplay } from "./Hitsu";
+import { HitsuAnswer } from "./Hitsu";
 export function Question() {
     const { currentType, noteBox } = useCardContext();
     const note = noteBox[currentType][0];
@@ -23,14 +23,6 @@ export function Answer() {
     }
 }
 
-export function DisplayMsg({ note }: { note: SourceNote }) {
-    switch (note.source) {
-        case "プログラミング必須英単語600+":
-            return <HitsuDisplay note={note} />;
-        default:
-            return <DefaultDisplayMsg note={note} />;
-    }
-}
 
 export function QACard() {
     return (
