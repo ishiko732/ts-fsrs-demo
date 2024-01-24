@@ -6,7 +6,8 @@ import FSRSMsg from "@/components/record/FSRSMsg";
 import { findLogsByCid } from "@/lib/log";
 import LogTable from "@/components/record/LogTable";
 import { isSelf } from "@/auth/api/auth/[...nextauth]/session";
-import { DisplayMsg, SourceNote } from "@/components/source";
+import { SourceNote } from "@/components/source";
+import DisplayMsg from "@/components/source/display";
 type Props = {
   params: {
     nid: string;
