@@ -17,7 +17,7 @@ type DataResponse = {
   noteBox0: Array<Array<Note & { card: Card }>>;
 };
 
-const getData = cache(async (): Promise<DataResponse> => {
+const getData = cache(async (source?: string): Promise<DataResponse> => {
   const session = await getAuthSession();
   if (!session) {
     redirect('/api/auth/signin?callbackUrl=/card')
@@ -39,6 +39,9 @@ const getData = cache(async (): Promise<DataResponse> => {
           state,
           due: state === State.Review ? { lte: startOfDay } : undefined,
         },
+        source: {
+          equals: source
+        }
       }
     })
   );
@@ -47,12 +50,12 @@ const getData = cache(async (): Promise<DataResponse> => {
     uid,
     now,
     todayCount,
-    noteBox0:noteBox0
+    noteBox0: noteBox0
   };
 });
 
-export default async function Page() {
-  const { noteBox0 } = await getData();
+export default async function Page({ searchParams }: { searchParams: { source?: string } }) {
+  const { noteBox0 } = await getData(searchParams.source);
   const noteBox = noteBox0.map((noteBox) => noteBox.sort(() => Math.random() - Math.random()))
   const isFinish = noteBox.every((notes) => notes.length === 0);
   return isFinish ? (
