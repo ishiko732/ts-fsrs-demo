@@ -32,7 +32,7 @@ export default async function FSRSSetting() {
         return await updateParameters(data);
     }
 
-    return <form action={submit} method="PUT">
+    return <form action={submit} method="POST">
         <h1 className="divider flex justify-center items-center text-md">Settings({username})</h1>
         <div>
             <label htmlFor="request_retention" className="pr-4">request_retention:</label>
