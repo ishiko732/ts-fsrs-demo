@@ -15,11 +15,7 @@ export default async function DisplayMsg({ note }: { note: SourceNote }) {
                     <span className="badge">{note.answer}</span>
                 </span>
                 <div className="flex justify-center flex-col items-center text-sm opacity-60">
-                    <div> {transliteration && Object.keys(transliteration).map((key) =>
-                        <span key={key} className="badge badge-ghost">
-                            {key}:{Array.isArray(transliteration[key]) ? transliteration[key].join("") : transliteration[key].toString()}
-                        </span>)}
-                    </div>
+                    <div> {transliteration && <MergeTransliteration {...transliteration} />}</div>
                     <div>
                         {tags?.map((tag) => <span key={tag} className="badge">{tag}</span>)}
                         {words?.map((word) => <span key={word} className="badge badge-ghost">{word}</span>)}
@@ -41,6 +37,29 @@ export default async function DisplayMsg({ note }: { note: SourceNote }) {
             </div>
         </div>
     );
+}
+
+export function MergeTransliteration(transliteration: LingqTransliteration) {
+    function mergeText(text: string | string[] | { [key: string]: string }[] | { [key: string]: string }) {
+        if (text === undefined) {
+            return ""
+        }
+        if (Array.isArray(text)) {
+            let merge = ""
+            for (let t of text) {
+                merge += mergeText(t)
+            }
+            return merge
+        }
+        if (typeof text === "string") {
+            return text
+        }
+        return Object.keys(text).map((key) => `${key}${text[key]}`).join("")
+    }
+    return Object.keys(transliteration).map((key) =>
+        <span key={key} className="badge badge-ghost">
+            {key}:{mergeText(transliteration[key])}
+        </span>)
 }
 
 export function HighlightedWord({ text, word }: { text: string, word: string }) {
