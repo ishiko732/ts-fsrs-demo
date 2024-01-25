@@ -5,6 +5,7 @@ import { HighlightedWord } from "./display/Lingq";
 export function Question({ open, note }: { open: boolean, note: SourceNote }) {
     const extend = JSON.parse(note.extend as string) as Partial<Lingq>;
     const fragment = extend.fragment!!;
+    const transliteration = extend.transliteration
     const tags = extend.tags;
     const words = extend.words;
     return (
@@ -15,6 +16,12 @@ export function Question({ open, note }: { open: boolean, note: SourceNote }) {
                     <span className="badge">{note.answer}</span>
                 </span>
                 <div className="flex justify-center flex-col items-center opacity-60 pt-4">
+                    {open && transliteration ?
+                        <div> {transliteration && Object.keys(transliteration).map((key) =>
+                            <span key={key} className="badge badge-ghost">
+                                {key}:{Array.isArray(transliteration[key]) ? transliteration[key].join("") : transliteration[key].toString()}
+                            </span>)}
+                        </div> : null}
                     <div className="text-sm">
                         {tags?.map((tag) => <span key={tag} className="badge">{tag}</span>)}
                     </div>
