@@ -39,7 +39,7 @@ export default async function LingqCallHandler(
   }
 
   const token = await getLingqToken();
-  if(token){
+  if (token) {
     const formData = new FormData();
     formData.append("status", status.toString());
     formData.append("extended_status", extended_status.toString());
@@ -47,6 +47,7 @@ export default async function LingqCallHandler(
       method: "PATCH",
       headers: {
         Authorization: token,
+        noteId: note.nid.toString(),
       },
       body: formData,
     });
@@ -60,8 +61,8 @@ async function getLingqToken() {
     const key = await fetch("/api/lingq/key", {
       method: "POST",
     }).then((res) => res.json());
-    if(!key.lingqKey){
-        globalForLingqToken.lingqToken = key.lingqKey;
+    if (!key.lingqKey) {
+      globalForLingqToken.lingqToken = key.lingqKey;
     }
     return globalForLingqToken.lingqToken;
   }

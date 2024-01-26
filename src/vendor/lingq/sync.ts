@@ -69,7 +69,7 @@ async function syncLingqs(user: DecryptSyncUser, lang: languageCode, next?: numb
                         words: lingq.words,
                         hints: lingq.hints,
                         tags: lingq.tags,
-                        transliteration:lingq.transliteration,
+                        transliteration: lingq.transliteration,
                         lang: lang
                     }),
                     card: {
@@ -91,6 +91,51 @@ async function syncLingqs(user: DecryptSyncUser, lang: languageCode, next?: numb
         promise.push(syncLingqs(user, lang, Number(page)))
     }
     await Promise.all(promise)
+}
+
+
+
+export async function updateNoteByLingq(uid: number, nid: number, lingq: Lingq) {
+    const data = await prisma.note.findUnique({
+        where: {
+            nid: nid,
+            uid: uid
+        },
+        include: { card: true },
+    });
+    if (!data) { // note not found
+        return
+    }
+    if (uid != data.uid) { // user id not match
+        return
+    }
+    const extend = JSON.parse(data.extend as string)
+
+    const newExtend = JSON.stringify({
+        pk: lingq.pk,
+        term: lingq.term,
+        fragment: lingq.fragment,
+        notes: lingq.notes,
+        words: lingq.words,
+        hints: lingq.hints,
+        tags: lingq.tags,
+        transliteration: lingq.transliteration,
+        lang: extend.lang
+    })
+
+    if (newExtend === data.extend) { // extend not change
+        return
+    }
+    return await prisma.note.update({
+        where: {
+            nid,
+            uid
+        },
+        data: {
+            extend: newExtend,
+        }
+    })
+
 }
 
 export { syncUser, getLingqLanguageCode, syncLingqs }
