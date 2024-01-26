@@ -1,11 +1,11 @@
 {
     "crons": [
       {
-        "path": "/api/sync/user",
+        "path": "/api/sync/lingq/user",
         "schedule": "0 23 * * *"
       },
       {
-        "path": "/api/sync/pull",
+        "path": "/api/sync/lingq/pull",
         "schedule": "10 23 * * *"
       }
     ]
