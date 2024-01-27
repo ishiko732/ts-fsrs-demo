@@ -78,5 +78,5 @@ export async function getLingqTTS({ language, text, token }: { language: languag
         throw new Error('language not supported')
     }
 
-    return request<LingqTTS>(`/api/v2/tts/`, token, { body: JSON.stringify({app_name,voice,language,text}), method: 'GET' },1000*60*60*6);
+    return request<LingqTTS>(`v2/tts/`, token, { body: JSON.stringify({app_name,voice,language,text}), method: 'GET' },1000*60*60*6);
 }
