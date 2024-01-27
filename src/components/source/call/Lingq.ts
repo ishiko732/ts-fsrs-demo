@@ -54,14 +54,14 @@ export default async function LingqCallHandler(
   }
 }
 
-async function getLingqToken() {
+export async function getLingqToken() {
   const globalForLingqToken = window as unknown as { lingqToken?: string };
   const token = globalForLingqToken.lingqToken;
   if (!token) {
     const key = await fetch("/api/lingq/key", {
       method: "POST",
     }).then((res) => res.json());
-    if (!key.lingqKey) {
+    if (key.lingqKey) {
       globalForLingqToken.lingqToken = key.lingqKey;
     }
     return globalForLingqToken.lingqToken;
