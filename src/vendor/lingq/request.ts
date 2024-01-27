@@ -69,7 +69,7 @@ export async function getLingqTTS({ language, text, token }: { language: languag
     let app_name,voice;
     if(language ==='ja'){
         app_name = 'gCloudTTS'
-        voice = 'ja-JP%3Amale%3Aja-JP-Neural2-C'
+        voice = 'ja-JP:male:ja-JP-Neural2-C'
     }else if(language ==='en'){
         app_name = 'msspeak'
         voice = 'en-US:Female'
