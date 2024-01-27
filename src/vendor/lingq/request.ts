@@ -14,7 +14,7 @@ async function streamToString(stream: ReadableStream) {
     return body.length > 0 ? body : null;
 }
 
-export async function request<T>(path: string, token: string, options: RequestInit = {}): Promise<T> {
+export async function request<T>(path: string, token: string, options: RequestInit = {},revalidate?: number): Promise<T> {
     const url = new URL(path, BaseUrl);
     if (options.body != null && options.body instanceof ReadableStream) {
         options.body = await streamToString(options.body);
@@ -36,6 +36,9 @@ export async function request<T>(path: string, token: string, options: RequestIn
             'Accept': 'application/json',
             Authorization,
             ...options.headers,
+        },
+        next:{
+            revalidate
         }
     });
     if (!response.ok) {
@@ -60,4 +63,20 @@ export async function getLingq({ language, id, token }: { language: languageCode
 
 export async function changeLingqStatus({ language, id, status, extended_status, token }: { language: languageCode, id: number, status: LingqStatus, extended_status: LingqExtendedStatus, token: string }): Promise<Lingq> {
     return request<Lingq>(`v3/${language}/cards/${id}/`, token, { body: JSON.stringify({ status, extended_status }), method: 'PATCH' });
+}
+
+export async function getLingqTTS({ language, text, token }: { language: languageCode, text: string, token: string }): Promise<LingqTTS> {
+    let app_name,voice;
+    if(language ==='ja'){
+        app_name = 'gCloudTTS'
+        voice = 'ja-JP%3Amale%3Aja-JP-Neural2-C'
+    }else if(language ==='en'){
+        app_name = 'msspeak'
+        voice = 'en-US:Female'
+    }
+    if(!app_name || !voice){
+        throw new Error('language not supported')
+    }
+
+    return request<LingqTTS>(`/api/v2/tts/`, token, { body: JSON.stringify({app_name,voice,language,text}), method: 'GET' },1000*60*60*6);
 }

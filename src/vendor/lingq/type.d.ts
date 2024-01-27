@@ -131,3 +131,16 @@ type LingqChangeStatus = {
     status: LingqStatus,
     extended_status: LingqExtendedStatus,
 }
+
+type LingqTTS = {
+    id: number,
+    language: Pick<LangeuageContext,"id","url","code","title">,
+    app_name: string,
+    voice: string,
+    voice_type: string,
+    text: string,
+    audio: string,
+    ctime: string,
+    ftime: string,
+    fixed: string
+}
