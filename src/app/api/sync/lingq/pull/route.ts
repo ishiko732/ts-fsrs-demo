@@ -1,4 +1,4 @@
-import { SyncWaitUser, syncLingqs } from '@/vendor/lingq/sync';
+import { SyncWaitUser, getLingqLanguageCode, syncLingqs, syncUser } from '@/vendor/lingq/sync';
 import { kv } from "@vercel/kv";
 import type { NextRequest } from 'next/server';
 
@@ -20,7 +20,14 @@ export async function GET(request: NextRequest) {
     }
 
     if (!users) {
-        return Response.json({ success: false });
+        const syncUsers = await syncUser();
+        const promiseUsers = syncUsers.map(async (user) => {
+          return {
+            ...user,
+            langs: await getLingqLanguageCode(user)
+          } as SyncWaitUser
+        })
+        users = await Promise.all(promiseUsers);
     }
 
     const promise: Promise<void>[] = []
