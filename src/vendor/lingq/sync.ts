@@ -38,58 +38,58 @@ async function getLingqLanguageCode(user: DecryptSyncUser) {
 async function syncLingqs(user: DecryptSyncUser, lang: languageCode, next?: number) {
     const data = await getLingqs({ language: lang, token: user.token, page: next, page_size: 50 })
     const promise: Promise<unknown>[] = []
-    async function sync(data: Lingqs) {
-        const hash: { [key: string]: Lingq } = {}
-        const collectPks = data.results.map((lingq) => {
-            hash[`${lingq.pk}`] = lingq
-            return `${lingq.pk}`
-        });
-        console.log(lang)
-        const existSourceIds = await prisma.$queryRaw<{ sourceId: string }[]>
-            `select sourceId from Note where uid = ${user.uid} and source = 'lingq' and sourceId in (${Prisma.join(collectPks)});`
-        const existPks = existSourceIds.map((note) => note.sourceId)
-        const nonExistPks = collectPks.filter((pk) => !existPks.includes(pk));
-        console.log(nonExistPks)
 
-        if (nonExistPks.length > 0) {
-            const fc = createEmptyCardByPrisma();
-            const dates = nonExistPks.map((pk) => {
-                const lingq = hash[pk]
-                const note = {
-                    uid: user.uid,
-                    question: lingq.term,
-                    answer: lang,
-                    source: "lingq",
-                    sourceId: pk,
-                    extend: JSON.stringify({
-                        pk: lingq.pk,
-                        term: lingq.term,
-                        fragment: lingq.fragment,
-                        notes: lingq.notes,
-                        words: lingq.words,
-                        hints: lingq.hints,
-                        tags: lingq.tags,
-                        transliteration: lingq.transliteration,
-                        lang: lang
-                    }),
-                    card: {
-                        create: fc
-                    }
-                }
-                return prisma.note.create({
-                    data: note,
-                    include: { card: true },
-                });
-            })
-            await prisma.$transaction(dates)
+    const hash: { [key: string]: Lingq } = {}
+    const collectPks = data.results.map((lingq) => {
+        hash[`${lingq.pk}`] = lingq
+        return `${lingq.pk}`
+    });
+    console.log(lang)
+    const existSourceIds = await prisma.$queryRaw<{ sourceId: string }[]>
+        `select sourceId from Note where uid = ${user.uid} and source = 'lingq' and sourceId in (${Prisma.join(collectPks)});`
+    const existPks = existSourceIds.map((note) => note.sourceId)
+    const nonExistPks = collectPks.filter((pk) => !existPks.includes(pk));
+    console.log(nonExistPks)
+    async function sync(hash: { [key: string]: Lingq }, pks: string[]) {
+        if (pks.length === 0) {
+            return
         }
-        return nonExistPks.length
+        const fc = createEmptyCardByPrisma();
+        const dates = pks.map((pk) => {
+            const lingq = hash[pk]
+            const note = {
+                uid: user.uid,
+                question: lingq.term,
+                answer: lang,
+                source: "lingq",
+                sourceId: pk,
+                extend: JSON.stringify({
+                    pk: lingq.pk,
+                    term: lingq.term,
+                    fragment: lingq.fragment,
+                    notes: lingq.notes,
+                    words: lingq.words,
+                    hints: lingq.hints,
+                    tags: lingq.tags,
+                    transliteration: lingq.transliteration,
+                    lang: lang
+                }),
+                card: {
+                    create: fc
+                }
+            }
+            return prisma.note.create({
+                data: note,
+                include: { card: true },
+            });
+        })
+        await prisma.$transaction(dates)
     }
-    promise.push(sync(data))
-    if (data.next != null) {
+    if (data.next != null && nonExistPks.length > 0) {
         const page = new URL(data.next).searchParams.get("page")
         promise.push(syncLingqs(user, lang, Number(page)))
     }
+    promise.push(sync(hash, nonExistPks))
     await Promise.all(promise)
 }
 
