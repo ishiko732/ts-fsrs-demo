@@ -57,15 +57,16 @@ async function syncLingqs(user: DecryptSyncUser, lang: languageCode, next?: numb
         const fc = createEmptyCardByPrisma();
         const dates = pks.map((pk) => {
             const lingq = hash[pk]
+            const question = lingq.term.replace(/\s+/g, '')
             const note = {
                 uid: user.uid,
-                question: lingq.term,
+                question: question,
                 answer: lang,
                 source: "lingq",
                 sourceId: pk,
                 extend: JSON.stringify({
                     pk: lingq.pk,
-                    term: lingq.term,
+                    term: question,
                     fragment: lingq.fragment,
                     notes: lingq.notes,
                     words: lingq.words,
