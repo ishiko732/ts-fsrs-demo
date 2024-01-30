@@ -1,6 +1,6 @@
 import { Revlog } from "@prisma/client";
 import prisma from "./prisma";
-import { Rating, State, date_scheduler, fixRating, fixState } from "ts-fsrs";
+import { Rating, State, date_scheduler } from "ts-fsrs";
 
 export async function findLogsByCid(cid: number) {
     const logs = await prisma.revlog.findMany({
@@ -83,8 +83,8 @@ export async function exportLogsByUid(uid:number):Promise<ExportRevLog[]>{
         return {
             card_id: log.cid,
             review_time: log.review.getTime(),
-            review_rating: fixRating(log.grade),
-            review_state: fixState(log.state),
+            review_rating: Number(log.grade),
+            review_state: Number(log.state),
             review_duration: log.duration * 1000
         }
     })
