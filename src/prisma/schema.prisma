@@ -21,7 +21,7 @@ model Revlog {
   scheduled_days    Int
   review            DateTime
   card              Card     @relation(fields: [cid], references: [cid])
-
+  duration          Int      @default(0)
   @@index([cid])
 }
 

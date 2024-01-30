@@ -5,12 +5,13 @@ import { stateFSRSRatingToPrisma, stateFSRSStateToPrisma } from "@/vendor/fsrsTo
 import { findLastLogByCid } from "./log";
 import { getFSRSParamsByCid } from "./fsrs";
 import { isAdminOrSelf } from "@/auth/api/auth/[...nextauth]/session";
-
+import { kv } from "@vercel/kv";
 
 type Query={
     nid:number;
     cid:number;
 }
+const globalForRevlog = global as unknown as { revlog?: {[key:number]:number} };
 
 export async function findCardByNid(nid:number){
     const note=await getNoteByNid(nid)
@@ -54,16 +55,18 @@ export async function schedulerCard(query:Partial<Query>,now:Date){
     const f = fsrs(params)
     const card={
         ...cardByPrisma,
-        nid:query.cid||cardByPrisma.note.nid,
+        nid:cardByPrisma.note.nid,
         // state:statePrismaToFSRSState(cardByPrisma.state),
         // due:fixDate(cardByPrisma.due),
         last_review:cardByPrisma.last_review?cardByPrisma.last_review:undefined
     }
+    await setSchedulerTime(cardByPrisma.cid, now)
     return f.repeat(card,now)
 }
 
 
 export async function updateCard(cid:number,now:Date,grade:Grade){
+    const duration = await getDuration(cid,now)
     const data:RecordLog = await schedulerCard({cid},now);
     const recordItem = data[Number(grade) as Grade]
     await prisma.card.update({
@@ -89,6 +92,7 @@ export async function updateCard(cid:number,now:Date,grade:Grade){
                     last_elapsed_days:recordItem.log.last_elapsed_days,
                     scheduled_days:recordItem.log.scheduled_days,
                     review:recordItem.log.review,
+                    duration: duration
                 },
             }
         },
@@ -104,6 +108,31 @@ export async function updateCard(cid:number,now:Date,grade:Grade){
     };;
 }
 
+
+export async function setSchedulerTime(cid:number,now:Date){
+    if (process.env.NODE_ENV === 'production') {
+        await kv.set(`revlog:${cid}`, JSON.stringify(now.getTime()));
+        await kv.expire(`revlog:${cid}`, 60*20); // 20 min
+    } else {
+        if(!globalForRevlog.revlog){
+            globalForRevlog.revlog = {}
+        }
+        globalForRevlog.revlog[cid] = now.getTime();
+    }
+}
+
+export async function getDuration(cid:number,now:Date){
+    let time = null;
+    if (process.env.NODE_ENV === 'production') {
+       time = await kv.get<number>(`revlog:${cid}`);
+    } else {
+        if(!globalForRevlog.revlog){
+            globalForRevlog.revlog = {}
+        }
+        time = Number(globalForRevlog.revlog[cid]);
+    }
+    return time? Math.floor((now.getTime()-time)/ 1000) : 0;
+}
 
 export async function rollbackCard(query:Partial<Query>){
     if(!query.nid && !query.cid){
