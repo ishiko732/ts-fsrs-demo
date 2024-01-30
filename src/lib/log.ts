@@ -1,7 +1,6 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Revlog } from "@prisma/client";
 import prisma from "./prisma";
 import { date_scheduler } from "ts-fsrs";
-import { DefaultArgs } from "@prisma/client/runtime/library";
 
 export async function findLogsByCid(cid: number) {
     const logs = await prisma.revlog.findMany({
@@ -64,4 +63,21 @@ export async function getTodayLearnedNewCardCount(uid:number,startOfDay: Date,so
         todayCount: Number(count[0].total),
         limit: Number(limit[0].card_limit) ?? 50
     };
+}
+
+export type ExportRevLog = Revlog & { due: number, review: number }
+
+export async function exportLogsByUid(uid:number){
+    const data= await prisma.$queryRaw<Revlog[]>`
+                select log.* from Revlog log
+                left join Card c on c.cid = log.cid
+                left join Note n on n.nid = c.nid
+                where n.uid=${Number(uid)} order by log.cid`
+    return data.map(log => {
+        return {
+            ...log,
+            due: log.due.getTime(),
+            review: log.review.getTime(),
+        }
+    })
 }
