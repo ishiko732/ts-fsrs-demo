@@ -1,6 +1,6 @@
 import { SyncWaitUser, getLingqLanguageCode, syncLingqs, syncUser } from '@/vendor/lingq/sync';
 import { kv } from "@vercel/kv";
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
 const globalForLingq = global as unknown as { syncUser?: SyncWaitUser[] };
 
@@ -8,7 +8,7 @@ const globalForLingq = global as unknown as { syncUser?: SyncWaitUser[] };
 export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('authorization');
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-        return new Response('Unauthorized', {
+        return NextResponse.json('Unauthorized', {
             status: 401,
         });
     }
@@ -42,6 +42,6 @@ export async function GET(request: NextRequest) {
     if (process.env.NODE_ENV === 'production') {
         await kv.del('lingq:syncUser');
     }
-    return Response.json({ success: true });
+    return NextResponse.json({ success: true });
 }
 

@@ -1,6 +1,6 @@
 import { SyncWaitUser, getLingqLanguageCode, syncUser } from '@/vendor/lingq/sync';
 import { kv } from "@vercel/kv";
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
 
 const globalForLingq = global as unknown as { syncUser?: SyncWaitUser[] };
@@ -26,6 +26,6 @@ export async function GET(request: NextRequest) {
   } else {
     globalForLingq.syncUser = data;
   }
-  return Response.json({ success: true });
+  return NextResponse.json({ success: true });
 }
 
