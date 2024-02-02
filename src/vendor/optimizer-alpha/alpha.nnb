@@ -1,0 +1,82 @@
+{
+    "cells": [
+        {
+            "language": "typescript",
+            "source": [
+                "function offset_date_by_timezone(timestamp: number, timezone: string):string {\r\n    return new Date(timestamp).toLocaleString(\"UTC\", { timeZone: timezone })\r\n}\r\n\r\ntype unit = \"days\" | \"minutes\";\r\nfunction date_diff(now: Date, pre: Date, unit: unit): number {\r\n    if (!now || !pre) {\r\n      throw new Error(\"Invalid date\");\r\n    }\r\n    const diff = now.getTime() - pre.getTime();\r\n    let r = 0;\r\n    switch (unit) {\r\n      case \"days\":\r\n        r = Math.floor(diff / (24 * 60 * 60 * 1000));\r\n        break;\r\n      case \"minutes\":\r\n        r = Math.floor(diff / (60 * 1000));\r\n        break;\r\n    }\r\n    return r;\r\n}\r\n\r\nfunction date_scheduler(now: Date, t: number, isDay?: boolean): Date {\r\n    return new Date(\r\n      isDay\r\n        ? now.getTime() + t * 24 * 60 * 60 * 1000\r\n        : now.getTime() + t * 60 * 1000,\r\n    );\r\n  }\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "import * as dfd from \"danfojs-node\"\r\nimport { Series, toDateTime } from \"danfojs-node\"\r\nimport { DataFrame,ArrayType1D,Groupby } from \"danfojs-node/dist/danfojs-node/src/core/frame\" // Update the import statement to use the correct version of the DataFrame type\r\n\r\nconst tf = dfd.tensorflow\r\n// read CSV file\r\n\r\nasync function readCSV(filePath: string) {\r\n    const data = await dfd.readCSV(filePath)\r\n    return data\r\n}\r\n\r\n\r\ntype SortByColumnsOptions = {\r\n    column: string\r\n    ascending?: boolean,\r\n}\r\n\r\nconst sortByColumns = (data: DataFrame, columns: SortByColumnsOptions[]) => {\r\n    const df = data\r\n    for (const column of columns.reverse()) {\r\n        df.sortValues(column.column, { ascending: column.ascending, inplace: true })\r\n    }\r\n    return df as DataFrame\r\n}\r\n\r\nasync function sortRevlog(data: DataFrame) {\r\n    return sortByColumns(data, [{ column: \"card_id\", ascending: true }, { column: \"review_time\", ascending: true }])\r\n}\r\n\r\nasync function checkColumns(data: DataFrame, columns: string[]) {\r\n    const dataColumns = data.columns\r\n    var flags = true\r\n    for (let index = 0; index < columns.length; index++) {\r\n        const column = columns[index];\r\n        if (dataColumns.indexOf(column) == -1) {\r\n            flags = false\r\n            break\r\n        }\r\n\r\n    }\r\n    return flags\r\n}\r\n\r\n\r\nfunction compute_real_days(x: string, next_day_starts_at: Date, day_start: number = 4) {\r\n    const reviewDate = new Date(x);\r\n    next_day_starts_at.setHours(day_start, 0, 0, 0);\r\n    const realDays = date_diff(reviewDate, next_day_starts_at, \"days\");\r\n    return realDays;\r\n}\r\n\r\nfunction compute_elapsed_days(current: string, previous?: string, unit: unit = \"days\") {\r\n    if (!previous) {\r\n        return 0\r\n    }\r\n    const currentDate = new Date(current);\r\n    const previousDate = new Date(previous);\r\n    const elapsedDays = date_diff(currentDate, previousDate, unit);\r\n    return elapsedDays;\r\n}\r\n\r\n\r\nfunction cum_concat(gb:Groupby,column:string):DataFrame {\r\n    let colDict: { [key: string ]: {} } = {...gb.colDict}\r\n    for(const [key, values] of Object.entries(colDict)) {\r\n      let colVal: { [key: string ]: Array<number> } = {}\r\n      let keyVal: any = {...values}\r\n      let groupColNames: Array<string> = gb.columnName as Array<string>\r\n      for(let colKey=0; colKey < groupColNames.length; colKey++) {\r\n        let colName = groupColNames[colKey]\r\n        let colIndex = gb.columnName.indexOf(colName)\r\n        let colDtype = gb.colDtype[colIndex]\r\n        colVal[column] = cum_concat_sub(keyVal[colName])\r\n      }\r\n      colDict[key] = colVal\r\n    }\r\n    return colDict\r\n}\r\n\r\nfunction cum_concat_sub(colVal:Array<number>):Array<number> {\r\n    let cumVal = 0\r\n    let cumArr:Array<number> = []\r\n    for(let i=0; i < colVal.length; i++) {\r\n      cumVal += colVal[i]\r\n      cumArr.push(cumVal)\r\n    }\r\n    return cumArr\r\n}\r\n\r\n\r\n\r\nasync function main(next_day_starts_at: Date = new Date(\"2000/12/27 00:00:00\"), timezone: string = \"Asia/Shanghai\") {\r\n    var df = await readCSV(\"./revlog.csv\")\r\n    const check = await checkColumns(df, [\"review_state\", \"review_duration\"])\r\n    // if (check){\r\n    //     console.log(\"OK\")\r\n    // }\r\n\r\n    df.query(df[\"review_time\"].gt(next_day_starts_at.getTime()), { inplace: true });\r\n    df.addColumn(\"review_date\", df[\"review_time\"].apply((x) => offset_date_by_timezone(x, timezone)), { inplace: true });\r\n    df.addColumn(\"real_days\", df[\"review_date\"].apply((x) => compute_real_days(x, next_day_starts_at)), { inplace: true });\r\n\r\n    df = df.groupby([\"card_id\", \"real_days\"]).first();\r\n    sortByColumns(df, [{ column: \"card_id\", ascending: true }, { column: \"review_time\", ascending: true }])\r\n\r\n    const [row] = df.shape;\r\n    if (row === 0) {\r\n        console.log(\"No data\")\r\n        return\r\n    }\r\n\r\n    const card_id = df.column(\"card_id\").values\r\n    const original = df.column(\"review_date\").values\r\n    const t: number[] = new Array(row).fill(0)\r\n    const card_idx: number[] = new Array(row).fill(0)\r\n    let current, previous;\r\n    for (let i = 0; i < card_id.length; i++) {\r\n        previous = current\r\n        current = original[i]\r\n        if (i === 0) {\r\n            // t[0] = 0\r\n            card_idx[i] =1\r\n            continue\r\n        }\r\n        if (card_id[i] === card_id[i - 1]) {\r\n            t[i] = compute_elapsed_days(current, previous)\r\n            card_idx[i] = card_idx[i - 1] + 1\r\n        }else{\r\n            card_idx[i] =1\r\n        }\r\n    }\r\n    df.addColumn(\"delta_t\", t, { inplace: true });\r\n    df.addColumn(\"i\",card_idx,{inplace:true});\r\n\r\n    const t_history = df.groupby([\"card_id\"]).col([\"card_id\",\"delta_t\"]);//.col(['delta_t']);\r\n    // t_history.col(undefined)\r\n    // t_history.col([\"card_id\",\"delta_t\"])\r\n    // console.log(cum_concat(t_history,\"delta_t\")) \r\n    // t_history.toDataFrame(cum_concat)\r\n    // // df.addColumn(\"t_history\", df[\"review_date\"].apply((x)=>), { inplace: true });\r\n    // t_history.apply(x=>cum_opts(x,\"concat\",{column:\"delta_t\"}));\r\n    // df.resetIndex({ inplace: true });\r\n    // const t_df = t_history.apply(x=>x['delta_t'].values.join(\",\"));\r\n    // t_df.print()\r\n    //   console.log( t_history)\r\n    // df.print()\r\n    // console.log(original)\r\n}\r\nmain()\r\n\r\n\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "console.log(new Date(\"2023/12/27 00:00:00 GMT+0\").getTime())"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "1703635200000",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "console.log(new Date(\"2023/12/27 00:00:00 GMT+8\").getTime())"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "1703606400000",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

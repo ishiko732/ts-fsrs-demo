@@ -15,6 +15,6 @@ type RevLogSchema = {
 type UserOption = {
     timezone: string,
     day_start: Range0To23; // used next day start hour
-    revlog_start_time: Date; // the date at which before reviews will be ignored
+    revlog_start_time: number; // the date at which before reviews will be ignored
     filter_out_suspended_cards: boolean; // filter out suspended cards
 }
