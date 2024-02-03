@@ -6,13 +6,8 @@ import { getLingqLanguageCode, syncLingqs } from "@/vendor/lingq/sync";
 
 async function syncLingqAction(formData: FormData) {
     'use server'
-    const session = await getAuthSession();
-    if (!session?.user) {
-        throw new Error('No user');
-    }
-    const uid = session.user.id
-    const params = await getFSRSParamsByUid(Number(uid))
-    if (!params.lingq_token) {
+    const params = await getParamsRequireLingqToken()
+    if (params === null || params.lingq_token == null) {
         throw new Error('No lingq Token');
     }
     const syncUser = {
@@ -26,12 +21,25 @@ async function syncLingqAction(formData: FormData) {
 };
 
 async function SyncLingq() {
-
+    const params = await getParamsRequireLingqToken()
     return (
-        <MenuItem tip="Sync Lingq" formAction={syncLingqAction}>
+        params? <MenuItem tip="Sync Lingq" formAction={syncLingqAction}>
             <SyncSubmitButton />
-        </MenuItem>
+        </MenuItem>: null
     );
 }
 
 export default SyncLingq;
+
+async function getParamsRequireLingqToken(){
+    const session = await getAuthSession();
+    if (!session?.user) {
+        throw new Error('No user');
+    }
+    const uid = session.user.id
+    const params = await getFSRSParamsByUid(Number(uid))
+    if (!params.lingq_token) {
+        return null;
+    }
+    return params
+}
