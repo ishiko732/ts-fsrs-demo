@@ -209,7 +209,7 @@ export function CardProvider({
         .then((res) => res.json())
         .then((res) => setSchedule(res));
       if(note.card&&note.card.state==='Review'){
-        const r = fsrs().get_retrievability(transferPrismaCardToCard(note.card),new Date())
+        const r = fsrs().get_retrievability(transferPrismaCardToCard(note.card),fixDate(new Date().toLocaleString("UTC",{timeZone:'UTC'})))
         if(r){
           setDSR({
             D:note.card.difficulty,
