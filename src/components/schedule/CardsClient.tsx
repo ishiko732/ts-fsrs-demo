@@ -5,6 +5,7 @@ import { CardProvider } from "@/context/CardContext";
 import ShowAnswerButton from "./ShowAnswerButton";
 import StatusBar from "./StatusBar";
 import RollbackButton from "./rollbackButton";
+import DSRDisplay from "./DSR";
 
 export default function CardClient({
   noteBox,
@@ -17,6 +18,7 @@ export default function CardClient({
       <div className="divider"></div>
       <StatusBar />
       <ShowAnswerButton />
+      <DSRDisplay/>
       <RollbackButton />
     </CardProvider>
   );

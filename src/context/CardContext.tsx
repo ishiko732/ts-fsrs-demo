@@ -1,11 +1,18 @@
 "use client";
 import { Card, Note } from "@prisma/client";
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { Grade, RecordLog, State, fixDate, fixState } from "ts-fsrs";
+import { Grade, RecordLog, State, fixDate, fixState, fsrs } from "ts-fsrs";
 import { useRouter } from "next/navigation";
 import { StateBox } from "@/types";
 import debounce from "@/lib/debounce";
 import callHandler from "@/components/source/call";
+import { transferPrismaCardToCard } from "@/vendor/fsrsToPrisma";
+
+export type DSR= {
+  D:number,
+  S:number,
+  R:string
+}
 
 export type changeResponse = {
   code: number;
@@ -25,6 +32,8 @@ type CardContextProps = {
   handleSchdule:(grade: Grade)=>Promise<boolean>;
   handleRollBack:()=>Promise<Note & { card: Card }|undefined>;
   rollbackAble:boolean;
+  DSR: DSR|undefined;
+  setDSR: React.Dispatch<React.SetStateAction<DSR|undefined>>;
 };
 
 const CardContext = createContext<CardContextProps | undefined>(undefined);
@@ -81,6 +90,7 @@ export function CardProvider({
     }
     return current;
   });
+  const [DSR,setDSR] = useState<DSR>();
 
   const rollBackRef= useRef<{cid:number,nextStateBox:StateBox}[]>([])
   const [rollbackAble,setRollbackAble] = useState(false)
@@ -198,6 +208,20 @@ export function CardProvider({
       fetch(`/api/fsrs?cid=${note.card.cid}&now=` + new Date(), { method: "post" })
         .then((res) => res.json())
         .then((res) => setSchedule(res));
+      if(note.card&&note.card.state==='Review'){
+        const r = fsrs().get_retrievability(transferPrismaCardToCard(note.card),new Date())
+        if(r){
+          setDSR({
+            D:note.card.difficulty,
+            S:note.card.stability,
+            R:r
+          })
+        }else{
+          setDSR(undefined)
+        }
+      }else{
+        setDSR(undefined)
+      }
     }
   }, [currentType,noteBox, setSchedule]);
 
@@ -213,7 +237,9 @@ export function CardProvider({
     setNoteBox:setNoteBox,
     handleSchdule,
     handleRollBack,
-    rollbackAble
+    rollbackAble,
+    DSR,
+    setDSR
   };
   return <CardContext.Provider value={value}>{children}</CardContext.Provider>;
 }
