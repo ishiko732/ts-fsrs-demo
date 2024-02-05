@@ -28,6 +28,7 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
     now = date_scheduler(now, -1, true);
   }
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0);
+  const nextDay = date_scheduler(startOfDay, 1, true);
   const { todayCount, limit } = await getTodayLearnedNewCardCount(uid, startOfDay)
   const states = [State.New, State.Learning, State.Relearning, State.Review];
   const noteBox = states.map((state) =>
@@ -37,7 +38,7 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
       query: {
         card: {
           state,
-          due: state === State.Review ? { lte: startOfDay } : undefined,
+          due: state === State.Review ? { lt: nextDay } : undefined,
         },
         source: {
           equals: source
