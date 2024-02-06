@@ -18,6 +18,7 @@ async function LogTable({ logs }: Props) {
             <th>Rating</th>
             <th className="hidden sm:table-cell">elapsed</th>
             <th className="hidden sm:table-cell">scheduled</th>
+            <th className="hidden sm:table-cell">duration</th>
           </tr>
         </thead>
         <tbody>
@@ -29,6 +30,7 @@ async function LogTable({ logs }: Props) {
               <td>{log.grade}</td>
               <td className="hidden sm:table-cell">{log.elapsed_days}</td>
               <td className="hidden sm:table-cell">{log.scheduled_days}</td>
+              <td className="hidden sm:table-cell">{log.duration > 0 ? durationFormat(log.duration) : '/'}</td>
             </tr>
           ))}
         </tbody>
@@ -38,3 +40,30 @@ async function LogTable({ logs }: Props) {
 }
 
 export default LogTable;
+
+
+function durationFormat(duration: number) {
+  const division = [60, 60, 24]
+  const char = ['s', 'm', 'h', 'd']
+  if (duration <= 0) {
+    return '/';
+  }
+  const split_duration = [];
+  for (let c of division) {
+    split_duration.push(duration % c);
+    duration = Math.floor(duration / c);
+    if (duration === 0) {
+      break;
+    }
+  }
+  if (duration > 0) {
+    split_duration.push(duration);
+  }
+  const res = [];
+  for (let i = split_duration.length - 1; i >= 0; i--) {
+    if (split_duration[i] > 0) {
+      res.push(`${split_duration[i]}${char[i]}`)
+    }
+  }
+  return res.join('');
+}
