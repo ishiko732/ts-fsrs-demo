@@ -95,6 +95,8 @@ export async function updateParameters(params: FSRSPutParams) {
     })
 }
 
+export function getFSRS(cid: number): Promise<FSRS>;
+export function getFSRS<T extends boolean>(cid: number, skip: T): Promise<T extends true ? null : FSRS>;
 export async function getFSRS<T extends boolean = boolean>
     (cid:number,skip: T=false as T)
     : Promise<T extends true ? null : FSRS> {

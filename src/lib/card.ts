@@ -45,7 +45,7 @@ export async function schedulerCard(query:Partial<Query>,now:Date){
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
-    const f = await getFSRS(cardByPrisma.cid,false)
+    const f = await getFSRS(cardByPrisma.cid)
     const card={
         ...cardByPrisma,
         nid:cardByPrisma.note.nid,
@@ -111,7 +111,7 @@ export async function rollbackCard(query:Partial<Query>){
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
-    const [log,f] =await Promise.all([findLastLogByCid(cardByPrisma.cid), getFSRS(cardByPrisma.cid,false)])
+    const [log,f] =await Promise.all([findLastLogByCid(cardByPrisma.cid), getFSRS(cardByPrisma.cid)])
     if(!log){  
         throw new Error("log not found")
     }
@@ -145,7 +145,7 @@ export async function rollbackCard(query:Partial<Query>){
 
 export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
     const cardByPrisma = await findCardByCid(cid);
-    const f = await getFSRS(cardByPrisma.cid, false)
+    const f = await getFSRS(cardByPrisma.cid)
     const recordItem = f.forget(cardByPrisma, now, reset_count)
     await prisma.card.update({
         where:{cid},
