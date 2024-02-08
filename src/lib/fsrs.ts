@@ -1,8 +1,9 @@
-import { FSRSParameters, default_w, generatorParameters } from "ts-fsrs";
+import { FSRS, FSRSParameters, default_w, fsrs, generatorParameters } from "ts-fsrs";
 import prisma from "./prisma";
 import { Parameters } from "@prisma/client";
 import { FSRSPutParams } from "@/types";
 import { decryptLingqKey, encryptLingqKey } from "@/vendor/lingq/crypt";
+import { isAdminOrSelf } from "@/app/(auth)/api/auth/[...nextauth]/session";
 
 
 export type ParametersType = {
@@ -92,4 +93,19 @@ export async function updateParameters(params: FSRSPutParams) {
             lingq_counter: counter
         }
     })
+}
+
+export async function getFSRS<T extends boolean = boolean>
+    (cid:number,skip: T=false as T)
+    : Promise<T extends true ? null : FSRS> {
+    const {params,uid} = await getFSRSParamsByCid(cid)
+    const permission = await isAdminOrSelf(uid)
+    if(!permission){
+        throw new Error("permission denied")
+    }
+    if(skip){
+        return null as T extends true ? null : FSRS;
+    }
+    const f = fsrs(params) as FSRS
+    return f as T extends true ? null : FSRS;
 }

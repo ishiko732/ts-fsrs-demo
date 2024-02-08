@@ -1,10 +1,9 @@
-import { CardPrisma, Grade, RecordLog, RevlogPrisma, fsrs} from "ts-fsrs";
+import { CardPrisma, Grade } from "ts-fsrs";
 import { getNoteByCid, getNoteByNid } from "./note";
 import prisma from "./prisma";
 import { stateFSRSRatingToPrisma, stateFSRSStateToPrisma } from "@/vendor/fsrsToPrisma";
 import { findLastLogByCid } from "./log";
-import { getFSRSParamsByCid } from "./fsrs";
-import { isAdminOrSelf } from "@/auth/api/auth/[...nextauth]/session";
+import { getFSRS } from "./fsrs";
 import { getDuration, setSchedulerTime } from "./duration";
 
 type Query={
@@ -46,12 +45,7 @@ export async function schedulerCard(query:Partial<Query>,now:Date){
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
-    const {params,uid} = await getFSRSParamsByCid(cardByPrisma.cid)
-    const permission = await isAdminOrSelf(uid)
-    if(!permission){
-        throw new Error("permission denied")
-    }
-    const f = fsrs(params)
+    const f = await getFSRS(cardByPrisma.cid,false)
     const card={
         ...cardByPrisma,
         nid:cardByPrisma.note.nid,
@@ -65,8 +59,7 @@ export async function schedulerCard(query:Partial<Query>,now:Date){
 
 
 export async function updateCard(cid:number,now:Date,grade:Grade){
-    const duration = await getDuration(cid,now)
-    const data:RecordLog = await schedulerCard({cid},now);
+    const [_,duration,data]=await Promise.all([getFSRS(cid,true),getDuration(cid,now),schedulerCard({cid},now)])
     const recordItem = data[Number(grade) as Grade]
     await prisma.card.update({
         where:{cid:cid},
@@ -118,22 +111,11 @@ export async function rollbackCard(query:Partial<Query>){
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
-    const log = await findLastLogByCid(cardByPrisma.cid)
-    if(!log ){  
+    const [log,f] =await Promise.all([findLastLogByCid(cardByPrisma.cid), getFSRS(cardByPrisma.cid,false)])
+    if(!log){  
         throw new Error("log not found")
     }
-    const logByPrisma = {
-        ...log,
-        rating:log.grade
-    } as unknown as RevlogPrisma
-
-    const {params,uid} = await getFSRSParamsByCid(cardByPrisma.cid)
-    const permission = await isAdminOrSelf(uid)
-    if(!permission){
-        throw new Error("permission denied")
-    }
-    const f = fsrs(params)
-    const backCard = f.rollback(cardByPrisma,logByPrisma) as CardPrisma
+    const backCard = f.rollback(cardByPrisma,log) as CardPrisma
 
     const res = await prisma.card.update({
         where:{cid:cardByPrisma.cid},
@@ -149,7 +131,7 @@ export async function rollbackCard(query:Partial<Query>){
             last_review:backCard.last_review|| null,
             logs:{
                 delete:{
-                    lid:logByPrisma.lid
+                    lid:log.lid
                 }
             }
         },
@@ -163,13 +145,7 @@ export async function rollbackCard(query:Partial<Query>){
 
 export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
     const cardByPrisma = await findCardByCid(cid);
-
-    const {params,uid} = await getFSRSParamsByCid(cardByPrisma.cid)
-    const permission = await isAdminOrSelf(uid)
-    if(!permission){
-        throw new Error("permission denied")
-    }
-    const f = fsrs(params)
+    const f = await getFSRS(cardByPrisma.cid, false)
     const recordItem = f.forget(cardByPrisma, now, reset_count)
     await prisma.card.update({
         where:{cid},

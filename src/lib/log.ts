@@ -1,6 +1,6 @@
 import { Revlog } from "@prisma/client";
 import prisma from "./prisma";
-import { Rating, State, date_scheduler } from "ts-fsrs";
+import { Rating, RevlogPrisma, State, date_scheduler } from "ts-fsrs";
 
 export async function findLogsByCid(cid: number) {
     const logs = await prisma.revlog.findMany({
@@ -23,7 +23,13 @@ export async function findLastLogByCid(cid: number) {
             review:'desc'
         }
     })
-    return logs
+    if(!logs){
+       return null
+    }
+    return {
+        ...logs,
+        rating:logs.grade
+    } as unknown as RevlogPrisma
 }
 
 export async function deleteLogByLid(lid:string){
