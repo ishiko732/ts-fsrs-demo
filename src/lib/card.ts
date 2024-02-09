@@ -146,7 +146,7 @@ export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
         }
     })
     return {
-        nextState:fixState(recordItem.state),
+        nextState:recordItem.state,
         nextDue:recordItem.due,
         nid:cardByPrisma.note.nid as number
     };
