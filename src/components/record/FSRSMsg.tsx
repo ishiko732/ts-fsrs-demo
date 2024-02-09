@@ -1,7 +1,6 @@
 import React from "react";
-import { Card, Revlog } from "@prisma/client";
+import { Card } from "@prisma/client";
 import { fsrs } from "ts-fsrs";
-import { transferPrismaCardToCard } from "@/vendor/fsrsToPrisma";
 import getFormattedDate from "@/lib/format";
 import Forget from "./Forget";
 type Props = {
@@ -11,7 +10,7 @@ type Props = {
 export default async function FSRSMsg({ card }: Props) {
   const f = fsrs();
   const retrievability = f.get_retrievability(
-    transferPrismaCardToCard(card),
+    card,
     new Date()
   );
   return (

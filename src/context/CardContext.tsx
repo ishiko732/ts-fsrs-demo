@@ -3,10 +3,9 @@ import { Card, Note } from "@prisma/client";
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Grade, RecordLog, State, fixDate, fixState, fsrs } from "ts-fsrs";
 import { useRouter } from "next/navigation";
-import { StateBox } from "@/types";
 import debounce from "@/lib/debounce";
 import callHandler from "@/components/source/call";
-import { transferPrismaCardToCard } from "@/vendor/fsrsToPrisma";
+import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 
 export type DSR= {
   D:number,
@@ -136,7 +135,8 @@ export function CardProvider({
 
   const handleSchdule = debounce(async (grade: Grade) => {
     const note = noteBox[currentType][0];
-    const res = await fetch(`/api/fsrs?cid=${note.card.cid}&now=${new Date()}&grade=${grade}`, {
+    const now = new Date();
+    const res = await fetch(`/api/fsrs?cid=${note.card.cid}&now=${now.getTime()}&offset=${now.getTimezoneOffset()}&grade=${grade}`, {
       method: "put",
     }).then((res) => res.json())
     if (res.code === 0) {
@@ -204,12 +204,13 @@ export function CardProvider({
   // get schedule
   useEffect(() => {
     const note=noteBox[currentType][0]
+    const now = new Date();
     if (note) {
-      fetch(`/api/fsrs?cid=${note.card.cid}&now=` + new Date(), { method: "post" })
+      fetch(`/api/fsrs?cid=${note.card.cid}&now=${now.getTime()}&offset=${now.getTimezoneOffset()}`, { method: "post" })
         .then((res) => res.json())
         .then((res) => setSchedule(res));
       if(note.card&&note.card.state==='Review'){
-        const r = fsrs().get_retrievability(transferPrismaCardToCard(note.card),fixDate(new Date().toLocaleString("UTC",{timeZone:'UTC'})))
+        const r = fsrs().get_retrievability(note.card,fixDate(new Date().toLocaleString("UTC",{timeZone:'UTC'})))
         if(r){
           setDSR({
             D:note.card.difficulty,
