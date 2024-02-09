@@ -140,10 +140,7 @@ export function CardProvider({
       method: "put",
     }).then((res) => res.json())
     if (res.code === 0) {
-      handleChange({
-        ...res,
-        nextState:fixState(res.state)
-      },note);
+      handleChange(res,note);
       setOpen(false);
     }
     return res.code === 0?true: false;

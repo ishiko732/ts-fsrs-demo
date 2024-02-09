@@ -93,7 +93,7 @@ export async function updateCard(cid:number,now:Date,grade:Grade){
     })
     // await prisma.$transaction([op1, op2]);
     return {
-        nextState:recordItem.card.state,
+        nextState:fixState(recordItem.card.state),
         nextDue:recordItem.card.due,
         nid:(recordItem.card as Card&{nid:number}).nid
     };;
@@ -146,7 +146,7 @@ export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
         }
     })
     return {
-        nextState:recordItem.state,
+        nextState:fixState(recordItem.state),
         nextDue:recordItem.due,
         nid:cardByPrisma.note.nid as number
     };
