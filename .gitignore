@@ -35,3 +35,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vscode/
+
+yalc.lock
+.yalc/

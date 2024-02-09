@@ -1,35 +1,3 @@
-import {Card, Revlog, State} from "ts-fsrs";
-export declare module "ts-fsrs" {
-  interface CardPrisma extends Card {
-    cid: number;
-    due: Date;
-    stability: number;
-    difficulty: number;
-    elapsed_days: number;
-    scheduled_days: number;
-    reps: number;
-    lapses: number;
-    state: State;
-    last_review?: Date;
-    nid: string;
-    note: note;
-    logs?: revlog[];
-  }
-  interface RevlogPrisma extends Revlog {
-    lid: string;
-    cid: number;
-    state: State;
-    rating: Rating;
-    due: Date;
-    stability: number;
-    difficulty: number;
-    elapsed_days: number;
-    last_elapsed_days: number;
-    scheduled_days: number;
-    review:Date;
-  }
-}
-
 interface NodeData{
   question:string;
   answer:string;
@@ -57,15 +25,6 @@ interface NoteFormData{
   answer: string;
   extend: string;
 }
-
-export type StateBox = ExcludeReLearning<State>;
-// StateBox:
-// 0: New
-// 1: Learning
-// 2: Review
-
-type ExcludeReLearning<T> = Exclude<T, State.Relearning>;
-
 
 export type FSRSPutParams={
   uid: number;
