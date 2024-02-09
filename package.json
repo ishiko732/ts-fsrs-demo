@@ -24,7 +24,7 @@
     "next-themes": "^0.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "ts-fsrs": "3.3.1"
+    "ts-fsrs": "3.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",
