@@ -1,4 +1,4 @@
-import { Grade } from "ts-fsrs";
+import { Grade, fixState } from "ts-fsrs";
 import { getNoteByCid, getNoteByNid } from "./note";
 import prisma from "./prisma";
 import { findLastLogByCid } from "./log";
@@ -146,7 +146,7 @@ export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
         }
     })
     return {
-        nextState:recordItem.state,
+        nextState:fixState(recordItem.state),
         nextDue:recordItem.due,
         nid:cardByPrisma.note.nid as number
     };
