@@ -5,7 +5,6 @@ import { FSRSPutParams } from "@/types";
 import { decryptLingqKey, encryptLingqKey } from "@/vendor/lingq/crypt";
 import { isAdminOrSelf } from "@/app/(auth)/api/auth/[...nextauth]/session";
 
-
 export type ParametersType = {
     params: FSRSParameters
     uid: number,
@@ -17,7 +16,7 @@ export async function getFSRSParamsByUid(uid: number): Promise<ParametersType> {
     const params: Parameters[] = await prisma.
         $queryRaw<Parameters[]>`select * from Parameters where uid=${Number(uid)}`
     if (params.length === 0) {
-        throw new Error(`note(nid=${uid}) not found`)
+        throw new Error(`uid(uid=${uid}) not found`)
     }
     return processArrayParameters(params)
 }
