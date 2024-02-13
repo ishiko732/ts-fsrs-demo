@@ -5,7 +5,8 @@ import { findLastLogByCid } from "./log";
 import { getFSRS } from "./fsrs";
 import { getDuration, setSchedulerTime } from "./duration";
 import { Card, Note } from "@prisma/client";
-import { forgetAfterHandler, repeatAfterHandler, rollbackAfterHandler } from "@/vendor/fsrsToPrisma/handler";
+import { RecordLogPrisma, RepeatRecordLog, forgetAfterHandler, repeatAfterHandler, rollbackAfterHandler } from "@/vendor/fsrsToPrisma/handler";
+import { CardUpdatePayload } from "@/types";
 
 type Query={
     nid:number;
@@ -37,7 +38,10 @@ export async function findCardByCid(cid:number){
 }
 
 
-export async function schedulerCard(query:Partial<Query>,now:Date){
+export function schedulerCard(query:Partial<Query>,now:Date): Promise<RecordLogPrisma>;
+export function schedulerCard<T extends Grade>(query:Partial<Query>,now:Date,grade?:Grade): Promise<T extends Grade ? RepeatRecordLog : RecordLogPrisma>;
+
+export async function schedulerCard<T extends Grade>(query:Partial<Query>,now:Date,grade?:Grade):Promise<T extends Grade ? RepeatRecordLog : RecordLogPrisma>{
     if(!query.nid && !query.cid){
         throw new Error("nid or cid not found")
     }
@@ -54,41 +58,52 @@ export async function schedulerCard(query:Partial<Query>,now:Date){
     }
     await setSchedulerTime(cardByPrisma.cid, now)
     const repeatAfterHandlerExtendSuspended = repeatAfterHandler.bind(null,userParams.lapses)
-    return f.repeat(card,now,repeatAfterHandlerExtendSuspended)
+    const repeat = f.repeat(card,now,repeatAfterHandlerExtendSuspended)
+    if(grade){
+        return repeat[grade] as T extends Grade ? RepeatRecordLog : RecordLogPrisma
+    }else{
+        return repeat as T extends Grade ? RepeatRecordLog : RecordLogPrisma
+    }
 }
 
 
+
+function getUpdateCardPayloadByScheduler(recordItem:RepeatRecordLog,duration:number){
+    const payload: CardUpdatePayload = {
+        due:recordItem.card.due,
+        stability:recordItem.card.stability,
+        difficulty:recordItem.card.difficulty,
+        elapsed_days:recordItem.card.elapsed_days,
+        scheduled_days:recordItem.card.scheduled_days,
+        reps:recordItem.card.reps,
+        lapses:recordItem.card.lapses,
+        state:recordItem.card.state,
+        last_review:recordItem.card.last_review,
+        suspended:recordItem.card.suspended,
+        logs:{
+            create:{
+                grade:recordItem.log.rating,
+                state:recordItem.log.state,
+                due:recordItem.log.due,
+                stability:recordItem.log.stability,
+                difficulty:recordItem.log.difficulty,
+                elapsed_days:recordItem.log.elapsed_days,
+                last_elapsed_days:recordItem.log.last_elapsed_days,
+                scheduled_days:recordItem.log.scheduled_days,
+                review:recordItem.log.review,
+                duration: duration
+            },
+        }
+    }
+    return payload;
+}
+
 export async function updateCard(cid:number,now:Date,grade:Grade){
-    const [_,duration,data]=await Promise.all([getFSRS(cid,true),getDuration(cid,now),schedulerCard({cid},now)])
-    const recordItem = data[Number(grade) as Grade]
+    const [_,duration,recordItem]=await Promise.all([getFSRS(cid,true),getDuration(cid,now),schedulerCard({cid},now,Number(grade) as Grade)])
+    const payload = getUpdateCardPayloadByScheduler(recordItem,duration)
     await prisma.card.update({
         where:{cid:cid},
-        data:{
-            due:recordItem.card.due,
-            stability:recordItem.card.stability,
-            difficulty:recordItem.card.difficulty,
-            elapsed_days:recordItem.card.elapsed_days,
-            scheduled_days:recordItem.card.scheduled_days,
-            reps:recordItem.card.reps,
-            lapses:recordItem.card.lapses,
-            state:recordItem.card.state,
-            last_review:recordItem.card.last_review|| null,
-            suspended:recordItem.card.suspended,
-            logs:{
-                create:{
-                    grade:recordItem.log.rating,
-                    state:recordItem.log.state,
-                    due:recordItem.log.due,
-                    stability:recordItem.log.stability,
-                    difficulty:recordItem.log.difficulty,
-                    elapsed_days:recordItem.log.elapsed_days,
-                    last_elapsed_days:recordItem.log.last_elapsed_days,
-                    scheduled_days:recordItem.log.scheduled_days,
-                    review:recordItem.log.review,
-                    duration: duration
-                },
-            }
-        },
+        data:payload,
         include:{
             logs:true
         }

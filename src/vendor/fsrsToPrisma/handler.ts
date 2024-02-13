@@ -1,3 +1,4 @@
+import { CardUpdatePayload, CardUpdateRequired } from "@/types";
 import {
   State as PrismaState,
   Rating as PrismaRating,
@@ -37,6 +38,8 @@ export interface RepeatRecordLog {
   log: RevlogPrismaUnChecked;
 }
 
+export type RecordLogPrisma = { [key in Grade]: RepeatRecordLog };
+
 export function cardAfterHandler(card: Card): CardPrismaUnChecked {
   return {
     ...(card as unknown as CardPrismaUnChecked),
@@ -45,10 +48,8 @@ export function cardAfterHandler(card: Card): CardPrismaUnChecked {
   };
 }
 
-export function repeatAfterHandler(lapses:number,recordLog: RecordLog) {
-  const record: { [key in Grade]: RepeatRecordLog } = {} as {
-    [key in Grade]: RepeatRecordLog;
-  };
+export function repeatAfterHandler(lapses: number, recordLog: RecordLog) {
+  const record: RecordLogPrisma = {} as RecordLogPrisma;
   for (const grade of Grades) {
     // lapses use userParams.lapses
     const suspended =
@@ -91,7 +92,7 @@ export function rollbackAfterHandler(card: Card):Prisma.XOR<Prisma.CardUpdateInp
 
 export function forgetAfterHandler(
   recordLogItem: RecordLogItem
-): Prisma.XOR<Prisma.CardUpdateInput, Prisma.CardUncheckedUpdateInput> {
+): CardUpdatePayload {
   return {
     due: recordLogItem.card.due,
     stability: recordLogItem.card.stability,
@@ -114,6 +115,7 @@ export function forgetAfterHandler(
         last_elapsed_days: recordLogItem.log.last_elapsed_days,
         scheduled_days: recordLogItem.log.scheduled_days,
         review: recordLogItem.log.review,
+        duration: 0,
       },
     },
   };

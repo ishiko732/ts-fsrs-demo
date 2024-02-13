@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 interface NodeData{
   question:string;
   answer:string;
@@ -47,5 +49,44 @@ declare global {
       LINGQ_KEY: string;
       CRON_SECRET: string;
     }
+  }
+}
+
+type Required<T, K extends keyof T> = T & {
+  [key in K]-?: T[key];
+};
+
+export type CardUpdateRequired = Required<
+  Prisma.CardUncheckedUpdateInput,
+  | "due"
+  | "stability"
+  | "difficulty"
+  | "elapsed_days"
+  | "scheduled_days"
+  | "reps"
+  | "lapses"
+  | "state"
+  | "last_review"
+  | "suspended"
+>;
+
+export type RevlogUpdateRequired = Required<
+  Prisma.RevlogUncheckedUpdateInput,
+  | "grade"
+  | "state"
+  | "due"
+  | "stability"
+  | "difficulty"
+  | "elapsed_days"
+  | "last_elapsed_days"
+  | "scheduled_days"
+  | "review"
+  | "duration"
+>;
+
+
+export type CardUpdatePayload = CardUpdateRequired &{
+  logs:{
+    create:RevlogUpdateRequired
   }
 }
