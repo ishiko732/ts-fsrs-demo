@@ -3,6 +3,7 @@ import { Card } from "@prisma/client";
 import { fsrs } from "ts-fsrs";
 import getFormattedDate from "@/lib/format";
 import Forget from "./Forget";
+import Suspended from "./Suspended";
 type Props = {
   card: Card;
 };
@@ -24,7 +25,6 @@ export default async function FSRSMsg({ card }: Props) {
       <div className="text-sm opacity-60"> lapses:{card.lapses}</div>
       {card.last_review && (
         <div className="text-sm opacity-60">
-          {" "}
           Last Review:{getFormattedDate(card.last_review)}
         </div>
       )}
@@ -35,7 +35,13 @@ export default async function FSRSMsg({ card }: Props) {
           <div>R:{retrievability}</div>
         </div>
       )}
-      <Forget cid={card.cid} className="mt-4" />
+        <div className="text-sm opacity-60">
+          {`${`Suspended:${card.suspended}`}`}
+        </div>
+        <div className="mt-4 flex ">
+          <Forget cid={card.cid} />
+          <Suspended cid={card.cid} suspend={card.suspended} className="ml-4"/>
+        </div>
     </>
   );
 }

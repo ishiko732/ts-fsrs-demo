@@ -85,7 +85,7 @@ export async function exportLogsByUid(uid:number):Promise<ExportRevLog[]>{
                 select log.* from Revlog log
                 left join Card c on c.cid = log.cid
                 left join Note n on n.nid = c.nid
-                where n.uid=${Number(uid)} order by log.cid`
+                where n.uid=${Number(uid)} and c.suspended=${false} order by log.cid`
     return data.map(log => {
         return {
             card_id: log.cid,

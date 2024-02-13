@@ -19,6 +19,7 @@ export default async function FSRSSetting() {
         const w = JSON.parse(formData.get('w') as string)
         const enable_fuzz = formData.get('enable_fuzz') === 'on' ? true : false
         const card_limit = Number(Number(formData.get('card_limit')).toFixed(0))
+        const lapses = formData.get('lapses') ? Math.max(Number(formData.get('lapses')), 3) : 8
         const lingq_token = formData.get('lingq_token') ? String(formData.get('lingq_token')) : null
         const data = {
             request_retention,
@@ -27,6 +28,7 @@ export default async function FSRSSetting() {
             enable_fuzz,
             card_limit,
             uid,
+            lapses,
             lingq_token
         }
         await updateParameters(data);
@@ -72,6 +74,13 @@ export default async function FSRSSetting() {
                 aria-label="card limit"
                 defaultValue={params.card_limit} />
             <div className="label text-xs">Represents the maximum limit of new cards that can be learned today.</div>
+
+            <label htmlFor="lapses" className="pr-4">lapses:</label>
+            <input name="lapses" className="input input-bordered w-full"
+                type="number" min={3} step={1}
+                aria-label="lapses"
+                defaultValue={params.lapses} />
+            <div className="label text-xs">The card will automatically pause after reaching that number of lapses.</div>
 
             <label htmlFor="lingq_token" className="pr-4">lingq_token:<Link className="btn btn-xs" target="_blank" href={"https://www.lingq.com/accounts/apikey/"}>Get Key</Link></label>
             <input name="lingq_token" className="input input-bordered w-full"
