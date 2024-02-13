@@ -17,6 +17,7 @@ export type changeResponse = {
   code: number;
   nextState: State;
   nextDue?:Date;
+  suspended:boolean;
 }
 
 type CardContextProps = {
@@ -95,7 +96,7 @@ export function CardProvider({
   const [rollbackAble,setRollbackAble] = useState(false)
 
   const handleChange = function(res: changeResponse,note:Note & { card: Card }){
-    const {nextState,nextDue} = res;
+    const {nextState,nextDue,suspended} = res;
     if(nextDue){
       note.card.due = nextDue;
     }
@@ -106,7 +107,8 @@ export function CardProvider({
     updatedNoteBox = updatedNoteBox.toSorted((a,b)=>fixDate(a.card.due).getTime()-fixDate(b.card.due).getTime())
     startTransition(()=>{ 
       // state update is marked as a transition, a slow re-render did not freeze the user interface.
-      if (nextState !== State.Review) {
+      // if suspended, the card will not be added to the learning box
+      if (nextState !== State.Review && !suspended ) {
         if (currentType === State.Learning) {
           setNoteBox[currentType]([...updatedNoteBox,note!]);
           console.log([...updatedNoteBox,note!])

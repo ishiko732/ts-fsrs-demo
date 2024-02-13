@@ -20,6 +20,7 @@ export interface CardPrismaUnChecked
   nid?: number;
   last_review: Date | null;
   state: PrismaState;
+  suspended: boolean;
 }
 
 export interface RevlogPrismaUnChecked
@@ -44,17 +45,23 @@ export function cardAfterHandler(card: Card): CardPrismaUnChecked {
   };
 }
 
-export function repeatAfterHandler(recordLog: RecordLog) {
+export function repeatAfterHandler(lapses:number,recordLog: RecordLog) {
   const record: { [key in Grade]: RepeatRecordLog } = {} as {
     [key in Grade]: RepeatRecordLog;
   };
   for (const grade of Grades) {
+    // lapses use userParams.lapses
+    const suspended =
+      grade === Rating.Again &&
+      recordLog[grade].card.lapses > 0 &&
+      recordLog[grade].card.lapses % lapses == 0;
     record[grade] = {
       card: {
         ...(recordLog[grade].card as Card & { cid: number; nid: number }),
         due: recordLog[grade].card.due,
         state: State[recordLog[grade].card.state] as PrismaState,
         last_review: recordLog[grade].card.last_review ?? null,
+        suspended: suspended,
       },
       log: {
         ...(recordLog[grade].log as unknown as RevlogPrismaUnChecked),
@@ -78,6 +85,7 @@ export function rollbackAfterHandler(card: Card):Prisma.XOR<Prisma.CardUpdateInp
         lapses: card.lapses,
         state: State[card.state] as PrismaState,
         last_review: card.last_review ?? null,
+        suspended: false,
     };
 }
 
@@ -94,6 +102,7 @@ export function forgetAfterHandler(
     lapses: recordLogItem.card.lapses,
     state: State[recordLogItem.card.state] as PrismaState,
     last_review: recordLogItem.card.last_review ?? null,
+    suspended: false,
     logs: {
       create: {
         grade: Rating[recordLogItem.log.rating] as PrismaRating,

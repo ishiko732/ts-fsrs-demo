@@ -11,6 +11,7 @@ export type ParametersType = {
     uid: number,
     card_limit: number,
     lingq_token: string | null
+    lapses: number;
 }
 
 export async function getFSRSParamsByUid(uid: number): Promise<ParametersType> {
@@ -63,7 +64,8 @@ async function processArrayParameters(params: Parameters[]): Promise<ParametersT
         params: fsrsParameters,
         uid: params[0].uid,
         card_limit: params[0].card_limit ?? 50,
-        lingq_token: lingq_token
+        lingq_token: lingq_token,
+        lapses: Math.max(3,params[0].lapses)
     }
 }
 
@@ -95,19 +97,22 @@ export async function updateParameters(params: FSRSPutParams) {
     })
 }
 
-export function getFSRS(cid: number): Promise<FSRS>;
-export function getFSRS<T extends boolean>(cid: number, skip: T): Promise<T extends true ? null : FSRS>;
+export function getFSRS(cid: number): Promise<{f:FSRS,userParams:ParametersType}>;
+export function getFSRS<T extends boolean>(cid: number, skip: T): Promise<T extends true ? null : {f:FSRS,userParams:ParametersType}>;
 export async function getFSRS<T extends boolean = boolean>
     (cid:number,skip: T=false as T)
-    : Promise<T extends true ? null : FSRS> {
-    const {params,uid} = await getFSRSParamsByCid(cid)
-    const permission = await isAdminOrSelf(uid)
+    : Promise<T extends true ? null : {f:FSRS,userParams:ParametersType}> {
+    const userParams = await getFSRSParamsByCid(cid)
+    const permission = await isAdminOrSelf(userParams.uid)
     if(!permission){
         throw new Error("permission denied")
     }
     if(skip){
-        return null as T extends true ? null : FSRS;
+        return null as T extends true ? null : {f:FSRS,userParams:ParametersType};
     }
-    const f = fsrs(params) as FSRS
-    return f as T extends true ? null : FSRS;
+    const f = fsrs(userParams.params) as FSRS
+    return {
+        f,
+        userParams
+    } as T extends true ? null : {f:FSRS,userParams:ParametersType};
 }

@@ -38,6 +38,7 @@ model Card {
   last_review    DateTime?
   nid            Int       @unique
   note           Note      @relation(fields: [nid], references: [nid])
+  suspended      Boolean   @default(false)
   logs           Revlog[]
 }
 
@@ -48,6 +49,7 @@ model Parameters {
   w                 Json
   enable_fuzz       Boolean @default(false)
   card_limit        Int     @default(50)
+  lapses            Int     @default(8)
   user              User?
   lingq_token       String?
   lingq_counter     String?

@@ -46,14 +46,15 @@ export async function schedulerCard(query:Partial<Query>,now:Date){
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
-    const f = await getFSRS(cardByPrisma.cid)
+    const {f,userParams} = await getFSRS(cardByPrisma.cid)
     const card={
         ...cardByPrisma,
         nid:cardByPrisma.note.nid,
         last_review:cardByPrisma.last_review?cardByPrisma.last_review:undefined
     }
     await setSchedulerTime(cardByPrisma.cid, now)
-    return f.repeat(card,now,repeatAfterHandler)
+    const repeatAfterHandlerExtendSuspended = repeatAfterHandler.bind(null,userParams.lapses)
+    return f.repeat(card,now,repeatAfterHandlerExtendSuspended)
 }
 
 
@@ -72,6 +73,7 @@ export async function updateCard(cid:number,now:Date,grade:Grade){
             lapses:recordItem.card.lapses,
             state:recordItem.card.state,
             last_review:recordItem.card.last_review|| null,
+            suspended:recordItem.card.suspended,
             logs:{
                 create:{
                     grade:recordItem.log.rating,
@@ -95,6 +97,7 @@ export async function updateCard(cid:number,now:Date,grade:Grade){
     return {
         nextState:fixState(recordItem.card.state),
         nextDue:recordItem.card.due,
+        suspended:recordItem.card.suspended,
         nid:(recordItem.card as Card&{nid:number}).nid
     };;
 }
@@ -110,7 +113,7 @@ export async function rollbackCard(query:Partial<Query>){
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
-    const [log,f] =await Promise.all([findLastLogByCid(cardByPrisma.cid), getFSRS(cardByPrisma.cid)])
+    const [log,{f}] =await Promise.all([findLastLogByCid(cardByPrisma.cid), getFSRS(cardByPrisma.cid)])
     if(!log){  
         throw new Error("log not found")
     }
@@ -136,7 +139,7 @@ export async function rollbackCard(query:Partial<Query>){
 
 export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
     const cardByPrisma = await findCardByCid(cid);
-    const f = await getFSRS(cardByPrisma.cid)
+    const {f} = await getFSRS(cardByPrisma.cid)
     const recordItem = f.forget(cardByPrisma, now, reset_count,forgetAfterHandler)
     await prisma.card.update({
         where:{cid},
@@ -150,4 +153,14 @@ export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
         nextDue:recordItem.due,
         nid:cardByPrisma.note.nid as number
     };
+}
+
+
+export async function suspendCard(cid:number,suspended:boolean){
+    return await prisma.card.update({
+        where:{cid},
+        data:{
+            suspended
+        }
+    })
 }

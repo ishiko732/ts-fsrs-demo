@@ -38,6 +38,7 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
         card: {
           state,
           due: state === State.Review ? { lte: startOfDay } : undefined,
+          suspended: false
         },
         source: {
           equals: source
