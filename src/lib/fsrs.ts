@@ -91,6 +91,7 @@ export async function updateParameters(params: FSRSPutParams) {
             w: JSON.stringify(params.w),
             enable_fuzz: params.enable_fuzz,
             card_limit: params.card_limit,
+            lapses:params.lapses,
             lingq_token: token,
             lingq_counter: counter
         }
