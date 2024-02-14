@@ -1,6 +1,7 @@
 import { suspendCard } from "@/lib/card";
 import clsx from "clsx";
 import { revalidatePath } from "next/cache";
+import SuspendedSubmit from "../LoadingSubmitButton";
 
 type Props = {
   cid: Number;
@@ -19,9 +20,7 @@ export default function Suspended({ cid, suspend, className }: Props) {
 
   return (
     <form action={suspendAction} className="flex justify-center">
-      <button className={clsx("btn btn-outline", className)} type="submit">
-        Toggle Suspended
-      </button>
+      <SuspendedSubmit className={clsx("btn btn-outline",className)}>Toggle Suspended</SuspendedSubmit>
     </form>
   );
 }
