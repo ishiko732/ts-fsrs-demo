@@ -13,6 +13,7 @@ type Query={
     cid:number;
 }
 
+// BUG not exist note
 export async function findCardByNid(nid:number){
     const note=await getNoteByNid(nid)
     if(!note || !note.card){  

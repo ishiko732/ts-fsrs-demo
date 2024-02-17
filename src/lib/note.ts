@@ -1,7 +1,8 @@
 import prisma from "./prisma";
 import { ProgeigoNodeData, NodeData } from "@/types";
 import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
-import { Card, Note, Prisma } from "@prisma/client";
+import { Card, Note, Prisma, PrismaPromise, Revlog } from "@prisma/client";
+import { findLogsByCid } from "./log";
 
 
 export async function addNote(data: Partial<NodeData>&{uid:number}) {
@@ -133,4 +134,50 @@ export async function delNoteByQuestion(question: string) {
       nid: note.nid,
     },
   });
+}
+
+
+export async function deleteNoteByNid(nid: number) {
+  const note = await getNoteByNid(nid);
+  const revlog = await findLogsByCid(note?.card?.cid??-1)
+  prisma.$transaction([
+    prisma.revlog.deleteMany({
+      where: {
+        cid: note?.card?.cid?? -1,
+      },
+    }),
+    prisma.card.delete({
+      where: {
+        cid:note?.card?.cid ?? -1,
+      },
+    }),
+    prisma.note.delete({
+      where: {
+        nid,
+      }
+    }),
+  ]);
+  return {revlog,card:note?.card,note:note!}  as {revlog:Revlog[],card:Card|undefined,note:Note};
+}
+
+
+export async function restoreNoteByNid(note:Note,revlog: Revlog[],card?:Card) {
+  const restore:PrismaPromise<Note|Card|Prisma.BatchPayload>[]=[]
+  if(card){
+    restore.push(prisma.card.create({
+      data: card,
+    }))
+    if(revlog.length>0){
+      restore.push(prisma.revlog.createMany({
+        data: revlog
+      }))
+    }
+  }
+  restore.push(prisma.note.create({
+    data: {
+      ...note,
+      extend:note.extend as string,
+    },
+  }))
+  return prisma.$transaction(restore);
 }

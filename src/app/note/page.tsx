@@ -9,6 +9,8 @@ import { fsrs } from "ts-fsrs";
 import clsx from "clsx";
 import TableHeader from "@/components/note/NoteTableHead";
 import NotePagination from "@/components/note/NotePagination";
+import DeleteNoteButton from "@/components/dangerous/DeleteNode/DeleteNoteButton";
+import TableStopPropagationEvent from "@/components/note/TableStopEvent";
 
 function computerOrder(order: { field: string; type: "desc" | "asc" }) {
   let _order:
@@ -149,6 +151,7 @@ export default async function Page({
                       </td>
                       <td>{note.card.state}</td>
                       <td className="hidden sm:table-cell">{note.card.reps}</td>
+                      <TableStopPropagationEvent><DeleteNoteButton nid={note.nid} className="btn-xs"/></TableStopPropagationEvent>
                     </tr>
                   </Link>
                 ))}
