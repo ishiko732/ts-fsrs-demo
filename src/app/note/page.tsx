@@ -24,7 +24,7 @@ const getData = cache(async (start: number, searchWord: string) => {
   const notes = await getNotes({
     uid: Number(session.user.id),
     take: start === 0 ? undefined : start,
-    query: { question: { contains: searchWord } },
+    query: { question: { contains: searchWord },card : {suspended : false} },
     order: { card: { due: "desc" } },
   });
   notes.forEach((note) => {
