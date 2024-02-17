@@ -1,4 +1,4 @@
-import getFormattedDate from "@/lib/format";
+import DateItem from "@/lib/formatDate";
 import { getNotes } from "@/lib/note";
 import Link from "next/link";
 import React, { cache } from "react";
@@ -102,9 +102,8 @@ export default async function Page({
                                   <div className="text-sm">
                                     {`(${
                                       note.card.state
-                                    })next:${getFormattedDate(
-                                      note.card!.due.getTime()
-                                    )}`}
+                                    })next:`}
+                                    <DateItem date={note.card!.due}></DateItem>
                                   </div>
                                 </div>
                               </Link>
