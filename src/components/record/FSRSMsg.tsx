@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "@prisma/client";
 import { fsrs } from "ts-fsrs";
-import getFormattedDate from "@/lib/format";
+import DateItem from "@/lib/formatDate";
 import Forget from "./Forget";
 import Suspended from "./Suspended";
 type Props = {
@@ -19,13 +19,15 @@ export default async function FSRSMsg({ card }: Props) {
       <h2 className="flex justify-center text-lg">FSRS</h2>
       <div className="text-sm opacity-60">Current State:{card.state}</div>
       <div className="text-sm opacity-60">
-        Next Review:{getFormattedDate(card.due)}
+        Next Review:
+        <DateItem date={card.due}></DateItem>
       </div>
       <div className="text-sm opacity-60">reps:{card.reps}</div>
       <div className="text-sm opacity-60"> lapses:{card.lapses}</div>
       {card.last_review && (
         <div className="text-sm opacity-60">
-          Last Review:{getFormattedDate(card.last_review)}
+          Last Review:
+          <DateItem date={card.last_review}></DateItem>
         </div>
       )}
       {retrievability && (
