@@ -43,7 +43,7 @@ async function dynamicReactNodes() {
 export default async function Menu() {
   const menuItems = await dynamicReactNodes();
   return (
-    <div className="flex sm:block justify-center sm:fixed bottom-[3rem] right-[16%] m-4 p-4">
+    <div className="flex sm:block justify-center sm:fixed bottom-[3rem] right-[4rem] m-4 p-4 z-[999]">
       <ul className="flex-row sm:flex-col menu bg-base-200 rounded-box border-2  border-stone-500 dark:border-gray-600">
         {menuItems.map((item) => item)}
       </ul>

@@ -71,14 +71,21 @@ export async function initProgeigoNotes(uid:number,dates: ProgeigoNodeData[]) {
   return Promise.all(all);
 }
 
-export async function getNotes({uid,take,query,order}:{uid: number, take?: number, query?: Prisma.NoteWhereInput,order?:Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]}) {
+export async function getNotes({uid,take,query,order,skip}:{uid: number, take?: number, skip?:number,query?: Prisma.NoteWhereInput,order?:Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]}) {
     const notes = await prisma.note.findMany({ take: take, where: {
       uid,
       ...query
-    },orderBy:order,include: { card: true }});
+    },orderBy:order,skip,include: { card: true }});
     return notes as Array<Note & { card: Card}>;
 }
 
+export async function getNoteCount({uid,query}:{uid: number, query?: Prisma.NoteWhereInput}) {
+  const count = await prisma.note.count({where: {
+    uid,
+    ...query
+  }});
+  return count;
+}
 export async function getNoteByNid(nid: number) {
     const note = await prisma.note.findFirst({
         where: {

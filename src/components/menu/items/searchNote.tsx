@@ -11,7 +11,7 @@ function SearchNoteDialog({
   const { setQueryParam } = useQueryParams();
   const searchTextRef = useRef<HTMLInputElement>(null);
   function handleChange(value: string) {
-    setQueryParam("s", value);
+    setQueryParam([{ queryName: "s", value }]);
   }
 
   function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
