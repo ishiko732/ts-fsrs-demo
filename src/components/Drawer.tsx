@@ -1,4 +1,4 @@
-import FSRSSetting from "./settings/FSRSConfig";
+import FSRSSetting from "./settings/FSRSSetting";
 
 
 

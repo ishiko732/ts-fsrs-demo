@@ -1,19 +1,12 @@
-import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
-import { getFSRSParamsByUid, updateParameters } from "@/lib/fsrs";
+import { ParametersType, updateParameters } from "@/lib/fsrs";
 import ConfigButtonGroup from "./ConfigButtonGroup";
 import Link from "next/link";
+import CheckParams from "./CheckParams";
 
-export default async function FSRSSetting() {
-
-    const session = await getAuthSession();
-    if (!session?.user) {
-        return null;
-    }
-    const username = session.user?.name
-    const params = await getFSRSParamsByUid(Number(session.user.id))
-    const submit = async (formData: FormData) => {
+export default async function FSRSConfig(this: any, {uid,username,params}: {uid:number,username:string,params: ParametersType}) {
+    const submit = async (uid:number,formData: FormData) => {
         'use server';
-        const uid = Number(session.user!!.id)
+        // const uid = Number(session.user!!.id)
         const request_retention = Number(formData.get('request_retention'))
         const maximum_interval = Number(Number(formData.get('maximum_interval')).toFixed(0))
         const w = JSON.parse(formData.get('w') as string)
@@ -34,8 +27,9 @@ export default async function FSRSSetting() {
         await updateParameters(data);
         return true;
     }
-
-    return <form action={submit}>
+    const method = submit.bind(null, uid)
+    return <form action={method}>
+        <CheckParams />
         <h1 className="divider flex justify-center items-center text-md">Settings({username})</h1>
         <div>
             <label htmlFor="request_retention" className="pr-4">request_retention:</label>
