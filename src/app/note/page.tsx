@@ -103,7 +103,7 @@ export default async function Page({
                                     {`(${
                                       note.card.state
                                     })next:${getFormattedDate(
-                                      note.card!.due
+                                      note.card!.due.getTime()
                                     )}`}
                                   </div>
                                 </div>

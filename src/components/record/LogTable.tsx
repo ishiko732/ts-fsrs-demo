@@ -25,7 +25,7 @@ async function LogTable({ logs }: Props) {
           {logs.map((log, index) => (
             <tr key={log.lid}>
               <th>{index + 1}</th>
-              <td>{getFormattedDate(log.review)}</td>
+              <td>{getFormattedDate(log.review.getTime())}</td>
               <td>{log.state}</td>
               <td>{log.grade}</td>
               <td className="hidden sm:table-cell">{log.elapsed_days}</td>

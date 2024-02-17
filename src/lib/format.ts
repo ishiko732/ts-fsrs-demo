@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-export default function getFormattedDate(date: Date | string): string {
+export default function getFormattedDate(date: number): string {
   try {
     const lang = headers().get("accept-language")?.split(",")[0].toUpperCase()!;
     return new Intl.DateTimeFormat(lang, {
