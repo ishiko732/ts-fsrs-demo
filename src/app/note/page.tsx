@@ -49,23 +49,26 @@ const getData = cache(
       return {
         notes: [],
         pageCount: 0,
+        noteCount: 0,
       };
     }
-    const noteCount = await getNoteCount({
+    const _noteCount = getNoteCount({
       uid: Number(session.user.id),
       query: { question: { contains: searchWord } },
     });
-    const notes = await getNotes({
+    const _notes = getNotes({
       uid: Number(session.user.id),
       take: start === 0 ? undefined : start,
       skip: 500 * (pageIndex - 1),
       query: { question: { contains: searchWord } },
       order: computerOrder(order),
     });
+    const [noteCount, notes] = await Promise.all([_noteCount, _notes]);
     const pageCount = Math.ceil(noteCount / 500);
     return {
       notes: notes as Array<Note & { card: Card }>,
       pageCount,
+      noteCount,
     };
   }
 );
@@ -86,10 +89,15 @@ export default async function Page({
   const orderField = searchParams["o"] ? searchParams["o"] : "due";
   const orderType = searchParams["ot"] ? searchParams["ot"] : "desc";
   const pageIndex = searchParams["page"] ? Number(searchParams["page"]) : 1;
-  const { notes, pageCount } = await getData(take, searchWord, pageIndex, {
-    field: orderField,
-    type: orderType,
-  });
+  const { notes, pageCount, noteCount } = await getData(
+    take,
+    searchWord,
+    pageIndex,
+    {
+      field: orderField,
+      type: orderType,
+    }
+  );
   const f = fsrs();
   const now = new Date();
   return (
@@ -134,7 +142,7 @@ export default async function Page({
                         {note.card.stability.toFixed(2)}
                       </td>
                       <td className="hidden sm:table-cell">
-                        {f.get_retrievability(note.card, now)??'/'}
+                        {f.get_retrievability(note.card, now) ?? "/"}
                       </td>
                       <td>
                         <DateItem date={note.card.due}></DateItem>
@@ -149,7 +157,11 @@ export default async function Page({
                 <TableHeader />
               </tfoot>
             </table>
-            <NotePagination cur={pageIndex} count={pageCount} />
+            <NotePagination
+              cur={pageIndex}
+              count={pageCount}
+              total={noteCount}
+            />
           </div>
         </div>
       </div>
