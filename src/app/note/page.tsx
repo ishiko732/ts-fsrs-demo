@@ -1,16 +1,11 @@
-import DateItem from "@/lib/formatDate";
 import { getNoteCount, getNotes } from "@/lib/note";
-import Link from "next/link";
 import React, { cache } from "react";
 import { Card, Note, Prisma } from "@prisma/client";
 import Menu from "@/components/menu";
 import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
-import { fsrs } from "ts-fsrs";
-import clsx from "clsx";
 import TableHeader from "@/components/note/NoteTableHead";
 import NotePagination from "@/components/note/NotePagination";
-import DeleteNoteButton from "@/components/dangerous/DeleteNode/DeleteNoteButton";
-import TableStopPropagationEvent from "@/components/note/TableStopEvent";
+import NoteTableBody from "@/components/note/NoteTableBody";
 
 function computerOrder(order: { field: string; type: "desc" | "asc" }) {
   let _order:
@@ -104,8 +99,6 @@ export default async function Page({
     },
     deleted
   );
-  const f = fsrs();
-  const now = new Date();
   return (
     <div className="bg-base-200 h-screen">
       <div className="w-full sm:flex sm:flex-wrap sm:justify-center bg-base-200">
@@ -117,54 +110,7 @@ export default async function Page({
                 <TableHeader />
               </thead>
               <tbody>
-                {notes.map((note: Note & { card: Card }, i: number) => (
-                  <Link
-                    legacyBehavior
-                    href={note.deleted ? `/note/${note.nid}?deleted=1` : `/note/${note.nid}`}
-                    key={note.nid}
-                  >
-                    <tr
-                      className={clsx(
-                        "hover",
-                        "cursor-pointer",
-                        note.card.suspended ? "bg-yellow-300" : ""
-                      )}
-                    >
-                      <th className="hidden sm:table-cell">
-                        {(pageIndex - 1) * take + i + 1}
-                      </th>
-                      <td>{note.question}</td>
-                      <td className="hidden sm:table-cell">{note.answer}</td>
-                      <td
-                        className="hidden sm:table-cell"
-                        title={`${note.source}${note.sourceId ?? ""}`}
-                      >
-                        {note.source}
-                      </td>
-                      <td className="hidden sm:table-cell">
-                        {note.card.difficulty.toFixed(2)}
-                      </td>
-                      <td className="hidden sm:table-cell">
-                        {note.card.stability.toFixed(2)}
-                      </td>
-                      <td className="hidden sm:table-cell">
-                        {f.get_retrievability(note.card, now) ?? "/"}
-                      </td>
-                      <td>
-                        <DateItem date={note.card.due}></DateItem>
-                      </td>
-                      <td>{note.card.state}</td>
-                      <td className="hidden sm:table-cell">{note.card.reps}</td>
-                      <TableStopPropagationEvent>
-                        <DeleteNoteButton
-                          nid={note.nid}
-                          cid={note.card.cid}
-                          deleted={note.deleted}
-                          className="btn-xs" />
-                      </TableStopPropagationEvent>
-                    </tr>
-                  </Link>
-                ))}
+               <NoteTableBody pageIndex={pageIndex} take={take} notes={notes}/>
               </tbody>
               <tfoot>
                 <TableHeader />
