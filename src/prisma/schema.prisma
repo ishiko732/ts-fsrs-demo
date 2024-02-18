@@ -22,6 +22,7 @@ model Revlog {
   review            DateTime
   card              Card     @relation(fields: [cid], references: [cid])
   duration          Int      @default(0)
+  deleted           Boolean  @default(false)
   @@index([cid])
 }
 
@@ -40,6 +41,7 @@ model Card {
   note           Note      @relation(fields: [nid], references: [nid])
   suspended      Boolean   @default(false)
   logs           Revlog[]
+  deleted        Boolean   @default(false)
 }
 
 model Parameters {
@@ -76,6 +78,7 @@ model Note {
   extend   Json
   card     Card?
   user     User?  @relation(fields: [uid], references: [uid])
+  deleted  Boolean @default(false)
   @@index([uid])
   @@index([sourceId,source])
 }

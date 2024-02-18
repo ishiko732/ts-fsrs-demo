@@ -1,14 +1,11 @@
-import DateItem from "@/lib/formatDate";
 import { getNoteCount, getNotes } from "@/lib/note";
-import Link from "next/link";
 import React, { cache } from "react";
 import { Card, Note, Prisma } from "@prisma/client";
 import Menu from "@/components/menu";
 import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
-import { fsrs } from "ts-fsrs";
-import clsx from "clsx";
 import TableHeader from "@/components/note/NoteTableHead";
 import NotePagination from "@/components/note/NotePagination";
+import NoteTableBody from "@/components/note/NoteTableBody";
 
 function computerOrder(order: { field: string; type: "desc" | "asc" }) {
   let _order:
@@ -42,7 +39,8 @@ const getData = cache(
     start: number,
     searchWord: string,
     pageIndex: number = 1,
-    order: { field: string; type: "desc" | "asc" }
+    order: { field: string; type: "desc" | "asc" },
+    deleted: '1' | '0' = '0'
   ) => {
     const session = await getAuthSession();
     if (!session?.user?.id) {
@@ -54,13 +52,13 @@ const getData = cache(
     }
     const _noteCount = getNoteCount({
       uid: Number(session.user.id),
-      query: { question: { contains: searchWord } },
+      query: { question: { contains: searchWord }, deleted: deleted === '1' },
     });
     const _notes = getNotes({
       uid: Number(session.user.id),
       take: start === 0 ? undefined : start,
       skip: 500 * (pageIndex - 1),
-      query: { question: { contains: searchWord } },
+      query: { question: { contains: searchWord }, deleted: deleted === '1' },
       order: computerOrder(order),
     });
     const [noteCount, notes] = await Promise.all([_noteCount, _notes]);
@@ -82,6 +80,7 @@ export default async function Page({
     o: string;
     ot: "desc" | "asc";
     page: string;
+    deleted: '1' | '0';
   };
 }) {
   const take = searchParams["take"] ? Number(searchParams["take"]) : 500;
@@ -89,6 +88,7 @@ export default async function Page({
   const orderField = searchParams["o"] ? searchParams["o"] : "due";
   const orderType = searchParams["ot"] ? searchParams["ot"] : "desc";
   const pageIndex = searchParams["page"] ? Number(searchParams["page"]) : 1;
+  const deleted = searchParams["deleted"] ? searchParams["deleted"] : "0";
   const { notes, pageCount, noteCount } = await getData(
     take,
     searchWord,
@@ -96,10 +96,9 @@ export default async function Page({
     {
       field: orderField,
       type: orderType,
-    }
+    },
+    deleted
   );
-  const f = fsrs();
-  const now = new Date();
   return (
     <div className="bg-base-200 h-screen">
       <div className="w-full sm:flex sm:flex-wrap sm:justify-center bg-base-200">
@@ -111,47 +110,7 @@ export default async function Page({
                 <TableHeader />
               </thead>
               <tbody>
-                {notes.map((note: Note & { card: Card }, i: number) => (
-                  <Link
-                    legacyBehavior
-                    href={`/note/${note.nid}`}
-                    key={note.nid}
-                  >
-                    <tr
-                      className={clsx(
-                        "hover",
-                        "cursor-pointer",
-                        note.card.suspended ? "bg-yellow-300" : ""
-                      )}
-                    >
-                      <th className="hidden sm:table-cell">
-                        {(pageIndex - 1) * take + i + 1}
-                      </th>
-                      <td>{note.question}</td>
-                      <td className="hidden sm:table-cell">{note.answer}</td>
-                      <td
-                        className="hidden sm:table-cell"
-                        title={`${note.source}${note.sourceId ?? ""}`}
-                      >
-                        {note.source}
-                      </td>
-                      <td className="hidden sm:table-cell">
-                        {note.card.difficulty.toFixed(2)}
-                      </td>
-                      <td className="hidden sm:table-cell">
-                        {note.card.stability.toFixed(2)}
-                      </td>
-                      <td className="hidden sm:table-cell">
-                        {f.get_retrievability(note.card, now) ?? "/"}
-                      </td>
-                      <td>
-                        <DateItem date={note.card.due}></DateItem>
-                      </td>
-                      <td>{note.card.state}</td>
-                      <td className="hidden sm:table-cell">{note.card.reps}</td>
-                    </tr>
-                  </Link>
-                ))}
+               <NoteTableBody pageIndex={pageIndex} take={take} notes={notes}/>
               </tbody>
               <tfoot>
                 <TableHeader />

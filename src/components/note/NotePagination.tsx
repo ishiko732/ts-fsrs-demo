@@ -27,6 +27,7 @@ export default function NotePagination({
             key={`note-pagination-${i}`}
             aria-label={`${i}`}
             checked={i === cur}
+            readOnly
             onClick={() => handleClick(i)}
           />
         ))}

@@ -52,6 +52,7 @@ export default function TableHeader() {
         <td onClick={handleClick} className="hover cursor-pointer hidden sm:table-cell">
           Reps {diplayArrow(queryParams, "reps")}
         </td>
+        <td>Operation</td>
       </tr>
     </>
   );
