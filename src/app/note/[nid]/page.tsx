@@ -12,17 +12,21 @@ type Props = {
   params: {
     nid: string;
   };
+  searchParams: {
+    deleted: '1' | '0';
+  }
 };
 
-const getData = cache(async (nid: string) => {
-  const note = (await getNoteByNid(Number(nid))) as
+const getData = cache(async (nid: string, deleted: boolean) => {
+  const note = (await getNoteByNid(Number(nid), deleted)) as
     | SourceNote
     | null;
   return note;
 });
 
-export default async function Page({ params }: Props) {
-  const note = await getData(params.nid);
+export default async function Page({ params, searchParams }: Props) {
+  const deleted = searchParams["deleted"] === '1';
+  const note = await getData(params.nid, deleted);
   if (!note) {
     notFound();
   }

@@ -44,7 +44,8 @@ const getData = cache(
     start: number,
     searchWord: string,
     pageIndex: number = 1,
-    order: { field: string; type: "desc" | "asc" }
+    order: { field: string; type: "desc" | "asc" },
+    deleted: '1' | '0' = '0'
   ) => {
     const session = await getAuthSession();
     if (!session?.user?.id) {
@@ -54,15 +55,16 @@ const getData = cache(
         noteCount: 0,
       };
     }
+    console.log(deleted)
     const _noteCount = getNoteCount({
       uid: Number(session.user.id),
-      query: { question: { contains: searchWord } },
+      query: { question: { contains: searchWord }, deleted: deleted === '1' },
     });
     const _notes = getNotes({
       uid: Number(session.user.id),
       take: start === 0 ? undefined : start,
       skip: 500 * (pageIndex - 1),
-      query: { question: { contains: searchWord } },
+      query: { question: { contains: searchWord }, deleted: deleted === '1' },
       order: computerOrder(order),
     });
     const [noteCount, notes] = await Promise.all([_noteCount, _notes]);
@@ -84,6 +86,7 @@ export default async function Page({
     o: string;
     ot: "desc" | "asc";
     page: string;
+    deleted: '1' | '0';
   };
 }) {
   const take = searchParams["take"] ? Number(searchParams["take"]) : 500;
@@ -91,6 +94,7 @@ export default async function Page({
   const orderField = searchParams["o"] ? searchParams["o"] : "due";
   const orderType = searchParams["ot"] ? searchParams["ot"] : "desc";
   const pageIndex = searchParams["page"] ? Number(searchParams["page"]) : 1;
+  const deleted = searchParams["deleted"] ? searchParams["deleted"] : "0";
   const { notes, pageCount, noteCount } = await getData(
     take,
     searchWord,
@@ -98,7 +102,8 @@ export default async function Page({
     {
       field: orderField,
       type: orderType,
-    }
+    },
+    deleted
   );
   const f = fsrs();
   const now = new Date();
@@ -116,7 +121,7 @@ export default async function Page({
                 {notes.map((note: Note & { card: Card }, i: number) => (
                   <Link
                     legacyBehavior
-                    href={`/note/${note.nid}`}
+                    href={note.deleted ? `/note/${note.nid}?deleted=1` : `/note/${note.nid}`}
                     key={note.nid}
                   >
                     <tr
@@ -151,7 +156,13 @@ export default async function Page({
                       </td>
                       <td>{note.card.state}</td>
                       <td className="hidden sm:table-cell">{note.card.reps}</td>
-                      <TableStopPropagationEvent><DeleteNoteButton nid={note.nid} className="btn-xs"/></TableStopPropagationEvent>
+                      <TableStopPropagationEvent>
+                        <DeleteNoteButton
+                          nid={note.nid}
+                          cid={note.card.cid}
+                          deleted={note.deleted}
+                          className="btn-xs" />
+                      </TableStopPropagationEvent>
                     </tr>
                   </Link>
                 ))}

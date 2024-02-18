@@ -1,14 +1,17 @@
 import clsx from "clsx";
 import DeleteSubmit from "./DeleteSubmit";
 import { deleteNoteByNid, restoreNoteByNid } from "@/lib/note";
-import { Card, Note, Revlog } from "@prisma/client";
 
 type Props = {
   nid: number;
+  cid?: number;
+  deleted: boolean;
 } & React.ComponentProps<"button">;
 
 export default async function DeleteNoteButton({
   nid,
+  cid,
+  deleted,
   ...props
 }: Props) {
   const action = async (nid:number) => {
@@ -18,9 +21,9 @@ export default async function DeleteNoteButton({
   }
   const actionByNid=action.bind(null,nid);
 
-  const restoreAction= async (note:Note,revlog: Revlog[],card?:Card)=>{
+  const restoreAction= async (nid:number,cid?:number)=>{
     'use server';
-    const res=  await restoreNoteByNid(note,revlog,card);
+    const res=  await restoreNoteByNid(nid,cid);
     console.log(res)
     return true;
   }
@@ -28,6 +31,9 @@ export default async function DeleteNoteButton({
     <>
       <DeleteSubmit
         {...props}
+        nid={nid}
+        cid={cid}
+        deleted={deleted}
         action={actionByNid}
         restoreAction={restoreAction}
         className={clsx("btn", props.className)}
