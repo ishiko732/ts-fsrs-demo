@@ -55,7 +55,6 @@ const getData = cache(
         noteCount: 0,
       };
     }
-    console.log(deleted)
     const _noteCount = getNoteCount({
       uid: Number(session.user.id),
       query: { question: { contains: searchWord }, deleted: deleted === '1' },
