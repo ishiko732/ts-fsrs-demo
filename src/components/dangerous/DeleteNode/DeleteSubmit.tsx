@@ -19,13 +19,16 @@ type Props = {
 export default function DeleteSubmit({
   action,
   restoreAction,
+  nid,
+  cid,
+  deleted,
   ...props
 }: Props) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{
     nid: number;
     cid?: number;
-  } | undefined>(props.deleted ? { nid: props.nid, cid: props.cid } : undefined);
+  } | undefined>(deleted ? { nid, cid } : undefined);
   return (
     <button
       {...props}
