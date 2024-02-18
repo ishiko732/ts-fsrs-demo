@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import DeleteSubmit from "./DeleteSubmit";
 import { deleteNoteByNid, restoreNoteByNid } from "@/lib/note";
+import { revalidatePath } from "next/cache";
 
 type Props = {
   nid: number;
@@ -14,17 +15,18 @@ export default async function DeleteNoteButton({
   deleted,
   ...props
 }: Props) {
-  const action = async (nid:number) => {
+  const action = async (nid: number) => {
     'use server';
-    const res=  await deleteNoteByNid(nid);
+    const res = await deleteNoteByNid(nid);
+    revalidatePath(`/note/${res.nid}`);
     return res;
   }
-  const actionByNid=action.bind(null,nid);
+  const actionByNid = action.bind(null, nid);
 
-  const restoreAction= async (nid:number,cid?:number)=>{
+  const restoreAction = async (nid: number, cid?: number) => {
     'use server';
-    const res=  await restoreNoteByNid(nid,cid);
-    console.log(res)
+    const res = await restoreNoteByNid(nid, cid);
+    revalidatePath(`/note/${nid}`);
     return true;
   }
   return (
