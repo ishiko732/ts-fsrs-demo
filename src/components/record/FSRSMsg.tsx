@@ -15,35 +15,36 @@ export default async function FSRSMsg({ card }: Props) {
     new Date()
   );
   return (
-    <>
-      <h2 className="flex justify-center text-lg">FSRS</h2>
-      <div className="text-sm opacity-60">Current State:{card.state}</div>
-      <div className="text-sm opacity-60">
-        Next Review:
-        <DateItem date={card.due}></DateItem>
+    <div className="flex justify-center flex-col mx-auto text-sm text-left items-center">
+        <p className="w-80">Current State:{card.state}</p>
+        <p className="w-80">
+          Next Review:
+          <DateItem date={card.due}></DateItem>
+        </p>
+        {card.last_review && (
+          <p className="w-80">
+            Last Review:
+            <DateItem date={card.last_review}></DateItem>
+          </p>
+        )}
+        <p className="w-80">elapsed:{card.elapsed_days}days</p>
+        <p className="w-80">scheduled:{card.scheduled_days}days</p>
+        <p className="w-80">reps:{card.reps}</p>
+        <p className="w-80">lapses:{card.lapses}</p>
+        <p className="w-80">
+          {`Suspended:${card.suspended}`}
+        </p>
+        {retrievability && (
+          <div>
+            <div>D:{card.difficulty.toFixed(2)}</div>
+            <div>S:{card.stability.toFixed(2)}</div>
+            <div>R:{retrievability}</div>
+          </div>
+        )}
+      <div className="mt-4 flex py-4">
+        <Forget cid={card.cid} />
+        <Suspended cid={card.cid} suspend={card.suspended} className="ml-2" />
       </div>
-      <div className="text-sm opacity-60">reps:{card.reps}</div>
-      <div className="text-sm opacity-60"> lapses:{card.lapses}</div>
-      {card.last_review && (
-        <div className="text-sm opacity-60">
-          Last Review:
-          <DateItem date={card.last_review}></DateItem>
-        </div>
-      )}
-      {retrievability && (
-        <div className="text-sm opacity-60">
-          <div>D:{card.difficulty.toFixed(2)}</div>
-          <div>S:{card.stability.toFixed(2)}</div>
-          <div>R:{retrievability}</div>
-        </div>
-      )}
-        <div className="text-sm opacity-60">
-          {`${`Suspended:${card.suspended}`}`}
-        </div>
-        <div className="mt-4 flex ">
-          <Forget cid={card.cid} />
-          <Suspended cid={card.cid} suspend={card.suspended} className="ml-4"/>
-        </div>
-    </>
+    </div>
   );
 }

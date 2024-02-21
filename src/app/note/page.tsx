@@ -36,7 +36,7 @@ function computerOrder(order: { field: string; type: "desc" | "asc" }) {
 
 const getData = cache(
   async (
-    start: number,
+    take: number,
     searchWord: string,
     pageIndex: number = 1,
     order: { field: string; type: "desc" | "asc" },
@@ -56,13 +56,13 @@ const getData = cache(
     });
     const _notes = getNotes({
       uid: Number(session.user.id),
-      take: start === 0 ? undefined : start,
-      skip: 500 * (pageIndex - 1),
+      take: take === 0 ? undefined : take,
+      skip: take * (pageIndex - 1),
       query: { question: { contains: searchWord }, deleted: deleted === '1' },
       order: computerOrder(order),
     });
     const [noteCount, notes] = await Promise.all([_noteCount, _notes]);
-    const pageCount = Math.ceil(noteCount / 500);
+    const pageCount = Math.ceil(noteCount / take);
     return {
       notes: notes as Array<Note & { card: Card }>,
       pageCount,
@@ -83,7 +83,7 @@ export default async function Page({
     deleted: '1' | '0';
   };
 }) {
-  const take = searchParams["take"] ? Number(searchParams["take"]) : 500;
+  const take = searchParams["take"] ? Number(searchParams["take"]) : 100;
   const searchWord = searchParams["s"] ? searchParams["s"] : "";
   const orderField = searchParams["o"] ? searchParams["o"] : "due";
   const orderType = searchParams["ot"] ? searchParams["ot"] : "desc";
@@ -103,7 +103,7 @@ export default async function Page({
     <div className="bg-base-200 h-screen">
       <div className="w-full sm:flex sm:flex-wrap sm:justify-center bg-base-200">
         <Menu />
-        <div className="w-3/4 sm:flex sm:flex-wrap sm:justify-center pt-8">
+        <div className="w-full sm:w-3/4 sm:flex sm:flex-wrap sm:justify-center pt-8">
           <div className="overflow-x-auto">
             <table className="table table-xs sm:table-sm table-zebra">
               <thead>

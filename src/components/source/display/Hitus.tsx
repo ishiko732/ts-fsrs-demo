@@ -12,7 +12,7 @@ export default async function HitsuDisplay({ note }: { note: SourceNote }) {
   const 発音 = extend.発音 as string | undefined;
   const ビデオ = extend.ビデオ as string | undefined;
   return (
-    <div className="item-center sm:w-3/4">
+    <div className="item-center w-full">
       <div className="w-full">
         <span className="flex justify-center items-center text-2xl">
           {note.question}
@@ -23,7 +23,7 @@ export default async function HitsuDisplay({ note }: { note: SourceNote }) {
           {品詞 && <span>{`${品詞}`}</span>}
         </div>
       </div>
-      <div className="pt-4">
+      <div className="pt-4 m-4">
         <div>意味:{note.answer}</div>
         {例文 && <div>例文:{例文}</div>}
         {例文訳 && <div>例文訳:{例文訳}</div>}

@@ -8,7 +8,7 @@ type Props = {
 
 async function LogTable({ logs }: Props) {
   return (
-    <div className="mt-2 rounded-lg shadow-md overflow-x-auto w-full sm:w-1/2 h-1/2 ">
+    <div className="mt-2 rounded-lg shadow-md overflow-x-auto w-full">
       <table className="table table-zebra max-h-1/2">
         <thead>
           <tr>

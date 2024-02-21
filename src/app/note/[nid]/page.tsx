@@ -8,6 +8,7 @@ import LogTable from "@/components/record/LogTable";
 import { isSelf } from "@/auth/api/auth/[...nextauth]/session";
 import { SourceNote } from "@/components/source";
 import DisplayMsg from "@/components/source/display";
+import TabConfig from "@/components/record/TabConfig";
 type Props = {
   params: {
     nid: string;
@@ -35,21 +36,21 @@ export default async function Page({ params, searchParams }: Props) {
     redirect("/denied");
   }
   const logs = await findLogsByCid(note.card.cid);
+
+  const tabs = [];
+  tabs.push({ tabName: "Note", component: <DisplayMsg note={note} /> })
+  if (logs && logs.length > 0) {
+    tabs.push({ tabName: "Logs", component: <LogTable logs={logs} /> })
+  }
+  tabs.push({ tabName: "FSRS", component: <FSRSMsg card={note.card} /> })
+
+
   return (
-    <div className="">
-      <div className="flex flex-col justify-center w-full h-screen items-center overflow-y-auto py-4">
-        <div className="overflow-y-auto p-4 sm:w-1/2 max-h-1/2 rounded-lg shadow-md sm:flex">
-          <DisplayMsg note={note} />
-          <div className="py-4 sm:py-0 divider divider-horizontal"></div>
-          <div className="w-full sm:w-1/4 sm:flex sm:flex-col">
-            <FSRSMsg card={note.card} />
-          </div>
-        </div>
-        {logs && logs.length > 0 && <LogTable logs={logs} />}
-        <div className="py-4">
-          <GoBack />
-        </div>
+    <>
+      <TabConfig tabNodes={tabs} defaultIndex={0} />
+      <div className="flex justify-center py-4">
+        <GoBack />
       </div>
-    </div>
+    </>
   );
 }

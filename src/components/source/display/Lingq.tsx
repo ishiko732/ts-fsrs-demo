@@ -8,7 +8,7 @@ export default async function DisplayMsg({ note }: { note: SourceNote }) {
     const transliteration = extend.transliteration
     const hints = extend.hints;
     return (
-        <div className="item-center sm:w-3/4">
+        <div className="item-center w-full">
             <div className="w-full">
                 <span className="flex justify-center items-center text-2xl">
                     {note.question}
@@ -23,7 +23,7 @@ export default async function DisplayMsg({ note }: { note: SourceNote }) {
                     <div><HighlightedWord text={fragment} word={note.question} /></div>
                 </div>
             </div>
-            <div className="pt-4">
+            <div className="pt-4 m-4">
                 <ul>
                     {
                         hints?.map((hint) =>
