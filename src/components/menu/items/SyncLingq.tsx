@@ -15,9 +15,7 @@ async function syncLingqAction() {
         uid: params.uid
     }
     const langs = await getLingqLanguageCode(syncUser)
-    const syncs = langs.map(async (lang) => syncLingqs(syncUser, lang))
-    await Promise.all(syncs)
-    return true
+    return langs
 };
 
 async function SyncLingq() {

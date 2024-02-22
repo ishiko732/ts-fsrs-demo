@@ -4,20 +4,34 @@ import { useState } from "react";
 export default function SyncSubmitButton({
   action,
 }: {
-  action: () => Promise<boolean>;
+  action: () => Promise<string[]>;
 }) {
   const [loading, setLoading] = useState(false);
+
+  const handleSyncHandler = async () => {
+    setLoading(true);
+    const ret = await action();
+    if (ret.length > 0) {
+      // /api/sync/lingq/manual?lang=ja&page=1&pageSize=25
+      for (let lang of ret) {
+        let page = 0;
+        let data = null;
+        do {
+          page++;
+          data = await fetch(
+            `/api/sync/lingq/manual?lang=${lang}&page=${page}&pageSize=25`
+          ).then((res) => res.json());
+          if (data.nonExistCount === 0) {
+            break;
+          }
+        } while (data.next);
+      }
+    }
+    setLoading(false);
+    ret && window.location.reload();
+  };
   return (
-    <button
-      disabled={loading}
-      type="submit"
-      onClick={async () => {
-        setLoading(true);
-        const ret = await action();
-        setLoading(false);
-        ret && window.location.reload();
-      }}
-    >
+    <button disabled={loading} type="submit" onClick={handleSyncHandler}>
       {loading ? (
         <span className="flex mx-auto h-6 loading loading-spinner loading-sm"></span>
       ) : (
