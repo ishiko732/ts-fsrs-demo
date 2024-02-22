@@ -34,7 +34,11 @@ export async function GET(request: NextRequest) {
     Array.from(users).forEach(async (user: SyncWaitUser) => {
         if (user.langs.length > 0) {
             user.langs.forEach((lang) => {
-                promise.push(syncLingqs(user, lang))
+                try{
+                    promise.push(syncLingqs(user, lang))
+                }catch(e){
+                    console.error(e)
+                }
             })
         }
     })
