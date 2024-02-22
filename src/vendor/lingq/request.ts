@@ -52,9 +52,27 @@ export async function getLingqContext({ language, page_size, page, token }: { la
     return request<Contexts>('v2/contexts/', token, { body: JSON.stringify({ language, page_size, page }), method: 'GET' });
 }
 
-
-export async function getLingqs({ language, page_size, page, token }: { language: languageCode, page_size?: number, page?: number, token: string }): Promise<Lingqs> {
-    return request<Lingqs>(`v3/${language}/cards/`, token, { body: JSON.stringify({ page_size, page }), method: 'GET' });
+export async function getLingqs({
+  language,
+  page_size,
+  page,
+  search_criteria,
+  sort,
+  status,
+  token,
+}: {
+  language: languageCode;
+  page_size?: number;
+  page?: number;
+  search_criteria?: string;
+  sort?: string;
+  status?: string[];
+  token: string;
+}): Promise<Lingqs> {
+  return request<Lingqs>(`v3/${language}/cards/`, token, {
+    body: JSON.stringify({ page_size, page, search_criteria, sort, status }),
+    method: "GET",
+  });
 }
 
 export async function getLingq({ language, id, token }: { language: languageCode, id: number, token: string }): Promise<Lingq> {

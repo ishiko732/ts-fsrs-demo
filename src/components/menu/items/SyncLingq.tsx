@@ -3,6 +3,7 @@ import MenuItem from ".";
 import SyncSubmitButton from "../submit/SyncSubmit";
 import { getFSRSParamsByUid } from "@/lib/fsrs";
 import { getLingqLanguageCode, syncLingqs } from "@/vendor/lingq/sync";
+import { revalidatePath } from "next/cache";
 
 async function syncLingqAction(formData: FormData) {
     'use server'
@@ -17,6 +18,7 @@ async function syncLingqAction(formData: FormData) {
     const langs = await getLingqLanguageCode(syncUser)
     const syncs = langs.map(async (lang) => syncLingqs(syncUser, lang))
     await Promise.all(syncs)
+    revalidatePath("/note")
     return true
 };
 

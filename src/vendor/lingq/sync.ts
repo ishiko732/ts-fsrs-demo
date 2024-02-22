@@ -36,7 +36,7 @@ async function getLingqLanguageCode(user: DecryptSyncUser) {
 }
 
 async function syncLingqs(user: DecryptSyncUser, lang: languageCode, next?: number) {
-    const data = await getLingqs({ language: lang, token: user.token, page: next, page_size: 50 })
+    const data = await getLingqs({ language: lang, token: user.token, page: next, page_size: 100,search_criteria:'startsWith',sort:'date',status:['0','1','2','3'] })
     const promise: Promise<unknown>[] = []
 
     const hash: { [key: string]: Lingq } = {}
