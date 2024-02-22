@@ -19,7 +19,8 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
   const lang = searchParams.get("lang");
-  const page = searchParams.get("page");
+  const page = searchParams.get("page") ?? '1';
+  const page_size = searchParams.get("pageSize")?? '25';
   if (!lang) {
     return NextResponse.json({ error: "No lang" }, { status: 400 });
   }
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
     language: lang as languageCode,
     token: params.lingq_token,
     page: Number(page),
-    page_size: 50,
+    page_size: Number(page_size),
     search_criteria: "startsWith",
     sort: "date",
     status: ["0", "1", "2", "3"],
@@ -53,6 +54,8 @@ export async function GET(request: NextRequest) {
       existCount: existPks.length,
       nonExistCount: nonExistPks.length,
       total: data.count,
+      page: page,
+      page_size: page_size,
       pre: data.previous,
       next: data.next,
     },
