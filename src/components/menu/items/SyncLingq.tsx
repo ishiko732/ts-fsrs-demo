@@ -3,9 +3,8 @@ import MenuItem from ".";
 import SyncSubmitButton from "../submit/SyncSubmit";
 import { getFSRSParamsByUid } from "@/lib/fsrs";
 import { getLingqLanguageCode, syncLingqs } from "@/vendor/lingq/sync";
-import { revalidatePath } from "next/cache";
 
-async function syncLingqAction(formData: FormData) {
+async function syncLingqAction() {
     'use server'
     const params = await getParamsRequireLingqToken()
     if (params === null || params.lingq_token == null) {
@@ -18,15 +17,14 @@ async function syncLingqAction(formData: FormData) {
     const langs = await getLingqLanguageCode(syncUser)
     const syncs = langs.map(async (lang) => syncLingqs(syncUser, lang))
     await Promise.all(syncs)
-    revalidatePath("/note")
     return true
 };
 
 async function SyncLingq() {
     const params = await getParamsRequireLingqToken()
     return (
-        params? <MenuItem tip="Sync Lingq" formAction={syncLingqAction}>
-            <SyncSubmitButton />
+        params? <MenuItem tip="Sync Lingq">
+            <SyncSubmitButton action={syncLingqAction}/>
         </MenuItem>: null
     );
 }
