@@ -3,7 +3,6 @@ import { getNoteByCid, getNoteByNid } from "./note";
 import prisma from "./prisma";
 import { findLastLogByCid } from "./log";
 import { getFSRS } from "./fsrs";
-import { getDuration, setSchedulerTime } from "./duration";
 import { Card, Note } from "@prisma/client";
 import { RecordLogPrisma, RepeatRecordLog, forgetAfterHandler, repeatAfterHandler, rollbackAfterHandler } from "@/vendor/fsrsToPrisma/handler";
 import { CardUpdatePayload } from "@/types";
@@ -57,7 +56,6 @@ export async function schedulerCard<T extends Grade>(query:Partial<Query>,now:Da
         nid:cardByPrisma.note.nid,
         last_review:cardByPrisma.last_review?cardByPrisma.last_review:undefined
     }
-    await setSchedulerTime(cardByPrisma.cid, now)
     const repeatAfterHandlerExtendSuspended = repeatAfterHandler.bind(null,userParams.lapses)
     const repeat = f.repeat(card,now,repeatAfterHandlerExtendSuspended)
     if(grade){
@@ -99,8 +97,8 @@ function getUpdateCardPayloadByScheduler(recordItem:RepeatRecordLog,duration:num
     return payload;
 }
 
-export async function updateCard(cid:number,now:Date,grade:Grade){
-    const [_,duration,recordItem]=await Promise.all([getFSRS(cid,true),getDuration(cid,now),schedulerCard({cid},now,Number(grade) as Grade)])
+export async function updateCard(cid:number,now:Date,grade:Grade,duration:number){
+    const [_,recordItem]=await Promise.all([getFSRS(cid,true), schedulerCard({cid},now,Number(grade) as Grade)])
     const payload = getUpdateCardPayloadByScheduler(recordItem,duration)
     await prisma.card.update({
         where:{cid:cid},

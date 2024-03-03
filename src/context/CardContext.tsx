@@ -91,6 +91,7 @@ export function CardProvider({
     return current;
   });
   const [DSR,setDSR] = useState<DSR>();
+  const [showTime,setShowTime] = useState(new Date().getTime());
 
   const rollBackRef= useRef<{cid:number,nextStateBox:StateBox}[]>([])
   const [rollbackAble,setRollbackAble] = useState(false)
@@ -138,10 +139,12 @@ export function CardProvider({
   const handleSchdule = debounce(async (grade: Grade) => {
     const note = noteBox[currentType][0];
     const now = new Date();
-    const res = await fetch(`/api/fsrs?cid=${note.card.cid}&now=${now.getTime()}&offset=${now.getTimezoneOffset()}&grade=${grade}`, {
+    const duration = now.getTime() - showTime;
+    const res = await fetch(`/api/fsrs?cid=${note.card.cid}&now=${now.getTime()}&offset=${now.getTimezoneOffset()}&grade=${grade}&duration=${duration}`, {
       method: "put",
     }).then((res) => res.json())
     if (res.code === 0) {
+      console.log(`[cid:${note.card.cid}]duration:${duration}ms`);
       handleChange(res,note);
       setOpen(false);
     }
@@ -210,7 +213,10 @@ export function CardProvider({
     if (note) {
       fetch(`/api/fsrs?cid=${note.card.cid}&now=${now.getTime()}&offset=${now.getTimezoneOffset()}`, { method: "post" })
         .then((res) => res.json())
-        .then((res) => setSchedule(res));
+        .then((res) => {
+          setSchedule(res);
+          setShowTime(new Date().getTime());
+        });
       if(note.card&&note.card.state==='Review'){
         const r = fsrs().get_retrievability(note.card,fixDate(new Date().toLocaleString("UTC",{timeZone:'UTC'})))
         if(r){

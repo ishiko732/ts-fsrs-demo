@@ -95,7 +95,7 @@ export async function exportLogsByUid(uid: number): Promise<ExportRevLog[]> {
             review_time: log.review.getTime(),
             review_rating: Number(log.grade),
             review_state: Number(log.state),
-            review_duration: log.duration * 1000
+            review_duration: Math.max(log.duration, 60) * 1000
         }
     })
 }

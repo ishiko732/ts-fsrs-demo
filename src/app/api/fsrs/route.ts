@@ -50,6 +50,7 @@ export async function PUT(request: NextRequest) {
   const grade = searchParams.get("grade");
   const rollback = searchParams.get("rollback");
   const reset = searchParams.get("reset");
+  const duration = Number(searchParams.get("duration") ?? 0); ;
   if (!nid && !cid) {
     return NextResponse.json("nid/cid not found", { status: 400 });
   }
@@ -72,7 +73,12 @@ export async function PUT(request: NextRequest) {
     if (Rating.Manual === Number(grade) as Rating) { // forget
       data = await forgetCard(Number(cid), new Date(), Boolean(reset));
     } else {
-      data = await updateCard(Number(cid), new Date(), Number(grade) as Grade);
+      data = await updateCard(
+        Number(cid),
+        new Date(),
+        Number(grade) as Grade,
+        Math.floor(duration / 1000)
+      );
     }
     if (data) {
       revalidatePath(`/note/${data.nid}`)
