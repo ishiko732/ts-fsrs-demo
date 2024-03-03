@@ -22,9 +22,11 @@ function computerOrder(order: { field: string; type: "desc" | "asc" }) {
         [order.field]: order.type,
       };
     } else {
-      order.field = order.field
-        .replace("s", "stability")
-        .replace("d", "difficulty");
+      if (order.field === "s"){
+        order.field = "stability";
+      }else if (order.field === "d") {
+        order.field = "difficulty";
+      }
       _order = {
         card: {
           [order.field]: order.type,
