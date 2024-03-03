@@ -13,7 +13,7 @@ function computerOrder(order: { field: string; type: "desc" | "asc" }) {
     | Prisma.NoteOrderByWithRelationInput[]
     | undefined = {};
   if (
-    ["question", "answer", "source", "due", "state", "reps"].includes(
+    ["question", "answer", "source", "due", "state", "reps", "s", "d"].includes(
       order.field
     )
   ) {
@@ -22,6 +22,9 @@ function computerOrder(order: { field: string; type: "desc" | "asc" }) {
         [order.field]: order.type,
       };
     } else {
+      order.field = order.field
+        .replace("s", "stability")
+        .replace("d", "difficulty");
       _order = {
         card: {
           [order.field]: order.type,
