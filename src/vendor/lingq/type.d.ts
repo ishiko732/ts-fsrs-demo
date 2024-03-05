@@ -101,6 +101,12 @@ type LingqHint = {
     flagged: boolean,
 }
 
+
+type addLingqHint =( LingqHint |{
+    locale:string,
+    text:string
+})[]
+
 type LingqTransliteration = {
     [key: string]: string[] | { [key: string]: string }[]
 }

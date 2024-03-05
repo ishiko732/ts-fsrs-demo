@@ -98,3 +98,38 @@ export async function getLingqTTS({ language, text, token }: { language: languag
 
     return request<LingqTTS>(`v2/tts/`, token, { body: JSON.stringify({app_name,voice,language,text}), method: 'GET' },1000*60*60*6);
 }
+
+
+export async function deleteHints({hintsId,token}:{hintsId:number,token:string}){
+    return request<LingqTTS>(`v2/hints/${hintsId}/`, token, { body: JSON.stringify({
+        "popularity": 0
+    }), method: 'PATCH' });   
+}
+
+export async function getHints({hintsId,token}:{hintsId:number,token:string}){
+    return request<LingqTTS>(`v2/hints/${hintsId}/`, token, { method: 'GET' });  
+}
+
+export async function searchHints({language,term,locale,token}:{language: languageCode,term:string,locale:string,token:string}){
+    return request<LingqTTS>(`/v2/${language}/hints/search/`, token, { body: JSON.stringify({
+        term,locale,all:1
+    }), method: 'GET' });   
+}
+
+
+export async function changeLingqHints({
+    language,
+    cardId,
+    token,
+    hints
+  }: {
+    language: languageCode;
+    cardId: number;
+    token: string;
+    hints:addLingqHint
+  }): Promise<Lingqs> {
+    return request<Lingqs>(`v3/${language}/cards/${cardId}/`, token, {
+      body: JSON.stringify({hints}),
+      method: "PATCH",
+    });
+  }
