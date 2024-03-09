@@ -15,7 +15,7 @@ export type ParametersType = {
 
 export async function getFSRSParamsByUid(uid: number): Promise<ParametersType> {
     const params: Parameters[] = await prisma.
-        $queryRaw<Parameters[]>`select * from Parameters where uid=${Number(uid)}`
+        $queryRaw<Parameters[]>`select * from "Parameters" where uid=${Number(uid)}`
     if (params.length === 0) {
         throw new Error(`uid(uid=${uid}) not found`)
     }
@@ -24,7 +24,7 @@ export async function getFSRSParamsByUid(uid: number): Promise<ParametersType> {
 
 export async function getFSRSParamsByNid(nid: number): Promise<ParametersType> {
     const params: Parameters[] = await prisma.
-        $queryRaw<Parameters[]>`select * from Parameters where uid=(select uid from Note where nid=${Number(nid)})`
+        $queryRaw<Parameters[]>`select * from "Parameters" where uid=(select uid from "Note" where nid=${Number(nid)})`
     if (params.length === 0) {
         throw new Error(`note(nid=${nid}) not found`)
     }
@@ -34,8 +34,8 @@ export async function getFSRSParamsByNid(nid: number): Promise<ParametersType> {
 export async function getFSRSParamsByCid(cid: number): Promise<ParametersType> {
     const params: Parameters[] = await prisma.
         $queryRaw<Parameters[]>`
-        select * from Parameters 
-        where uid=(select uid from Note 
+        select * from "Parameters" 
+        where uid=(select uid from "Note" 
                    where nid in (select nid from Card where cid=${Number(cid)}))`
     if (params.length === 0) {
         throw new Error(`card(cid=${cid}) not found`)
