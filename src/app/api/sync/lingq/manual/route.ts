@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
   });
   const existSourceIds = await prisma.$queryRaw<
     { sourceId: string }[]
-  >`select sourceId from Note where uid = ${
+  >`select sourceId from "Note" where uid = ${
     params.uid
   } and source = 'lingq' and sourceId in (${Prisma.join(collectPks)});`;
   const existPks = existSourceIds.map((note) => note.sourceId);

@@ -51,22 +51,22 @@ export async function getTodayLearnedNewCardCount(uid: number, startOfDay: Date,
     if (source && source === "lingq") {
         p_count = prisma.
             $queryRaw<{ total: bigint }[]>`
-            select count(log.cid) as total from Revlog log
-            left join Card c on c.cid = log.cid
-            left join Note n on n.nid = c.nid
+            select count(log.cid) as total from "Revlog" log
+            left join "Card" c on c.cid = log.cid
+            left join "Note" n on n.nid = c.nid
             where n.uid=${Number(uid)} and log.state='0' and log.review between ${startOfDay} and ${nextDay} and n.source=${source} and log.deleted=${false}`
     } else {
         p_count = prisma.
             $queryRaw<{ total: bigint }[]>`
-            select count(log.cid) as total from Revlog log
-            left join Card c on c.cid = log.cid
-            left join Note n on n.nid = c.nid
+            select count(log.cid) as total from "Revlog" log
+            left join "Card" c on c.cid = log.cid
+            left join "Note" n on n.nid = c.nid
             where n.uid=${Number(uid)} and log.state='0' and log.review between ${startOfDay} and ${nextDay} and log.deleted=${false}`
     }
     // log.state = State.New
     // get current day new card count
     const p_limit = prisma.$queryRaw<{ card_limit: bigint }[]>`
-            select card_limit from Parameters where uid=${Number(uid)}`
+            select card_limit from "Parameters" where uid=${Number(uid)}`
 
     const [count, limit] = await Promise.all([p_count, p_limit])
     return {
@@ -85,9 +85,9 @@ export type ExportRevLog = {
 
 export async function exportLogsByUid(uid: number): Promise<ExportRevLog[]> {
     const data = await prisma.$queryRaw<Revlog[]>`
-                select log.* from Revlog log
-                left join Card c on c.cid = log.cid
-                left join Note n on n.nid = c.nid
+                select log.* from "Revlog" log
+                left join "Card" c on c.cid = log.cid
+                left join "Note" n on n.nid = c.nid
                 where n.uid=${Number(uid)} and c.suspended=${false} and log.deleted=${false} order by log.cid`
     return data.map(log => {
         return {
