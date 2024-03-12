@@ -1,6 +1,6 @@
 import { State as PrismaState } from "@prisma/client";
 import prisma from "./prisma";
-import { Rating, State, date_scheduler } from "ts-fsrs";
+import { Rating, State, date_scheduler, fixRating, fixState } from "ts-fsrs";
 import { RevlogPrismaUnChecked } from "@/vendor/fsrsToPrisma/handler";
 
 export async function findLogsByCid(cid: number, deleted: boolean = false) {
@@ -130,8 +130,8 @@ export async function exportLogsByUid(uid: number): Promise<ExportRevLog[]> {
         return {
             card_id: log.cid,
             review_time: log.review.getTime(),
-            review_rating: Number(log.grade),
-            review_state: Number(log.state),
+            review_rating: fixRating(log.grade),
+            review_state: fixState(log.state),
             review_duration: Math.max(log.duration, 60) * 1000
         }
     })
