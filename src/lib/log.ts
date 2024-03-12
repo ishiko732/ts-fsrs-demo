@@ -1,4 +1,4 @@
-import { Revlog } from "@prisma/client";
+import { State as PrismaState } from "@prisma/client";
 import prisma from "./prisma";
 import { Rating, State, date_scheduler } from "ts-fsrs";
 import { RevlogPrismaUnChecked } from "@/vendor/fsrsToPrisma/handler";
@@ -47,31 +47,58 @@ export async function deleteLogByLid(lid: string,deleted: boolean = false) {
 
 export async function getTodayLearnedNewCardCount(uid: number, startOfDay: Date, source?: string) {
     const nextDay = date_scheduler(startOfDay, 1, true);
-    let p_count = null
-    if (source && source === "lingq") {
-        p_count = prisma.
-            $queryRaw<{ total: bigint }[]>`
-            select count(log.cid) as total from "Revlog" log
-            left join "Card" c on c.cid = log.cid
-            left join "Note" n on n.nid = c.nid
-            where n.uid=${Number(uid)} and log.state='0' and log.review between ${startOfDay} and ${nextDay} and n.source=${source} and log.deleted=${false}`
-    } else {
-        p_count = prisma.
-            $queryRaw<{ total: bigint }[]>`
-            select count(log.cid) as total from "Revlog" log
-            left join "Card" c on c.cid = log.cid
-            left join "Note" n on n.nid = c.nid
-            where n.uid=${Number(uid)} and log.state='0' and log.review between ${startOfDay} and ${nextDay} and log.deleted=${false}`
-    }
+    // let p_count = null
+    // if (source && source === "lingq") {
+    //     p_count = prisma.
+    //         $queryRaw<{ total: bigint }[]>`
+    //         select count(log.cid) as total from "Revlog" log
+    //         left join "Card" c on c.cid = log.cid
+    //         left join "Note" n on n.nid = c.nid
+    //         where n.uid=${Number(uid)} and log.state='0' and log.review between ${startOfDay} and ${nextDay} and n.source=${source} and log.deleted=${false}`
+    // } else {
+    //     p_count = prisma.
+    //         $queryRaw<{ total: bigint }[]>`
+    //         select count(log.cid) as total from "Revlog" log
+    //         left join "Card" c on c.cid = log.cid
+    //         left join "Note" n on n.nid = c.nid
+    //         where n.uid=${Number(uid)} and log.state='0' and log.review between ${startOfDay} and ${nextDay} and log.deleted=${false}`
+    // }
+
+    const p_count = prisma.note.count({
+      where: {
+        uid: uid,
+        card: {
+          logs: {
+            some: {
+              review: {
+                gte: startOfDay,
+                lt: nextDay,
+              },
+              state: PrismaState.New,
+              deleted: false,
+            },
+          },
+          deleted: false,
+        },
+        source: source && source === "lingq" ? "lingq" : undefined,
+        deleted: false,
+      },
+    });
     // log.state = State.New
     // get current day new card count
-    const p_limit = prisma.$queryRaw<{ card_limit: bigint }[]>`
-            select card_limit from "Parameters" where uid=${Number(uid)}`
+    const p_limit = prisma.parameters.findUnique({
+        where: {
+            uid: uid
+        },
+        select:{
+            card_limit:true
+        }
+    })
 
     const [count, limit] = await Promise.all([p_count, p_limit])
     return {
-        todayCount: Number(count[0].total),
-        limit: Number(limit[0].card_limit) ?? 50
+      todayCount: count,
+      limit: limit?.card_limit ?? 50,
     };
 }
 
@@ -84,11 +111,21 @@ export type ExportRevLog = {
 }
 
 export async function exportLogsByUid(uid: number): Promise<ExportRevLog[]> {
-    const data = await prisma.$queryRaw<Revlog[]>`
-                select log.* from "Revlog" log
-                left join "Card" c on c.cid = log.cid
-                left join "Note" n on n.nid = c.nid
-                where n.uid=${Number(uid)} and c.suspended=${false} and log.deleted=${false} order by log.cid`
+    const data = await prisma.revlog.findMany({
+      where: {
+        card: {
+          note: {
+            uid: uid,
+            deleted: false,
+          },
+          deleted: false,
+          suspended: false,
+        },
+      },
+      orderBy: {
+        cid: "asc",
+      },
+    });
     return data.map(log => {
         return {
             card_id: log.cid,
