@@ -24,11 +24,28 @@ use packages:
  `.env.local`  
 
 ```bash
-DATABASE_URL="mysql://username:password@localhost:3306/fsrsDemo"
-DATABASE_URL_WITH_SCHEMA=${DATABASE_URL}?schema=fsrsDemo
+DATABASE_URL="postgres://username:password@host:port/database?sslmode=require"
+DATABASE_URL_WITH_SCHEMA=${DATABASE_URL}&schema=fsrsDemo 
+# example
+DATABASE_URL="postgres://default:password@abc.com:5432/verceldb?sslmode=require&schema=fsrs"
 
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=**** # openssl rand -base64 32
+
+# GitHub OAuth https://github.com/settings/developers
+GITHUB_ID=***
+GITHUB_SECRET=***
+
+# if need lingq server
+LINGQ_KEY=**** # copy from http://localhost:3000/api/lingq/key
+```
+
+update schema: src/prisma/schema.prisma
+```prisma
+datasource db {
+  provider     = "postgresql" // or mysql
+  url          = env("DATABASE_URL")
+}
 ```
 
 ## How to run?
