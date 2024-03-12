@@ -14,57 +14,71 @@ export type ParametersType = {
 }
 
 export async function getFSRSParamsByUid(uid: number): Promise<ParametersType> {
-    const params: Parameters[] = await prisma.
-        $queryRaw<Parameters[]>`select * from "Parameters" where uid=${Number(uid)}`
-    if (params.length === 0) {
+    const params: Parameters|null = await prisma.parameters.findUnique({
+            where: {
+                uid: uid
+            }
+        })
+    if (!params) {
         throw new Error(`uid(uid=${uid}) not found`)
     }
     return processArrayParameters(params)
 }
 
 export async function getFSRSParamsByNid(nid: number): Promise<ParametersType> {
-    const params: Parameters[] = await prisma.
-        $queryRaw<Parameters[]>`select * from "Parameters" where uid=(select uid from "Note" where nid=${Number(nid)})`
-    if (params.length === 0) {
-        throw new Error(`note(nid=${nid}) not found`)
+    const note_only_uid = await prisma.note.findUnique({
+        where:{
+            nid
+        },
+        select:{
+            uid:true
+        }
+    })
+    if (!note_only_uid) {
+      throw new Error(`note(nid=${nid}) not found`);
     }
-    return processArrayParameters(params)
+    return getFSRSParamsByUid(note_only_uid.uid);
 }
 
 export async function getFSRSParamsByCid(cid: number): Promise<ParametersType> {
-    const params: Parameters[] = await prisma.
-        $queryRaw<Parameters[]>`
-        select * from "Parameters" 
-        where uid=(select uid from "Note" 
-                   where nid in (select nid from Card where cid=${Number(cid)}))`
-    if (params.length === 0) {
-        throw new Error(`card(cid=${cid}) not found`)
+        const note_only_uid = await prisma.note.findFirst({
+          where: {
+            card:{
+                cid:cid,
+            }
+          },
+          select: {
+            uid: true,
+          },
+        });
+    if (!note_only_uid) {
+      throw new Error(`card(cid=${cid}) not found`);
     }
-    return processArrayParameters(params)
+    return getFSRSParamsByUid(note_only_uid.uid);
 }
 
 
-async function processArrayParameters(params: Parameters[]): Promise<ParametersType> {
+async function processArrayParameters(params: Parameters): Promise<ParametersType> {
     if (!params) {
         throw new Error("params not found")
     }
     const fsrsParameters = generatorParameters({
-        request_retention: params[0].request_retention,
-        maximum_interval: params[0].maximum_interval,
-        w: JSON.parse(params[0].w as string),
-        enable_fuzz: params[0].enable_fuzz
+        request_retention: params.request_retention,
+        maximum_interval: params.maximum_interval,
+        w: JSON.parse(params.w as string),
+        enable_fuzz: params.enable_fuzz
     })
     let lingq_token = null
-    if (params[0].lingq_token && params[0].lingq_counter && params[0].lingq_token.length > 0) {
-        lingq_token = await decryptLingqKey(params[0].lingq_token, params[0].lingq_counter)
+    if (params.lingq_token && params.lingq_counter && params.lingq_token.length > 0) {
+        lingq_token = await decryptLingqKey(params.lingq_token, params.lingq_counter)
     }
 
     return {
         params: fsrsParameters,
-        uid: params[0].uid,
-        card_limit: params[0].card_limit ?? 50,
+        uid: params.uid,
+        card_limit: params.card_limit ?? 50,
         lingq_token: lingq_token,
-        lapses: Math.max(3,params[0].lapses)
+        lapses: Math.max(3,params.lapses)
     }
 }
 

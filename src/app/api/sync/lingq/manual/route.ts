@@ -3,7 +3,6 @@ import { getFSRSParamsByUid } from "@/lib/fsrs";
 import prisma from "@/lib/prisma";
 import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
 import { getLingqs } from "@/vendor/lingq/request";
-import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -19,8 +18,8 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
   const lang = searchParams.get("lang");
-  const page = searchParams.get("page") ?? '1';
-  const page_size = searchParams.get("pageSize")?? '25';
+  const page = searchParams.get("page") ?? "1";
+  const page_size = searchParams.get("pageSize") ?? "25";
   if (!lang) {
     return NextResponse.json({ error: "No lang" }, { status: 400 });
   }
@@ -41,12 +40,21 @@ export async function GET(request: NextRequest) {
     hash[`${lingq.pk}`] = lingq;
     return `${lingq.pk}`;
   });
-  const existSourceIds = await prisma.$queryRaw<
-    { sourceId: string }[]
-  >`select sourceId from "Note" where uid = ${
-    params.uid
-  } and source = 'lingq' and sourceId in (${Prisma.join(collectPks)});`;
-  const existPks = existSourceIds.map((note) => note.sourceId);
+  const existSourceIds = await prisma.note.findMany({
+    where: {
+      uid: params.uid,
+      source: "lingq",
+      sourceId: {
+        in: collectPks,
+      },
+    },
+    select: {
+      sourceId: true,
+    },
+  });
+  const existPks = existSourceIds
+    .filter((note) => note.sourceId)
+    .map((note) => note.sourceId);
   const nonExistPks = collectPks.filter((pk) => !existPks.includes(pk));
   await sync(params.uid, lang, hash, nonExistPks);
   return NextResponse.json(

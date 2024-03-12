@@ -17,10 +17,21 @@ type DecryptSyncUser = {
 export type SyncWaitUser = DecryptSyncUser & { langs: languageCode[] }
 
 async function syncUser() {
-    const users = await prisma.$queryRaw<SyncUser[]>`
-        select uid,lingq_token,lingq_counter from "Parameters" 
-        where lingq_token is not null and lingq_counter is not null;`
-
+    const users = await prisma.parameters.findMany({
+      where: {
+        lingq_token: {
+          not: null,
+        },
+        lingq_counter: {
+          not: null,
+        },
+      },
+      select: {
+        uid: true,
+        lingq_token: true,
+        lingq_counter: true,
+      },
+    }) as SyncUser[];
     const promise = users.map(async (syncUser) => {
         return {
             uid: syncUser.uid,
@@ -45,8 +56,19 @@ async function syncLingqs(user: DecryptSyncUser, lang: languageCode, next?: numb
         return `${lingq.pk}`
     });
     console.log(lang)
-    const existSourceIds = await prisma.$queryRaw<{ sourceId: string }[]>
-        `select sourceId from "Note" where uid = ${user.uid} and source = 'lingq' and sourceId in (${Prisma.join(collectPks)});`
+    const existSourceIds = await prisma.note.findMany({
+      where: {
+        uid: user.uid,
+        source: "lingq",
+        sourceId: {
+          in: collectPks,
+        },
+      },
+      select: {
+        sourceId: true,
+      },
+    });
+    
     const existPks = existSourceIds.map((note) => note.sourceId)
     const nonExistPks = collectPks.filter((pk) => !existPks.includes(pk));
     console.log(nonExistPks)
