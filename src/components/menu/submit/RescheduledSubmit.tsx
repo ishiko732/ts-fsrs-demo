@@ -11,11 +11,16 @@ export default function RescheduledSubmitButton({
   const handleRescheduleHandler = async () => {
     setLoading(true);
     console.time("reschedule");
-    let page = 1;
+    let page = 0;
+    let waits = [];
     let ret;
     do {
       // vercel serverless function has a 10s timeout
-      ret = await action(page, pageSize);
+      for (let i = 1; i < 10; i++) {
+        waits.push(action(page * 10 + i, pageSize));
+      }
+      ret = (await Promise.all(waits)).every((p) => p);
+      waits = [];
       page++;
     } while (ret);
     setLoading(false);
