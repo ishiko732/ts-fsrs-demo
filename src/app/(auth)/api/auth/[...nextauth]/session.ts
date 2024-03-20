@@ -27,3 +27,8 @@ export async function isAdminOrSelf(uid: number) {
     const session = await getAuthSession();
     return session?.user?.role === "admin" || session?.user?.id === String(uid);
 }
+
+export async function getSessionUserId(){
+    const session = await getAuthSession();
+    return session?.user?.id ? Number(session?.user?.id) : null;
+}
