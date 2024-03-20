@@ -10,6 +10,7 @@ export default function RescheduledSubmitButton({
   const pageSize = 300;
   const handleRescheduleHandler = async () => {
     setLoading(true);
+    console.time("reschedule");
     let page = 1;
     let ret;
     do {
@@ -18,6 +19,7 @@ export default function RescheduledSubmitButton({
       page++;
     } while (ret);
     setLoading(false);
+    console.timeEnd("reschedule");
     window.location.reload();
   };
   return (
