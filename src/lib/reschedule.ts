@@ -1,7 +1,7 @@
 import { getSessionUserId } from "@/app/(auth)/api/auth/[...nextauth]/session";
 import prisma from "./prisma";
 import { FSRSParameters, fsrs } from "ts-fsrs";
-import { State } from "@prisma/client";
+import { Card, State } from "@prisma/client";
 
 export async function reschedule(
   parameters: FSRSParameters,
@@ -21,7 +21,13 @@ export async function reschedule(
       state: State.Review,
     },
   });
+  return _reschedule(parameters, cards);
+}
 
+export async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
+  if (cards.length === 0) {
+    return false;
+  }
   const f = fsrs(parameters);
   const rescheduled_cards = f.reschedule(cards);
   if (rescheduled_cards.length === 0) {
@@ -37,4 +43,29 @@ export async function reschedule(
   );
   console.log(`reschedule: ${rescheduled_cards.length}cards`);
   return true;
+}
+
+type Query = {
+  uid: number;
+  page: number;
+  pageSize: number;
+  due?: Date;
+};
+
+export async function _findCardsByUid({ uid, page, pageSize, due }: Query) {
+  return prisma.card.findMany({
+    where: {
+      note: {
+        uid,
+      },
+      state: State.Review,
+      due: due
+        ? {
+            gte: due,
+          }
+        : undefined,
+    },
+    take: pageSize,
+    skip: pageSize * (page - 1),
+  });
 }

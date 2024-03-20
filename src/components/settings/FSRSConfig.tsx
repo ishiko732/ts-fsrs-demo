@@ -27,6 +27,7 @@ export default async function FSRSConfig(this: any, {uid,username,params}: {uid:
         }
         const params= await updateParameters(data);
         if(params.enable_fuzz){
+            // vercel serverless function has a 10s timeout
             console.time("reschedule");
             await reschedule(
               {
