@@ -20,6 +20,9 @@ export async function reschedule(
       },
       state: State.Review,
     },
+    orderBy: {
+      last_review: "asc",
+    },
   });
   return _reschedule(parameters, cards);
 }
@@ -67,5 +70,8 @@ export async function _findCardsByUid({ uid, page, pageSize, due }: Query) {
     },
     take: pageSize,
     skip: pageSize * (page - 1),
+    orderBy: {
+      last_review: "asc",
+    },
   });
 }
