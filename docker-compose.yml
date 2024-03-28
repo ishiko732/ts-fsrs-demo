@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: my_postgres_container3
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fsrsDemo
+    volumes:
+      - demo_postgres_data:/var/lib/postgresql/data
+    restart: always
+
+
+volumes:
+  demo_postgres_data:

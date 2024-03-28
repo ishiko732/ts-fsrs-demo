@@ -49,7 +49,7 @@ datasource db {
 ```
 
 ## How to run?
-
+- run docker make sure the database is running on your machine: `docker-compose up`
 - Configure the database environment and use `npm run dbpush`
 - Run demo
 
