@@ -37,6 +37,10 @@ export async function PATCH(
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });
   }
+  if(process.env.NODE_ENV !== 'production') {
+    console.debug('not production env');
+    return NextResponse.json({ error: "must production env" }, { status: 400 });
+  }
   let data;
   if (hints) {
     data = await changeLingqHints({

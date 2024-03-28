@@ -57,7 +57,7 @@ export async function initProgeigoDates(uid: number) {
   const dates: ProgeigoNodeData[] = progeigo.data.英単語.map(
     (node) => node.data
   ) as ProgeigoNodeData[];
-  return initProgeigoNotes(uid, dates);
+  return initProgeigoNotes(uid, dates.slice(0, 60));
 }
 
 // find or init user

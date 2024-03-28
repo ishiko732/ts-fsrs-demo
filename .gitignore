@@ -38,3 +38,10 @@ next-env.d.ts
 
 yalc.lock
 .yalc/
+
+#.env
+.env
+.env.local
+.env.development
+.env.test
+.env.production
