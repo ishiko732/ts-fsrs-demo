@@ -3,7 +3,7 @@ version: '3.1'
 services:
   postgres:
     image: postgres:latest
-    container_name: my_postgres_container3
+    container_name: demo_postgres_container
     ports:
       - "5432:5432"
     environment:
