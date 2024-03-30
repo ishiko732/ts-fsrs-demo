@@ -90,3 +90,9 @@ export type CardUpdatePayload = CardUpdateRequired &{
     create:RevlogUpdateRequired
   }
 }
+
+
+export type UserCreatedRequired = Required<
+  Prisma.UserCreateInput,
+  "oauthId" | "oauthType" | "email"
+>;

@@ -11,7 +11,7 @@
     "dbpull": "dotenv -e .env.local -- npx prisma db pull",
     "dbpush": "dotenv -e .env.local -- npx prisma db push",
     "prismaGen": "dotenv -e .env.local -- npx prisma generate",
-    "init":"dotenv -e .env.local -- npx prisma migrate dev --name init",
+    "init": "dotenv -e .env.local -- npx prisma migrate dev --name init",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "@vercel/analytics": "^1.1.1",
     "@vercel/kv": "^1.0.1",
     "@vercel/speed-insights": "^1.0.2",
+    "bcrypt": "^5.1.1",
     "clsx": "^2.0.0",
     "next": "14.1.0",
     "next-auth": "^4.24.5",
@@ -28,6 +29,7 @@
     "ts-fsrs": "3.4.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20",
     "@types/react": "18.2.23",
     "@types/react-dom": "18.2.13",

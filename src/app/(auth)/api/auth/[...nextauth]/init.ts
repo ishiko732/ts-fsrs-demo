@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import { GithubProfile } from "next-auth/providers/github";
 import {
   default_enable_fuzz,
   default_maximum_interval,
@@ -8,52 +7,44 @@ import {
 } from "ts-fsrs";
 import progeigo from "@/../public/プログラミング必須英単語600+.json" assert { type: "json" };
 import { initProgeigoNotes } from "@/lib/note";
-import { ProgeigoNodeData } from "@/types";
-interface OauthUser {
-  oauthId: string;
-  oauthType: string;
-}
-
-// find user by oauthId and oauthType
-export async function findOauthUser(profile: OauthUser) {
-  return prisma.user.findFirst({
-    where: {
-      oauthId: profile.oauthId,
-      oauthType: profile.oauthType,
-    },
-  });
-}
+import { ProgeigoNodeData, UserCreatedRequired } from "@/types";
+import { getUserByEmail, getUserByOauthId } from "@/lib/user";
+import { User, Parameters } from "@prisma/client";
 
 // init user and fsrs config
-export async function initUserAndFSRS(profile: GithubProfile) {
-  return prisma.parameters.create({
-    data: {
-      request_retention: default_request_retention,
-      maximum_interval: default_maximum_interval,
-      w: JSON.stringify(default_w),
-      enable_fuzz: default_enable_fuzz,
-      user: {
-        create: {
-          name:
-            profile.name === null || profile.name === ""
-              ? profile.login
-              : profile.name,
-          password: "",
-          email: profile.email ?? "",
-          oauthId: profile.id.toString(),
-          oauthType: "github",
+export async function initUserAndFSRS(
+  profile: UserCreatedRequired
+): Promise<Parameters & { user: User }> {
+  const params: Parameters & { user: User | null } =
+    await prisma.parameters.create({
+      data: {
+        request_retention: default_request_retention,
+        maximum_interval: default_maximum_interval,
+        w: JSON.stringify(default_w),
+        enable_fuzz: default_enable_fuzz,
+        user: {
+          create: {
+            name: profile.name,
+            password: profile.password,
+            email: profile.email,
+            oauthId: profile.oauthId,
+            oauthType: profile.oauthType,
+          },
         },
       },
-    },
-    include: {
-      user: true,
-    },
-  });
+      include: {
+        user: true,
+      },
+    });
+  if (!params.user) {
+    throw new Error("user not found");
+  }
+  return params as Parameters & { user: User };
 }
 
 // init progeigo dates
 export async function initProgeigoDates(uid: number) {
-  console.log("init dates")
+  console.log("init dates");
   const dates: ProgeigoNodeData[] = progeigo.data.英単語.map(
     (node) => node.data
   ) as ProgeigoNodeData[];
@@ -61,15 +52,20 @@ export async function initProgeigoDates(uid: number) {
 }
 
 // find or init user
-export async function initUser(profile: GithubProfile) {
-  const user = await findOauthUser({
-    oauthId: profile.id.toString(),
-    oauthType: "github",
-  });
+export async function initUser(profile: UserCreatedRequired) {
+  let user: User | null = null;
+  if (profile.oauthType) {
+    user = await getUserByOauthId({
+      oauthId: profile.oauthId,
+      oauthType: profile.oauthType,
+    });
+  } else {
+    user = await getUserByEmail(profile.email);
+  }
   if (!user) {
-    const _user = await initUserAndFSRS(profile);
-    await initProgeigoDates(_user.uid);
-    return _user;
+    const params = await initUserAndFSRS(profile);
+    user = params.user;
+    await initProgeigoDates(user.uid);
   }
   return user;
 }
