@@ -22,7 +22,7 @@ export default async function Home() {
               </span>
             </Link>
           </div>
-          <div className="divider">USE</div>
+          <div className="divider">USE({process.env.NODE_ENV.toUpperCase()})</div>
           <div className="items-center">
             <Link href={session?.user ? "/note" : "/api/auth/signin"}>
               <button className="btn btn-outline m-2 w-full sm:w-auto">Go to Notes</button>
