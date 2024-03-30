@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "No params" }, { status: 400 });
   }
   const page = Number(searchParams.get("page") ?? "1");
-  const pageSize = Number(searchParams.get("pageSize") ?? "50");
+  const pageSize = Number(searchParams.get("pageSize") ?? "25");
   const cards: Card[] = await _findCardsByUid({ uid, page, pageSize });
   await _reschedule(params.params, cards);
   return NextResponse.json({ success: true });

@@ -45,7 +45,8 @@ export async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
       })
     )
   );
-  console.timeEnd(`reschedule: ${rescheduled_cards.length}cards`);
+  console.timeEnd(`reschedule`);
+  console.time(`reschedule: ${rescheduled_cards.length}cards`);
   return true;
 }
 
