@@ -14,7 +14,7 @@ async function rescheduledCardAction(
 ) {
   "use server";
   const cards: Card[] = await _findCardsByUid({ uid, page, pageSize });
-  return _reschedule(params, cards);
+  return await _reschedule(params, cards);
 }
 
 async function RescheduledCard() {
