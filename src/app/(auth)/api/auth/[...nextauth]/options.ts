@@ -9,7 +9,7 @@ import * as bcrypt from "bcrypt";
 
 function getProviders(): Provider[] {
   const providers: Provider[] = [];
-
+  const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV;
   providers.push(
     GitHubProvider({
       async profile(profile: GithubProfile) {
@@ -41,7 +41,7 @@ function getProviders(): Provider[] {
       },
     })
   );
-  if (process.env.NODE_ENV !== "production") {
+  if (env !== "production") {
     providers.push(
       CredentialsProvider({
         id: "custom-login",

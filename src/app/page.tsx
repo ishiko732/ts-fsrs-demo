@@ -5,6 +5,7 @@ import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
 
 export default async function Home() {
   const session = await getAuthSession()
+  const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV;
   return (
     <>
       <div className="min-h-screen">
@@ -22,7 +23,7 @@ export default async function Home() {
               </span>
             </Link>
           </div>
-          <div className="divider">USE({process.env.NODE_ENV.toUpperCase()})</div>
+          <div className="divider">USE({env})</div>
           <div className="items-center">
             <Link href={session?.user ? "/note" : "/api/auth/signin"}>
               <button className="btn btn-outline m-2 w-full sm:w-auto">Go to Notes</button>
