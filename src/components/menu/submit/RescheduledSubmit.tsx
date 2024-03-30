@@ -7,7 +7,7 @@ export default function RescheduledSubmitButton({
   action: (page: number, pageSize: number) => Promise<boolean>;
 }) {
   const [loading, setLoading] = useState(false);
-  const pageSize = 100;
+  const pageSize = 50;
   const handleRescheduleHandler = async () => {
     setLoading(true);
     console.time("reschedule");
