@@ -36,6 +36,7 @@ export async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
   if (rescheduled_cards.length === 0) {
     return true;
   }
+  console.time(`reschedule`);
   await prisma.$transaction(
     rescheduled_cards.map((data) =>
       prisma.card.update({
@@ -44,7 +45,7 @@ export async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
       })
     )
   );
-  console.log(`reschedule: ${rescheduled_cards.length}cards`);
+  console.timeEnd(`reschedule: ${rescheduled_cards.length}cards`);
   return true;
 }
 
