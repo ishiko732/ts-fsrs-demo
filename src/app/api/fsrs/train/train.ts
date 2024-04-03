@@ -10,13 +10,11 @@ Error.stackTraceLimit = 30;
 //   self.postMessage(result);
 // };
 
-export async function loadCsvAndTrain(wasmURL:URL,file: papa.LocalFile) {
+export async function loadCsvAndTrain(wasmURL: URL, file: papa.LocalFile) {
   const cids: bigint[] = [];
   const eases: number[] = [];
   const ids: bigint[] = [];
   const types: number[] = [];
-  await init(wasmURL);
-//   await initThreadPool(cpus().length);
 
   return new Promise<TrainResult>((resolve, reject) => {
     const startTime = performance.now();
@@ -30,10 +28,11 @@ export async function loadCsvAndTrain(wasmURL:URL,file: papa.LocalFile) {
         eases.push(Number(data.review_rating));
         types.push(Number(data.review_state));
       },
-      complete: function () {
+      complete:async function () {
         const loadEndTime = performance.now();
         const trainStartTime = performance.now();
-        const w = computeParameters(
+        const w = await computeParameters(
+          wasmURL,
           new BigInt64Array(cids),
           new Uint8Array(eases),
           new BigInt64Array(ids),
@@ -55,17 +54,29 @@ export async function loadCsvAndTrain(wasmURL:URL,file: papa.LocalFile) {
   });
 }
 
-function computeParameters(
+export async function computeParameters(
+  wasmURL: URL,
   cids: BigInt64Array,
   eases: Uint8Array,
   ids: BigInt64Array,
   types: Uint8Array
 ) {
+  await init(wasmURL);
+  //   await initThreadPool(cpus().length);
   let fsrs = new Fsrs();
   console.time("full training time");
   let parameters = fsrs.computeParametersAnki(cids, eases, ids, types);
   console.timeEnd("full training time");
   fsrs.free();
-  console.log(parameters)
+  console.log(parameters);
   return parameters;
+}
+
+
+export function getProcessW(w: Float32Array) {
+  const processed_w = [];
+  for (let i = 0; i < w.length; i++) {
+    processed_w.push(Number(w[i].toFixed(8)));
+  }
+  return processed_w;
 }

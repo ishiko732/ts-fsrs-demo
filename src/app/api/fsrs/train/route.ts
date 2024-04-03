@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
 // import { Worker } from "worker_threads";
-import { loadCsvAndTrain } from "./train";
+import { getProcessW, loadCsvAndTrain } from "./train";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -65,12 +65,4 @@ async function getReadStream(fileURL: string) {
       this.push(value);
     },
   });
-}
-
-function getProcessW(w: Float32Array) {
-  const processed_w = [];
-  for (let i = 0; i < w.length; i++) {
-    processed_w.push(Number(w[i].toFixed(8)));
-  }
-  return processed_w;
 }
