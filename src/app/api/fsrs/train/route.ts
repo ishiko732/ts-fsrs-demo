@@ -8,11 +8,18 @@ export async function GET(request: NextRequest) {
   const searchParams = new URLSearchParams(url.search);
   const fileURL = searchParams.get("url") ?? "http://localhost:3000/revlog.csv";
   const stream = await getReadStream(fileURL);
-  const { w, ...others } = await loadCsvAndTrain(stream);
+
+  const wasmURL = new URL(
+    "fsrs_browser_bg.wasm",
+    new URL(request.url).origin
+  );
+  const { w, ...others } = await loadCsvAndTrain(wasmURL, stream);
+
 
   return NextResponse.json({
     data: fileURL,
     w: getProcessW(w),
+    wasmURL: wasmURL.toString(),
     ...others,
   });
 }
@@ -26,11 +33,16 @@ export async function POST(request: NextRequest) {
   const filename = file.name.replaceAll(" ", "_");
   const buffer = Buffer.from(await file.arrayBuffer());
   const stream = Readable.from(buffer);
-  const { w, ...others } = await loadCsvAndTrain(stream);
+  const wasmURL = new URL(
+    "fsrs_browser_bg.wasm",
+    new URL(request.url).origin
+  );
+  const { w, ...others } = await loadCsvAndTrain(wasmURL, stream);
 
   return NextResponse.json({
     fileName: filename,
     w: getProcessW(w),
+    wasmURL: wasmURL.toString(),
     ...others,
   });
 }

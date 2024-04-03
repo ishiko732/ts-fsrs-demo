@@ -10,12 +10,12 @@ Error.stackTraceLimit = 30;
 //   self.postMessage(result);
 // };
 
-export async function loadCsvAndTrain(file: papa.LocalFile) {
+export async function loadCsvAndTrain(wasmURL:URL,file: papa.LocalFile) {
   const cids: bigint[] = [];
   const eases: number[] = [];
   const ids: bigint[] = [];
   const types: number[] = [];
-  await init();
+  await init(wasmURL);
 //   await initThreadPool(cpus().length);
 
   return new Promise<TrainResult>((resolve, reject) => {
