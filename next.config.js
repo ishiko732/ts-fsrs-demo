@@ -18,9 +18,9 @@ const nextConfig = {
       },
     ];
   },
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
-  },
+  // compiler: {
+  //   removeConsole: process.env.NODE_ENV === "production",
+  // },
   webpack(config, { isServer, dev }) {
     config.experiments = {
       asyncWebAssembly: true,
