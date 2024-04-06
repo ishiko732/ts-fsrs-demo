@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
-// import { Worker } from "worker_threads";
 import { getProcessW, loadCsvAndTrain } from "./train";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
-  const fileURL = searchParams.get("url") ?? "http://localhost:3000/revlog.csv";
+
+  const fileURL = searchParams.get("url") ?? `${url.origin}/revlog.csv`;
   const stream = await getReadStream(fileURL);
 
-  const wasmURL = new URL(
-    "fsrs_browser_bg.wasm",
-    new URL(request.url).origin
-  );
+  const wasmURL = new URL("./fsrs_browser_bg.wasm", url.origin);
   const { w, ...others } = await loadCsvAndTrain(wasmURL, stream);
 
 
