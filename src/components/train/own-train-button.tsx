@@ -10,17 +10,12 @@ export default function OwnTrainButton({
 }: {
   action: () => Promise<ExportRevLog[]>;
 }) {
-  const [basePath, setBasePath] = useState("");
   const workerRef = useRef<Worker>();
   const trainTimeRef = useRef<number>(0);
   const startRef = useRef<number>(0);
   const { loading, setLoading, setW, setLoadTime, setTrainTime, setTotalTime } =
     useTrainContext();
-  useEffect(() => {
-    setBasePath(window.location.origin);
-  }, []);
   const handleClick = async () => {
-    const wasmURL = new URL("fsrs_browser_bg.wasm", basePath);
     setLoading(true);
     const start = performance.now();
     startRef.current = start;

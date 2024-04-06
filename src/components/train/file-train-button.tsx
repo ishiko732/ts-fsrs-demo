@@ -2,33 +2,46 @@
 
 import { getProcessW, loadCsvAndTrain } from "@/app/api/fsrs/train/train";
 import { useTrainContext } from "@/context/TrainContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function FileTrain() {
-  const [basePath, setBasePath] = useState("");
+  const workerRef = useRef<Worker>();
+  const trainTimeRef = useRef<number>(0);
+  const startRef = useRef<number>(0);
   const { loading, setLoading, setW, setLoadTime, setTrainTime, setTotalTime } =
     useTrainContext();
-  useEffect(() => {
-    setBasePath(window.location.origin);
-  }, []);
-  const handleClick = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const wasmURL = new URL("fsrs_browser_bg.wasm", basePath);
 
+  const handleClick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) {
       return;
     }
     setLoading(true);
-    const result = await loadCsvAndTrain(wasmURL, e.target.files[0]);
+    const file = e.target.files[0];
+    trainTimeRef.current = performance.now();
+    workerRef.current?.postMessage(file);
     if (e.target.value) {
       e.target.value = "";
     }
-    setLoading(false);
-    setLoadTime(result.loadTime);
-    setTrainTime(result.trainTime);
-    setTotalTime(result.totalTime);
-    setW(getProcessW(result.w));
   };
 
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL("@/../public/fsrs_worker.ts", import.meta.url)
+    );
+    workerRef.current.onmessage = (event: MessageEvent<TrainResult>) => {
+      const endTime = performance.now();
+      console.log(event.data)
+      setW(getProcessW(event.data.w));
+      setLoadTime(event.data.loadTime)
+      setTrainTime(event.data.trainTime);
+      setTotalTime(event.data.totalTime);
+      setLoading(false);
+    };
+    return () => {
+      workerRef.current?.terminate();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <input
