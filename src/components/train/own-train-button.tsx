@@ -42,7 +42,6 @@ export default function OwnTrainButton({
   };
 
   useEffect(() => {
-    console.log(import.meta.url);
     workerRef.current = new Worker(
       new URL("@/../public/fsrs_worker.ts", import.meta.url)
     );

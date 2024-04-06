@@ -1,13 +1,11 @@
 "use client";
 
-import { getProcessW, loadCsvAndTrain } from "@/app/api/fsrs/train/train";
+import { getProcessW } from "@/app/api/fsrs/train/train";
 import { useTrainContext } from "@/context/TrainContext";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function FileTrain() {
   const workerRef = useRef<Worker>();
-  const trainTimeRef = useRef<number>(0);
-  const startRef = useRef<number>(0);
   const { loading, setLoading, setW, setLoadTime, setTrainTime, setTotalTime } =
     useTrainContext();
 
@@ -17,7 +15,6 @@ export default function FileTrain() {
     }
     setLoading(true);
     const file = e.target.files[0];
-    trainTimeRef.current = performance.now();
     workerRef.current?.postMessage(file);
     if (e.target.value) {
       e.target.value = "";
@@ -29,7 +26,6 @@ export default function FileTrain() {
       new URL("@/../public/fsrs_worker.ts", import.meta.url)
     );
     workerRef.current.onmessage = (event: MessageEvent<TrainResult>) => {
-      const endTime = performance.now();
       console.log(event.data)
       setW(getProcessW(event.data.w));
       setLoadTime(event.data.loadTime)
