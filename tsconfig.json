@@ -21,6 +21,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/auth/*": ["./src/app/(auth)/*"],
+      "@public":["./public"],
+      "@node_modules":["./node_modules"],
     },
     "types": ["react-dom/experimental"]
   },

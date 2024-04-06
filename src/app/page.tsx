@@ -26,10 +26,20 @@ export default async function Home() {
           <div className="divider">USE({env})</div>
           <div className="items-center">
             <Link href={session?.user ? "/note" : "/api/auth/signin"}>
-              <button className="btn btn-outline m-2 w-full sm:w-auto">Go to Notes</button>
+              <button className="btn btn-outline m-2 w-full sm:w-auto">
+                Go to Notes
+              </button>
             </Link>
             <Link href={session?.user ? "/card" : "/api/auth/signin"}>
-              <button className="btn btn-outline m-2 py-4 w-full sm:w-auto">Go to Review</button>
+              <button className="btn btn-outline m-2 py-4 w-full sm:w-auto">
+                Go to Review
+              </button>
+            </Link>
+            <Link href={"/train"}>
+              <button className="btn btn-outline m-2 py-4 w-full sm:w-auto" title="Train(alpha)">
+                Go to Train
+                <div className="badge badge-ghost">alpha</div>
+              </button>
             </Link>
           </div>
         </main>
