@@ -106,7 +106,7 @@ Client:
 http://localhost:3000/train
 ![client train](images/train.png)
 > In training:
-![training](training.png)
+![training](images/training.png)
 
 
 ## Build
