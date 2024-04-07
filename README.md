@@ -10,9 +10,10 @@ use packages:
 - prisma (global) npm install -g prisma
 - dotenv (global) npm install -g dotenv
 - next.js (>= 14.2.0)
-- ts-fsrs (>= 3.2.1)
+- ts-fsrs (>= 3.5.3)
 - tailwindcss (>= 3)
 - daisyui (>= 4.4.22)
+- fsrs-browser (>= 0.6.1)
 ````
 
 ## Environment Variables
@@ -60,12 +61,12 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 - Open [localhost:3000](http://localhost:3000)
 - Sign In
 
-## Display
+## Preview
 
 ### Home
 ![home](images/home.png)
 
-> Tip: ts-fsrs version:3.3.0
+> Tip: ts-fsrs version:3.5.3
 
 ### Notes
 ![Notes](images/notes.png)
@@ -93,6 +94,19 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 
 ![FSRS Settings](images/settings.png)
 > You can customize the parameters of your FSRS params
+
+## Train
+use `fsrs-browser` to train.
+
+API Router:
+http://localhost:3000/api/fsrs/train
+![nodejs train](images/apiTrain.png)
+
+Client:
+http://localhost:3000/train
+![client train](images/train.png)
+> In training:
+![training](training.png)
 
 
 ## Build
