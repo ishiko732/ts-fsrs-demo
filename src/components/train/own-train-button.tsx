@@ -43,7 +43,7 @@ export default function OwnTrainButton({
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("@public/fsrs_worker.ts", import.meta.url)
+      new URL("./fsrs_worker.ts", import.meta.url)
     );
     workerRef.current.onmessage = (event: MessageEvent<Float32Array>) => {
       const endTime = performance.now();
