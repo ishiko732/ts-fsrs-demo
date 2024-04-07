@@ -3,7 +3,7 @@
 import { getProcessW } from "@/app/api/fsrs/train/train";
 import { useTrainContext } from "@/context/TrainContext";
 import { ExportRevLog } from "@/lib/log";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function OwnTrainButton({
   action,
@@ -43,7 +43,7 @@ export default function OwnTrainButton({
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("@/../public/fsrs_worker.ts", import.meta.url)
+      new URL("@public/fsrs_worker.ts", import.meta.url)
     );
     workerRef.current.onmessage = (event: MessageEvent<Float32Array>) => {
       const endTime = performance.now();

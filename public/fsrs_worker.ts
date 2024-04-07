@@ -1,29 +1,30 @@
-import init, { Fsrs, initThreadPool } from "fsrs-browser/fsrs_browser";
+import init, { Fsrs } from "fsrs-browser/fsrs_browser";
 import * as papa from "papaparse";
-import { cpus } from "os";
 
 Error.stackTraceLimit = 30;
 
 self.onmessage = async (event) => {
-  const wasmURL = new URL("@/../public/fsrs_browser_bg.wasm", import.meta.url);
+  const wasmURL = new URL("@public/fsrs_browser_bg.wasm", import.meta.url);
+  let result: TrainResult | Float32Array;
   if (event.data instanceof File) {
-    const result = await loadCsvAndTrain(wasmURL, event.data);
-    self.postMessage(result);
+    result = await loadCsvAndTrain(wasmURL, event.data);
   } else if (
     event.data.cids instanceof BigInt64Array &&
     event.data.eases instanceof Uint8Array &&
     event.data.ids instanceof BigInt64Array &&
     event.data.types instanceof Uint8Array
   ) {
-    const result = await computeParameters(
+    result = await computeParameters(
       wasmURL,
       event.data.cids,
       event.data.eases,
       event.data.ids,
       event.data.types
     );
-    self.postMessage(result);
+  } else {
+    throw new Error("Invalid data");
   }
+  self.postMessage(result);
   console.log("finished");
 };
 
@@ -79,12 +80,6 @@ export async function computeParameters(
   types: Uint8Array
 ) {
   await init(wasmURL);
-  console.log(cpus().length);
-//   if (cpus.length > 0) {
-//     await initThreadPool(cpus().length);
-//   }else{
-//     await initThreadPool(1);
-//   }
   let fsrs = new Fsrs();
   console.time("full training time");
   let parameters = fsrs.computeParametersAnki(cids, eases, ids, types);
