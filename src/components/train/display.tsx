@@ -22,7 +22,9 @@ export default function TrainDisplay() {
     trainTime && (
       <div className="flex justify-center">
         <div className="label flex flex-col gap-2">
-          <p className="label-text w-full text-left">W: {JSON.stringify(w)}</p>
+          <p className="label-text w-full text-left">
+            W: <span className="select-all">{JSON.stringify(w)}</span>
+          </p>
           <p className="label-text w-full text-left">
             <button className="btn" onClick={handleClick}>
               Copy w
