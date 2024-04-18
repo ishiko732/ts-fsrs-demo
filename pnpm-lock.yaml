@@ -45,8 +45,8 @@ dependencies:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
   ts-fsrs:
-    specifier: ^3.5.6
-    version: 3.5.6
+    specifier: ^3.5.7
+    version: 3.5.7
 
 devDependencies:
   '@types/bcrypt':
@@ -2928,8 +2928,8 @@ packages:
       typescript: 5.2.2
     dev: true
 
-  /ts-fsrs@3.5.6:
-    resolution: {integrity: sha512-jZIhkjECNqfs1zm1dLFeHoDnOawN7uhAMUEjpOfHk/k/RaeunYZprqYxAIBXFK+Slvf99T4C6PmeAwAKsN2P+w==}
+  /ts-fsrs@3.5.7:
+    resolution: {integrity: sha512-xA18Igi1adkuCNgNjKkorjYgZq842+HdgRjatQPDERcrAWMlzM+3BwIbrF/Q0ijYEyw3NcTp3yJIMSO7agBLKQ==}
     engines: {node: '>=16.0.0'}
     dependencies:
       seedrandom: 3.0.5
