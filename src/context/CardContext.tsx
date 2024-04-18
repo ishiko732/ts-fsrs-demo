@@ -218,13 +218,17 @@ export function CardProvider({
           setShowTime(new Date().getTime());
         });
       if(note.card&&note.card.state==='Review'){
-        const r = fsrs().get_retrievability(note.card,fixDate(new Date().toLocaleString("UTC",{timeZone:'UTC'})))
+        const r = fsrs().get_retrievability(
+          note.card,
+          fixDate(new Date().toLocaleString("UTC", { timeZone: "UTC" })),
+          true
+        );
         if(r){
           setDSR({
-            D:note.card.difficulty,
-            S:note.card.stability,
-            R:r
-          })
+            D: note.card.difficulty,
+            S: Math.round(note.card.stability),
+            R: r,
+          });
         }else{
           setDSR(undefined)
         }
