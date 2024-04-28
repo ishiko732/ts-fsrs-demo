@@ -21,7 +21,7 @@
     "@vercel/speed-insights": "^1.0.2",
     "bcrypt": "^5.1.1",
     "clsx": "^2.0.0",
-    "fsrs-browser": "^0.6.1",
+    "fsrs-browser": "^0.6.2",
     "next": "14.1.0",
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",

@@ -24,8 +24,8 @@ dependencies:
     specifier: ^2.0.0
     version: 2.0.0
   fsrs-browser:
-    specifier: ^0.6.1
-    version: 0.6.1
+    specifier: ^0.6.2
+    version: 0.6.2
   next:
     specifier: 14.1.0
     version: 14.1.0(react-dom@18.2.0)(react@18.2.0)
@@ -1506,8 +1506,8 @@ packages:
     dev: true
     optional: true
 
-  /fsrs-browser@0.6.1:
-    resolution: {integrity: sha512-aRnUZvOD1ntcjCAASqWPuBBrWWDbl1TeVcZBx4lBi0jttCg1xa4GEDWqhObWamX1T/igAtekIbcjlkDe2sY+Fg==}
+  /fsrs-browser@0.6.2:
+    resolution: {integrity: sha512-90E48xhLoMNCeG9y8E8DajRmOb0PDdVImA37iSbqMPrmzFuIpGqqyK5+JvWhHRObvLHlQGsj3JhzLe+L2+80BA==}
     dev: false
 
   /function-bind@1.1.1:
