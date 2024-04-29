@@ -8,7 +8,7 @@ export default function TrainTestButton() {
       className="btn mt-4"
       onClick={() => {
         console.log("UI thread is not blocked.");
-        alert("UI thread is not blocked.");
+        // alert("UI thread is not blocked.");
       }}
     >
       UI thread TEST

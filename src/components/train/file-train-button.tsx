@@ -6,8 +6,18 @@ import { useEffect, useRef } from "react";
 
 export default function FileTrain() {
   const workerRef = useRef<Worker>();
-  const { loading, setLoading, setW, setLoadTime, setTrainTime, setTotalTime } =
-    useTrainContext();
+
+  const {
+    loading,
+    setLoading,
+    setW,
+    setLoadTime,
+    setTrainTime,
+    setTotalTime,
+    timezone,
+    nextDayStart,
+    computerMinuteOffset,
+  } = useTrainContext();
 
   const handleClick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) {
@@ -15,7 +25,8 @@ export default function FileTrain() {
     }
     setLoading(true);
     const file = e.target.files[0];
-    workerRef.current?.postMessage(file);
+    const offset = computerMinuteOffset(timezone, nextDayStart);
+    workerRef.current?.postMessage({ file, offset });
     if (e.target.value) {
       e.target.value = "";
     }
@@ -26,9 +37,9 @@ export default function FileTrain() {
       new URL("./fsrs_worker.ts", import.meta.url)
     );
     workerRef.current.onmessage = (event: MessageEvent<TrainResult>) => {
-      console.log(event.data)
+      console.log(event.data);
       setW(getProcessW(event.data.w));
-      setLoadTime(event.data.loadTime)
+      setLoadTime(event.data.loadTime);
       setTrainTime(event.data.trainTime);
       setTotalTime(event.data.totalTime);
       setLoading(false);

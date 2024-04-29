@@ -1,5 +1,6 @@
 "use client";
 
+import { get_custom_timezone, get_timezone_offset } from "@/lib/date";
 import { createContext, useContext, useState } from "react";
 
 type TrainContextProps = {
@@ -13,6 +14,11 @@ type TrainContextProps = {
   setLoadTime: React.Dispatch<React.SetStateAction<string>>;
   totalTime: string;
   setTotalTime: React.Dispatch<React.SetStateAction<string>>;
+  timezone: string;
+  setTimezone: React.Dispatch<React.SetStateAction<string>>;
+  nextDayStart: number;
+  setNextDayStart: React.Dispatch<React.SetStateAction<number>>;
+  computerMinuteOffset: (timezone: string, nextDayStart: number) => number;
 };
 
 const TrainContext = createContext<TrainContextProps | undefined>(undefined);
@@ -35,6 +41,15 @@ export default function TrainProvider({
   const [trainTime, setTrainTime] = useState("");
   const [loadTime, setLoadTime] = useState("");
   const [totalTime, setTotalTime] = useState("");
+  const [timezone, setTimezone] = useState(get_custom_timezone()); // if UTC then timeoffset=0
+  const [nextDayStart, setNextDayStart] = useState(4); // 4 hr
+
+  const computerMinuteOffset = (timezone: string, nextDayStart: number) => {
+    const offset = get_timezone_offset(timezone) * -1;
+    const nextDayStartOffset = nextDayStart * 60;
+    const minute_offset = offset - nextDayStartOffset;
+    return minute_offset;
+  };
 
   const value = {
     w,
@@ -47,6 +62,11 @@ export default function TrainProvider({
     setLoadTime,
     totalTime,
     setTotalTime,
+    timezone,
+    setTimezone,
+    nextDayStart,
+    setNextDayStart,
+    computerMinuteOffset,
   };
   return (
     <TrainContext.Provider value={value}>{children}</TrainContext.Provider>
