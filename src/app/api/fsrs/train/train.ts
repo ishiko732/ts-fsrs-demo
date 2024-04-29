@@ -10,7 +10,11 @@ Error.stackTraceLimit = 30;
 //   self.postMessage(result);
 // };
 
-export async function loadCsvAndTrain(wasmURL: URL, file: papa.LocalFile) {
+export async function loadCsvAndTrain(
+  wasmURL: URL,
+  file: papa.LocalFile,
+  minute_offset: number
+) {
   const cids: bigint[] = [];
   const eases: number[] = [];
   const ids: bigint[] = [];
@@ -28,11 +32,12 @@ export async function loadCsvAndTrain(wasmURL: URL, file: papa.LocalFile) {
         eases.push(Number(data.review_rating));
         types.push(Number(data.review_state));
       },
-      complete:async function () {
+      complete: async function () {
         const loadEndTime = performance.now();
         const trainStartTime = performance.now();
         const w = await computeParameters(
           wasmURL,
+          minute_offset,
           new BigInt64Array(cids),
           new Uint8Array(eases),
           new BigInt64Array(ids),
@@ -56,6 +61,7 @@ export async function loadCsvAndTrain(wasmURL: URL, file: papa.LocalFile) {
 
 export async function computeParameters(
   wasmURL: URL,
+  minute_offset: number,
   cids: BigInt64Array,
   eases: Uint8Array,
   ids: BigInt64Array,
@@ -65,13 +71,18 @@ export async function computeParameters(
   //   await initThreadPool(cpus().length);
   let fsrs = new Fsrs();
   console.time("full training time");
-  let parameters = fsrs.computeParametersAnki(cids, eases, ids, types);
+  let parameters = fsrs.computeParametersAnki(
+    minute_offset,
+    cids,
+    eases,
+    ids,
+    types
+  );
   console.timeEnd("full training time");
   fsrs.free();
   console.log(parameters);
   return parameters;
 }
-
 
 export function getProcessW(w: Float32Array) {
   const processed_w = [];

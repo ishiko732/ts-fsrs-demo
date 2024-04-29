@@ -2,7 +2,6 @@ export function get_custom_timezone(): string {
   return new Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
-
 // https://stackoverflow.com/questions/20712419/get-utc-offset-from-timezone-in-javascript
 export function get_timezone_offset(timeZone: string): number {
   const timeZoneName = Intl.DateTimeFormat("ia", {
@@ -27,6 +26,16 @@ export function get_timezone_offset(timeZone: string): number {
 }
 
 // https://stackoverflow.com/questions/38399465/how-to-get-list-of-all-timezones-in-javascript
-export function get_timezones(){
-    return Intl.supportedValuesOf("timeZone");
+export function get_timezones() {
+  return Intl.supportedValuesOf("timeZone");
 }
+
+export const computerMinuteOffset = (
+  timezone: string,
+  nextDayStart: number
+) => {
+  const offset = get_timezone_offset(timezone) * -1;
+  const nextDayStartOffset = nextDayStart * 60;
+  const minute_offset = offset - nextDayStartOffset;
+  return minute_offset;
+};
