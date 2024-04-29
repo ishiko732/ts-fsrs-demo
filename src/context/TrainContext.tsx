@@ -1,7 +1,7 @@
 "use client";
 
-import { get_custom_timezone, get_timezone_offset } from "@/lib/date";
-import { createContext, useContext, useState } from "react";
+import { get_custom_timezone } from "@/lib/date";
+import { createContext, useContext, useRef, useState } from "react";
 
 type TrainContextProps = {
   w: number[];
@@ -18,6 +18,8 @@ type TrainContextProps = {
   setTimezone: React.Dispatch<React.SetStateAction<string>>;
   nextDayStart: number;
   setNextDayStart: React.Dispatch<React.SetStateAction<number>>;
+  progressRef: React.MutableRefObject<HTMLProgressElement | null>;
+  progressTextRef: React.MutableRefObject<HTMLDivElement | null>;
 };
 
 const TrainContext = createContext<TrainContextProps | undefined>(undefined);
@@ -42,6 +44,8 @@ export default function TrainProvider({
   const [totalTime, setTotalTime] = useState("");
   const [timezone, setTimezone] = useState(get_custom_timezone()); // if UTC then timeoffset=0
   const [nextDayStart, setNextDayStart] = useState(4); // 4 hr
+  const progressRef = useRef<HTMLProgressElement>(null);
+  const progressTextRef = useRef<HTMLDivElement>(null);
 
   const value = {
     w,
@@ -58,6 +62,8 @@ export default function TrainProvider({
     setTimezone,
     nextDayStart,
     setNextDayStart,
+    progressRef,
+    progressTextRef,
   };
   return (
     <TrainContext.Provider value={value}>{children}</TrainContext.Provider>

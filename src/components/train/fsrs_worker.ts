@@ -1,7 +1,16 @@
-import init, { Fsrs } from "fsrs-browser/fsrs_browser";
+import init, {
+  Fsrs,
+  Progress,
+  InitOutput,
+  getProgress,
+  initThreadPool,
+} from "fsrs-browser/fsrs_browser";
 import * as papa from "papaparse";
 
 Error.stackTraceLimit = 30;
+
+let container: InitOutput | null = null;
+let progress: Progress | null = null;
 
 self.onmessage = async (event) => {
   const wasmURL = new URL("@public/fsrs_browser_bg.wasm", import.meta.url);
@@ -80,18 +89,36 @@ export async function computeParameters(
   ids: BigInt64Array,
   types: Uint8Array
 ) {
-  await init(wasmURL);
+  container = await init(wasmURL);
+  // await initThreadPool(navigator.hardwareConcurrency);
+  progress = Progress.new();
+
   const fsrs = new Fsrs();
   console.time("full training time");
+  // must set next.config.js
+  // https://vercel.com/docs/projects/project-configuration#headers
+  // https://vercel.com/guides/fix-shared-array-buffer-not-defined-nextjs-react
+  self.postMessage({
+    tag: "start",
+    wasmMemoryBuffer: container.memory.buffer,
+    pointer: progress.pointer(),
+  } satisfies ProgressStart);
   const parameters = fsrs.computeParametersAnki(
     minute_offset,
     cids,
     eases,
     ids,
-    types
+    types,
+    progress
   );
-  console.timeEnd("full training time");
+  self.postMessage({
+    tag: "finish",
+    parameters,
+  } satisfies ProgressFinish);
   fsrs.free();
+  progress = null;
+  container = null;
+  console.timeEnd("full training time");
   console.log(parameters);
   return parameters;
 }
@@ -103,3 +130,15 @@ export function getProcessW(w: Float32Array) {
   }
   return processed_w;
 }
+
+// not working
+// export function getProgressPoint() {
+//   if (progress === null || container === null) {
+//     return undefined;
+//   }
+//   const { itemsProcessed, itemsTotal } = getProgress(
+//     container.memory.buffer,
+//     progress.pointer()
+//   );
+//   return { itemsProcessed, itemsTotal };
+// }
