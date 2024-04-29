@@ -2,6 +2,7 @@
 
 import { getProcessW } from "@/app/api/fsrs/train/train";
 import { useTrainContext } from "@/context/TrainContext";
+import { computerMinuteOffset } from "@/lib/date";
 import { useEffect, useRef } from "react";
 
 export default function FileTrain() {
@@ -16,7 +17,6 @@ export default function FileTrain() {
     setTotalTime,
     timezone,
     nextDayStart,
-    computerMinuteOffset,
   } = useTrainContext();
 
   const handleClick = async (e: React.ChangeEvent<HTMLInputElement>) => {
