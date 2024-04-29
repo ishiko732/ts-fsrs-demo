@@ -2,7 +2,9 @@
 
 import { getProcessW } from "@/app/api/fsrs/train/train";
 import { useTrainContext } from "@/context/TrainContext";
+import { computerMinuteOffset } from "@/lib/date";
 import { ExportRevLog } from "@/lib/log";
+import { getProgress } from "fsrs-browser";
 import { useEffect, useRef } from "react";
 
 export default function OwnTrainButton({
@@ -13,8 +15,19 @@ export default function OwnTrainButton({
   const workerRef = useRef<Worker>();
   const trainTimeRef = useRef<number>(0);
   const startRef = useRef<number>(0);
-  const { loading, setLoading, setW, setLoadTime, setTrainTime, setTotalTime } =
-    useTrainContext();
+  const timeIdRef = useRef<NodeJS.Timeout>();
+  const {
+    loading,
+    setLoading,
+    setW,
+    setLoadTime,
+    setTrainTime,
+    setTotalTime,
+    timezone,
+    nextDayStart,
+    progressRef,
+    progressTextRef,
+  } = useTrainContext();
   const handleClick = async () => {
     setLoading(true);
     const start = performance.now();
@@ -33,7 +46,9 @@ export default function OwnTrainButton({
     });
     setLoadTime(`${(loadEndTime - start).toFixed(5)}ms`);
     trainTimeRef.current = performance.now();
+    const offset = computerMinuteOffset(timezone, nextDayStart);
     workerRef.current?.postMessage({
+      offset,
       cids: new BigInt64Array(cids),
       eases: new Uint8Array(eases),
       ids: new BigInt64Array(ids),
@@ -45,12 +60,40 @@ export default function OwnTrainButton({
     workerRef.current = new Worker(
       new URL("./fsrs_worker.ts", import.meta.url)
     );
-    workerRef.current.onmessage = (event: MessageEvent<Float32Array>) => {
+    workerRef.current.onmessage = (
+      event: MessageEvent<Float32Array | ProgressState>
+    ) => {
       const endTime = performance.now();
-      setW(getProcessW(event.data));
-      setTrainTime(`${(endTime - trainTimeRef.current).toFixed(5)}ms`);
-      setTotalTime(`${(endTime - startRef.current).toFixed(5)}ms`);
-      setLoading(false);
+      if ("tag" in event.data) {
+        const progressState = event.data as ProgressState;
+        if (progressState.tag === "start") {
+          const { wasmMemoryBuffer, pointer } = progressState;
+          clearInterval(timeIdRef.current);
+          timeIdRef.current = setInterval(() => {
+            const { itemsProcessed, itemsTotal } = getProgress(
+              wasmMemoryBuffer,
+              pointer
+            );
+            if (progressRef.current) {
+              progressRef.current.value = itemsProcessed;
+              progressRef.current.max = itemsTotal;
+            }
+            if (progressTextRef.current) {
+              progressTextRef.current.innerText = `${itemsProcessed}/${itemsTotal}`;
+            }
+            console.log(itemsProcessed, itemsTotal);
+          }, 100);
+        } else if (progressState.tag === "finish") {
+          clearInterval(timeIdRef.current);
+          console.log("finish");
+        }
+        return;
+      } else {
+        setW(getProcessW(event.data));
+        setTrainTime(`${(endTime - trainTimeRef.current).toFixed(5)}ms`);
+        setTotalTime(`${(endTime - startRef.current).toFixed(5)}ms`);
+        setLoading(false);
+      }
     };
     return () => {
       workerRef.current?.terminate();

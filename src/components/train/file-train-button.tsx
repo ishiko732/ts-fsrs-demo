@@ -47,6 +47,7 @@ export default function FileTrain() {
         // process ProgressState
         const progressState = event.data as ProgressState;
         if (progressState.tag === "start") {
+          const { wasmMemoryBuffer, pointer } = progressState;
           clearInterval(timeIdRef.current);
           timeIdRef.current = setInterval(() => {
             const { itemsProcessed, itemsTotal } = getProgress(
@@ -62,7 +63,6 @@ export default function FileTrain() {
             }
             console.log(itemsProcessed, itemsTotal);
           }, 100);
-          const { wasmMemoryBuffer, pointer } = progressState;
         } else if (progressState.tag === "finish") {
           clearInterval(timeIdRef.current);
           console.log("finish");
