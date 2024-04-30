@@ -2,12 +2,16 @@
 
 import { useTrainContext } from "@/context/TrainContext";
 import { get_timezones } from "@/lib/date";
+import { useState, useEffect } from "react";
 
 export default function TimezoneSelector() {
+  // https://nextjs.org/docs/messages/react-hydration-error
+  const [isClient, setIsClient] = useState(false);
   const { timezone, setTimezone } = useTrainContext();
-
   const timezones = get_timezones();
-
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   const handlClick = (tz: string) => {
     setTimezone(tz);
   };
@@ -19,12 +23,11 @@ export default function TimezoneSelector() {
       <select
         className="select select-bordered"
         onChange={(e) => handlClick(e.target.value)}
+        value={timezone}
       >
-        {timezones.map((tz) => (
-          <option key={tz} selected={timezone === tz}>
-            {tz}
-          </option>
-        ))}
+        {isClient
+          ? timezones.map((tz) => <option key={tz}>{tz}</option>)
+          : null}
       </select>
     </label>
   );
