@@ -12,7 +12,7 @@ export default function TimezoneSelector() {
   useEffect(() => {
     setTimezone(get_custom_timezone());
     setIsClient(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const handlClick = (tz: string) => {
     setTimezone(tz);
@@ -25,10 +25,13 @@ export default function TimezoneSelector() {
       <select
         className="select select-bordered"
         onChange={(e) => handlClick(e.target.value)}
-        value={timezone}
       >
         {isClient
-          ? timezones.map((tz) => <option key={tz}>{tz}</option>)
+          ? timezones.map((tz) => (
+              <option key={tz} selected={tz === timezone}>
+                {tz}
+              </option>
+            ))
           : null}
       </select>
     </label>
