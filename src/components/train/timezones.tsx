@@ -1,7 +1,7 @@
 "use client";
 
 import { useTrainContext } from "@/context/TrainContext";
-import { get_timezones } from "@/lib/date";
+import { get_custom_timezone, get_timezones } from "@/lib/date";
 import { useState, useEffect } from "react";
 
 export default function TimezoneSelector() {
@@ -10,7 +10,9 @@ export default function TimezoneSelector() {
   const { timezone, setTimezone } = useTrainContext();
   const timezones = get_timezones();
   useEffect(() => {
+    setTimezone(get_custom_timezone());
     setIsClient(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const handlClick = (tz: string) => {
     setTimezone(tz);
