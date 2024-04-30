@@ -3,7 +3,6 @@
 import { getProcessW } from "@/app/api/fsrs/train/train";
 import { useTrainContext } from "@/context/TrainContext";
 import { computerMinuteOffset } from "@/lib/date";
-import { getProgress } from "fsrs-browser";
 import { useEffect, useRef } from "react";
 
 export default function FileTrain() {
@@ -18,8 +17,7 @@ export default function FileTrain() {
     setTotalTime,
     timezone,
     nextDayStart,
-    progressRef,
-    progressTextRef,
+    handleProgress,
   } = useTrainContext();
 
   const handleClick = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,20 +46,9 @@ export default function FileTrain() {
         const progressState = event.data as ProgressState;
         if (progressState.tag === "start") {
           const { wasmMemoryBuffer, pointer } = progressState;
-          clearInterval(timeIdRef.current);
+          handleProgress(wasmMemoryBuffer, pointer);
           timeIdRef.current = setInterval(() => {
-            const { itemsProcessed, itemsTotal } = getProgress(
-              wasmMemoryBuffer,
-              pointer
-            );
-            if (progressRef.current) {
-              progressRef.current.value = itemsProcessed;
-              progressRef.current.max = itemsTotal;
-            }
-            if (progressTextRef.current) {
-              progressTextRef.current.innerText = `${itemsProcessed}/${itemsTotal}`;
-            }
-            console.log(itemsProcessed, itemsTotal);
+            handleProgress(wasmMemoryBuffer, pointer);
           }, 100);
         } else if (progressState.tag === "finish") {
           clearInterval(timeIdRef.current);

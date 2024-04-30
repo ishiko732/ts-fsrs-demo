@@ -1,6 +1,7 @@
 "use client";
 
 import { get_custom_timezone } from "@/lib/date";
+import { getProgress } from "fsrs-browser";
 import { createContext, useContext, useRef, useState } from "react";
 
 type TrainContextProps = {
@@ -20,6 +21,7 @@ type TrainContextProps = {
   setNextDayStart: React.Dispatch<React.SetStateAction<number>>;
   progressRef: React.MutableRefObject<HTMLProgressElement | null>;
   progressTextRef: React.MutableRefObject<HTMLDivElement | null>;
+  handleProgress: (wasmMemoryBuffer: ArrayBuffer, pointer: number) => void;
 };
 
 const TrainContext = createContext<TrainContextProps | undefined>(undefined);
@@ -47,6 +49,21 @@ export default function TrainProvider({
   const progressRef = useRef<HTMLProgressElement>(null);
   const progressTextRef = useRef<HTMLDivElement>(null);
 
+  const handleProgress = (wasmMemoryBuffer: ArrayBuffer, pointer: number) => {
+    const { itemsProcessed, itemsTotal } = getProgress(
+      wasmMemoryBuffer,
+      pointer
+    );
+    if (progressRef.current) {
+      progressRef.current.value = itemsProcessed;
+      progressRef.current.max = itemsTotal;
+    }
+    if (progressTextRef.current) {
+      progressTextRef.current.innerText = `${itemsProcessed}/${itemsTotal}`;
+    }
+    console.log(itemsProcessed, itemsTotal);
+  };
+  
   const value = {
     w,
     setW,
@@ -64,6 +81,7 @@ export default function TrainProvider({
     setNextDayStart,
     progressRef,
     progressTextRef,
+    handleProgress
   };
   return (
     <TrainContext.Provider value={value}>{children}</TrainContext.Provider>
