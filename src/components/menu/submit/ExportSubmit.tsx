@@ -18,6 +18,11 @@ export default function ExportSubmitButton({ action }: { action: () => Promise<E
         setLoading(true)
         const data = await action();
         const logs = data.revlogs
+        if(logs.length === 0){
+            alert("No logs to export")
+            setLoading(false)
+            return;
+        }
         const GMT = -data.offset / 60
         const head = Object.keys(logs[0]).join(',') + '\n'
         const body = logs.map(log => Object.values(log).join(',')).join('\n')
