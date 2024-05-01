@@ -13,3 +13,25 @@ interface TrainResult {
   totalTime: string;
   count: number;
 }
+
+interface ProgressStart {
+  tag: "start";
+  wasmMemoryBuffer: ArrayBuffer;
+  pointer: number;
+}
+
+interface ProgressFinish {
+  tag: "finish";
+  parameters: Float32Array;
+}
+
+interface ProgressItem {
+  itemsProcessed: number;
+  itemsTotal: number;
+}
+
+interface Progress extends ProgressItem {
+  tag: "progress";
+}
+
+type ProgressState = Progress | ProgressStart | ProgressFinish;

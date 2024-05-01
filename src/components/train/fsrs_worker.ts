@@ -1,26 +1,29 @@
-import init, { Fsrs } from "fsrs-browser/fsrs_browser";
+import init, {
+  Fsrs,
+  Progress,
+  InitOutput,
+  initThreadPool,
+} from "fsrs-browser/fsrs_browser";
 import * as papa from "papaparse";
 
 Error.stackTraceLimit = 30;
 
+let container: InitOutput | null = null;
+let progress: Progress | null = null;
+
 self.onmessage = async (event) => {
   const wasmURL = new URL("@public/fsrs_browser_bg.wasm", import.meta.url);
   let result: TrainResult | Float32Array;
-  if (event.data instanceof File) {
-    result = await loadCsvAndTrain(wasmURL, event.data);
+  const { file, offset, cids, eases, ids, types } = event.data;
+  if (file instanceof File) {
+    result = await loadCsvAndTrain(wasmURL, file, offset);
   } else if (
-    event.data.cids instanceof BigInt64Array &&
-    event.data.eases instanceof Uint8Array &&
-    event.data.ids instanceof BigInt64Array &&
-    event.data.types instanceof Uint8Array
+    cids instanceof BigInt64Array &&
+    eases instanceof Uint8Array &&
+    ids instanceof BigInt64Array &&
+    types instanceof Uint8Array
   ) {
-    result = await computeParameters(
-      wasmURL,
-      event.data.cids,
-      event.data.eases,
-      event.data.ids,
-      event.data.types
-    );
+    result = await computeParameters(wasmURL, offset, cids, eases, ids, types);
   } else {
     throw new Error("Invalid data");
   }
@@ -28,7 +31,11 @@ self.onmessage = async (event) => {
   console.log("finished");
 };
 
-export async function loadCsvAndTrain(wasmURL: URL, file: papa.LocalFile) {
+export async function loadCsvAndTrain(
+  wasmURL: URL,
+  file: papa.LocalFile,
+  minute_offset: number
+) {
   const cids: bigint[] = [];
   const eases: number[] = [];
   const ids: bigint[] = [];
@@ -51,6 +58,7 @@ export async function loadCsvAndTrain(wasmURL: URL, file: papa.LocalFile) {
         const trainStartTime = performance.now();
         const w = await computeParameters(
           wasmURL,
+          minute_offset,
           new BigInt64Array(cids),
           new Uint8Array(eases),
           new BigInt64Array(ids),
@@ -74,17 +82,47 @@ export async function loadCsvAndTrain(wasmURL: URL, file: papa.LocalFile) {
 
 export async function computeParameters(
   wasmURL: URL,
+  minute_offset: number,
   cids: BigInt64Array,
   eases: Uint8Array,
   ids: BigInt64Array,
   types: Uint8Array
 ) {
-  await init(wasmURL);
-  let fsrs = new Fsrs();
+  // https://github.com/open-spaced-repetition/fsrs-browser/blob/b44d5ab7d0b44a7cad8b0a61a68440fdfd7e9496/sandbox/src/train.ts#L11-L12
+  // PR#10: https://github.com/open-spaced-repetition/fsrs-browser/pull/10#issuecomment-1973066639
+  if (!container) { //
+    container = await init(wasmURL);
+    await initThreadPool(navigator.hardwareConcurrency);
+  }
+
+  progress = Progress.new();
+
+  const fsrs = new Fsrs();
   console.time("full training time");
-  let parameters = fsrs.computeParametersAnki(cids, eases, ids, types);
-  console.timeEnd("full training time");
+  // must set next.config.js
+  // https://vercel.com/docs/projects/project-configuration#headers
+  // https://vercel.com/guides/fix-shared-array-buffer-not-defined-nextjs-react
+  self.postMessage({
+    tag: "start",
+    wasmMemoryBuffer: container!.memory.buffer,
+    pointer: progress.pointer(),
+  } satisfies ProgressStart);
+  const parameters = fsrs.computeParametersAnki(
+    minute_offset,
+    cids,
+    eases,
+    ids,
+    types,
+    progress
+  );
+  self.postMessage({
+    tag: "finish",
+    parameters,
+  } satisfies ProgressFinish);
   fsrs.free();
+  progress = null;
+  // container = null;
+  console.timeEnd("full training time");
   console.log(parameters);
   return parameters;
 }
@@ -96,3 +134,15 @@ export function getProcessW(w: Float32Array) {
   }
   return processed_w;
 }
+
+// not working
+// export function getProgressPoint() {
+//   if (progress === null || container === null) {
+//     return undefined;
+//   }
+//   const { itemsProcessed, itemsTotal } = getProgress(
+//     container.memory.buffer,
+//     progress.pointer()
+//   );
+//   return { itemsProcessed, itemsTotal };
+// }
