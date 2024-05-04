@@ -111,22 +111,22 @@ export async function updateParameters(params: FSRSPutParams) {
     })
 }
 
-export function getFSRS(cid: number): Promise<{f:FSRS,userParams:ParametersType}>;
-export function getFSRS<T extends boolean>(cid: number, skip: T): Promise<T extends true ? null : {f:FSRS,userParams:ParametersType}>;
-export async function getFSRS<T extends boolean = boolean>
-    (cid:number,skip: T=false as T)
-    : Promise<T extends true ? null : {f:FSRS,userParams:ParametersType}> {
-    const userParams = await getFSRSParamsByCid(cid)
-    const permission = await isAdminOrSelf(userParams.uid)
-    if(!permission){
-        throw new Error("permission denied")
-    }
-    if(skip){
-        return null as T extends true ? null : {f:FSRS,userParams:ParametersType};
-    }
-    const f = fsrs(userParams.params) as FSRS
-    return {
-        f,
-        userParams
-    } as T extends true ? null : {f:FSRS,userParams:ParametersType};
+
+/**
+ * verify if the user has the permission to access the FSRS
+ * if the user is the admin or the owner of the FSRS, return the FSRS and the user parameters
+ * @param cid card id
+ * @throws permission denied
+ */
+export async function getFSRS(cid: number) {
+  const userParams = await getFSRSParamsByCid(cid);
+  const permission = await isAdminOrSelf(userParams.uid);
+  if (!permission) {
+    throw new Error("permission denied");
+  }
+  const f = fsrs(userParams.params) as FSRS;
+  return {
+    f,
+    userParams,
+  } as { f: FSRS; userParams: ParametersType };
 }

@@ -98,7 +98,11 @@ function getUpdateCardPayloadByScheduler(recordItem:RepeatRecordLog,duration:num
 }
 
 export async function updateCard(cid:number,now:Date,grade:Grade,duration:number){
-    const [_,recordItem]=await Promise.all([getFSRS(cid,true), schedulerCard({cid},now,Number(grade) as Grade)])
+    const recordItem = await schedulerCard(
+      { cid },
+      now,
+      Number(grade) as Grade
+    );
     const payload = getUpdateCardPayloadByScheduler(recordItem,duration)
     await prisma.card.update({
         where:{cid:cid},
