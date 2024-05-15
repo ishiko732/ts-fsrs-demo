@@ -2,7 +2,7 @@ import { Grade, fixState } from "ts-fsrs";
 import { getNoteByCid, getNoteByNid } from "./note";
 import prisma from "./prisma";
 import { findLastLogByCid } from "./log";
-import { getFSRS } from "./fsrs";
+import { getFSRSBySessionUser } from "./fsrs";
 import { Card, Note } from "@prisma/client";
 import { RecordLogPrisma, RepeatRecordLog, forgetAfterHandler, repeatAfterHandler, rollbackAfterHandler } from "@/vendor/fsrsToPrisma/handler";
 import { CardUpdatePayload } from "@/types";
@@ -50,7 +50,7 @@ export async function schedulerCard<T extends Grade>(query:Partial<Query>,now:Da
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
-    const {f,userParams} = await getFSRS(cardByPrisma.cid)
+    const { f, userParams } = await getFSRSBySessionUser(cardByPrisma.note.uid);
     const card={
         ...cardByPrisma,
         nid:cardByPrisma.note.nid,
@@ -131,7 +131,7 @@ export async function rollbackCard(query:Partial<Query>){
     if(!cardByPrisma){  
         throw new Error("card not found")
     }
-    const [log,{f}] =await Promise.all([findLastLogByCid(cardByPrisma.cid), getFSRS(cardByPrisma.cid)])
+    const [log,{f}] =await Promise.all([findLastLogByCid(cardByPrisma.cid), getFSRSBySessionUser(cardByPrisma.note.uid)])
     if(!log){  
         throw new Error("log not found")
     }
@@ -157,7 +157,7 @@ export async function rollbackCard(query:Partial<Query>){
 
 export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
     const cardByPrisma = await findCardByCid(cid);
-    const {f} = await getFSRS(cardByPrisma.cid)
+    const {f} = await getFSRSBySessionUser(cardByPrisma.note.uid)
     const recordItem = f.forget(cardByPrisma, now, reset_count,forgetAfterHandler)
     await prisma.card.update({
         where:{cid},
