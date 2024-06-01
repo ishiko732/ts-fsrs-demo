@@ -4,11 +4,9 @@ import {
   createContext,
   ReactNode,
   useContext,
-  useEffect,
   useState,
-  useTransition,
 } from "react";
-import { Grade, RecordLog, State, fixDate } from "ts-fsrs";
+import { Grade, RecordLog, State } from "ts-fsrs";
 import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 import { useCardBoxes } from "@/hooks/useCardBoxes";
 import { useRollback } from "@/hooks/useRollback";
@@ -58,47 +56,44 @@ export function CardProvider({
   children: ReactNode;
   noteBox0: Array<Array<Note & { card: Card }>>;
 }) {
-  const { currentType, setCurrentType, noteBox, setNoteBox } =
-    useCardBoxes(noteBox0);
   const [open, setOpen] = useState(false);
-
-  const { rollBackRef, rollbackAble, setRollbackAble, handleRollBack } =
-    useRollback({
-      currentType,
-      setCurrentType,
-      noteBox,
-      setNoteBox,
-      open,
-      setOpen,
-    });
-
-  const { schedule, setSchedule, handleSchdule, DSR, setDSR } = useSchedule({
-    noteBox,
-    currentType,
-    setCurrentType,
-    setNoteBox,
-    rollBackRef,
-    rollbackAble,
-    setRollbackAble,
+  const cardHooks = useCardBoxes(noteBox0);
+  const rollbackHooks = useRollback({
+    currentType: cardHooks.currentType,
+    setCurrentType: cardHooks.setCurrentType,
+    noteBox: cardHooks.noteBox,
+    setNoteBox: cardHooks.setNoteBox,
     open,
     setOpen,
-    handleRollBack,
+  });
+
+  const scheduleHooks = useSchedule({
+    currentType: cardHooks.currentType,
+    setCurrentType: cardHooks.setCurrentType,
+    noteBox: cardHooks.noteBox,
+    setNoteBox: cardHooks.setNoteBox,
+    rollBackRef: rollbackHooks.rollBackRef,
+    rollbackAble: rollbackHooks.rollbackAble,
+    setRollbackAble: rollbackHooks.setRollbackAble,
+    handleRollBack: rollbackHooks.handleRollBack,
+    open,
+    setOpen,
   });
 
   const value = {
     open,
     setOpen,
-    currentType,
-    setCurrentType,
-    schedule,
-    setSchedule,
-    noteBox: noteBox,
-    setNoteBox: setNoteBox,
-    handleSchdule,
-    handleRollBack,
-    rollbackAble,
-    DSR,
-    setDSR,
+    noteBox: cardHooks.noteBox,
+    setNoteBox: cardHooks.setNoteBox,
+    currentType: cardHooks.currentType,
+    setCurrentType: cardHooks.setCurrentType,
+    handleRollBack: rollbackHooks.handleRollBack,
+    rollbackAble: rollbackHooks.rollbackAble,
+    schedule: scheduleHooks.schedule,
+    setSchedule: scheduleHooks.setSchedule,
+    handleSchdule: scheduleHooks.handleSchdule,
+    DSR: scheduleHooks.DSR,
+    setDSR: scheduleHooks.setDSR,
   };
   return <CardContext.Provider value={value}>{children}</CardContext.Provider>;
 }
