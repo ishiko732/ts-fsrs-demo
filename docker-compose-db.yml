@@ -1,0 +1,21 @@
+version: "3.1"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: demo_postgres_container
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fsrsDemo
+      TZ: UTC
+    volumes:
+      - demo_postgres_data:/var/lib/postgresql/data
+      - ./src/prisma/migrations/20240309044015_init/:/docker-entrypoint-initdb.d
+    restart: always
+
+
+volumes:
+  demo_postgres_data:

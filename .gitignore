@@ -45,3 +45,7 @@ yalc.lock
 .env.development
 .env.test
 .env.production
+
+
+# idea
+.idea/

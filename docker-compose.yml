@@ -1,6 +1,32 @@
-version: '3.1'
+version: "3.1"
 
 services:
+  # https://github.com/vercel/next.js/blob/canary/examples/with-docker-compose/docker-compose.dev.yml
+  next-app:
+    tty: true
+    depends_on:
+      - postgres
+    container_name: ts-fsrs-demo
+    build:
+      context: .
+      network: host
+
+    # Set environment variables directly in the docker-compose file
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+
+    # Set environment variables based on the .env file
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./node_modules:/app/node_modules
+    restart: always
+    ports:
+      - 3000:3000
+    command: ["/bin/sh", "./start.sh"]
   postgres:
     image: postgres:latest
     container_name: demo_postgres_container
@@ -10,31 +36,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: fsrsDemo
+      TZ: UTC
     volumes:
       - demo_postgres_data:/var/lib/postgresql/data
+      - ./src/prisma/migrations/20240309044015_init/:/docker-entrypoint-initdb.d
     restart: always
-  # https://github.com/vercel/next.js/blob/canary/examples/with-docker-compose/docker-compose.dev.yml
-  next-app:
-      container_name: ts-fsrs-demo
-      build:
-        context: .
-        dockerfile: dev.Dockerfile
-        network: host
 
-      # Set environment variables directly in the docker-compose file
-      environment:
-        DATABASE_URL: ${DATABASE_URL}
-        NEXTAUTH_URL: ${NEXTAUTH_URL}
-        NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-
-      # Set environment variables based on the .env file
-      env_file:
-        - .env
-      volumes:
-        - .:./app
-      restart: always
-      ports:
-        - 3000:3000
 
 volumes:
   demo_postgres_data:
