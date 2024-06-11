@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  next_app:
+    container_name: next-app
+    user: "node"
+
+    build:
+      context: . # ビルドに必要なファイルが存在するディレクトリのパスを指定
+      dockerfile: Dockerfile.dev # ビルドに使用するDockerfileの名前を指定
+
+    volumes:
+      # ホストのディレクトリとコンテナの/workspaceをマウント
+      - type: bind
+        source: .
+        target: /workspace
+
+      - type: volume
+        source: node_modules
+        target: /workspace/next_app/node_modules
+
+    ports:
+      - 3000:3000 # ホストのポート3000をコンテナのポート3000にマッピング
+
+    networks:
+      - next_app_network # コンテナが参加するネットワークの名前
+
+volumes:
+  node_modules:
+    name: next_app_node_modules
+
+networks:
+  next_app_network:
+    driver: host

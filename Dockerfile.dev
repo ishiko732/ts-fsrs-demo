@@ -1,0 +1,21 @@
+FROM node:22-alpine as Base
+
+WORKDIR /workspace/next_app
+
+RUN mkdir -p /workspace/next_app/node_modules
+
+# 依存関係をインストール
+COPY next_app/package.json next_app/pnpm-lock* ./
+
+RUN pnpm install
+
+RUN chown -R node:node ./
+USER node
+
+# Next.jsによってテレメトリデータを収集するのを無効にする
+ARG NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED=$NEXT_TELEMETRY_DISABLED
+
+# 注意: ポートのマッピングはdocker-composeで行うため、設定しない
+
+CMD ["pnpm", "dev"]
