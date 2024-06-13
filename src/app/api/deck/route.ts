@@ -9,6 +9,6 @@ export async function GET() {
     }
     const deckService = new DeckService();
     const fsrs = await deckService.getAlgorithm(uid)
-    const deckContext = await deckService.getTodayMemoryContext(uid, "Asia/Shanghai", 4)
+    const deckContext = await deckService.getTodayMemoryContext(uid, "UTC", 4)
     return NextResponse.json(deckContext, { status: 200 })
 }
