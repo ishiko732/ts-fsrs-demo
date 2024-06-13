@@ -93,7 +93,7 @@ export class DeckService implements IDeckService {
             const state = states[i];
             const total = await notesMemoryTotal[i];
             const pageSize = Math.min(50, total);
-            const memoryState = await getNoteMemoryState(uid, state, startOfDay, pageSize);
+            const memoryState = await getNoteMemoryState(uid, state, startOfDay, pageSize, limit, count);
             noteContext[state] = {
                 memoryState,
                 pageSize,
@@ -175,7 +175,7 @@ type NoteMemoryContext = {
 const MOCK_DECKID = 1;
 const CARD_NULL = -1;
 const INVALID_DUE = Infinity;
-async function getNoteMemoryState(uid: number, state: PrismaState, lte: Date, pageSize: number, page: number = 1) {
+async function getNoteMemoryState(uid: number, state: PrismaState, lte: Date, limit: number, todayCount: number, pageSize: number, page: number = 1) {
     const notes = await prisma.note.findMany({
         where: {
             uid,
@@ -196,7 +196,7 @@ async function getNoteMemoryState(uid: number, state: PrismaState, lte: Date, pa
                 }
             }
         },
-        take: pageSize,
+        take: state === PrismaState.New ? Math.max(0, limit - todayCount) : undefined,
         skip: (page - 1) * pageSize,
     });
     return notes.map(note => {
@@ -221,6 +221,6 @@ async function getNoteMemoryTotal(uid: number, state: PrismaState, lte: Date, li
                 deleted: false
             }
         },
-        take: state === PrismaState.New ? Math.max(0, 50 - 0) : undefined,
+        take: state === PrismaState.New ? Math.max(0, limit - todayCount) : undefined,
     });
 }
