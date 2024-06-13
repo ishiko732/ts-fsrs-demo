@@ -183,6 +183,7 @@ async function getNoteMemoryState(uid: number, state: PrismaState, lte: Date, pa
             card: {
                 suspended: false,
                 due: state === PrismaState.Review ? { lte: lte } : undefined,
+                state,
                 deleted: false
             }
         },
