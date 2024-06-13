@@ -46,9 +46,9 @@ export class DeckService implements IDeckService {
 
     getTodayMemoryContext = async (uid: number, timezone: string, hourOffset: number): Promise<DeckMemoryState> => {
         const clientTime = Intl.DateTimeFormat('en-US', { timeZone: timezone }).format(new Date());
-        const currentDate = new Date(clientTime);
+        let currentDate = new Date(clientTime);
         if (currentDate.getHours() < hourOffset) {
-            currentDate.setDate(currentDate.getDate() - 1);
+            currentDate = date_scheduler(currentDate, -1, true);
         }
         const startOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), hourOffset, 0, 0, 0);
         const startTimestamp = startOfDay.getTime();
