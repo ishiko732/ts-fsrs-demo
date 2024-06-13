@@ -5,10 +5,10 @@ import { NextResponse } from "next/server";
 export async function GET() {
     const uid = await getSessionUserId();
     if (!uid) {
-        return null;
+        return NextResponse.json({ msg: 'uid not found' }, { status: 401 });
     }
     const deckService = new DeckService();
     const fsrs = await deckService.getAlgorithm(uid)
     const deckContext = await deckService.getTodayMemoryContext(uid, "Asia/Shanghai", 4)
-    return NextResponse.json(deckContext)
+    return NextResponse.json(deckContext, { status: 200 })
 }
