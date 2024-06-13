@@ -217,6 +217,7 @@ async function getNoteMemoryTotal(uid: number, state: PrismaState, lte: Date, li
             card: {
                 suspended: false,
                 due: state === PrismaState.Review ? { lte: lte } : undefined,
+                state,
                 deleted: false
             }
         },
