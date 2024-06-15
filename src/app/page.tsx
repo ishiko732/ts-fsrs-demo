@@ -1,15 +1,13 @@
-import Link from "next/link";
-import { FSRSVersion } from "ts-fsrs";
-import UserBar from "@/auth/components/UserBar";
 import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
+import HomePage from "@/page/home";
 
 export default async function Home() {
   const session = await getAuthSession()
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV;
   return (
     <>
-      <div className="min-h-screen">
-        <UserBar user={session?.user} />
+        <HomePage />
+        {/* <UserBar user={session?.user} />
         <main className="flex flex-col min-h-screen items-center justify-center">
           <div className="sm:my-4 sm:text-xl">TS-FSRS-DEMO</div>
           <div className="sm:my-4 sm:text-lg">
@@ -42,8 +40,7 @@ export default async function Home() {
               </button>
             </Link>
           </div>
-        </main>
-      </div>
+        </main> */}
     </>
   );
 }

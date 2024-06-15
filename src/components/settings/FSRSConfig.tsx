@@ -1,46 +1,11 @@
-import { ParametersType, updateParameters } from "@/lib/fsrs";
+import { ParametersType } from "@/lib/fsrs";
 import ConfigButtonGroup from "./ConfigButtonGroup";
 import Link from "next/link";
 import CheckParams from "./CheckParams";
-import { reschedule } from "@/lib/reschedule";
+import { commitUserParams } from "@/actions/userParamsService";
 
 export default async function FSRSConfig(this: any, {uid,username,params}: {uid:number,username:string,params: ParametersType}) {
-    const submit = async (uid:number,formData: FormData) => {
-        'use server';
-        // const uid = Number(session.user!!.id)
-        const request_retention = Number(formData.get('request_retention'))
-        const maximum_interval = Number(Number(formData.get('maximum_interval')).toFixed(0))
-        const w = JSON.parse(formData.get('w') as string)
-        const enable_fuzz = formData.get('enable_fuzz') === 'on' ? true : false
-        const card_limit = Number(Number(formData.get('card_limit')).toFixed(0))
-        const lapses = formData.get('lapses') ? Math.max(Number(formData.get('lapses')), 3) : 8
-        const lingq_token = formData.get('lingq_token') ? String(formData.get('lingq_token')) : null
-        const data = {
-            request_retention,
-            maximum_interval,
-            w,
-            enable_fuzz,
-            card_limit,
-            uid,
-            lapses,
-            lingq_token
-        }
-        const params= await updateParameters(data);
-        // if(params.enable_fuzz){
-        //     // vercel serverless function has a 10s timeout
-        //     console.time("reschedule");
-        //     await reschedule(
-        //       {
-        //         ...params,
-        //         w: JSON.parse(params.w as string),
-        //       },
-        //       uid
-        //     );
-        //     console.timeEnd("reschedule");
-        // }
-        return true;
-    }
-    const method = submit.bind(null, uid)
+    const method = commitUserParams
     return <form action={method}>
         <CheckParams />
         <h1 className="divider flex justify-center items-center text-md">Settings({username})</h1>
