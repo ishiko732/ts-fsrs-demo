@@ -1,151 +1,261 @@
+'use client';
 import Link from 'next/link';
 import { commitUserParams, getUserParams } from '@/actions/userParamsService';
-import CheckParams from '../settings/CheckParams';
-import ConfigButtonGroup from '../settings/ConfigButtonGroup';
+import { useEffect, useState } from 'react';
+import { signOut } from 'next-auth/react';
+import { ParametersType } from '@/lib/fsrs';
+import { z } from 'zod';
+import LoadingSpinner from '../loadingSpinner';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Badge } from '../ui/badge';
+const formSchema = z.object({
+  request_retention: z.coerce
+    .number()
+    .min(0.7, { message: 'Value must be at least 0.7' })
+    .max(0.99, { message: 'Value must be no more than 0.99' })
+    .refine((val) => (val * 100) % 1 === 0, {
+      message: 'Value must be a multiple of 0.01',
+    })
+    .refine(Number.isFinite, { message: 'Value must be a finite number' }),
+  maximum_interval: z.coerce.number().min(7).max(36500).step(1).int(),
+  w: z.string(),
+  enable_fuzz: z.coerce.boolean().default(false),
+  card_limit: z.coerce.number().min(0).step(1).int(),
+  lapses: z.coerce.number().min(3).step(1).int(),
+  lingq_token: z.string().optional(),
+});
 
-export default async function FSRSConfig(this: any) {
-  const method = commitUserParams;
-  const { code, msg, data } = await getUserParams();
-  if (code !== 200 || !data) {
-    return <CheckParams />;
+export default function FSRSConfigForm({
+  loading,
+  setLoading,
+}: {
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const [params, setParams] = useState<ParametersType>();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
+  useEffect(() => {
+    getUserParams()
+      .then((res) => {
+        if (res.code === 200 && res.data) {
+          const param = res.data;
+          form.setValue('request_retention', param.params.request_retention);
+          form.setValue('maximum_interval', param.params.maximum_interval);
+          form.setValue('w', param.params.w.join(','));
+          form.setValue('enable_fuzz', param.params.enable_fuzz);
+          form.setValue('card_limit', param.card_limit);
+          form.setValue('lapses', param.lapses);
+          form.setValue('lingq_token', param.lingq_token ?? undefined);
+          setParams(param);
+        } else {
+          signOut();
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+        signOut();
+      });
+  }, []);
+  if (!params) {
+    return <LoadingSpinner />;
   }
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    // process w
+    const w = values.w
+      .replace(/[\[\]]/g, '')
+      .split(',')
+      .map((v) => parseFloat(v));
+    if (w.length !== 17) {
+      form.setError('w', { message: 'w must have 17 values' });
+      return;
+    }
+    if (loading) {
+      return;
+    }
+    setLoading(true);
+    const res = await commitUserParams({
+      ...values,
+      w,
+      lingq_token: values.lingq_token ?? null,
+    });
+    setLoading(false);
+    console.log(res);
+    window.location.reload();
+  }
+
   return (
-    <form action={method}>
-      <h1 className='divider flex justify-center items-center text-md'>
-        Settings
-      </h1>
-      <div>
-        <label htmlFor='request_retention' className='pr-4'>
-          request_retention:
-        </label>
-        <input
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='space-y-4 max-h-[80%] overflow-y-auto pb-4 px-8'
+      >
+        <FormField
+          control={form.control}
           name='request_retention'
-          className='input input-bordered w-full'
-          type='number'
-          max={0.99}
-          min={0.7}
-          step={0.01}
-          aria-label='request retention'
-          defaultValue={data.params.request_retention}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>request_retention</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder='request_retention'
+                  {...field}
+                  type='number'
+                />
+              </FormControl>
+              <FormDescription>
+                Represents the probability of the target memory you want. Note
+                that there is a trade-off between higher retention rates and
+                higher repetition rates. It is recommended that you set this
+                value between 0.8 and 0.9.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <div className='label text-xs'>
-          Represents the probability of the target memory you want. Note that
-          there is a trade-off between higher retention rates and higher
-          repetition rates. It is recommended that you set this value between
-          0.8 and 0.9.
-        </div>
-
-        <label htmlFor='maximum_interval' className='pr-4'>
-          maximum_interval:
-        </label>
-        <input
+        <FormField
+          control={form.control}
           name='maximum_interval'
-          className='input input-bordered w-full'
-          type='number'
-          max={36500}
-          min={7}
-          step={1}
-          aria-label='maximum interval'
-          defaultValue={data.params.maximum_interval}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>maximum_interval</FormLabel>
+              <FormControl>
+                <Input placeholder='maximum_interval' {...field} />
+              </FormControl>
+              <FormDescription>
+                The maximum number of days between reviews of a card. When the
+                review interval of a card reaches this number of days, the{' '}
+                {`'hard', 'good', and 'easy'`} intervals will be consistent. The
+                shorter the interval, the more workload.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <div className='label text-xs'>
-          The maximum number of days between reviews of a card. When the review
-          interval of a card reaches this number of days, the{' '}
-          {`'hard', 'good', and 'easy'`} intervals will be consistent. The
-          shorter the interval, the more workload.
-        </div>
-
-        <label htmlFor='w' className='pr-4'>
-          w:
-        </label>
-        <input
+        <FormField
+          control={form.control}
           name='w'
-          className='input input-bordered w-full'
-          type='text'
-          aria-label='w'
-          defaultValue={JSON.stringify(data.params.w)}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>w</FormLabel>
+              <FormControl>
+                <Input placeholder='w' {...field} />
+              </FormControl>
+              <FormDescription>
+                Weights created by running the FSRS optimizer. By default, these
+                are calculated from a sample dataset.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <div className='label text-xs'>
-          Weights created by running the FSRS optimizer. By default, these are
-          calculated from a sample dataset.
-        </div>
+        <FormField
+          control={form.control}
+          name='enable_fuzz'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>enable_fuzz</FormLabel>
+              <FormControl className='ml-4'>
+                <Checkbox
 
-        <div className='flex py-4'>
-          <label htmlFor='enable_fuzz' className='pr-4'>
-            enable_fuzz:
-          </label>
-          <input
-            name='enable_fuzz'
-            type='checkbox'
-            className='toggle toggle-info'
-            aria-label='enable fuzz'
-            defaultChecked={data.params.enable_fuzz}
-          />
-        </div>
-        <div className='label text-xs'>
-          When enabled, this adds a small random delay to the new interval time
-          to prevent cards from sticking together and always being reviewed on
-          the same day.
-        </div>
-
-        <label htmlFor='card_limit' className='pr-4'>
-          card_limit:
-        </label>
-        <input
+                  placeholder='enable_fuzz'
+                  {...field}
+                  value={undefined}
+                />
+              </FormControl>
+              <FormDescription>
+                When enabled, this adds a small random delay to the new interval
+                time to prevent cards from sticking together and always being
+                reviewed on the same day.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name='card_limit'
-          className='input input-bordered w-full'
-          type='number'
-          min={0}
-          step={1}
-          aria-label='card limit'
-          defaultValue={data.card_limit}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>card_limit</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder='card_limit'
+                  {...field}
+                  className='text-sm'
+                />
+              </FormControl>
+              <FormDescription>
+                Represents the maximum limit of new cards that can be learned
+                today.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <div className='label text-xs'>
-          Represents the maximum limit of new cards that can be learned today.
-        </div>
-
-        <label htmlFor='lapses' className='pr-4'>
-          lapses:
-        </label>
-        <input
+        <FormField
+          control={form.control}
           name='lapses'
-          className='input input-bordered w-full'
-          type='number'
-          min={3}
-          step={1}
-          aria-label='lapses'
-          defaultValue={data.lapses}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>lapses</FormLabel>
+              <FormControl>
+                <Input placeholder='lapses' {...field} />
+              </FormControl>
+              <FormDescription>
+                The card will automatically pause after reaching that number of
+                lapses.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <div className='label text-xs'>
-          The card will automatically pause after reaching that number of
-          lapses.
-        </div>
-
-        <label htmlFor='lingq_token' className='pr-4'>
-          lingq_token:
-          <Link
-            className='btn btn-xs'
-            target='_blank'
-            href={'https://www.lingq.com/accounts/apikey/'}
-          >
-            Get Key
-          </Link>
-        </label>
-        <input
+        <FormField
+          control={form.control}
           name='lingq_token'
-          className='input input-bordered w-full'
-          type='text'
-          aria-label='lingq token'
-          defaultValue={data.lingq_token ?? undefined}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                lingq_token
+                <Badge variant='outline' className='ml-4'>
+                  <Link
+                    className='btn btn-xs'
+                    target='_blank'
+                    href={'https://www.lingq.com/accounts/apikey/'}
+                  >
+                    Get Key
+                  </Link>
+                </Badge>
+              </FormLabel>
+              <FormControl>
+                <Input placeholder='lingq_token' {...field} />
+              </FormControl>
+              <FormDescription>
+                Associate lingq’s card for FSRS scheduling.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <div className='label text-xs'>
-          Associate lingq’s card for FSRS scheduling.
-        </div>
-      </div>
-
-      <div className='mt-2 flex items-center justify-end gap-x-4'>
-        <ConfigButtonGroup />
-      </div>
-    </form>
+        <Button type='submit' className='hidden' id='fsrsSetting'>
+          Submit
+        </Button>
+      </form>
+    </Form>
   );
 }
