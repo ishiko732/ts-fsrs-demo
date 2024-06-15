@@ -46,7 +46,7 @@ export default function Setting() {
     DrawerToggle = (
       <div className='absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[800px]'>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className='sm:max-w-[625px] border   border-b-stone-900 dark:border-white p-4 max-h-[800px] overflow-y-auto'>
+          <DialogContent className='sm:max-w-[625px] border   border-b-stone-900 dark:border-white p-4 max-h-[800px] overflow-y-auto z-998 dark:bg-black bg-white'>
             <DialogHeader>
               <DialogTitle className='flex justify-center items-center text-md'>
                 Edit profile
@@ -75,7 +75,10 @@ export default function Setting() {
   } else {
     DrawerToggle = (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent ref={drawerRef} className='max-h-[80%]'>
+        <DrawerContent
+          ref={drawerRef}
+          className='max-h-[80%] dark:bg-black bg-white'
+        >
           <DrawerHeader>
             <DrawerTitle className='flex justify-center items-center text-md'>
               Edit profile
