@@ -111,7 +111,7 @@ export default function Setting() {
         size='icon'
         onClick={() => setOpen((pre) => !pre)}
       >
-        <Settings2Icon></Settings2Icon>
+        <Settings2Icon aria-label='setting'></Settings2Icon>
       </Button>
       {isClient && DrawerToggle}
     </>

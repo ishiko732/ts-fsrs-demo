@@ -17,12 +17,19 @@ const Logo = ({ env }: { env: string }) => {
       <div className='btn btn-ghost text-xl hidden sm:flex'>
         <Image src='/osr.png' alt='TS-FSRS-DEMO' width={32} height={32} />
         <HoverCard>
-          <HoverCardTrigger className='hidden font-bold sm:inline-block mt-1 line-clamp-3 cursor-pointer '>
-            TS-FSRS-DEMO
+          <HoverCardTrigger
+            className='hidden font-bold sm:inline-block mt-1 line-clamp-3 cursor-pointer '
+            asChild
+          >
+            <div>TS-FSRS-DEMO</div>
           </HoverCardTrigger>
           <HoverCardContent className='pt-4 pl-6 w-[24rem]  border   border-b-stone-900 dark:border-white z-[999] bg-white dark:bg-black'>
             <div className='flex justify-between space-x-4'>
-              <Link href='https://github.com/ishiko732' target='_blank'>
+              <Link
+                href='https://github.com/ishiko732'
+                target='_blank'
+                legacyBehavior
+              >
                 <Avatar>
                   <AvatarImage src='https://avatars.githubusercontent.com/u/62931549?v=4' />
                   <AvatarFallback>ishiko</AvatarFallback>
@@ -30,7 +37,11 @@ const Logo = ({ env }: { env: string }) => {
               </Link>
               <div className='space-y-1'>
                 <h4 className='text-sm font-semibold underline underline-offset-1'>
-                  <Link href='https://github.com/ishiko732' target='_blank'>
+                  <Link
+                    href='https://github.com/ishiko732'
+                    target='_blank'
+                    legacyBehavior
+                  >
                     @ishiko732
                   </Link>
                 </h4>
@@ -44,6 +55,7 @@ const Logo = ({ env }: { env: string }) => {
                     <Link
                       href={'https://github.com/open-spaced-repetition/ts-fsrs'}
                       target='_blank'
+                      legacyBehavior
                     >
                       ts-fsrs
                     </Link>
@@ -53,6 +65,7 @@ const Logo = ({ env }: { env: string }) => {
                     <Link
                       href={`https://www.npmjs.com/package/ts-fsrs/v/${FSRSVersion}`}
                       target='_blank'
+                      legacyBehavior
                     >
                       {FSRSVersion}
                     </Link>
@@ -65,6 +78,7 @@ const Logo = ({ env }: { env: string }) => {
                   <Link
                     href='https://github.com/open-spaced-repetition'
                     target={'_blank'}
+                    legacyBehavior
                   >
                     <span className='text-xs text-muted-foreground underline underline-offset-1 pb-2'>
                       open-spaced-repetition
