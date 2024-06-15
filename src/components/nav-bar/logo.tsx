@@ -61,12 +61,12 @@ const Logo = ({ env }: { env: string }) => {
                   <span className='font-bold'> {env}</span>
                 </p>
                 <div className='flex items-center py-4'>
-                  <Building2 className='mr-2 h-4 w-4 opacity-70' />{' '}
+                  <Building2 className='mr-2 mt-1 h-4 w-4 ' />{' '}
                   <Link
                     href='https://github.com/open-spaced-repetition'
                     target={'_blank'}
                   >
-                    <span className='text-xs text-muted-foreground underline underline-offset-1'>
+                    <span className='text-xs text-muted-foreground underline underline-offset-1 pb-2'>
                       open-spaced-repetition
                     </span>
                   </Link>
