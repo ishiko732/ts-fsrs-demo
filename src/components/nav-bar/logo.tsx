@@ -20,7 +20,7 @@ const Logo = ({ env }: { env: string }) => {
           <HoverCardTrigger className='hidden font-bold sm:inline-block mt-1 line-clamp-3 cursor-pointer '>
             TS-FSRS-DEMO
           </HoverCardTrigger>
-          <HoverCardContent className='pt-4 pl-6 w-[24rem]  border   border-b-stone-900 dark:border-white'>
+          <HoverCardContent className='pt-4 pl-6 w-[24rem]  border   border-b-stone-900 dark:border-white z-999  bg-white dark:bg-black'>
             <div className='flex justify-between space-x-4'>
               <Link href='https://github.com/ishiko732' target='_blank'>
                 <Avatar>
