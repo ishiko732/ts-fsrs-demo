@@ -8,14 +8,14 @@ export async function GET() {
         return NextResponse.json({ msg: 'uid not found' }, { status: 401 });
     }
     const deckService = new DeckService();
-    const fsrs = await deckService.getAlgorithm(uid)
+    const params = await deckService.getAlgorithmParams(uid)
     const deckContext = await deckService.getTodayMemoryContext(uid, "UTC", 4)
-    Object.assign(deckContext, { params: fsrs.parameters })
+    Object.assign(deckContext, { params: params })
     return NextResponse.json(deckContext, { status: 200 })
 }
 
 
-// fetch("http://localhost:3000/api/deck?page=1", {
+// fetch("/api/deck?page=1", {
 //     "headers": {
 //         "accept": "*/*",
 //         "accept-language": "zh-CN,zh;q=0.9,ja;q=0.8,en-US;q=0.7,en;q=0.6",
@@ -39,7 +39,7 @@ export async function PATCH(request: NextRequest) {
     if (!uid) {
         return NextResponse.json({ msg: 'uid not found' }, { status: 401 });
     }
-    const deckContext: DeckMemoryState = await request.json()
+    const deckContext: DeckMemoryState & { ignoreIds?: number[] } = await request.json()
     const url = new URL(request.url);
     const page = +(url.searchParams.get("page") || '');
     if (page < 1) {
@@ -48,6 +48,10 @@ export async function PATCH(request: NextRequest) {
     if (deckContext?.uid !== uid) {
         return NextResponse.json({ msg: 'uid not match' }, { status: 400 })
     }
-    const noteMemoryContext = await new DeckService().todayMemoryContextPage(uid, deckContext.startTimestamp, deckContext.userNewCardlimit, deckContext.deckTodayLearnedcount, page)
+    const noteMemoryContext = await new DeckService().todayMemoryContextPage({
+        ...deckContext,
+        page,
+        ignoreCardIds: deckContext.ignoreIds ?? []
+    })
     return NextResponse.json(noteMemoryContext, { status: 200 })
 }

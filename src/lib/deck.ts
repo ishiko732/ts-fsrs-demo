@@ -1,13 +1,24 @@
 import { Card, Note } from "@prisma/client";
-import { FSRS, RecordLog, date_scheduler, fsrs, generatorParameters } from "ts-fsrs";
+import { FSRS, FSRSParameters, RecordLog, date_scheduler, fsrs, generatorParameters } from "ts-fsrs";
 import prisma from "./prisma";
 import { State as PrismaState } from "@prisma/client";
 
+type SearchTodayMemoryContextPage = {
+    uid: number,
+    startTimestamp: number,
+    userNewCardlimit: number,
+    deckTodayLearnedcount: number,
+    page?: number,
+    ignoreCardIds?: number[]
+}
+
+
 abstract class IDeckService {
     abstract getDeck(deckId: number): void;
+    abstract getAlgorithmParams(uid: number): Promise<FSRSParameters>;
     abstract getAlgorithm(uid: number): Promise<FSRS>;
     abstract getTodayMemoryContext(uid: number, timezone: string, hourOffset: number): Promise<DeckMemoryContext>;
-    abstract todayMemoryContextPage(uid: number, startTimestamp: number, userNewCardlimit: number, deckTodayLearnedcount: number, page: number): Promise<NoteMemoryContext>
+    abstract todayMemoryContextPage({ uid, startTimestamp, userNewCardlimit, deckTodayLearnedcount, page, ignoreCardIds }: SearchTodayMemoryContextPage): Promise<NoteMemoryContext>
 
 }
 
@@ -38,11 +49,15 @@ export class DeckService implements IDeckService {
         }
     };
 
-    getAlgorithm = async (uid: number) => {
+    getAlgorithmParams = async (uid: number) => {
         if (!uid) {
             throw new Error("uid not found");
         }
-        const params = await getDBAlgorithmParams(uid)
+        return await getDBAlgorithmParams(uid)
+    }
+
+    getAlgorithm = async (uid: number) => {
+        const params = await this.getAlgorithmParams(uid);
         return fsrs(params);
     };
 
@@ -94,7 +109,9 @@ export class DeckService implements IDeckService {
             const state = states[i];
             const total = await notesMemoryTotal[i];
             const pageSize = Math.min(memoryPageSize, total);
-            const memoryState = await getNoteMemoryState(uid, state, startOfDay, limit, count, pageSize);
+            const memoryState = await getNoteMemoryState({
+                uid, state, lte: startOfDay, limit, todayCount: count, pageSize
+            });
             noteContext[state] = {
                 memoryState,
                 pageSize,
@@ -113,8 +130,8 @@ export class DeckService implements IDeckService {
         } as DeckMemoryContext;
     }
 
-    todayMemoryContextPage = async (uid: number, startTimestamp: number, userNewCardlimit: number, deckTodayLearnedcount: number, page: number): Promise<NoteMemoryContext> => {
-        if (page < 1) {
+    todayMemoryContextPage = async ({ uid, startTimestamp, userNewCardlimit, deckTodayLearnedcount, page, ignoreCardIds }: SearchTodayMemoryContextPage): Promise<NoteMemoryContext> => {
+        if ((page ?? 0) < 1) {
             throw new Error('page must be greater than 0')
         }
         const notesMemoryTotal = states.map((state) => getNoteMemoryTotal(uid, state, new Date(startTimestamp), userNewCardlimit, deckTodayLearnedcount))
@@ -123,11 +140,19 @@ export class DeckService implements IDeckService {
             const state = states[i];
             const total = await notesMemoryTotal[i];
             const pageSize = Math.min(memoryPageSize, total);
-            const memoryState = await getNoteMemoryState(uid, state, new Date(startTimestamp), userNewCardlimit, deckTodayLearnedcount, pageSize, page);
+            const memoryState = await getNoteMemoryState({
+                uid, state,
+                lte: new Date(startTimestamp),
+                limit: userNewCardlimit,
+                todayCount: deckTodayLearnedcount,
+                pageSize,
+                page,
+                ignoreCardIds
+            });
             noteContext[state] = {
                 memoryState,
                 pageSize,
-                loadPage: page,
+                loadPage: page!,
                 totalSize: total
             }
         }
@@ -202,7 +227,10 @@ type NoteMemoryContext = {
 const MOCK_DECKID = 1;
 const CARD_NULL = -1;
 const INVALID_DUE = Infinity;
-async function getNoteMemoryState(uid: number, state: PrismaState, lte: Date, limit: number, todayCount: number, pageSize: number, page: number = 1) {
+async function getNoteMemoryState(
+    { uid, state, lte, limit, todayCount, pageSize, page = 1, ignoreCardIds = [] }:
+        { uid: number, state: PrismaState, lte: Date, limit: number, todayCount: number, pageSize: number, page?: number, ignoreCardIds?: number[] }
+) {
     const stateNewPageSize = state === PrismaState.New ? Math.max(0, Math.min(pageSize, limit - todayCount)) : pageSize
     const notes = await prisma.note.findMany({
         where: {
@@ -212,7 +240,10 @@ async function getNoteMemoryState(uid: number, state: PrismaState, lte: Date, li
                 suspended: false,
                 due: state === PrismaState.Review ? { lte: lte } : undefined,
                 state,
-                deleted: false
+                deleted: false,
+                cid: state === PrismaState.New ? undefined : {
+                    notIn: ignoreCardIds
+                }
             }
         },
         select: {
