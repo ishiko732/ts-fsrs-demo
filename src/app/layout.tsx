@@ -31,10 +31,12 @@ export default async function RootLayout({
         name='google-site-verification'
         content='O3iry-K9HB2g3JEHQ5AJ3sd9GBSi9KzUM8nzYiBqyGM'
       />
-      <body className={cn(
-        "min-h-screen grid-rows-[min-content_1fr] bg-background font-sans antialiased",
-        inter.variable,
-      )}>
+      <body
+        className={cn(
+          'min-h-screen grid-rows-[min-content_1fr] bg-background font-sans antialiased',
+          inter.variable
+        )}
+      >
         <AuthProvider>
           <ThemeProvider
             attribute='class'
@@ -42,6 +44,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <NavBar />
             {children}
             <SpeedInsights />
             <Analytics />
