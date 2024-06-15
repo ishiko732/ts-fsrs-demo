@@ -1,20 +1,19 @@
-import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import Link from 'next/link';
 import React from 'react';
-import { dependencies } from '@/../package.json' assert { type: 'json' };
+import packageInfo from '@/../package.json';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-async function HomePage() {
-  const session = await getAuthSession();
+export const dynamic = 'force-static';
 
+async function HomePage() {
+  const { dependencies } = packageInfo;
   const coreDeps = [
     '@prisma/client',
     'next',
     'ts-fsrs',
     'fsrs-browser',
   ] as const;
-  console.log(dependencies['ts-fsrs']);
   return (
     <>
       <div className='absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] '>
@@ -43,12 +42,12 @@ async function HomePage() {
           </ul>
         </div>
         <div className='items-center'>
-          <Link href={session?.user ? '/note' : '/api/auth/signin'}>
+          <Link href={'/note'}>
             <Button className='btn btn-outline m-2 w-full sm:w-auto'>
               Go to Notes
             </Button>
           </Link>
-          <Link href={session?.user ? '/card' : '/api/auth/signin'}>
+          <Link href={'/card'}>
             <Button className='btn btn-outline m-2 py-4 w-full sm:w-auto'>
               Go to Review
             </Button>
