@@ -1,5 +1,4 @@
 'use client';
-import { User } from 'next-auth';
 import { Button } from '../ui/button';
 import { Settings2Icon } from 'lucide-react';
 import { useState, useRef, ReactNode } from 'react';
@@ -36,11 +35,10 @@ export default function Setting() {
             <DialogHeader>
               <DialogTitle>Edit profile</DialogTitle>
               <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
+                {`Make changes to your profile here. Click save when you're done.`}
               </DialogDescription>
             </DialogHeader>
-            <div className='grid gap-4 py-4'>
-            </div>
+            <div className='grid gap-4 py-4'></div>
             <DialogFooter>
               <Button type='submit'>Save changes</Button>
             </DialogFooter>

@@ -35,7 +35,7 @@ const Logo = ({ env }: { env: string }) => {
                   </Link>
                 </h4>
                 <p className='text-sm'>
-                  I'm ishiko, a Node.js Engineer from ShenZheng.
+                  {`I'm ishiko, a Node.js Engineer from ShenZheng.`}
                 </p>
                 <br />
                 <p className='text-sm'>
