@@ -6,7 +6,7 @@ import { signOut } from 'next-auth/react';
 import { ParametersType } from '@/lib/fsrs';
 import { z } from 'zod';
 import LoadingSpinner from '../loadingSpinner';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -170,15 +170,16 @@ export default function FSRSConfigForm({
           name='enable_fuzz'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>enable_fuzz</FormLabel>
-              <FormControl className='ml-4'>
-                <Checkbox
-
-                  placeholder='enable_fuzz'
-                  {...field}
-                  value={undefined}
-                />
-              </FormControl>
+              <div className='flex items-center'>
+                <FormLabel className='space-y-0.5 pr-4'>enable_fuzz</FormLabel>
+                <FormControl>
+                  <Switch
+                    placeholder='enable_fuzz'
+                    {...field}
+                    value={undefined}
+                  />
+                </FormControl>
+              </div>
               <FormDescription>
                 When enabled, this adds a small random delay to the new interval
                 time to prevent cards from sticking together and always being
