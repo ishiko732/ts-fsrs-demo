@@ -1,19 +1,28 @@
-import { getSessionUserId } from "@/app/(auth)/api/auth/[...nextauth]/session";
-import { DeckMemoryState, DeckService } from "@/lib/deck";
-import { NextRequest, NextResponse } from "next/server";
+import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
+import { DeckMemoryState, DeckService } from '@/lib/deck';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
-    const uid = await getSessionUserId();
-    if (!uid) {
-        return NextResponse.json({ msg: 'uid not found' }, { status: 401 });
-    }
-    const deckService = new DeckService();
-    const params = await deckService.getAlgorithmParams(uid)
-    const deckContext = await deckService.getTodayMemoryContext(uid, "UTC", 4)
-    Object.assign(deckContext, { params: params })
-    return NextResponse.json(deckContext, { status: 200 })
+export async function GET(request: NextRequest) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    return NextResponse.json({ msg: 'uid not found' }, { status: 401 });
+  }
+  const url = new URL(request.url);
+  const timezone = url.searchParams.get('timezone') ?? 'UTC';
+  const hourOffset = Math.min(
+    0,
+    Math.max(23, ~~(url.searchParams.get('hourOffset') ?? 4))
+  );
+  const deckService = new DeckService();
+  const params = await deckService.getAlgorithmParams(uid);
+  const deckContext = await deckService.getTodayMemoryContext(
+    uid,
+    timezone,
+    hourOffset
+  );
+  Object.assign(deckContext, { params: params });
+  return NextResponse.json(deckContext, { status: 200 });
 }
-
 
 // fetch("/api/deck?page=1", {
 //     "headers": {
@@ -35,23 +44,27 @@ export async function GET() {
 //     "credentials": "include"
 // });
 export async function PATCH(request: NextRequest) {
-    const uid = await getSessionUserId();
-    if (!uid) {
-        return NextResponse.json({ msg: 'uid not found' }, { status: 401 });
-    }
-    const deckContext: DeckMemoryState & { ignoreIds?: number[] } = await request.json()
-    const url = new URL(request.url);
-    const page = +(url.searchParams.get("page") || '');
-    if (page < 1) {
-        return NextResponse.json({ msg: 'page must be greater than 0' }, { status: 400 })
-    }
-    if (deckContext?.uid !== uid) {
-        return NextResponse.json({ msg: 'uid not match' }, { status: 400 })
-    }
-    const noteMemoryContext = await new DeckService().todayMemoryContextPage({
-        ...deckContext,
-        page,
-        ignoreCardIds: deckContext.ignoreIds ?? []
-    })
-    return NextResponse.json(noteMemoryContext, { status: 200 })
+  const uid = await getSessionUserId();
+  if (!uid) {
+    return NextResponse.json({ msg: 'uid not found' }, { status: 401 });
+  }
+  const deckContext: DeckMemoryState & { ignoreIds?: number[] } =
+    await request.json();
+  const url = new URL(request.url);
+  const page = +(url.searchParams.get('page') || '');
+  if (page < 1) {
+    return NextResponse.json(
+      { msg: 'page must be greater than 0' },
+      { status: 400 }
+    );
+  }
+  if (deckContext?.uid !== uid) {
+    return NextResponse.json({ msg: 'uid not match' }, { status: 400 });
+  }
+  const noteMemoryContext = await new DeckService().todayMemoryContextPage({
+    ...deckContext,
+    page,
+    ignoreCardIds: deckContext.ignoreIds ?? [],
+  });
+  return NextResponse.json(noteMemoryContext, { status: 200 });
 }
