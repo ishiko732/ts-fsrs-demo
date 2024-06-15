@@ -223,6 +223,13 @@ type NoteMemoryContext = {
     [key in PrismaState]: NoteMemoryStatePage;
 };
 
+// TODO
+enum NoteOrder  {
+    lastReview,
+    Difficulty
+}
+
+
 // note
 const MOCK_DECKID = 1;
 const CARD_NULL = -1;
@@ -257,6 +264,11 @@ async function getNoteMemoryState(
         },
         take: stateNewPageSize,
         skip: state === PrismaState.New ? stateNewPageSize : (page - 1) * pageSize,
+        orderBy:{
+            card:{
+                difficulty: 'desc',
+            }
+        }
     });
     return notes.map(note => {
         return {
