@@ -103,6 +103,7 @@ export default function FSRSConfigForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
+        method='post'
         className='space-y-4 max-h-[80%] overflow-y-auto pb-4 px-8'
       >
         <FormField
