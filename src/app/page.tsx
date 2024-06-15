@@ -2,10 +2,16 @@ import Link from "next/link";
 import { FSRSVersion } from "ts-fsrs";
 import UserBar from "@/auth/components/UserBar";
 import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
+import { FlushTimeZonePage } from "@/components/deck/flushTimezone";
 
-export default async function Home() {
+type HomeProps = {
+  searchParams: { hourOffset?: string };
+};
+
+export default async function Home({ searchParams }: HomeProps) {
   const session = await getAuthSession()
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV;
+
   return (
     <>
       <div className="min-h-screen">
@@ -43,6 +49,7 @@ export default async function Home() {
             </Link>
           </div>
         </main>
+        <FlushTimeZonePage hourOffset={+(searchParams.hourOffset ?? 4)} />
       </div>
     </>
   );

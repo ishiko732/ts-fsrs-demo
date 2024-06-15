@@ -66,6 +66,8 @@ model User {
   email     String     @unique
   notes     Note[]
   params    Parameters @relation(fields: [uid], references: [uid])
+  timezone  String     @default("UTC")
+  hourOffset Int    @default(4) 
 }
 
 model Note {

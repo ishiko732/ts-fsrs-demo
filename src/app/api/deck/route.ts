@@ -1,4 +1,5 @@
 import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
+import { get_timezones } from '@/lib/date';
 import { DeckMemoryState, DeckService } from '@/lib/deck';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -8,7 +9,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ msg: 'uid not found' }, { status: 401 });
   }
   const url = new URL(request.url);
+  const timezones = get_timezones();
   const timezone = url.searchParams.get('timezone') ?? 'UTC';
+  const existed = !!~timezones.indexOf(timezone);
   const hourOffset = Math.min(
     0,
     Math.max(23, ~~(url.searchParams.get('hourOffset') ?? 4))
@@ -17,7 +20,7 @@ export async function GET(request: NextRequest) {
   const params = await deckService.getAlgorithmParams(uid);
   const deckContext = await deckService.getTodayMemoryContext(
     uid,
-    timezone,
+    existed ? timezone : 'UTC',
     hourOffset
   );
   Object.assign(deckContext, { params: params });
