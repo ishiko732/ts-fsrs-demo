@@ -13,8 +13,13 @@ import NextDayStartAt from './nextDayStartAt';
 import FileTrain from './file-train-button';
 import { useForm } from 'react-hook-form';
 import { useTrainContext } from '@/context/TrainContext';
+import OwnTrain from './own-train-button';
 
-export default function FSRSParamTrainForm({}: {}) {
+export default function FSRSParamTrainForm({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
   const { timezone, nextDayStart } = useTrainContext();
   const form = useForm({
     mode: 'onSubmit',
@@ -60,8 +65,18 @@ export default function FSRSParamTrainForm({}: {}) {
             </FormItem>
           )}
         />
-        {/* <OwnTrain /> */}
-        <FileTrain form={form}/>
+        <div className='flex flex-1 justify-between items-stretch'>
+          <div className='inline-flex justify-center items-center'>
+            <label>using .csv train：</label>
+            <FileTrain form={form} />
+          </div>
+          <div>
+            <label>using your own revlog：</label>
+            <OwnTrain form={form} />
+          </div>
+        </div>
+
+        {children}
       </form>
     </Form>
   );

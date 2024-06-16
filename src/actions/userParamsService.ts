@@ -6,6 +6,7 @@ import {
   getFSRSParamsByUid,
   updateParameters,
 } from '@/lib/fsrs';
+import { exportLogsByUid } from '@/lib/log';
 
 type IRespose = {
   code: number;
@@ -54,4 +55,12 @@ export async function commitUserParams(data: ICommitUserParams) {
     msg: 'success',
     data: null,
   } as IRespose;
+}
+
+export async function exportLogs() {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    return [];
+  }
+  return await exportLogsByUid(uid);
 }

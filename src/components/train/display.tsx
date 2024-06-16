@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useTrainContext } from "@/context/TrainContext";
-import { useState } from "react";
-import { Button } from "../ui/button";
+import { useTrainContext } from '@/context/TrainContext';
+import { useState } from 'react';
+import { Button } from '../ui/button';
 
 export default function TrainDisplay() {
   const { loading, loadTime, trainTime, totalTime, w } = useTrainContext();
@@ -26,9 +26,9 @@ export default function TrainDisplay() {
           <p className='leading-7 [&:not(:first-child)]:mt-6'>
             W: <span className='select-all'>{JSON.stringify(w)}</span>
           </p>
-          <p className='leading-7 [&:not(:first-child)]:mt-6 flex justify-center items-center'>
-            {ok && <span className='px-4 label-text'>Copied!</span>}
+          <p className='leading-7 [&:not(:first-child)]:mt-6 flex justify-center items-center flex-col'>
             <Button onClick={handleClick}>Copy w</Button>
+            {ok && <span className='px-4 label-text'>Copied!</span>}
           </p>
           <ul className='my-6 ml-6 list-disc [&>li]:mt-2'>
             <li>Load time: {loadTime}</li>
