@@ -21,10 +21,10 @@ export default function TrainDisplay() {
     !loading &&
     loadTime &&
     trainTime && (
-      <div className='flex justify-center pt-4'>
+      <div className='flex justify-center pt-4 w-1/2'>
         <div className='flex flex-col gap-2'>
           <p className='leading-7 [&:not(:first-child)]:mt-6'>
-            W: <span className='select-all'>{JSON.stringify(w)}</span>
+            W: <span className='select-all text-sm'>{JSON.stringify(w)}</span>
           </p>
           <p className='leading-7 [&:not(:first-child)]:mt-6 flex justify-center items-center flex-col'>
             <Button onClick={handleClick}>Copy w</Button>

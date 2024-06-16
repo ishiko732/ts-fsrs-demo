@@ -12,7 +12,7 @@ use packages:
 - next.js (>= 14.2.0)
 - ts-fsrs (>= 3.5.3)
 - tailwindcss (>= 3)
-- daisyui (>= 4.4.22)
+- shadcn 
 - fsrs-browser (>= 0.6.1)
 ````
 
@@ -104,9 +104,7 @@ http://localhost:3000/api/fsrs/train
 
 Client:
 http://localhost:3000/train
-![client train](images/train.png)
-> In training:
-![training](images/training.png)
+![training](images/train.png)
 
 
 ## Build

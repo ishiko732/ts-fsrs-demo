@@ -1,6 +1,6 @@
 'use client';
 
-import { exportLogs } from '@/actions/userParamsService';
+import { exportLogs } from '@/actions/userLogsService';
 import { getProcessW } from '@/app/api/fsrs/train/train';
 import { useTrainContext } from '@/context/TrainContext';
 import { computerMinuteOffset, get_timezones } from '@/lib/date';
