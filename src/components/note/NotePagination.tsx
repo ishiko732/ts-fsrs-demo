@@ -1,6 +1,34 @@
-"use client";
+'use client';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import useQueryParams from '@/hooks/useQueryParams';
 
-import useQueryParams from "@/hooks/useQueryParams";
+function genPageArray(cur: number, count: number) {
+  const array = [];
+  if (count > 3) {
+    array.push(1);
+    array.push(2);
+  }
+  if (cur > 2 && cur < count - 1) {
+    array.push(-1);
+    array.push(cur - 1);
+    array.push(cur);
+    array.push(cur + 1);
+    array.push(-1);
+  }
+  if (count > 1) {
+    array.push(count - 1);
+  }
+  array.push(count);
+  return array;
+}
 
 export default function NotePagination({
   cur,
@@ -13,26 +41,40 @@ export default function NotePagination({
 }) {
   const { setQueryParam } = useQueryParams();
   const handleClick = (index: number) => {
-    setQueryParam([{ queryName: "page", value: `${index}` }]);
+    setQueryParam([{ queryName: 'page', value: `${index}` }]);
   };
-  const array = Array.from({ length: count }, (_, i) => i + 1);
+  const array = genPageArray(cur, count);
   return (
-    <div>
-      <div className="join flex flex-wrap justify-center py-4 ">
-        {array.map((i) => (
-          <input
-            className="join-item btn btn-square"
-            type="radio"
-            name="options"
-            key={`note-pagination-${i}`}
-            aria-label={`${i}`}
-            checked={i === cur}
-            readOnly
-            onClick={() => handleClick(i)}
-          />
-        ))}
-      </div>
-      <div className="flex flex-wrap justify-center pb-4">total:{total}</div>
-    </div>
+    <>
+      <Pagination>
+        <PaginationContent>
+          {cur !== 1 && (
+            <PaginationItem>
+              <PaginationPrevious href='#' />
+            </PaginationItem>
+          )}
+          {array.map((i) => (
+            <PaginationItem key={`note-pagination-${i}`}>
+              {i !== -1 ? (
+                <PaginationLink
+                  onClick={() => handleClick(i)}
+                  isActive={i === cur}
+                >
+                  {i}
+                </PaginationLink>
+              ) : (
+                <PaginationEllipsis />
+              )}
+            </PaginationItem>
+          ))}
+          {cur !== array.length && (
+            <PaginationItem>
+              <PaginationNext href='#' />
+            </PaginationItem>
+          )}
+        </PaginationContent>
+      </Pagination>
+      <div className='flex flex-wrap justify-center pb-4'>total:{total}</div>
+    </>
   );
 }
