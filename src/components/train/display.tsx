@@ -2,6 +2,7 @@
 
 import { useTrainContext } from "@/context/TrainContext";
 import { useState } from "react";
+import { Button } from "../ui/button";
 
 export default function TrainDisplay() {
   const { loading, loadTime, trainTime, totalTime, w } = useTrainContext();
@@ -20,20 +21,20 @@ export default function TrainDisplay() {
     !loading &&
     loadTime &&
     trainTime && (
-      <div className="flex justify-center">
-        <div className="label flex flex-col gap-2">
-          <p className="label-text w-full text-left">
-            W: <span className="select-all">{JSON.stringify(w)}</span>
+      <div className='flex justify-center pt-4'>
+        <div className='flex flex-col gap-2'>
+          <p className='leading-7 [&:not(:first-child)]:mt-6'>
+            W: <span className='select-all'>{JSON.stringify(w)}</span>
           </p>
-          <p className="label-text w-full text-left">
-            <button className="btn" onClick={handleClick}>
-              Copy w
-            </button>
-            {ok && <span className="label-text">Copied!</span>}
+          <p className='leading-7 [&:not(:first-child)]:mt-6 flex justify-center items-center'>
+            {ok && <span className='px-4 label-text'>Copied!</span>}
+            <Button onClick={handleClick}>Copy w</Button>
           </p>
-          <p className="label-text w-full text-left">Load time: {loadTime}</p>
-          <p className="label-text w-full text-left">Train time: {trainTime}</p>
-          <p className="label-text w-full text-left">Total time: {totalTime}</p>
+          <ul className='my-6 ml-6 list-disc [&>li]:mt-2'>
+            <li>Load time: {loadTime}</li>
+            <li>Train time: {trainTime}</li>
+            <li>Total time: {totalTime}</li>
+          </ul>
         </div>
       </div>
     )

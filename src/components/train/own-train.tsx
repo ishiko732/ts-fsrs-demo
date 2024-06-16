@@ -1,12 +1,11 @@
-import { getAuthSession } from "@/app/(auth)/api/auth/[...nextauth]/session";
-import { exportLogsByUid } from "@/lib/log";
-import OwnTrainButton from "./own-train-button";
-import TrainDisplay from "./display";
+import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
+import { exportLogsByUid } from '@/lib/log';
+import OwnTrainButton from './own-train-button';
 
 export default async function OwnTrain() {
   const session = await getAuthSession();
   const getUserRevlog = async (uid: number) => {
-    "use server";
+    'use server';
     return exportLogsByUid(uid);
   };
 
@@ -15,9 +14,9 @@ export default async function OwnTrain() {
   }
   const getRevlogAction = getUserRevlog.bind(null, Number(session.user.id));
   return (
-    <div className="label flex  flex-col gap-2">
+    <div className='label flex  flex-col gap-2'>
       <OwnTrainButton action={getRevlogAction} />
-      <span className="label-text">Training using your own revlog.</span>
+      <span className='label-text'>Training using your own revlog.</span>
     </div>
   );
 }
