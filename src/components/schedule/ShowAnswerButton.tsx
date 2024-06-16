@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useRef } from "react";
-import { useCardContext } from "@/context/CardContext";
-import { show_diff_message, Grades, Rating, State,Grade } from "ts-fsrs";
-import debounce from "@/lib/debounce";
+import React, { useCallback, useEffect, useRef } from 'react';
+import { useCardContext } from '@/context/CardContext';
+import { show_diff_message, Grades, Rating, Grade } from 'ts-fsrs';
+import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
 
 function ShowAnswerButton() {
   const {
@@ -13,30 +14,32 @@ function ShowAnswerButton() {
     schedule,
     noteBox,
     handleSchdule,
-    handleRollBack
+    handleRollBack,
   } = useCardContext();
 
-
-  const handleKeyPress = useCallback(async (event:React.KeyboardEvent<HTMLElement>) => {
-    // Call updateCalc here
-    if(!open&&event.code === 'Space'){
-      setOpen(true)
-    }else if (open){
-      switch (event.key) {
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-          await handleSchdule(Number(event.key) as Grade)
-          break;
+  const handleKeyPress = useCallback(
+    async (event: React.KeyboardEvent<HTMLElement>) => {
+      // Call updateCalc here
+      if (!open && event.code === 'Space') {
+        setOpen(true);
+      } else if (open) {
+        switch (event.key) {
+          case '1':
+          case '2':
+          case '3':
+          case '4':
+            await handleSchdule(Number(event.key) as Grade);
+            break;
+        }
       }
-    }
 
-    if ((event.ctrlKey || event.metaKey) && event.key ==='z'){
-      await handleRollBack()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+      if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
+        await handleRollBack();
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [open]
+  );
   useEffect(() => {
     // attach the event listener
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -52,20 +55,28 @@ function ShowAnswerButton() {
 
   const note = noteBox[currentType][0];
   if (!note) return null;
-  const color = ["btn-error", "btn-warning", "btn-info", "btn-success"];
+  const color = ['bg-red-500', 'bg-orange-500', 'bg-blue-500', 'bg-green-500'];
+  const hoverColor = [
+    'hover:bg-red-600',
+    'hover:bg-orange-600',
+    'hover:bg-blue-600',
+    'hover:bg-green-600',
+  ];
   return !open ? (
-    <button
-      className="btn mt-4 tooltip tooltip-bottom"
+    <Button
+      className='mt-4 tooltip tooltip-bottom w-full md:w-[80%]'
       onClick={() => {
         setOpen(true);
       }}
-      data-tip="Press Space to show answer"
+      variant={'outline'}
+      data-tip='Press Space to show answer'
+      title='Press Space to show answer'
     >
-      show answer
-    </button>
+      Show Answer
+    </Button>
   ) : (
     schedule && (
-      <div className="flex justify-center pt-6">
+      <div className='flex justify-center pt-6'>
         {Grades.map((grade: Grade) =>
           show_diff_message(
             schedule[grade].card.due,
@@ -73,15 +84,25 @@ function ShowAnswerButton() {
             true
           )
         ).map((time: string, index: number) => (
-          <button
+          <Button
             key={Rating[(index + 1) as Grade]}
-            className={"btn mx-2 btn-sm md:btn-md tooltip tooltip-bottom " + color[index]}
-            onClick={async(e) => await handleSchdule( (index + 1) as Grade)}
+            className={cn(
+              'btn mx-2 btn-sm md:btn-md tooltip tooltip-bottom bg-orange-500',
+              color[index],
+              hoverColor[index]
+            )}
+            onClick={async (e) => await handleSchdule((index + 1) as Grade)}
             data-tip={time}
           >
-            <span>{Rating[(index+1)as Grade]}</span>
-            <span className="hidden sm:inline"><kbd className={`kbd kbd-sm dark:text-black dark:bg-slate-200`}>{index+1}</kbd></span>
-          </button>
+            <span>{Rating[(index + 1) as Grade]}</span>
+            <span className='hidden sm:inline'>
+              <kbd
+                className={`ml-1 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100`}
+              >
+                <span className='text-xs'>{index + 1}</span>
+              </kbd>
+            </span>
+          </Button>
         ))}
       </div>
     )
