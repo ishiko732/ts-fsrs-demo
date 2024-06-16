@@ -56,11 +56,3 @@ export async function commitUserParams(data: ICommitUserParams) {
     data: null,
   } as IRespose;
 }
-
-export async function exportLogs() {
-  const uid = await getSessionUserId();
-  if (!uid) {
-    return [];
-  }
-  return await exportLogsByUid(uid);
-}
