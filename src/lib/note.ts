@@ -73,12 +73,17 @@ export async function initProgeigoNotes(uid: number, dates: ProgeigoNodeData[]) 
 }
 
 export async function getNotes({ uid, take, query, order, skip }: { uid: number, take?: number, skip?: number, query?: Prisma.NoteWhereInput, order?: Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[] }) {
+  const where = {
+    uid,
+    deleted: false,
+  };
+  Object.assign(where, query);
   const notes = await prisma.note.findMany({
-    take: take, where: {
-      uid,
-      deleted: false,
-      ...query
-    }, orderBy: order, skip, include: { card: true }
+    take: take,
+    where: where,
+    orderBy: order,
+    skip,
+    include: { card: true },
   });
   return notes as Array<Note & { card: Card }>;
 }

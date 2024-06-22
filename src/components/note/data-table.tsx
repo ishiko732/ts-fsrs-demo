@@ -6,13 +6,9 @@ import {
   ColumnFiltersState,
   PaginationState,
   SortingState,
-  Updater,
   VisibilityState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
@@ -42,7 +38,7 @@ import {
   NoteSimpleInfo,
   toggleHiddenNote,
 } from '@/actions/userNoteService';
-import { Card, CardInput, FSRS, FSRSParameters, fsrs } from 'ts-fsrs';
+import { CardInput, FSRS, FSRSParameters, fsrs } from 'ts-fsrs';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 export const columns: (f: FSRS, now: number) => ColumnDef<NoteSimpleInfo>[] = (
   f: FSRS,
@@ -258,19 +254,25 @@ export default function DataTable({
   fsrsParams,
   rowCount,
   pageCount,
+  keyword = null,
+  sort = [],
 }: {
   data: NoteList;
   fsrsParams: FSRSParameters;
   rowCount: number;
   pageCount: number;
+  keyword: string | null;
+  sort: SortingState;
 }) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [keywords, setKeywords] = React.useState<string | null>(keyword);
+  const [sorting, setSorting] = React.useState<SortingState>(sort);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const timer = React.useRef<NodeJS.Timeout | null>(null);
   const f = fsrs(fsrsParams);
   const now = new Date().getTime();
 
@@ -281,12 +283,20 @@ export default function DataTable({
 
   // create query string
   const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null>) => {
+    (
+      params: Record<
+        string,
+        string | number | null | string[] | number[] | undefined
+      >
+    ) => {
       const newSearchParams = new URLSearchParams(searchParams?.toString());
 
       for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
+        if (value === null || value === undefined) {
           newSearchParams.delete(key);
+        } else if (Array.isArray(value)) {
+          newSearchParams.delete(key);
+          value.map((v) => newSearchParams.append(key, '' + v));
         } else {
           newSearchParams.set(key, String(value));
         }
@@ -311,6 +321,30 @@ export default function DataTable({
     [pageIndex, pageSize]
   );
 
+  const changeRouter = React.useCallback(
+    (
+      pageIndex: number,
+      pageSize: number,
+      sorting: SortingState,
+      keywords: string | null
+    ) => {
+      const sortParams = sorting.map((s) => s.id);
+      const sortAsc = sorting.map((s) => {
+        return { [`${s.id}Asc`]: s.desc ? 0 : 1 };
+      });
+      router.push(
+        `${pathname}?${createQueryString({
+          page: pageIndex + 1,
+          take: pageSize,
+          sort: sortParams,
+          ...Object.assign({}, ...sortAsc),
+          keyword: keywords ?? null,
+        })}`
+      );
+    },
+    []
+  );
+
   React.useEffect(() => {
     setPagination({
       pageIndex: pageIndex,
@@ -320,13 +354,18 @@ export default function DataTable({
 
   // changed the route as well
   React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page: pageIndex + 1,
-        take: pageSize,
-      })}`
-    );
-  }, [pageIndex, pageSize]);
+    changeRouter(pageIndex, pageSize, sorting, keywords);
+  }, [pageIndex, pageSize, sorting]);
+
+  React.useEffect(() => {
+    // 200ms
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+    timer.current = setTimeout(() => {
+      changeRouter(pageIndex, pageSize, sorting, keywords);
+    }, 200);
+  }, [keywords]);
 
   // Ref: https://tanstack.com/table/latest/docs/api/features/pagination#lastpage
   const table = useReactTable<NoteSimpleInfo>({
@@ -335,9 +374,9 @@ export default function DataTable({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
+    // getSortedRowModel: getSortedRowModel(),
+    // getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     manualPagination: true,
@@ -356,14 +395,10 @@ export default function DataTable({
     <div className='w-full'>
       <div className='flex items-center py-4'>
         <Input
-          placeholder='Filter question...'
-          value={
-            (table.getColumn('question')?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table.getColumn('question')?.setFilterValue(event.target.value)
-          }
-          className='max-w-sm'
+          placeholder='Filter question/answer...'
+          value={keywords ?? undefined}
+          onChange={(event) => setKeywords(event.target.value)}
+          className='max-w-1/2 mr-4'
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
