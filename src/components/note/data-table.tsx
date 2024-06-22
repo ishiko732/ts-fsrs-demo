@@ -40,6 +40,7 @@ import {
 } from '@/actions/userNoteService';
 import { CardInput, FSRS, FSRSParameters, fsrs } from 'ts-fsrs';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 export const columns: (f: FSRS, now: number) => ColumnDef<NoteSimpleInfo>[] = (
   f: FSRS,
   now: number
@@ -232,7 +233,19 @@ export const columns: (f: FSRS, now: number) => ColumnDef<NoteSimpleInfo>[] = (
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View Detail</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link
+                  legacyBehavior
+                  href={
+                    noteSimpleInfo.deleted
+                      ? `/note/${noteSimpleInfo.nid}?deleted=1`
+                      : `/note/${noteSimpleInfo.nid}`
+                  }
+                  key={noteSimpleInfo.nid}
+                >
+                  View Detail
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className=' bg-red-500'
                 onClick={() => {

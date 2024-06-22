@@ -38,6 +38,7 @@ export type NoteSimpleInfo = {
   last_review?: number;
   state: State;
   reps: number;
+  deleted: boolean;
 };
 
 export async function getNotesBySessionUserId({
@@ -80,6 +81,7 @@ export async function getNotesBySessionUserId({
       last_review: note.card.last_review?.getTime() ?? 0,
       state: fixState(note.card.state),
       reps: note.card.reps,
+      deleted: note.deleted,
     };
   });
 }
