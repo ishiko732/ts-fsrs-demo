@@ -6,7 +6,7 @@ import {
   getFSRSParamsByUid,
   updateParameters,
 } from '@/lib/fsrs';
-import { exportLogsByUid } from '@/lib/log';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 type IRespose = {
   code: number;
@@ -19,7 +19,7 @@ export async function getUserParams() {
   if (!uid) {
     return { code: 401, msg: 'user not found.', data: null } as IRespose;
   }
-
+  revalidateTag(`user-params-${uid}`);
   try {
     return {
       code: 200,
@@ -50,6 +50,7 @@ export async function commitUserParams(data: ICommitUserParams) {
     ...data,
     uid,
   });
+  revalidatePath(`user-params-${uid}`);
   return {
     code: 200,
     msg: 'success',
