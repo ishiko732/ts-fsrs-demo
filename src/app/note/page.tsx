@@ -1,12 +1,21 @@
-import { getNoteCount, getNotes } from '@/lib/note';
 import React, { cache } from 'react';
-import { Card, Note, Prisma } from '@prisma/client';
-import Menu from '@/components/menu';
-import { getAuthSession } from '@/auth/api/auth/[...nextauth]/session';
-import TableHeader from '@/components/note/NoteTableHead';
-import NotePagination from '@/components/note/NotePagination';
-import NoteTableBody from '@/components/note/NoteTableBody';
+import { Prisma } from '@prisma/client';
 import { redirect } from 'next/navigation';
+import {
+  getNoteTotalCount,
+  getNotesBySessionUserId,
+} from '@/actions/userNoteService';
+import DataTable from '@/components/note/data-table';
+import { getUserParams } from '@/actions/userParamsService';
+import { generatorParameters } from 'ts-fsrs';
+
+export const revalidate = 0; // no cache
+
+// interface IndexPageProps {
+//   searchParams: {
+//     [key: string]: string | string[] | undefined;
+//   };
+// }
 
 function computerOrder(order: { field: string; type: 'desc' | 'asc' }) {
   let _order:
@@ -48,32 +57,23 @@ const getData = cache(
     order: { field: string; type: 'desc' | 'asc' },
     deleted: '1' | '0' = '0'
   ) => {
-    const session = await getAuthSession();
-    if (!session) {
-      redirect('/api/auth/signin?callbackUrl=/note');
-    }
-    if (!session?.user?.id) {
-      return {
-        notes: [],
-        pageCount: 0,
-        noteCount: 0,
-      };
-    }
-    const _noteCount = getNoteCount({
-      uid: Number(session.user.id),
+    const _noteCount = getNoteTotalCount({
       query: { question: { contains: searchWord }, deleted: deleted === '1' },
     });
-    const _notes = getNotes({
-      uid: Number(session.user.id),
+    const _notes = getNotesBySessionUserId({
       take: take === 0 ? undefined : take,
       skip: take * (pageIndex - 1),
       query: { question: { contains: searchWord }, deleted: deleted === '1' },
       order: computerOrder(order),
     });
-    const [noteCount, notes] = await Promise.all([_noteCount, _notes]);
+    const [noteCount, notes] = await Promise.all([_noteCount, _notes]).catch(
+      () => {
+        redirect('/api/auth/signin?callbackUrl=/note');
+      }
+    );
     const pageCount = Math.ceil(noteCount / take);
     return {
-      notes: notes as Array<Note & { card: Card }>,
+      notes: notes,
       pageCount,
       noteCount,
     };
@@ -92,51 +92,40 @@ export default async function Page({
     deleted: '1' | '0';
   };
 }) {
-  const take = searchParams['take'] ? Number(searchParams['take']) : 100;
+  const take = Number(searchParams['take']);
+  const pageIndex = Number(searchParams['page']);
+  if (
+    !Number.isInteger(take) ||
+    !Number.isInteger(pageIndex) ||
+    pageIndex < 1 ||
+    take < 1
+  ) {
+    redirect('/note?page=1&take=15');
+  }
   const searchWord = searchParams['s'] ? searchParams['s'] : '';
   const orderField = searchParams['o'] ? searchParams['o'] : 'due';
   const orderType = searchParams['ot'] ? searchParams['ot'] : 'desc';
-  const pageIndex = searchParams['page'] ? Number(searchParams['page']) : 1;
   const deleted = searchParams['deleted'] ? searchParams['deleted'] : '0';
   const { notes, pageCount, noteCount } = await getData(
     take,
-    searchWord,
+    searchWord as string,
     pageIndex,
     {
-      field: orderField,
-      type: orderType,
+      field: orderField as string,
+      type: orderType as 'desc' | 'asc',
     },
-    deleted
+    deleted as '1' | '0'
   );
+
+  const params = await getUserParams();
   return (
-    <div className='bg-base-200 h-screen'>
-      <div className='w-full sm:flex sm:flex-wrap sm:justify-center bg-base-200'>
-        <Menu />
-        <div className='w-full sm:w-3/4 sm:flex sm:flex-wrap sm:justify-center pt-8'>
-          <div className='overflow-x-auto'>
-            <table className='table table-xs sm:table-sm table-zebra'>
-              <thead>
-                <TableHeader />
-              </thead>
-              <tbody>
-                <NoteTableBody
-                  pageIndex={pageIndex}
-                  take={take}
-                  notes={notes}
-                />
-              </tbody>
-              <tfoot>
-                <TableHeader />
-              </tfoot>
-            </table>
-            <NotePagination
-              cur={pageIndex}
-              count={pageCount}
-              total={noteCount}
-            />
-          </div>
-        </div>
-      </div>
+    <div className=' container'>
+      <DataTable
+        data={notes}
+        fsrsParams={generatorParameters(params.data?.params)}
+        rowCount={noteCount}
+        pageCount={pageCount}
+      />
     </div>
   );
 }
