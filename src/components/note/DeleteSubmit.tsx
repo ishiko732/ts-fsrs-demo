@@ -15,7 +15,7 @@ type Props = {
     cid?: number
   ) => Promise<boolean>;
 } & React.ComponentProps<"button">;
-
+// @deprecated
 export default function DeleteSubmit({
   action,
   restoreAction,

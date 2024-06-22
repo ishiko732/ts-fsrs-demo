@@ -3,6 +3,7 @@
 import useQueryParams from "@/hooks/useQueryParams";
 import { ReadonlyURLSearchParams } from "next/navigation";
 
+// @deprecated
 function diplayArrow(queryParams: ReadonlyURLSearchParams, target: string) {
   if (queryParams.get("o") === target.toLowerCase()) {
     return queryParams.get("ot") === "desc" ? "▼" : "▲";

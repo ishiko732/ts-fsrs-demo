@@ -30,6 +30,8 @@ function genPageArray(cur: number, count: number) {
   return array;
 }
 
+
+// @deprecated
 export default function NotePagination({
   cur,
   count,

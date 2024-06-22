@@ -6,6 +6,7 @@ import DeleteNoteButton from "./DeleteNoteButton";
 import { fsrs } from "ts-fsrs";
 import DateItem from "@/lib/formatDate";
 
+// @deprecated
 export default async function NoteTableBody({pageIndex,take,notes}:{pageIndex:number,take:number,notes:Array<Note & { card: Card }>}){
     const f = fsrs();
     const now = new Date();

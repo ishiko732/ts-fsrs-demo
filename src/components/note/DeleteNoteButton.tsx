@@ -8,7 +8,7 @@ type Props = {
   cid?: number;
   deleted: boolean;
 } & React.ComponentProps<"button">;
-
+// @deprecated
 export default async function DeleteNoteButton({
   nid,
   cid,
