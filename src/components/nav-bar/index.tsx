@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import Logo from './logo';
 import { ThemesModeToggle } from '../themes/toggle';
-import Github from '../Github';
+import Github from './Github';
 import { Button } from '../ui/button';
 import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import Link from 'next/link';
