@@ -41,24 +41,20 @@ async function HomePage() {
             })}
           </ul>
         </div>
-        <div className='items-center'>
-          <Link href={'/note'}>
-            <Button className='btn btn-outline m-2 w-full sm:w-auto'>
+        <div className='items-center flex-1 '>
+          <Link href={'/note'} legacyBehavior>
+            <Button className='m-2 w-full sm:w-auto min-w-6'>
               Go to Notes
             </Button>
           </Link>
-          <Link href={'/card'}>
-            <Button className='btn btn-outline m-2 py-4 w-full sm:w-auto'>
+          <Link href={'/card'} legacyBehavior>
+            <Button className='m-2 w-full sm:w-auto min-w-6'>
               Go to Review
             </Button>
           </Link>
-          <Link href={'/train'}>
-            <Button
-              className='btn btn-outline m-2 py-4 w-full sm:w-auto'
-              title='Train(alpha)'
-            >
-              Go to Train
-              <Badge className='badge badge-ghost'>alpha</Badge>
+          <Link href={'/train'} legacyBehavior>
+            <Button className='m-2 w-full sm:w-auto min-w-6'>
+              Go to Train <Badge className='badge badge-ghost'>alpha</Badge>
             </Button>
           </Link>
         </div>
