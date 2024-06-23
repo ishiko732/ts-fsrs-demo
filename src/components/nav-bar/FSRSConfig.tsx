@@ -32,7 +32,7 @@ const formSchema = z.object({
     .refine(Number.isFinite, { message: 'Value must be a finite number' }),
   maximum_interval: z.coerce.number().min(7).max(36500).step(1).int(),
   w: z.string(),
-  enable_fuzz: z.coerce.boolean().default(false),
+  enable_fuzz: z.coerce.boolean(),
   card_limit: z.coerce.number().min(0).step(1).int(),
   lapses: z.coerce.number().min(3).step(1).int(),
   lingq_token: z.string().optional(),
@@ -174,9 +174,12 @@ export default function FSRSConfigForm({
                 <FormLabel className='space-y-0.5 pr-4'>enable_fuzz</FormLabel>
                 <FormControl>
                   <Switch
+                    id='enable_fuzz'
                     placeholder='enable_fuzz'
                     {...field}
                     value={undefined}
+                    onCheckedChange={field.onChange}
+                    checked={field.value}
                   />
                 </FormControl>
               </div>
