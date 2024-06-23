@@ -1,8 +1,9 @@
-import React from "react";
-import dynamic from "next/dynamic";
-import path from "path";
-import fs from "fs";
-import Configs from "./menu.config";
+import React from 'react';
+import dynamic from 'next/dynamic';
+import path from 'path';
+import fs from 'fs';
+import Configs from './menu.config';
+import LoadingMenu from './loading-menu';
 
 function comparator(a: string, b: string) {
   const sortA = Configs[a]?.sort ?? Infinity;
@@ -19,20 +20,20 @@ function comparator(a: string, b: string) {
 }
 
 async function dynamicReactNodes() {
-  const itemsDir = path.join(process.cwd(), "src/components/menu/items");
+  const itemsDir = path.join(process.cwd(), 'src/components/menu/items');
   const filenames = fs.readdirSync(itemsDir);
   return filenames
     .filter(
       (filename) =>
-        path.extname(filename) === ".tsx" && filename !== "index.tsx"
+        path.extname(filename) === '.tsx' && filename !== 'index.tsx'
     )
     .filter((filename) => Configs[filename]?.filter ?? true)
     .sort(comparator)
     .map((filename) => {
       const Item = dynamic(() => import(`./items/${path.basename(filename)}`), {
         loading: () => (
-          <li className="w-[54px] h-10">
-            <span className="flex mx-auto my-auto loading loading-spinner loading-xs"></span>
+          <li className='w-[54px] h-10'>
+            <LoadingMenu />
           </li>
         ),
       });
@@ -43,8 +44,8 @@ async function dynamicReactNodes() {
 export default async function Menu() {
   const menuItems = await dynamicReactNodes();
   return (
-    <div className="flex sm:block justify-center sm:fixed bottom-[3rem] right-[4rem] m-4 p-4 z-[999]">
-      <ul className="flex-row sm:flex-col menu bg-base-200 rounded-box border-2  border-stone-500 dark:border-gray-600">
+    <div className='flex sm:block justify-center sm:fixed bottom-[3rem] right-[4rem] m-4 p-4 z-[999]'>
+      <ul className='flex-row sm:flex-col menu bg-base-200 rounded-box border-2  border-stone-500 dark:border-gray-600'>
         {menuItems.map((item) => item)}
       </ul>
     </div>

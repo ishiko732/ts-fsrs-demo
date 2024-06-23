@@ -1,34 +1,28 @@
-import { exportLogsByUid } from "@/lib/log";
-import MenuItem from ".";
-import ExportSubmitButton, { ExportType } from "../submit/ExportSubmit";
-import { getAuthSession } from "@/app/(auth)/api/auth/[...nextauth]/session";
+import { exportLogsByUid } from '@/lib/log';
+import MenuItem from '.';
+import ExportSubmitButton, { ExportType } from '../submit/ExportSubmit';
+import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
 
 async function exportRevlogAction() {
-    'use server'
-    const session = await getAuthSession();
-    if (!session?.user) {
-        throw new Error('No user');
-    }
-    const uid = Number(session.user.id)
-    const logs = await exportLogsByUid(uid)
+  'use server';
+  const session = await getAuthSession();
+  if (!session?.user) {
+    throw new Error('No user');
+  }
+  const uid = Number(session.user.id);
+  const logs = await exportLogsByUid(uid);
 
-    return {
-        timezone: new Intl.DateTimeFormat().resolvedOptions().timeZone,
-        offset: new Date().getTimezoneOffset(),
-        revlogs: logs
-    } as ExportType;
-};
-
-export default async function ExportRevlog() {
-    return (
-        <MenuItem tip="Export Revlog to CSV">
-            <ExportSubmitButton action={exportRevlogAction} />
-        </MenuItem>
-    );
+  return {
+    timezone: new Intl.DateTimeFormat().resolvedOptions().timeZone,
+    offset: new Date().getTimezoneOffset(),
+    revlogs: logs,
+  } as ExportType;
 }
 
-
-function ExportIcon() {
-
-    return <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 576 512" className={"w-6 h-6"} xmlns="http://www.w3.org/2000/svg"><path d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V288H216c-13.3 0-24 10.7-24 24s10.7 24 24 24H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zM384 336V288H494.1l-39-39c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l80 80c9.4 9.4 9.4 24.6 0 33.9l-80 80c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l39-39H384zm0-208H256V0L384 128z"></path></svg>
+export default async function ExportRevlog() {
+  return (
+    <MenuItem tip='Export Revlog to CSV'>
+      <ExportSubmitButton action={exportRevlogAction} />
+    </MenuItem>
+  );
 }

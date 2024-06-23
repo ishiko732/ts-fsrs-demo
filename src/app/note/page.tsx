@@ -9,6 +9,7 @@ import DataTable from '@/components/note/data-table';
 import { getUserParams } from '@/actions/userParamsService';
 import { generatorParameters } from 'ts-fsrs';
 import { ColumnSort, SortingState } from '@tanstack/react-table';
+import Menu from '@/components/menu';
 
 export const revalidate = 0; // no cache
 
@@ -150,6 +151,7 @@ export default async function Page({ searchParams }: NotePageProps) {
   const params = await getUserParams();
   return (
     <div className=' container'>
+      <Menu/>
       <DataTable
         data={notes}
         fsrsParams={generatorParameters(params.data?.params)}
