@@ -40,12 +40,10 @@ export default function FileTrain({
     }
     if (!!~timezones.indexOf(timezone) === false) {
       form.setError('timezone', { message: 'Invalid timezone' });
-      debugger
       return;
     }
     if (nextDayStart < 0 || nextDayStart > 24) {
       form.setError('nextDayStart', { message: 'Invalid next day start' });
-      debugger
       return;
     }
     setLoading(true);
@@ -101,6 +99,7 @@ export default function FileTrain({
         className='file-input w-full max-w-xs'
         onChange={(e) => handleClick(e)}
         accept='.csv'
+        aria-label='File Train'
       />
       {loading && <LoadingSpinner />}
     </>

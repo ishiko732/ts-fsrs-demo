@@ -53,7 +53,9 @@ export default function FSRSParamTrainForm({
           name='nextDayStart'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='pr-4'>Next Day Start At</FormLabel>
+              <FormLabel className='pr-4' htmlFor='Next Day Start At'>
+                Next Day Start At
+              </FormLabel>
               <FormControl>
                 <NextDayStartAt field={field} />
               </FormControl>
@@ -67,7 +69,7 @@ export default function FSRSParamTrainForm({
         />
         <div className='flex flex-1 justify-between items-stretch'>
           <div className='inline-flex justify-center items-center'>
-            <label>using .csv train：</label>
+            <label htmlFor='File Train'>using .csv train：</label>
             <FileTrain form={form} />
           </div>
           <div>

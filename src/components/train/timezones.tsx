@@ -45,6 +45,7 @@ export default function TimezoneSelector() {
             role='combobox'
             aria-expanded={open}
             className='w-[400px] justify-between'
+            aria-label='Select TimeZone'
           >
             {timezone || 'Select TimeZone...'}
             <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
@@ -59,7 +60,13 @@ export default function TimezoneSelector() {
               <CommandGroup>
                 {isClient &&
                   timezones.map((tz, index) => (
-                    <CommandItem key={index} value={tz} onSelect={handlClick}>
+                    <CommandItem
+                      key={index}
+                      value={tz}
+                      onSelect={handlClick}
+                      aria-label={tz}
+                      role='select'
+                    >
                       <Check
                         className={cn(
                           'mr-2 h-4 w-4',

@@ -23,6 +23,7 @@ export default function NextDayStartAt({
       step={1}
       min={0}
       max={23}
+      aria-label='Next Day Start At'
       onChange={(e) => {
         setNextDayStart(+e.target.value);
       }}
