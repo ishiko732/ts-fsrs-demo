@@ -88,9 +88,8 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 
 ## Settings
 
-
-![user-bar](images/user-bar.png)
-> Click on the avatar, and you can set up, log out, and adjust the theme.
+![setting-button](images/setting-button.png)
+> Click on the button, and you can set up.
 
 ![FSRS Settings](images/settings.png)
 > You can customize the parameters of your FSRS params
