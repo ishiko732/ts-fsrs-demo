@@ -11,6 +11,7 @@ import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 import { useCardBoxes } from "@/hooks/useCardBoxes";
 import { useRollback } from "@/hooks/useRollback";
 import { DSR, useSchedule } from "@/hooks/useSchdule";
+import { useFinished } from "@/hooks/useFinished";
 
 export type changeResponse = {
   code: number;
@@ -79,6 +80,8 @@ export function CardProvider({
     open,
     setOpen,
   });
+
+  useFinished(cardHooks);
 
   const value = {
     open,
