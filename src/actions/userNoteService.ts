@@ -3,12 +3,14 @@
 import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import {
   deleteNoteByNid,
+  getNoteByNid,
   getNoteCount,
   getNotes,
   restoreNoteByNid,
 } from '@/lib/note';
-import { Prisma } from '@prisma/client';
+import { Card, Note, Prisma } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+import { notFound, redirect } from 'next/navigation';
 import { State, fixState } from 'ts-fsrs';
 
 export async function getNoteTotalCount({
@@ -90,4 +92,19 @@ export async function toggleHiddenNote(nid: number, hidden: boolean) {
   const res = hidden ? await deleteNoteByNid(nid) : await restoreNoteByNid(nid);
   revalidatePath(`/note/${nid}`);
   return res;
+}
+
+export async function getUserNote(nid: number, deleted: boolean) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const note = await getNoteByNid(Number(nid), deleted);
+  if (!note) {
+    notFound();
+  }
+  if (note?.uid !== uid) {
+    redirect('/denied');
+  }
+  return note as Note & { card: Card };
 }

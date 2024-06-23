@@ -7,6 +7,7 @@ import {
   updateParameters,
 } from '@/lib/fsrs';
 import { unstable_cache as cache, revalidateTag } from 'next/cache';
+import { fsrs } from 'ts-fsrs';
 type IRespose = {
   code: number;
   msg: string;
@@ -69,4 +70,14 @@ export async function commitUserParams(data: ICommitUserParams) {
     msg: 'success',
     data: null,
   } as IRespose;
+}
+
+export async function getUserFSRS() {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const userCacheParams = getUserParams_cache(uid);
+  const paramsData = await userCacheParams();
+  return fsrs(paramsData.params);
 }

@@ -1,16 +1,10 @@
-"use client";
-import { useRouter } from "next/navigation";
+import { Button } from '../ui/button';
+import Link from 'next/link';
 
 export default function GoBack() {
-  const router = useRouter();
   return (
-    <button
-      className="btn btn-outline"
-      onClick={() => {
-        router.push("/note")
-      }}
-    >
-      Go Notes
-    </button>
+    <Link href={'/note'} legacyBehavior>
+      <Button variant={'outline'}>Go Notes</Button>
+    </Link>
   );
 }

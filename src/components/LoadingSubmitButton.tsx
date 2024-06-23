@@ -1,25 +1,28 @@
 "use client";
 import { useFormStatus } from "react-dom";
+import { Button } from "./ui/button";
+import LoadingSpinner from "./loadingSpinner";
+
 
 export default function LoadingSubmitButton({
   ...props
-}: React.ComponentProps<"button">) {
+}: React.ComponentPropsWithoutRef<"button">) {
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <Button
       className={props.className}
-      type="submit"
+      type='submit'
       disabled={pending}
       {...props}
     >
       {pending ? (
         <>
-          <span className="loading loading-spinner"></span>Processing
+          <LoadingSpinner/>
         </>
       ) : (
         props.children
       )}
-    </button>
+    </Button>
   );
 }

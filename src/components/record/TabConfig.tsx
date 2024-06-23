@@ -6,7 +6,7 @@ type Props = {
     defaultIndex: number
 };
 
-
+// @deprecated
 export default function TabConfig({ tabNodes, defaultIndex }: Props) {
 
     const [activeIndex, setActiveIndex] = useState(defaultIndex);
