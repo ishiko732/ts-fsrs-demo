@@ -34,6 +34,7 @@ export default function TimezoneSelector() {
   useEffect(() => {
     setIsClient(true);
     setTimezone(get_custom_timezone());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

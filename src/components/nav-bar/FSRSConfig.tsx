@@ -70,7 +70,7 @@ export default function FSRSConfigForm({
         console.error(e);
         signOut();
       });
-  }, []);
+  }, [form]);
   if (!params) {
     return <LoadingSpinner />;
   }

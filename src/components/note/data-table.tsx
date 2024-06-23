@@ -355,6 +355,7 @@ export default function DataTable({
         })}`
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -368,6 +369,7 @@ export default function DataTable({
   // changed the route as well
   React.useEffect(() => {
     changeRouter(pageIndex, pageSize, sorting, keywords);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, sorting]);
 
   React.useEffect(() => {
@@ -378,6 +380,7 @@ export default function DataTable({
     timer.current = setTimeout(() => {
       changeRouter(pageIndex, pageSize, sorting, keywords);
     }, 200);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keywords]);
 
   // Ref: https://tanstack.com/table/latest/docs/api/features/pagination#lastpage
