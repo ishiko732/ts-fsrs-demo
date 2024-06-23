@@ -69,7 +69,6 @@ function ShowAnswerButton() {
         setOpen(true);
       }}
       variant={'outline'}
-      data-tip='Press Space to show answer'
       title='Press Space to show answer'
     >
       Show Answer
@@ -92,7 +91,7 @@ function ShowAnswerButton() {
               hoverColor[index]
             )}
             onClick={async (e) => await handleSchdule((index + 1) as Grade)}
-            data-tip={time}
+            title={time}
           >
             <span>{Rating[(index + 1) as Grade]}</span>
             <span className='hidden sm:inline'>
