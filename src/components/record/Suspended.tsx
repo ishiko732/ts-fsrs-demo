@@ -1,7 +1,6 @@
-import { suspendCard } from "@/lib/card";
-import clsx from "clsx";
-import { revalidatePath } from "next/cache";
 import SuspendedSubmit from "../LoadingSubmitButton";
+import { suspendCard } from "@/actions/userCardService";
+import { cn } from "@/lib/utils";
 
 type Props = {
   cid: Number;
@@ -10,17 +9,11 @@ type Props = {
 };
 
 export default function Suspended({ cid, suspend, className }: Props) {
-  const suspendAction = async () => {
-    "use server";
-    const data = await suspendCard(Number(cid), !suspend);
-    if (data) {
-      revalidatePath(`/note/${data.nid}`);
-    }
-  };
+  const suspendAction = suspendCard.bind(null, Number(cid), !suspend);
 
   return (
     <form action={suspendAction} className="flex justify-center">
-      <SuspendedSubmit className={clsx("btn btn-outline",className)}>Toggle Suspended</SuspendedSubmit>
+      <SuspendedSubmit className={cn(className)}>Toggle Suspended</SuspendedSubmit>
     </form>
   );
 }

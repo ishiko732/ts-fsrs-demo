@@ -12,7 +12,7 @@ use packages:
 - next.js (>= 14.2.0)
 - ts-fsrs (>= 3.5.3)
 - tailwindcss (>= 3)
-- daisyui (>= 4.4.22)
+- shadcn 
 - fsrs-browser (>= 0.6.1)
 ````
 
@@ -88,9 +88,8 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 
 ## Settings
 
-
-![user-bar](images/user-bar.png)
-> Click on the avatar, and you can set up, log out, and adjust the theme.
+![setting-button](images/setting-button.png)
+> Click on the button, and you can set up.
 
 ![FSRS Settings](images/settings.png)
 > You can customize the parameters of your FSRS params
@@ -104,9 +103,7 @@ http://localhost:3000/api/fsrs/train
 
 Client:
 http://localhost:3000/train
-![client train](images/train.png)
-> In training:
-![training](images/training.png)
+![training](images/train.png)
 
 
 ## Build
