@@ -20,9 +20,10 @@ async function syncLingqAction() {
 
 async function SyncLingq() {
   const params = await getParamsRequireLingqToken();
+  const  tip='Sync Lingq'
   return params ? (
-    <MenuItem tip='Sync Lingq'>
-      <SyncSubmitButton action={syncLingqAction} />
+    <MenuItem tip={tip}>
+      <SyncSubmitButton action={syncLingqAction} tip={tip} />
     </MenuItem>
   ) : null;
 }

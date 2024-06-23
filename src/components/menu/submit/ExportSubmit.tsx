@@ -14,8 +14,10 @@ export type ExportType = {
 
 export default function ExportSubmitButton({
   action,
+  tip,
 }: {
   action: () => Promise<ExportType>;
+  tip: string;
 }) {
   const [loading, setLoading] = useState(false);
   return (
@@ -44,6 +46,7 @@ export default function ExportSubmitButton({
         setLoading(false);
         a.click();
       }}
+      aria-label={tip}
     >
       {loading ? <LoadingMenu /> : <ExportIcon />}
     </Button>

@@ -24,9 +24,10 @@ async function RescheduledCard() {
   }
   const params = await getFSRSParamsByUid(uid);
   const rescheduleAction = rescheduledCardAction.bind(null, uid, params.params);
+  const tip = 'Reschedule';
   return (
-    <MenuItem tip='Reschedule'>
-      <RescheduledSubmitButton action={rescheduleAction} />
+    <MenuItem tip={tip}>
+      <RescheduledSubmitButton action={rescheduleAction} tip={tip} />
     </MenuItem>
   );
 }

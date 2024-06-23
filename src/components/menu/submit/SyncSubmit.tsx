@@ -5,8 +5,10 @@ import LoadingMenu from '../loading-menu';
 
 export default function SyncSubmitButton({
   action,
+  tip,
 }: {
   action: () => Promise<string[]>;
+  tip: string;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -39,6 +41,7 @@ export default function SyncSubmitButton({
       className='w-full'
       variant={'outline'}
       onClick={handleSyncHandler}
+      aria-label={tip}
     >
       {loading ? <LoadingMenu /> : <SyncIcon />}
     </Button>

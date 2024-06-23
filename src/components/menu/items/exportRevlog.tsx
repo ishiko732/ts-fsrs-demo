@@ -20,9 +20,10 @@ async function exportRevlogAction() {
 }
 
 export default async function ExportRevlog() {
+  const tip = 'Export Revlog to CSV';
   return (
-    <MenuItem tip='Export Revlog to CSV'>
-      <ExportSubmitButton action={exportRevlogAction} />
+    <MenuItem tip={tip}>
+      <ExportSubmitButton action={exportRevlogAction} tip={tip} />
     </MenuItem>
   );
 }

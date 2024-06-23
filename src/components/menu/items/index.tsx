@@ -62,13 +62,13 @@ async function MenuItemContent({
 }: Props) {
   return (
     <>
-      <li onClick={onClick} className='max-w-[54px] max-h-10'>
+      <li onClick={onClick} className='max-w-[54px] max-h-10' aria-label={tip}>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <a className={cn('tooltip tooltip-right', className)}>
+              <div className={cn(className)}>
                 {children}
-              </a>
+              </div>
             </TooltipTrigger>
             <TooltipContent side='right' >
               <p>{tip}</p>

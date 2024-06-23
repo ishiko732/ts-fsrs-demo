@@ -5,8 +5,10 @@ import LoadingMenu from '../loading-menu';
 
 export default function RescheduledSubmitButton({
   action,
+  tip,
 }: {
   action: (page: number, pageSize: number) => Promise<boolean>;
+  tip: string;
 }) {
   const [loading, setLoading] = useState(false);
   const pageSize = 25;
@@ -36,6 +38,7 @@ export default function RescheduledSubmitButton({
       className='w-full'
       variant={'outline'}
       onClick={handleRescheduleHandler}
+      aria-label={tip}
     >
       {loading ? <LoadingMenu /> : <RefreshIcon />}
     </Button>
