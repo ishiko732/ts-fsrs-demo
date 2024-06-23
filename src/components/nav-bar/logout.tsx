@@ -19,7 +19,7 @@ export default function Logout() {
     <>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant='outline' size='icon'>
+          <Button variant='outline' size='icon' title='Sign Out'>
             <LogOutIcon aria-label='signOut'></LogOutIcon>
           </Button>
         </AlertDialogTrigger>

@@ -80,7 +80,7 @@ const Logo = ({ env }: { env: string }) => {
                     target={'_blank'}
                     legacyBehavior
                   >
-                    <span className='text-xs text-muted-foreground underline underline-offset-1 pb-2'>
+                    <span className='text-xs text-muted-foreground underline underline-offset-1'>
                       open-spaced-repetition
                     </span>
                   </Link>

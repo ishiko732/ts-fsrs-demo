@@ -110,6 +110,7 @@ export default function Setting() {
         variant='outline'
         size='icon'
         onClick={() => setOpen((pre) => !pre)}
+        title='Setting'
       >
         <Settings2Icon aria-label='setting'></Settings2Icon>
       </Button>

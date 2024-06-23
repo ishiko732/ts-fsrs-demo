@@ -7,7 +7,7 @@ export default function Github({
   name: string;
 }) {
   return (
-    <Button variant='outline' size='icon' aria-label={name}>
+    <Button variant='outline' size='icon' aria-label={name} title='GitHub'>
       <Link
         legacyBehavior
         href={`https://github.com/${name}`}
