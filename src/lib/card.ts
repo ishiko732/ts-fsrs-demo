@@ -154,31 +154,3 @@ export async function rollbackCard(query:Partial<Query>){
     return await getNoteByCid(cardByPrisma.cid);
 }
 
-
-export async function forgetCard(cid:number,now:Date,reset_count:boolean=false){
-    const cardByPrisma = await findCardByCid(cid);
-    const {f} = await getFSRSBySessionUser(cardByPrisma.note.uid)
-    const recordItem = f.forget(cardByPrisma, now, reset_count,forgetAfterHandler)
-    await prisma.card.update({
-        where:{cid},
-        data:recordItem,
-        include:{
-            logs:true
-        }
-    })
-    return {
-        nextState:fixState(recordItem.state),
-        nextDue:recordItem.due,
-        nid:cardByPrisma.note.nid as number
-    };
-}
-
-
-export async function suspendCard(cid:number,suspended:boolean){
-    return await prisma.card.update({
-        where:{cid},
-        data:{
-            suspended
-        }
-    })
-}
