@@ -1,9 +1,10 @@
-import { forgetCard, rollbackCard, schedulerCard, updateCard } from "@/lib/card";
+import { rollbackCard, schedulerCard, updateCard } from "@/lib/card";
 import { getNoteByNid } from "@/lib/note";
 import { NextRequest, NextResponse } from "next/server";
 import { Grade, Rating } from "ts-fsrs";
 import { revalidatePath } from 'next/cache'
 import { isAdminOrSelf } from "@/auth/api/auth/[...nextauth]/session";
+import { forgetAction } from "@/actions/userCardService";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -71,7 +72,7 @@ export async function PUT(request: NextRequest) {
   try {
     let data;
     if (Rating.Manual === Number(grade) as Rating) { // forget
-      data = await forgetCard(Number(cid), new Date(), Boolean(reset));
+      data = await forgetAction(Number(cid), new Date().getTime(), Boolean(reset));
     } else {
       data = await updateCard(
         Number(cid),

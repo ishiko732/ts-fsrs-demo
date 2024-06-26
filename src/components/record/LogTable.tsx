@@ -1,45 +1,81 @@
 import DateItem from "@/lib/formatDate";
 import { Revlog } from "@prisma/client";
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 type Props = {
   logs: Revlog[];
 };
 
 async function LogTable({ logs }: Props) {
+  const total_duration = logs.reduce((acc, log) => acc + log.duration, 0);
   return (
-    <div className="mt-2 rounded-lg shadow-md overflow-x-auto w-full">
-      <table className="table table-zebra max-h-1/2">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Date</th>
-            <th>State</th>
-            <th>Rating</th>
-            <th className="hidden sm:table-cell">elapsed</th>
-            <th className="hidden sm:table-cell">scheduled</th>
-            <th className="hidden sm:table-cell">duration</th>
-          </tr>
-        </thead>
-        <tbody>
-          {logs.map((log, index) => (
-            <tr key={log.lid}>
-              <th>{index + 1}</th>
-              <td><DateItem date={log.review}></DateItem></td>
-              <td>{log.state}</td>
-              <td>{log.grade}</td>
-              <td className="hidden sm:table-cell">{log.elapsed_days}</td>
-              <td className="hidden sm:table-cell">{log.scheduled_days}</td>
-              <td className="hidden sm:table-cell">{log.duration > 0 ? durationFormat(log.duration) : '/'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table>
+      <TableCaption >{'Logs'}</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className='w-[100px]'>Index(Desc)</TableHead>
+          <TableHead>Date</TableHead>
+          <TableHead>State</TableHead>
+          <TableHead>Gard</TableHead>
+          <TableHead className='text-right hidden sm:table-cell'>
+            elapsed
+          </TableHead>
+          <TableHead className='text-right hidden sm:table-cell'>
+            scheduled
+          </TableHead>
+          <TableHead className='text-right hidden sm:table-cell'>
+            duration
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {logs.map((log, index) => (
+          <TableRow key={log.lid}>
+            <TableCell className='font-medium'>{index}</TableCell>
+            <TableCell>
+              <DateItem date={log.review}></DateItem>
+            </TableCell>
+            <TableCell>{log.state}</TableCell>
+            <TableCell>{log.grade}</TableCell>
+            <TableCell className='text-right hidden sm:table-cell'>
+              {log.elapsed_days}
+            </TableCell>
+            <TableCell className='text-right hidden sm:table-cell'>
+              {log.scheduled_days}
+            </TableCell>
+            <TableCell className='text-right hidden sm:table-cell'>
+              {log.duration > 0 ? durationFormat(log.duration) : '/'}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+      {total_duration > 0 && (
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={6}>Total </TableCell>
+            <TableCell className='text-right'>{durationFormat(total_duration)}</TableCell>
+          </TableRow>
+        </TableFooter>
+      )}
+    </Table>
   );
 }
 
 export default LogTable;
+
+
+
+
 
 
 function durationFormat(duration: number) {

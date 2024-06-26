@@ -1,15 +1,15 @@
-"use client";
-import { useTrainContext } from "@/context/TrainContext";
+'use client';
+import { useTrainContext } from '@/context/TrainContext';
+import { Progress } from '../ui/progress';
 
 export default function TrainProgress() {
-  const { progressRef, progressTextRef } = useTrainContext();
+  const { progressValue, progressTextRef } = useTrainContext();
   return (
-    <>
-      {/* {loading ? (
-        <progress className="progress w-56" ref={progressRef}></progress>
-      ) : null} */}
-      <progress className="progress w-64 my-4" ref={progressRef}></progress>
-      <div ref={progressTextRef}></div>
-    </>
+    progressValue > 0 && (
+      <>
+        <Progress className='w-[400px] my-4' value={progressValue} />
+        <div ref={progressTextRef}></div>
+      </>
+    )
   );
 }

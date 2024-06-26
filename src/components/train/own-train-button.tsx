@@ -1,15 +1,22 @@
-"use client";
+'use client';
 
-import { getProcessW } from "@/app/api/fsrs/train/train";
-import { useTrainContext } from "@/context/TrainContext";
-import { computerMinuteOffset } from "@/lib/date";
-import { ExportRevLog } from "@/lib/log";
-import { useEffect, useRef } from "react";
+import { exportLogs } from '@/actions/userLogsService';
+import { getProcessW } from '@/app/api/fsrs/train/train';
+import { useTrainContext } from '@/context/TrainContext';
+import { computerMinuteOffset, get_timezones } from '@/lib/date';
+import { useEffect, useRef } from 'react';
+import { Button } from '../ui/button';
+import { UseFormReturn } from 'react-hook-form';
 
-export default function OwnTrainButton({
-  action,
+const timezones = get_timezones();
+export default function OwnTrain({
+  form,
 }: {
-  action: () => Promise<ExportRevLog[]>;
+  form: UseFormReturn<
+    { timezone: string; nextDayStart: number },
+    any,
+    undefined
+  >;
 }) {
   const workerRef = useRef<Worker>();
   const trainTimeRef = useRef<number>(0);
@@ -27,10 +34,20 @@ export default function OwnTrainButton({
     handleProgress,
   } = useTrainContext();
   const handleClick = async () => {
+    if (!!~timezones.indexOf(timezone) === false) {
+      form.setError('timezone', { message: 'Invalid timezone' });
+      debugger;
+      return;
+    }
+    if (nextDayStart < 0 || nextDayStart > 24) {
+      form.setError('nextDayStart', { message: 'Invalid next day start' });
+      debugger;
+      return;
+    }
     setLoading(true);
     const start = performance.now();
     startRef.current = start;
-    const logs = await action();
+    const logs = await exportLogs();
     const loadEndTime = performance.now();
     const cids: bigint[] = [];
     const eases: number[] = [];
@@ -56,25 +73,25 @@ export default function OwnTrainButton({
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("./fsrs_worker.ts", import.meta.url)
+      new URL('./fsrs_worker.ts', import.meta.url)
     );
     workerRef.current.onmessage = (
       event: MessageEvent<Float32Array | ProgressState>
     ) => {
       const endTime = performance.now();
-      console.log(event.data, "tag" in event.data);
-      if ("tag" in event.data) {
+      console.log(event.data, 'tag' in event.data);
+      if ('tag' in event.data) {
         const progressState = event.data as ProgressState;
-        if (progressState.tag === "start") {
+        if (progressState.tag === 'start') {
           const { wasmMemoryBuffer, pointer } = progressState;
           clearInterval(timeIdRef.current);
           handleProgress(wasmMemoryBuffer, pointer);
           timeIdRef.current = setInterval(() => {
             handleProgress(wasmMemoryBuffer, pointer);
           }, 100);
-        } else if (progressState.tag === "finish") {
+        } else if (progressState.tag === 'finish') {
           clearInterval(timeIdRef.current);
-          console.log("finish");
+          console.log('finish');
         }
         return;
       } else {
@@ -91,9 +108,13 @@ export default function OwnTrainButton({
   }, []);
   return (
     <>
-      <button className="btn" disabled={loading} onClick={handleClick}>
+      <Button
+        disabled={loading}
+        onClick={handleClick}
+        title='Training using your own revlog.'
+      >
         Train(by own Revlog)
-      </button>
+      </Button>
     </>
   );
 }

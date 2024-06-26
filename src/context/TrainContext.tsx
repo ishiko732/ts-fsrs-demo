@@ -19,7 +19,8 @@ type TrainContextProps = {
   setTimezone: React.Dispatch<React.SetStateAction<string>>;
   nextDayStart: number;
   setNextDayStart: React.Dispatch<React.SetStateAction<number>>;
-  progressRef: React.MutableRefObject<HTMLProgressElement | null>;
+  progressValue: number;
+  setProgressValue: React.Dispatch<React.SetStateAction<number>>;
   progressTextRef: React.MutableRefObject<HTMLDivElement | null>;
   handleProgress: (wasmMemoryBuffer: ArrayBuffer, pointer: number) => void;
 };
@@ -46,7 +47,7 @@ export default function TrainProvider({
   const [totalTime, setTotalTime] = useState("");
   const [timezone, setTimezone] = useState(get_custom_timezone()); // if UTC then timeoffset=0
   const [nextDayStart, setNextDayStart] = useState(4); // 4 hr
-  const progressRef = useRef<HTMLProgressElement>(null);
+  const [progressValue, setProgressValue] = useState(0);
   const progressTextRef = useRef<HTMLDivElement>(null);
 
   const handleProgress = (wasmMemoryBuffer: ArrayBuffer, pointer: number) => {
@@ -54,10 +55,7 @@ export default function TrainProvider({
       wasmMemoryBuffer,
       pointer
     );
-    if (progressRef.current) {
-      progressRef.current.value = itemsProcessed;
-      progressRef.current.max = itemsTotal;
-    }
+    setProgressValue((itemsProcessed / itemsTotal) * 100);
     if (progressTextRef.current) {
       progressTextRef.current.innerText = `${itemsProcessed}/${itemsTotal}`;
     }
@@ -79,7 +77,8 @@ export default function TrainProvider({
     setTimezone,
     nextDayStart,
     setNextDayStart,
-    progressRef,
+    progressValue,
+    setProgressValue,
     progressTextRef,
     handleProgress
   };

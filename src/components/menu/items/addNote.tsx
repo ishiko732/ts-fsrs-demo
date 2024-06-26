@@ -1,84 +1,95 @@
-"use client";
-import React, { useRef } from "react";
-import MenuItem from ".";
+'use client';
+import React, { useRef, useState } from 'react';
+import MenuItem from '.';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-function AddNoteDialog({
-  dialogRef,
-}: {
-  dialogRef: React.RefObject<HTMLDialogElement>;
-}) {
+function AddNoteDialog({ tip }: { tip: string }) {
   const questionRef = useRef<HTMLInputElement>(null);
   const answerRef = useRef<HTMLInputElement>(null);
-  const handleAppCloseClick = () => {
-    dialogRef.current?.close();
-  };
+  const [open, setOpen] = useState(false);
 
   const saveAddNote = () => {
     let question = questionRef.current?.value;
     let answer = answerRef.current?.value;
     fetch(`/api/note`, {
-      method: "post",
+      method: 'post',
       body: JSON.stringify({ question, answer }),
-    }).then((res) => console.log(res.json()));
-    handleAppCloseClick();
+    })
+      .then((res) => console.log(res.json()))
+      .then(() => setOpen(false));
   };
 
   return (
-    <dialog id="addNote" className="modal" ref={dialogRef}>
-      <div className="modal-box">
-        <div className="form-control">
-          <div className="flex flex-col item-center gap-4">
-            <input
-              type="text"
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant={'outline'} className='w-full' aria-label={tip}>
+          <svg
+            width='24'
+            height='24'
+            className={'w-6 h-6 dark:fill-white'}
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path d='M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z' />
+          </svg>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className='sm:max-w-[425px]'>
+        <DialogHeader>
+          <DialogTitle>Add Note</DialogTitle>
+          <DialogDescription>
+            Add a question and answer to your notes.
+          </DialogDescription>
+        </DialogHeader>
+        <div className='grid gap-4 py-4'>
+          <div className='grid grid-cols-4 items-center gap-4'>
+            <Label htmlFor='question' className='text-right'>
+              Question
+            </Label>
+            <Input
+              id='question'
+              defaultValue='question'
+              className='col-span-3'
               ref={questionRef}
-              placeholder="question"
-              className="input input-bordered w-full"
             />
-            <input
-              type="text"
+          </div>
+          <div className='grid grid-cols-4 items-center gap-4'>
+            <Label htmlFor='answer' className='text-right'>
+              Answer
+            </Label>
+            <Input
+              id='answer'
+              defaultValue='answer'
+              className='col-span-3'
               ref={answerRef}
-              placeholder="answer"
-              className="input input-bordered w-full"
             />
           </div>
         </div>
-
-        <div className="flex justify-center item-center gap-4 mt-6">
-          <button className="btn btn-success" onClick={saveAddNote}>
+        <DialogFooter>
+          <Button type='submit' onClick={saveAddNote}>
             Add
-          </button>
-          <button className="btn" onClick={handleAppCloseClick}>
-            Close
-          </button>
-        </div>
-      </div>
-      <form method="dialog" className="modal-backdrop">
-        <button>close</button>
-      </form>
-    </dialog>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 function AddNote() {
-  const ref = useRef<HTMLDialogElement>(null);
-  const handleAddOpenClick = () => {
-    ref.current?.showModal();
-  };
-
+  const tip = 'Add Note';
   return (
-    <MenuItem
-      tip="Add Note"
-      dialog={<AddNoteDialog dialogRef={ref} />}
-      onClick={handleAddOpenClick}
-    >
-      <svg
-        width="24"
-        height="24"
-        className={"w-6 h-6 dark:fill-white"}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z" />
-      </svg>
+    <MenuItem tip={tip}>
+      <AddNoteDialog tip={tip} />
     </MenuItem>
   );
 }

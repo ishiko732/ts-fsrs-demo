@@ -1,5 +1,11 @@
-import clsx from "clsx";
-import React from "react";
+import { cn } from '@/lib/utils';
+import React from 'react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type Props = {
   tip?: string;
@@ -56,10 +62,19 @@ async function MenuItemContent({
 }: Props) {
   return (
     <>
-      <li onClick={onClick} className="max-w-[54px] max-h-10">
-        <a className={clsx("tooltip tooltip-right", className)} data-tip={tip}>
-          {children}
-        </a>
+      <li onClick={onClick} className='max-w-[54px] max-h-10' aria-label={tip}>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={cn(className)}>
+                {children}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side='right' >
+              <p>{tip}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </li>
       {dialog || null}
     </>
