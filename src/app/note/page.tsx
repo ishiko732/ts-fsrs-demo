@@ -55,6 +55,12 @@ const querySQL = (
   deleted: boolean
 ): { query: Prisma.NoteWhereInput } => {
   return {
+    // mysql not support mode
+    // mode: 'insensitive' property is not required and therefore not available in the generated Prisma Client API.
+    // https://www.prisma.io/docs/orm/prisma-client/queries/case-sensitivity#mysql-provider
+
+    // postgresql support mode
+    // https://www.prisma.io/docs/orm/prisma-client/queries/case-sensitivity#postgresql-provider
     query: {
       OR: [
         {
