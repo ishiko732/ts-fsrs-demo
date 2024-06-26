@@ -1,9 +1,19 @@
 import HomePage from "@/page/home";
+import { FlushTimeZonePage } from "@/components/deck/flushTimezone";
+import { getSessionUserId } from "./(auth)/api/auth/[...nextauth]/session";
 
-export default async function Home() {
+type HomeProps = {
+  searchParams: { hourOffset?: string };
+};
+
+export default async function Home({ searchParams }: HomeProps) {
+  const uid = await getSessionUserId()
   return (
     <>
-        <HomePage />
+      <HomePage />
+      {uid && (
+        <FlushTimeZonePage hourOffset={+(searchParams.hourOffset ?? 4)} />
+      )}
     </>
   );
 }
