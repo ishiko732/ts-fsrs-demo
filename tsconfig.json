@@ -20,9 +20,13 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/auth/*": ["./src/app/(auth)/*"],
-      "@public/*":["./public/*"],
-      "@node_modules/*":["./node_modules/*"],
+      "@auth/*": ["./src/app/(auth)/api/auth/[...nextauth]/*"],
+      "@public/*": ["./public/*"],
+      "@components/*": ["./src/app/(components)/*"],
+      "@actions/*": ["./src/actions/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@context/*": ["./src/context/*"],
     },
     "types": ["react-dom/experimental"]
   },

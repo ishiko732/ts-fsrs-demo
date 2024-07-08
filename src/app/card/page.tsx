@@ -4,7 +4,7 @@ import { cache } from 'react';
 import CardClient from '@/components/schedule/CardsClient';
 import Finish from '@/components/Finish';
 import { getTodayLearnedNewCardCount } from '@/lib/log';
-import { getAuthSession } from '@/auth/api/auth/[...nextauth]/session';
+import { getAuthSession } from '@auth/session';
 import { redirect } from 'next/navigation';
 import { date_scheduler } from 'ts-fsrs';
 

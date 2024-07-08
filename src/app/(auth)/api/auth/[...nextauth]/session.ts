@@ -1,4 +1,4 @@
-import { options } from "@/auth/api/auth/[...nextauth]/options";
+import { options } from "@auth/options";
 import { getServerSession } from "next-auth/next";
 import type { User } from "next-auth";
 

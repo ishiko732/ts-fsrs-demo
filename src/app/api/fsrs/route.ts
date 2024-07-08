@@ -1,10 +1,10 @@
-import { rollbackCard, schedulerCard, updateCard } from "@/lib/card";
-import { getNoteByNid } from "@/lib/note";
+import { rollbackCard, schedulerCard, updateCard } from "@lib/card";
+import { getNoteByNid } from "@lib/note";
 import { NextRequest, NextResponse } from "next/server";
 import { Grade, Rating } from "ts-fsrs";
 import { revalidatePath } from 'next/cache'
-import { isAdminOrSelf } from "@/auth/api/auth/[...nextauth]/session";
-import { forgetAction } from "@/actions/userCardService";
+import { isAdminOrSelf } from "@auth/session";
+import { forgetAction } from "@actions/userCardService";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
