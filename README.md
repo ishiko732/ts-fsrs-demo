@@ -8,7 +8,6 @@ use packages:
 
 ````
 - prisma (global) npm install -g prisma
-- dotenv (global) npm install -g dotenv
 - next.js (>= 14.2.0)
 - ts-fsrs (>= 3.5.3)
 - tailwindcss (>= 3)
@@ -22,7 +21,7 @@ use packages:
 
 > Ref(prisma docs): [https://www.prisma.io/docs/guides/development-environment/environment-variables](https://www.prisma.io/docs/guides/development-environment/environment-variables)
 
- `.env.local`  
+ `.env`  
 
 ```bash
 DATABASE_URL="postgres://username:password@host:port/database?sslmode=require"
@@ -51,7 +50,7 @@ datasource db {
 
 ## How to run?
 - run docker make sure the database is running on your machine: `docker-compose up`
-- Configure the database environment and use `npm run dbpush`
+- Configure the database environment and use `npm run db:push`
 - Run demo
 
 ```bash
