@@ -1,4 +1,7 @@
-type SearchTodayMemoryContextPage = {
+import { Card, Note, State as PrismaState } from '@prisma/client';
+import { FSRS, FSRSParameters, RecordLog } from "ts-fsrs";
+
+export type SearchTodayMemoryContextPage = {
   uid: number;
   startTimestamp: number;
   userNewCardlimit: number;
@@ -7,7 +10,7 @@ type SearchTodayMemoryContextPage = {
   ignoreCardIds?: number[];
 };
 
-abstract class IDeckService {
+export abstract class IDeckService {
   abstract getDeck(deckId: number): void;
   abstract getAlgorithmParams(uid: number): Promise<FSRSParameters>;
   abstract getAlgorithm(uid: number): Promise<FSRS>;
@@ -64,7 +67,7 @@ export interface NoteMemoryStatePage {
   totalSize: number;
 }
 
-type NoteMemoryContext = {
+export type NoteMemoryContext = {
   [key in PrismaState]: NoteMemoryStatePage;
 };
 

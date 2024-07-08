@@ -19,7 +19,6 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
       "@auth/*": ["./src/app/(auth)/api/auth/[...nextauth]/*"],
       "@public/*": ["./public/*"],
       "@components/*": ["./src/app/(components)/*"],
@@ -27,9 +26,10 @@
       "@lib/*": ["./src/lib/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@context/*": ["./src/context/*"],
+      "@/*": ["./src/*"]
     },
     "types": ["react-dom/experimental"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

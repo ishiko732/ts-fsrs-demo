@@ -1,6 +1,7 @@
 import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import { get_timezones } from '@/lib/date';
-import { DeckMemoryState, DeckService } from '@/lib/deck';
+import type { DeckMemoryState } from '@lib/deck/type';
+import { DeckService } from '@lib/deck';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
