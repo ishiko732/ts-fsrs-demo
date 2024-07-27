@@ -50,6 +50,7 @@ type ICommitUserParams = {
   maximum_interval: number;
   w: number[];
   enable_fuzz: boolean;
+  enable_short_term: boolean;
   card_limit: number;
   lapses: number;
   lingq_token: string | null;

@@ -33,6 +33,7 @@ const formSchema = z.object({
   maximum_interval: z.coerce.number().min(7).max(36500).step(1).int(),
   w: z.string(),
   enable_fuzz: z.coerce.boolean(),
+  enable_short_term: z.coerce.boolean(),
   card_limit: z.coerce.number().min(0).step(1).int(),
   lapses: z.coerce.number().min(3).step(1).int(),
   lingq_token: z.string().optional(),
@@ -61,6 +62,7 @@ export default function FSRSConfigForm({
           form.setValue('card_limit', param.card_limit);
           form.setValue('lapses', param.lapses);
           form.setValue('lingq_token', param.lingq_token ?? undefined);
+          form.setValue('enable_short_term', param.params.enable_short_term);
           setParams(param);
         } else {
           signOut();
@@ -81,8 +83,8 @@ export default function FSRSConfigForm({
       .replace(/[\[\]]/g, '')
       .split(',')
       .map((v) => parseFloat(v));
-    if (w.length !== 17) {
-      form.setError('w', { message: 'w must have 17 values' });
+    if (w.length !== 19) {
+      form.setError('w', { message: 'w must have 19 values' });
       return;
     }
     if (loading) {
@@ -187,6 +189,31 @@ export default function FSRSConfigForm({
                 When enabled, this adds a small random delay to the new interval
                 time to prevent cards from sticking together and always being
                 reviewed on the same day.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='enable_short_term'
+          render={({ field }) => (
+            <FormItem>
+              <div className='flex items-center'>
+                <FormLabel className='space-y-0.5 pr-4'>enable_short-term</FormLabel>
+                <FormControl>
+                  <Switch
+                    id='enable_short-term'
+                    placeholder='enable_short-term'
+                    {...field}
+                    value={undefined}
+                    onCheckedChange={field.onChange}
+                    checked={field.value}
+                  />
+                </FormControl>
+              </div>
+              <FormDescription>
+                When disabled, this allow user to skip the short-term schedule.
               </FormDescription>
               <FormMessage />
             </FormItem>
