@@ -129,8 +129,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.4)
       ts-fsrs:
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^4.0.1
+        version: 4.0.1
       vaul:
         specifier: ^0.9.1
         version: 0.9.1(@types/react-dom@18.2.13)(@types/react@18.2.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2758,8 +2758,8 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
-  ts-fsrs@4.0.0:
-    resolution: {integrity: sha512-m3J/8c8geDMb0SPd7ta7P0Xlqh3E6d/t9Q/akUtERX4UNz5411VtSmzXENDMUogNVaDKv/FkH7ImrfMdvv9/MA==}
+  ts-fsrs@4.0.1:
+    resolution: {integrity: sha512-UkzsDQhKcQVaR72CSFFY8F4w7ECU54vgHHy80HIWrdDgpx24T4B4VNAJn6lT91HcQnsB0lIHWWzUOLTWVWODiA==}
     engines: {node: '>=18.0.0'}
 
   ts-interface-checker@0.1.13:
@@ -5681,7 +5681,7 @@ snapshots:
     dependencies:
       typescript: 5.5.2
 
-  ts-fsrs@4.0.0:
+  ts-fsrs@4.0.1:
     dependencies:
       seedrandom: 3.0.5
 
