@@ -57,7 +57,9 @@ export async function schedulerCard<T extends Grade>(query:Partial<Query>,now:Da
         last_review:cardByPrisma.last_review?cardByPrisma.last_review:undefined
     }
     const repeatAfterHandlerExtendSuspended = repeatAfterHandler.bind(null,userParams.lapses)
+    console.log(f.parameters)
     const repeat = f.repeat(card,now,repeatAfterHandlerExtendSuspended)
+    console.log(repeat)
     if(grade){
         return repeat[grade] as T extends Grade ? RepeatRecordLog : RecordLogPrisma
     }else{
