@@ -8,12 +8,10 @@ import DeckStatus from './count';
 
 export default function DeckItem({
   deck,
-  selected,
   timezone,
   hourOffset,
 }: {
   deck: Deck;
-  selected: boolean;
   timezone: string;
   hourOffset: number;
 }) {
@@ -22,7 +20,7 @@ export default function DeckItem({
     <div
       className={cn(
         'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent md:w-1/3 sm:w-1/2 w-full',
-        selected && 'bg-muted'
+        // selected && 'bg-muted'
       )}
     >
       <div className='flex w-full flex-col gap-1'>

@@ -21,7 +21,7 @@ export default async function DeckPage() {
         <DeckItem
           key={deck.did}
           deck={deck}
-          selected={false}
+        //   selected={false}
           timezone={timezone}
           hourOffset={hourOffset}
         />
