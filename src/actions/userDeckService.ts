@@ -23,6 +23,7 @@ export async function getDecksAction() {
     throw new Error('user not found.');
   }
   const get = getDecks(uid);
+
   return await get();
 }
 
@@ -83,8 +84,6 @@ export async function getNumberOfNewCardsLearnedTodayAction(
 export async function getNoteMemoryTotalAction(
   did: number,
   startTimestamp: number,
-  limit: number,
-  count: number
 ) {
   const uid = await getSessionUserId();
   if (!uid) {
@@ -99,8 +98,6 @@ export async function getNoteMemoryTotalAction(
           uid,
           state,
           start,
-          limit,
-          count,
           did
         ))
     )
@@ -127,8 +124,6 @@ export async function getNoteMemoryContextAction(
     uid,
     state,
     start,
-    limit,
-    todayCount,
     deckId
   );
   const size = Math.min(pageSize, total);

@@ -131,8 +131,6 @@ export async function getNoteMemoryTotal(
   uid: number,
   state: PrismaState,
   lte: Date,
-  limit: number,
-  todayCount: number,
   deckId: number
 ) {
   return await prisma.note.count({
