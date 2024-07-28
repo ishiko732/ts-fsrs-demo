@@ -9,7 +9,7 @@ import { Deck } from '@prisma/client';
 
 // allow server/client use this class
 export class DeckCrud {
-  async getList() {
+  async getList(): Promise<Deck[]> {
     return await getDecksAction();
   }
   async get(did: number) {

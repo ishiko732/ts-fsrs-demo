@@ -50,7 +50,16 @@ export const getDecks = (uid: number) => {
       const decks: Deck[] = await prisma.deck.findMany({
         where: { uid },
       });
-
+      decks.push({
+        did: 0,
+        uid,
+        name: 'Default',
+        fsrs: JSON.stringify(generatorParameters()),
+        extends: JSON.stringify({}),
+        deleted: false,
+        card_limit: 50,
+        lapses: 8,
+      });
       return decks;
     },
     [`actions/decks/${uid}`],

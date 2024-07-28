@@ -22,7 +22,8 @@ export async function getDecksAction() {
   if (!uid) {
     throw new Error('user not found.');
   }
-  return await getDecks(uid);
+  const get = getDecks(uid);
+  return await get();
 }
 
 export async function addDeckAction(
