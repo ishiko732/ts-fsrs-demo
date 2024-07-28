@@ -2,14 +2,59 @@
 import 'server-only';
 import { getSessionUserId } from '@auth/session';
 import {
+  addDeck,
+  deleteDeck,
+  getDecks,
   getNoteMemoryState,
   getNoteMemoryTotal,
   getParamsByUserId_cache,
   states_prisma,
+  updateDeck,
 } from '@lib/deck/retriever';
 import { getNumberOfNewCardsLearnedToday } from '@lib/deck/retriever';
 import { Deck, State as PrismaState } from '@prisma/client';
-import { NoteMemoryState, NoteMemoryStatePage } from '@lib/deck/type';
+import { NoteMemoryStatePage } from '@lib/deck/type';
+
+// Deck Crud
+
+export async function getDecksAction() {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  return await getDecks(uid);
+}
+
+export async function addDeckAction(
+  deck: Omit<Deck, 'uid' | 'did' | 'deleted'>
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  Reflect.set(deck, 'did', undefined);
+  // @ts-ignore
+  delete deck.did;
+  return await addDeck(uid, { ...deck, deleted: false });
+}
+
+export async function updateDeckAction(
+  deck: Omit<Deck, 'uid' | 'did' | 'deleted'>
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  return await updateDeck(uid, { ...deck, deleted: false });
+}
+
+export async function deleteDeckAction(did: number, move: boolean) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  return await deleteDeck(uid, did, move);
+}
 
 export async function getParamsByUserIdAction(deckId: number = 0) {
   const uid = await getSessionUserId();
@@ -46,17 +91,19 @@ export async function getNoteMemoryTotalAction(
   }
   const start = new Date(startTimestamp);
   const res = {} as Record<PrismaState, number>;
-  await Promise.all( states_prisma.map(
-    async (state) =>
-      (res[state] = await getNoteMemoryTotal(
-        uid,
-        state,
-        start,
-        limit,
-        count,
-        did
-      ))
-  ))
+  await Promise.all(
+    states_prisma.map(
+      async (state) =>
+        (res[state] = await getNoteMemoryTotal(
+          uid,
+          state,
+          start,
+          limit,
+          count,
+          did
+        ))
+    )
+  );
   return res;
 }
 

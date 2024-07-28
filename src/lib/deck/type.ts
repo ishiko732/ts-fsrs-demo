@@ -41,6 +41,7 @@ abstract class INoteService {
 export interface DeckMemoryState {
   uid: number;
   deckId:number,
+  deckName: string;
   timezone: string;
   startTimestamp: number;
   nextTimestamp: number;

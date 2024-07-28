@@ -42,6 +42,73 @@ export const getParamsByUserId_cache = (uid: number, deckId?: number) => {
   ) satisfies () => Promise<Record<string, Omit<Deck, 'deleted'>>>;
 };
 
+// crud
+
+export const getDecks = (uid: number) => {
+  return cache(
+    async () => {
+      const decks: Deck[] = await prisma.deck.findMany({
+        where: { uid },
+      });
+
+      return decks;
+    },
+    [`actions/decks/${uid}`],
+    {
+      tags: [`actions/decks/${uid}`],
+    }
+  ) satisfies () => Promise<Deck[]>;
+};
+
+export const addDeck = async (uid: number, deck: Omit<Deck, 'did' | 'uid'>) => {
+  return prisma.deck.create({
+    data: {
+      ...deck,
+      fsrs: JSON.stringify(deck.fsrs),
+      extends: JSON.stringify(deck.extends),
+      uid,
+    },
+  });
+};
+
+export const updateDeck = async (uid: number, deck: Partial<Deck>) => {
+  return prisma.deck.update({
+    where: { did: deck.did, uid: uid },
+    data: {
+      ...deck,
+      fsrs: deck.fsrs ? JSON.stringify(deck.fsrs) : undefined,
+      extends: deck.extends ? JSON.stringify(deck.extends) : undefined,
+    },
+  });
+};
+
+export const deleteDeck = async (
+  uid: number,
+  deckId: number,
+  move: boolean
+) => {
+  const noteIds = await prisma.note.findMany({
+    select: {
+      nid: true,
+    },
+    where: {
+      did: deckId,
+      uid: uid,
+    },
+  });
+  const res = await prisma.$transaction([
+    prisma.deck.update({
+      where: { did: deckId, uid },
+      data: { deleted: true },
+    }),
+    prisma.note.updateMany({
+      where: { nid: { in: noteIds.map((note) => note.nid) } },
+      data: move ? { did: DEFAULT_DECK_ID } : { deleted: true },
+    }),
+  ]);
+  return res.length > 0;
+};
+
 export const states_prisma = [
   PrismaState.New,
   PrismaState.Learning,
@@ -70,7 +137,7 @@ export async function getNoteMemoryTotal(
         state,
         deleted: false,
       },
-    }
+    },
   });
 }
 

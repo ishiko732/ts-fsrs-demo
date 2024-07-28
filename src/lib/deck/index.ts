@@ -82,6 +82,7 @@ export class DeckService implements IDeckService {
     return {
       uid: deck.uid,
       deckId: deck.did,
+      deckName: deck.name,
       timezone,
       startTimestamp,
       nextTimestamp,
