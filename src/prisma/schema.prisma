@@ -86,6 +86,7 @@ model User {
 model Note {
   nid      Int     @id @unique @default(autoincrement())
   uid      Int
+  did      Int     @default(0)
   question String  @default("")
   answer   String  @default("")
   source   String  @default("")

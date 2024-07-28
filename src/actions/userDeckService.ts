@@ -1,12 +1,17 @@
 'use server';
 import 'server-only';
-import prisma from '@/lib/prisma';
-import { unstable_cache as cache, revalidateTag } from 'next/cache';
-import { Deck } from '@prisma/client';
-import { generatorParameters } from 'ts-fsrs';
 import { getSessionUserId } from '@auth/session';
+import {
+  getNoteMemoryState,
+  getNoteMemoryTotal,
+  getParamsByUserId_cache,
+  states_prisma,
+} from '@lib/deck/retriever';
+import { getNumberOfNewCardsLearnedToday } from '@lib/deck/retriever';
+import { Deck, State as PrismaState } from '@prisma/client';
+import { NoteMemoryState, NoteMemoryStatePage } from '@lib/deck/type';
 
-export async function getParamsByUserId(deckId: number = 0) {
+export async function getParamsByUserIdAction(deckId: number = 0) {
   const uid = await getSessionUserId();
   if (!uid) {
     throw new Error('user not found.');
@@ -15,38 +20,86 @@ export async function getParamsByUserId(deckId: number = 0) {
   return await get();
 }
 
-const defaultParams = (uid: number) => {
-  return {
-    did: 0,
-    uid: uid,
-    name: 'Default',
-    fsrs: JSON.stringify(generatorParameters()),
-    card_limit: 50,
-    lapses: 8,
-    extends: JSON.stringify({}),
-  } satisfies Omit<Deck, 'deleted'>;
-};
+export async function getNumberOfNewCardsLearnedTodayAction(
+  deckId: number = 0,
+  startTimestamp: number,
+  endTimestamp: number
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const start = new Date(startTimestamp);
+  const end = new Date(endTimestamp);
+  return await getNumberOfNewCardsLearnedToday(uid, deckId, start, end);
+}
 
-const getParamsByUserId_cache = (uid: number, deckId?: number) => {
-  return cache(
-    async () => {
-      if (deckId === 0) {
-        return { 0: defaultParams(uid) };
-      }
-      const decks: Deck[] = await prisma.deck.findMany({
-        where: { uid, did: deckId },
-      });
-      const resp: Record<string, Omit<Deck, 'deleted'>> = {};
-      for (const data of decks) {
-        const { deleted, ...rest } = data;
-        resp[data.did] = rest;
-      }
-      resp[0] = defaultParams(uid);
-      return resp;
-    },
-    [`actions/deck_params/${uid}/deck/${deckId}`],
-    {
-      tags: [`actions/deck_params/${uid}`],
-    }
-  ) satisfies () => Promise<Record<string, Omit<Deck, 'deleted'>>>;
-};
+export async function getNoteMemoryTotalAction(
+  did: number,
+  startTimestamp: number,
+  limit: number,
+  count: number
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const start = new Date(startTimestamp);
+  const res = {} as Record<PrismaState, number>;
+  await Promise.all( states_prisma.map(
+    async (state) =>
+      (res[state] = await getNoteMemoryTotal(
+        uid,
+        state,
+        start,
+        limit,
+        count,
+        did
+      ))
+  ))
+  return res;
+}
+
+export async function getNoteMemoryContextAction(
+  deckId: number,
+  state: PrismaState,
+  startTimestamp: number,
+  limit: number,
+  todayCount: number,
+  pageSize: number,
+  page: number = 1,
+  ignoreCardIds?: number[]
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const start = new Date(startTimestamp);
+  const total = await getNoteMemoryTotal(
+    uid,
+    state,
+    start,
+    limit,
+    todayCount,
+    deckId
+  );
+  const size = Math.min(pageSize, total);
+  const noteMemoryStates = await getNoteMemoryState({
+    uid,
+    deckId,
+    state,
+    lte: start,
+    limit,
+    todayCount,
+    pageSize: size,
+    page,
+    ignoreCardIds,
+  });
+
+  return {
+    memoryState: noteMemoryStates,
+    pageSize: size,
+    loadPage: page,
+    totalSize: total,
+  } satisfies NoteMemoryStatePage;
+}

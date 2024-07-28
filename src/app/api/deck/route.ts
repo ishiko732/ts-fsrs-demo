@@ -17,10 +17,9 @@ export async function GET(request: NextRequest) {
     0,
     Math.max(23, ~~(url.searchParams.get('hourOffset') ?? 4))
   );
-  const deckService = new DeckService();
-  const params = await deckService.getAlgorithmParams(uid);
+  const deckService = new DeckService(0);
+  const params = await deckService.getAlgorithmParams();
   const deckContext = await deckService.getTodayMemoryContext(
-    uid,
     existed ? timezone : 'UTC',
     hourOffset
   );

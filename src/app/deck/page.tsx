@@ -4,11 +4,10 @@ import { getUserTimeZone } from '@actions/userTimezone';
 export const dynamic = 'force-dynamic';
 
 export default async function Page() {
-  const deckService = new DeckService();
+  const deckService = new DeckService(0);
   const { uid, timezone, hourOffset } = await getUserTimeZone();
-  const fsrs = await deckService.getAlgorithm(uid);
+  const fsrs = await deckService.getAlgorithm();
   const deckContext = await deckService.getTodayMemoryContext(
-    uid,
     timezone,
     hourOffset
   );
