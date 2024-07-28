@@ -34,6 +34,7 @@ export type FSRSPutParams={
   maximum_interval: number;
   w: number[];
   enable_fuzz: boolean;
+  enable_short_term: boolean;
   lapses: number;
   card_limit: number;
   lingq_token: string| null;

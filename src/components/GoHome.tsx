@@ -1,14 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
 
 export default function GoHome() {
   const router = useRouter();
   return (
-    <button
-      className="btn btn-primary"
-      onClick={() => router.replace("/")}
-    >
+    <Button onClick={() => router.replace('/')}>
       Go Home
-    </button>
+    </Button>
   );
 }

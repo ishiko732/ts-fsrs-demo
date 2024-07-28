@@ -1,134 +1,171 @@
-import { getNoteCount, getNotes } from "@/lib/note";
-import React, { cache } from "react";
-import { Card, Note, Prisma } from "@prisma/client";
-import Menu from "@/components/menu";
-import { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
-import TableHeader from "@/components/note/NoteTableHead";
-import NotePagination from "@/components/note/NotePagination";
-import NoteTableBody from "@/components/note/NoteTableBody";
+import React, { cache } from 'react';
+import { Prisma } from '@prisma/client';
+import { redirect } from 'next/navigation';
+import {
+  getNoteTotalCount,
+  getNotesBySessionUserId,
+} from '@/actions/userNoteService';
+import DataTable from '@/components/note/data-table';
+import { getUserParams } from '@/actions/userParamsService';
+import { generatorParameters } from 'ts-fsrs';
+import { ColumnSort, SortingState } from '@tanstack/react-table';
+import Menu from '@/components/menu';
 
-function computerOrder(order: { field: string; type: "desc" | "asc" }) {
+export const revalidate = 0; // no cache
+
+function computerOrder(order: SortingState) {
+  let sort: ColumnSort = {
+    id: 'due',
+    desc: false,
+  };
+  if (Array.isArray(order) && order.length > 0) {
+    sort = order[0];
+  }
   let _order:
     | Prisma.NoteOrderByWithRelationInput
     | Prisma.NoteOrderByWithRelationInput[]
     | undefined = {};
   if (
-    ["question", "answer", "source", "due", "state", "reps", "s", "d"].includes(
-      order.field
+    ['question', 'answer', 'source', 'due', 'state', 'reps', 'S', 'D'].includes(
+      sort.id
     )
   ) {
-    if (["question", "answer", "source"].includes(order.field)) {
+    if (['question', 'answer', 'source'].includes(sort.id)) {
       _order = {
-        [order.field]: order.type,
+        [sort.id]: sort.desc ? 'desc' : 'asc',
       };
     } else {
-      if (order.field === "s"){
-        order.field = "stability";
-      }else if (order.field === "d") {
-        order.field = "difficulty";
+      if (sort.id === 'S') {
+        sort.id = 'stability';
+      } else if (sort.id === 'D') {
+        sort.id = 'difficulty';
       }
       _order = {
         card: {
-          [order.field]: order.type,
+          [sort.id]: sort.desc ? 'desc' : 'asc',
         },
       };
     }
-  } else {
-    _order = { card: { due: "desc" } };
   }
   return _order;
 }
 
-const getData = cache(
-  async (
-    take: number,
-    searchWord: string,
-    pageIndex: number = 1,
-    order: { field: string; type: "desc" | "asc" },
-    deleted: '1' | '0' = '0'
-  ) => {
-    const session = await getAuthSession();
-    if (!session?.user?.id) {
-      return {
-        notes: [],
-        pageCount: 0,
-        noteCount: 0,
-      };
-    }
-    const _noteCount = getNoteCount({
-      uid: Number(session.user.id),
-      query: { question: { contains: searchWord }, deleted: deleted === '1' },
-    });
-    const _notes = getNotes({
-      uid: Number(session.user.id),
-      take: take === 0 ? undefined : take,
-      skip: take * (pageIndex - 1),
-      query: { question: { contains: searchWord }, deleted: deleted === '1' },
-      order: computerOrder(order),
-    });
-    const [noteCount, notes] = await Promise.all([_noteCount, _notes]);
-    const pageCount = Math.ceil(noteCount / take);
-    return {
-      notes: notes as Array<Note & { card: Card }>,
-      pageCount,
-      noteCount,
-    };
-  }
-);
+const querySQL = (
+  searchWord: string,
+  deleted: boolean
+): { query: Prisma.NoteWhereInput } => {
+  return {
+    // mysql not support mode
+    // mode: 'insensitive' property is not required and therefore not available in the generated Prisma Client API.
+    // https://www.prisma.io/docs/orm/prisma-client/queries/case-sensitivity#mysql-provider
 
-export default async function Page({
-  searchParams,
-}: {
+    // postgresql support mode
+    // https://www.prisma.io/docs/orm/prisma-client/queries/case-sensitivity#postgresql-provider
+    query: {
+      OR: [
+        {
+          answer: { contains: searchWord, mode: 'insensitive' },
+        },
+        {
+          question: { contains: searchWord, mode: 'insensitive' },
+        },
+      ],
+      deleted: deleted,
+    },
+  };
+};
+
+const getData = async (
+  take: number,
+  searchWord: string,
+  pageIndex: number = 1,
+  order: SortingState,
+  deleted: boolean
+) => {
+  const _noteCount = getNoteTotalCount(querySQL(searchWord, deleted));
+  const _notes = getNotesBySessionUserId({
+    take: take === 0 ? undefined : take,
+    skip: take * (pageIndex - 1),
+    ...querySQL(searchWord, deleted),
+    order: computerOrder(order),
+  });
+  const [noteCount, notes] = await Promise.all([_noteCount, _notes]).catch(
+    () => {
+      redirect('/api/auth/signin?callbackUrl=/note');
+    }
+  );
+  const pageCount = Math.ceil(noteCount / take);
+  return {
+    notes: notes,
+    pageCount,
+    noteCount,
+  };
+};
+
+type NoteSortField =
+  | 'question'
+  | 'answer'
+  | 'source'
+  | 'D'
+  | 'S'
+  | 'R'
+  | 'Reps';
+
+type NotePageProps = {
   searchParams: {
-    take: string;
-    s: string;
-    o: string;
-    ot: "desc" | "asc";
     page: string;
+    take: string;
+    keyword: string;
+    sort: NoteSortField;
+    [key: string]: string | string[];
     deleted: '1' | '0';
   };
-}) {
-  const take = searchParams["take"] ? Number(searchParams["take"]) : 100;
-  const searchWord = searchParams["s"] ? searchParams["s"] : "";
-  const orderField = searchParams["o"] ? searchParams["o"] : "due";
-  const orderType = searchParams["ot"] ? searchParams["ot"] : "desc";
-  const pageIndex = searchParams["page"] ? Number(searchParams["page"]) : 1;
-  const deleted = searchParams["deleted"] ? searchParams["deleted"] : "0";
+};
+
+export default async function Page({ searchParams }: NotePageProps) {
+  const take = Number(searchParams['take']);
+  const pageIndex = Number(searchParams['page']);
+  if (
+    !Number.isInteger(take) ||
+    !Number.isInteger(pageIndex) ||
+    pageIndex < 1 ||
+    take < 1
+  ) {
+    redirect('/note?page=1&take=15');
+  }
+  const keyword = searchParams.keyword ?? null;
+  const sortField = searchParams.sort ?? [];
+  const sort: SortingState | null = Array.isArray(searchParams.sort)
+    ? Array.from(sortField).map((s) => {
+        return {
+          id: s,
+          desc: searchParams[`${s}Asc`] === '0',
+        };
+      })
+    : searchParams.sort
+    ? [{ id: sortField, desc: searchParams[`${sortField}Asc`] === '0' }]
+    : null;
+  const deleted = searchParams.deleted === '1' ?? false;
   const { notes, pageCount, noteCount } = await getData(
     take,
-    searchWord,
+    keyword ?? '',
     pageIndex,
-    {
-      field: orderField,
-      type: orderType,
-    },
+    sort ?? [],
     deleted
   );
+
+  const params = await getUserParams();
   return (
-    <div className="bg-base-200 h-screen">
-      <div className="w-full sm:flex sm:flex-wrap sm:justify-center bg-base-200">
-        <Menu />
-        <div className="w-full sm:w-3/4 sm:flex sm:flex-wrap sm:justify-center pt-8">
-          <div className="overflow-x-auto">
-            <table className="table table-xs sm:table-sm table-zebra">
-              <thead>
-                <TableHeader />
-              </thead>
-              <tbody>
-               <NoteTableBody pageIndex={pageIndex} take={take} notes={notes}/>
-              </tbody>
-              <tfoot>
-                <TableHeader />
-              </tfoot>
-            </table>
-            <NotePagination
-              cur={pageIndex}
-              count={pageCount}
-              total={noteCount}
-            />
-          </div>
-        </div>
-      </div>
+    <div className=' container'>
+      <Menu/>
+      <DataTable
+        data={notes}
+        fsrsParams={generatorParameters(params.data?.params)}
+        rowCount={noteCount}
+        pageCount={pageCount}
+        keyword={keyword}
+        sort={sort ?? []}
+      />
     </div>
   );
 }

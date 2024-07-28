@@ -1,26 +1,26 @@
-import { forgetCard } from "@/lib/card";
-import clsx from "clsx";
-import { revalidatePath } from "next/cache";
-import React from "react";
-import ForgetSubmit from "../LoadingSubmitButton";
+import React from 'react';
+import ForgetSubmit from '../LoadingSubmitButton';
+import { forgetAction as _forgetAction } from '@/actions/userCardService';
+import { cn } from '@/lib/utils';
 
 type Props = {
-  cid: Number;
+  cid: number;
   className?: string;
 };
 
 export default function Forget({ cid, className }: Props) {
-  const forgetAction = async () => {
-    "use server";
-    const data = await forgetCard(Number(cid), new Date(), true);
-    if (data) {
-      revalidatePath(`/note/${data.nid}`);
-    }
-  };
+  const forgetAction = _forgetAction.bind(
+    null,
+    cid,
+    new Date().getTime(),
+    true
+  );
 
   return (
-    <form action={forgetAction} className="flex justify-center">
-      <ForgetSubmit className={clsx("btn btn-outline", className)}>Forget</ForgetSubmit>
+    <form action={forgetAction} className='flex justify-center'>
+      <ForgetSubmit className={cn('btn btn-outline', className)}>
+        Forget
+      </ForgetSubmit>
     </form>
   );
 }
