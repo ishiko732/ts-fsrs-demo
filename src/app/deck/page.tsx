@@ -1,5 +1,5 @@
 import { DeckService } from '@lib/deck';
-import { getUserTimeZone } from '@/actions/timezone';
+import { getUserTimeZone } from '@actions/userTimezone';
 
 export const dynamic = 'force-dynamic';
 

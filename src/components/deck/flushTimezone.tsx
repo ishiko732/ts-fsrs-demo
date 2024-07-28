@@ -1,5 +1,5 @@
 'use client'
-import { flushTimezone } from "@/actions/timezone"
+import { flushTimezone } from "@actions/userTimezone"
 import { get_custom_timezone } from "@/lib/date";
 import { useEffect } from "react";
 
