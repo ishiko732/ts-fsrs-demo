@@ -12,6 +12,7 @@ import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { FSRSVersion } from 'ts-fsrs';
 const Logo = ({ env }: { env: string }) => {
+  const matchVersion = FSRSVersion.match(/\bv?(\d+\.\d+\.\d+)\b/);
   return (
     <div className='mr-4 hidden sm:flex'>
       <div className='btn btn-ghost text-xl hidden sm:flex'>
@@ -21,7 +22,9 @@ const Logo = ({ env }: { env: string }) => {
             className='hidden font-bold sm:inline-block mt-1 line-clamp-3 cursor-pointer '
             asChild
           >
-            <div>TS-FSRS-DEMO</div>
+            <div>
+              <Link href={'/'} aria-label='home'>TS-FSRS-DEMO</Link>
+            </div>
           </HoverCardTrigger>
           <HoverCardContent className='pt-4 pl-6 w-[24rem]  border   border-b-stone-900 dark:border-white z-[999] bg-white dark:bg-black'>
             <div className='flex justify-between space-x-4'>
@@ -63,7 +66,9 @@ const Logo = ({ env }: { env: string }) => {
                   version :{' '}
                   <span className='underline underline-offset-1'>
                     <Link
-                      href={`https://www.npmjs.com/package/ts-fsrs/v/${FSRSVersion}`}
+                      href={`https://www.npmjs.com/package/ts-fsrs/v/${
+                        matchVersion?.[1] ?? 'latest'
+                      }`}
                       target='_blank'
                       legacyBehavior
                     >

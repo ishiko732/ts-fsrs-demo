@@ -23,6 +23,7 @@ model Revlog {
   card              Card     @relation(fields: [cid], references: [cid])
   duration          Int      @default(0)
   deleted           Boolean  @default(false)
+
   @@index([cid])
 }
 
@@ -50,6 +51,7 @@ model Parameters {
   maximum_interval  Int     @default(36500)
   w                 Json
   enable_fuzz       Boolean @default(false)
+  enable_short_term Boolean @default(true)
   card_limit        Int     @default(50)
   lapses            Int     @default(8)
   user              User?
@@ -71,18 +73,19 @@ model User {
 }
 
 model Note {
-  nid      Int    @id @unique @default(autoincrement())
+  nid      Int     @id @unique @default(autoincrement())
   uid      Int
-  question String @default("")
-  answer   String @default("")
-  source   String @default("")
+  question String  @default("")
+  answer   String  @default("")
+  source   String  @default("")
   sourceId String?
   extend   Json
   card     Card?
-  user     User?  @relation(fields: [uid], references: [uid])
+  user     User?   @relation(fields: [uid], references: [uid])
   deleted  Boolean @default(false)
+
   @@index([uid])
-  @@index([sourceId,source])
+  @@index([sourceId, source])
 }
 
 enum State {

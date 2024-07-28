@@ -4,12 +4,12 @@ import {
   default_w,
   fsrs,
   generatorParameters,
-} from "ts-fsrs";
-import prisma from "./prisma";
-import { Parameters } from "@prisma/client";
-import { FSRSPutParams } from "@/types";
-import { decryptLingqKey, encryptLingqKey } from "@/vendor/lingq/crypt";
-import { getSessionUserId } from "@/app/(auth)/api/auth/[...nextauth]/session";
+} from 'ts-fsrs';
+import prisma from './prisma';
+import { Parameters } from '@prisma/client';
+import { FSRSPutParams } from '@/types';
+import { decryptLingqKey, encryptLingqKey } from '@/vendor/lingq/crypt';
+import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
 
 export type ParametersType = {
   params: FSRSParameters;
@@ -35,13 +35,14 @@ async function processArrayParameters(
   params: Parameters
 ): Promise<ParametersType> {
   if (!params) {
-    throw new Error("params not found");
+    throw new Error('params not found');
   }
   const fsrsParameters = generatorParameters({
     request_retention: params.request_retention,
     maximum_interval: params.maximum_interval,
     w: JSON.parse(params.w as string),
     enable_fuzz: params.enable_fuzz,
+    enable_short_term: params.enable_short_term,
   });
   let lingq_token = null;
   if (
@@ -87,6 +88,7 @@ export async function updateParameters(params: FSRSPutParams) {
       maximum_interval: params.maximum_interval,
       w: JSON.stringify(params.w),
       enable_fuzz: params.enable_fuzz,
+      enable_short_term: params.enable_short_term,
       card_limit: params.card_limit,
       lapses: params.lapses,
       lingq_token: token,
@@ -102,10 +104,10 @@ export async function updateParameters(params: FSRSPutParams) {
 export async function getFSRSBySessionUser(verifyUid: number) {
   const uid = await getSessionUserId();
   if (!uid) {
-    throw new Error("uid not found");
+    throw new Error('uid not found');
   }
   if (verifyUid !== uid) {
-    throw new Error("permission denied");
+    throw new Error('permission denied');
   }
   const userParams = await getFSRSParamsByUid(uid);
   const f = fsrs(userParams.params) as FSRS;
