@@ -14,6 +14,7 @@ import {
 import { getNumberOfNewCardsLearnedToday } from '@lib/deck/retriever';
 import { Deck, State as PrismaState } from '@prisma/client';
 import { NoteMemoryStatePage } from '@lib/deck/type';
+import { revalidateTag } from 'next/cache';
 
 // Deck Crud
 
@@ -37,7 +38,9 @@ export async function addDeckAction(
   Reflect.set(deck, 'did', undefined);
   // @ts-ignore
   delete deck.did;
-  return await addDeck(uid, { ...deck, deleted: false });
+  const res = await addDeck(uid, { ...deck, deleted: false });
+  revalidateTag(`actions/decks/${uid}`);
+  return res;
 }
 
 export async function updateDeckAction(
@@ -47,7 +50,10 @@ export async function updateDeckAction(
   if (!uid) {
     throw new Error('user not found.');
   }
-  return await updateDeck(uid, { ...deck, deleted: false });
+  const res = await updateDeck(uid, { ...deck, deleted: false });
+  revalidateTag(`actions/decks/${uid}`);
+  revalidateTag(`actions/deck_params/${uid}`);
+  return res;
 }
 
 export async function deleteDeckAction(did: number, move: boolean) {
@@ -55,7 +61,10 @@ export async function deleteDeckAction(did: number, move: boolean) {
   if (!uid) {
     throw new Error('user not found.');
   }
-  return await deleteDeck(uid, did, move);
+  const res = await deleteDeck(uid, did, move);
+  revalidateTag(`actions/decks/${uid}`);
+  revalidateTag(`actions/deck_params/${uid}`);
+  return res;
 }
 
 export async function getParamsByUserIdAction(deckId: number = 0) {
@@ -83,7 +92,7 @@ export async function getNumberOfNewCardsLearnedTodayAction(
 
 export async function getNoteMemoryTotalAction(
   did: number,
-  startTimestamp: number,
+  startTimestamp: number
 ) {
   const uid = await getSessionUserId();
   if (!uid) {
@@ -94,12 +103,7 @@ export async function getNoteMemoryTotalAction(
   await Promise.all(
     states_prisma.map(
       async (state) =>
-        (res[state] = await getNoteMemoryTotal(
-          uid,
-          state,
-          start,
-          did
-        ))
+        (res[state] = await getNoteMemoryTotal(uid, state, start, did))
     )
   );
   return res;
@@ -120,12 +124,7 @@ export async function getNoteMemoryContextAction(
     throw new Error('user not found.');
   }
   const start = new Date(startTimestamp);
-  const total = await getNoteMemoryTotal(
-    uid,
-    state,
-    start,
-    deckId
-  );
+  const total = await getNoteMemoryTotal(uid, state, start, deckId);
   const size = Math.min(pageSize, total);
   const noteMemoryStates = await getNoteMemoryState({
     uid,

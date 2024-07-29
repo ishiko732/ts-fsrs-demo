@@ -73,8 +73,8 @@ export const addDeck = async (uid: number, deck: Omit<Deck, 'did' | 'uid'>) => {
   return prisma.deck.create({
     data: {
       ...deck,
-      fsrs: JSON.stringify(deck.fsrs),
-      extends: JSON.stringify(deck.extends),
+      fsrs: deck.fsrs!,
+      extends: deck.extends!,
       uid,
     },
   });
