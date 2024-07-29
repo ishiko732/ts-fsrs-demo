@@ -19,8 +19,7 @@ export default function DeckItem({
   return (
     <div
       className={cn(
-        'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent md:w-1/3 sm:w-1/2 w-full',
-        // selected && 'bg-muted'
+        'flex flex-col rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent w-full sm:w-[calc(50%-2rem)] md:w-[calc(33.33%-2rem)] m-2'
       )}
     >
       <div className='flex w-full flex-col gap-1'>

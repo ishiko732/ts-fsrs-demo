@@ -10,6 +10,5 @@ export default async function DeckStatus({
   did: number;
 }) {
   const detail = await DeckCrud.detail(did, timezone, hourOffset);
-  console.log(detail);
   return <div>{JSON.stringify(detail)}</div>;
 }
