@@ -26,7 +26,7 @@ const actions = [
 ];
 
 export default async function DeckActions({ deck }: { deck: Deck }) {
-  return (
+  return deck.did ? (
     <>
       <div className='ml-auto cursor-pointer'>
         <DropdownMenu>
@@ -45,5 +45,7 @@ export default async function DeckActions({ deck }: { deck: Deck }) {
         </DropdownMenu>
       </div>
     </>
+  ) : (
+    <></>
   );
 }
