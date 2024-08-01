@@ -1,8 +1,8 @@
-import { DeckCrud } from '@lib/deck/crud';
 import DeckItem from './deck';
 import { getUserTimeZone } from '@actions/userTimezone';
 import AddDeckItem from './add_deck';
 import DeckDialog from './dialog';
+import { deckCrud } from '@lib/container';
 
 export default async function DeckPage() {
   // const deckService = new DeckService(0);
@@ -14,8 +14,8 @@ export default async function DeckPage() {
   // );
   // console.log(fsrs.parameters);
 
-  const deckCrud = new DeckCrud();
-  const list = await deckCrud.getList();
+  const list = await deckCrud.getList(false);
+  console.log(list)
   const { timezone, hourOffset } = await getUserTimeZone();
   return (
     <div className='container  pt-4 flex flex-wrap items-start'>

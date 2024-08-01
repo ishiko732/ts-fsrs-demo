@@ -9,15 +9,16 @@ import {
   NoteMomoryStateRequest,
   PartialRequired,
 } from './type';
+import { CARDLIMT, LAPSES } from '@/constant/deck';
 
 export const defaultParams = (uid: number) => {
   return {
-    did: 0,
+    did: DEFAULT_DECK_ID,
     uid: uid,
     name: 'Default',
     fsrs: JSON.stringify(generatorParameters()),
-    card_limit: 50,
-    lapses: 8,
+    card_limit: CARDLIMT,
+    lapses: LAPSES,
     extends: JSON.stringify({}),
   } satisfies Omit<Deck, 'deleted'>;
 };
@@ -48,24 +49,24 @@ export const getParamsByUserId_cache = (uid: number, deckId?: number) => {
 
 // crud
 
-export const getDecks = (uid: number) => {
+export const getDecks = (uid: number, deleted?: boolean) => {
   return cache(
     async () => {
       const decks: Deck[] = await prisma.deck.findMany({
-        where: { uid },
-        orderBy:{
-          did: 'desc'
-        }
+        where: { uid, deleted },
+        orderBy: {
+          did: 'desc',
+        },
       });
       decks.push({
-        did: 0,
+        did: DEFAULT_DECK_ID,
         uid,
         name: 'Default',
         fsrs: JSON.stringify(generatorParameters()),
         extends: JSON.stringify({}),
         deleted: false,
-        card_limit: 50,
-        lapses: 8,
+        card_limit: CARDLIMT,
+        lapses: LAPSES,
       });
       return decks;
     },

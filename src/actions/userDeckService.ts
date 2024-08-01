@@ -14,16 +14,16 @@ import {
 import { getNumberOfNewCardsLearnedToday } from '@lib/deck/retriever';
 import { Deck, State as PrismaState } from '@prisma/client';
 import { NoteMemoryStatePage } from '@lib/deck/type';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 // Deck Crud
 
-export async function getDecksAction() {
+export async function getDecksAction(deleted?: boolean) {
   const uid = await getSessionUserId();
   if (!uid) {
     throw new Error('user not found.');
   }
-  const get = getDecks(uid);
+  const get = getDecks(uid, deleted);
 
   return await get();
 }

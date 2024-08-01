@@ -12,8 +12,8 @@ import { date_scheduler } from 'ts-fsrs';
 
 // allow server/client use this class
 export class DeckCrud {
-  async getList(): Promise<Deck[]> {
-    return await getDecksAction();
+  async getList(deleted?:boolean): Promise<Deck[]> {
+    return await getDecksAction(deleted);
   }
   async get(did: number) {
     return await getParamsByUserIdAction(did);

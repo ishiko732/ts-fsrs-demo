@@ -31,7 +31,7 @@ export const EditDeckProfile = ({
 
   return (
     <DropdownMenuItem onClick={handler} className={className}>
-      <div>Edit Profile</div>
+      <div>Edit Deck</div>
     </DropdownMenuItem>
   );
 };
