@@ -61,11 +61,17 @@ export default function DeckForm({
     form.setValue('request_retention', params.fsrs.request_retention);
     form.setValue('maximum_interval', params.fsrs.maximum_interval);
     form.setValue('w', JSON.stringify(params.fsrs.w));
-    form.setValue('enable_fuzz', fuzz);
-    form.setValue('enable_short_term', short_term);
-    form.setValue('card_limit', CARDLIMT);
-    form.setValue('lapses', LAPSES);
-  }, [form, fuzz, params.fsrs, short_term]);
+    form.setValue('card_limit', params.card_limit);
+    form.setValue('lapses', params.lapses);
+    if (params.did) {
+      form.setValue('enable_fuzz', params.fsrs.enable_fuzz);
+      form.setValue('enable_short_term', params.fsrs.enable_short_term);
+      form.setValue('name', params.name);
+    } else {
+      form.setValue('enable_fuzz', fuzz);
+      form.setValue('enable_short_term', short_term);
+    }
+  }, [form, fuzz, params, short_term]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // process w
@@ -81,7 +87,7 @@ export default function DeckForm({
       return;
     }
     setLoading(true);
-    const params = generatorParameters({
+    const f_params = generatorParameters({
       request_retention: values.request_retention,
       maximum_interval: values.maximum_interval,
       w,
@@ -89,13 +95,24 @@ export default function DeckForm({
       enable_short_term: values.enable_short_term,
     });
     const curd = new DeckCrud();
-    const res = await curd.create({
-      name: values.name,
-      fsrs: JSON.stringify(params),
-      card_limit: values.card_limit,
-      lapses: values.lapses,
-      extends: JSON.stringify({}),
-    });
+    if(params.did){
+      const res = await curd.update({
+        did: params.did,
+        name: values.name,
+        fsrs: JSON.stringify(f_params),
+        card_limit: values.card_limit,
+        lapses: values.lapses,
+        extends: JSON.stringify({}),
+      });
+    }else{
+      const res = await curd.create({
+        name: values.name,
+        fsrs: JSON.stringify(f_params),
+        card_limit: values.card_limit,
+        lapses: values.lapses,
+        extends: JSON.stringify({}),
+      });
+    }
     setLoading(false);
     window.location.reload();
   }

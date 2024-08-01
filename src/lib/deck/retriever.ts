@@ -4,7 +4,11 @@ import prisma from '@/lib/prisma';
 import { unstable_cache as cache, revalidateTag } from 'next/cache';
 import { Deck } from '@prisma/client';
 import { State as PrismaState } from '@prisma/client';
-import { NoteMemoryState, NoteMomoryStateRequest } from './type';
+import {
+  NoteMemoryState,
+  NoteMomoryStateRequest,
+  PartialRequired,
+} from './type';
 
 export const defaultParams = (uid: number) => {
   return {
@@ -80,13 +84,16 @@ export const addDeck = async (uid: number, deck: Omit<Deck, 'did' | 'uid'>) => {
   });
 };
 
-export const updateDeck = async (uid: number, deck: Partial<Deck>) => {
+export const updateDeck = async (
+  uid: number,
+  deck: PartialRequired<Deck, 'did'>
+) => {
   return prisma.deck.update({
     where: { did: deck.did, uid: uid },
     data: {
       ...deck,
-      fsrs: deck.fsrs ? JSON.stringify(deck.fsrs) : undefined,
-      extends: deck.extends ? JSON.stringify(deck.extends) : undefined,
+      fsrs: deck.fsrs!,
+      extends: deck.extends!,
     },
   });
 };

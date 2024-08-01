@@ -23,7 +23,7 @@ export class DeckCrud {
     return await addDeckAction(deck);
   }
 
-  async update(deck: Omit<Deck, 'did' | 'uid' | 'deleted'>) {
+  async update(deck: Omit<Deck, 'uid' | 'deleted'>) {
     return await updateDeckAction(deck);
   }
   async delete(did: number, move: boolean) {
@@ -31,12 +31,16 @@ export class DeckCrud {
     // move: false => delete permanently(soft)
     return await deleteDeckAction(did, move);
   }
-  static async detail(did: number, timezone: string = 'UTC', hourOffset: number = 4) {
+  static async detail(
+    did: number,
+    timezone: string = 'UTC',
+    hourOffset: number = 4
+  ) {
     const { startTimestamp, nextTimestamp } = computedToday(
       timezone,
       hourOffset
     );
-    const count_state =await getNoteMemoryTotalAction(did,startTimestamp)
+    const count_state = await getNoteMemoryTotalAction(did, startTimestamp);
     return count_state;
   }
 }

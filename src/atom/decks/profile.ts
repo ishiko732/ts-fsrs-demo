@@ -16,7 +16,6 @@ export type TDeckProfile = Omit<
 
 export const DeckProfileAtom = atom({
   openProfile: atom(false),
-  deckId: atom(0),
   fuzz: atom(default_enable_fuzz),
   shortTerm: atom(defualt_enable_short_term),
   profile: atom({
@@ -30,6 +29,6 @@ export const DeckProfileAtom = atom({
       w: default_w,
       enable_fuzz: default_enable_fuzz,
       enable_short_term: defualt_enable_short_term,
-    },
+    } as FSRSParameters,
   } satisfies TDeckProfile),
 });

@@ -43,9 +43,7 @@ export async function addDeckAction(
   return res;
 }
 
-export async function updateDeckAction(
-  deck: Omit<Deck, 'uid' | 'did' | 'deleted'>
-) {
+export async function updateDeckAction(deck: Omit<Deck, 'uid' | 'deleted'>) {
   const uid = await getSessionUserId();
   if (!uid) {
     throw new Error('user not found.');

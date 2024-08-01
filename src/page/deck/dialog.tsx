@@ -34,7 +34,7 @@ const DeckForm = dynamic(() => import('./form'), {
 
 export default function DeckDialog() {
   const deckProfile = useAtomValue(DeckProfileAtom);
-  const deckId = useAtomValue(deckProfile.deckId);
+  const {did} = useAtomValue(deckProfile.profile);
   const [open, setOpen] = useAtom(deckProfile.openProfile);
   const drawerRef = useRef<HTMLDivElement>(null);
   const isDesktop = useMediaQuery('only screen and (max-width : 768px)');
@@ -56,7 +56,7 @@ export default function DeckDialog() {
           <DialogContent className='sm:max-w-[625px] border  border-b-stone-900 dark:border-white p-4 max-h-[800px] overflow-y-auto'>
             <DialogHeader>
               <DialogTitle className='flex justify-center items-center text-md'>
-                {!deckId ? `Add deck` : 'Edit deck'}
+                {!did ? `Add deck` : 'Edit deck'}
               </DialogTitle>
               <DialogDescription className='flex justify-center items-center text-sm'>
                 Set your deck parameters.
@@ -88,7 +88,7 @@ export default function DeckDialog() {
         >
           <DrawerHeader>
             <DrawerTitle className='flex justify-center items-center text-md'>
-              {!deckId ? `Add deck` : 'Edit deck'}
+              {!did ? `Add deck` : 'Edit deck'}
             </DrawerTitle>
             <DrawerDescription className='flex justify-center items-center text-sm'>
               Set your deck parameters.
