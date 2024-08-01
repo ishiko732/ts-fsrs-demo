@@ -6,7 +6,13 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { use, useCallback } from 'react';
 import { FSRSParameters } from 'ts-fsrs';
 
-export const EditDeckProfile = ({ deck }: { deck: Deck }) => {
+export const EditDeckProfile = ({
+  deck,
+  className,
+}: {
+  deck: Deck;
+  className?: string;
+}) => {
   const deckProfile = useAtomValue(DeckProfileAtom);
   const setProfile = useSetAtom(deckProfile.profile);
   const setOpen = useSetAtom(deckProfile.openProfile);
@@ -23,5 +29,9 @@ export const EditDeckProfile = ({ deck }: { deck: Deck }) => {
     setOpen(true);
   }, [deck, setProfile, setOpen]);
 
-  return <DropdownMenuItem onClick={handler}>Edit Profile</DropdownMenuItem>;
+  return (
+    <DropdownMenuItem onClick={handler} className={className}>
+      <div>Edit Profile</div>
+    </DropdownMenuItem>
+  );
 };

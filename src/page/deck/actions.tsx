@@ -31,9 +31,9 @@ export default async function DeckActions({ deck }: { deck: Deck }) {
           <DropdownMenuTrigger>
             <MoreHorizontal className='h-5 w-5' />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {actions.map((action, index) => (
-              <action.Action key={action.name} deck={deck} />
+          <DropdownMenuContent className='bg-white dark:bg-black py-4 rounded-md'>
+            {actions.map((action) => (
+              <action.Action key={action.name} deck={deck} className=' transition-all hover:bg-accent m-0.5 px-1'/>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>

@@ -27,7 +27,7 @@ importers:
         specifier: ^1.0.5
         version: 1.1.1(@types/react-dom@18.2.13)(@types/react@18.2.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-dropdown-menu':
-        specifier: ^2.0.6
+        specifier: ^2.1.1
         version: 2.1.1(@types/react-dom@18.2.13)(@types/react@18.2.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-hover-card':
         specifier: ^1.0.7
