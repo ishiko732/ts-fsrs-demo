@@ -4,18 +4,14 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@lib/utils';
 import { CirclePlus } from 'lucide-react';
-import DeckDialog from './dialog';
-import { useAtom } from 'jotai';
-import {
-  fuzz as fuzzAtom,
-  shortTerm as shortTemAtom,
-  openProfile,
-} from '@/atom/decks/profile';
+import { useAtom, useAtomValue } from 'jotai';
+import { DeckProfileAtom } from '@/atom/decks/profile';
 
 export default function AddDeckItem() {
-  const [fuzz, setFuzz] = useAtom(fuzzAtom);
-  const [shortTerm, setShortTerm] = useAtom(shortTemAtom);
-  const [open, setOpen] = useAtom(openProfile);
+  const deckProfile = useAtomValue(DeckProfileAtom);
+  const [fuzz, setFuzz] = useAtom(deckProfile.fuzz);
+  const [shortTerm, setShortTerm] = useAtom(deckProfile.shortTerm);
+  const [open, setOpen] = useAtom(deckProfile.openProfile);
   return (
     <>
       <div

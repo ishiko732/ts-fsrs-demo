@@ -22,6 +22,9 @@ import {
   generatorParameters,
 } from 'ts-fsrs';
 import { DeckCrud } from '@lib/deck/crud';
+import { useAtom, useAtomValue } from 'jotai';
+import { DeckProfileAtom } from '@/atom/decks/profile';
+import { CARDLIMT, LAPSES } from '@/constant/deck';
 const formSchema = z.object({
   name: z.coerce.string(),
   request_retention: z.coerce
@@ -41,28 +44,28 @@ const formSchema = z.object({
 });
 
 export default function DeckForm({
-  fuzz,
-  short_term,
   loading,
   setLoading,
 }: {
-  fuzz: boolean;
-  short_term: boolean;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+  const deckProfile = useAtomValue(DeckProfileAtom);
+  const fuzz = useAtomValue(deckProfile.fuzz);
+  const short_term = useAtomValue(deckProfile.shortTerm);
+  const params = useAtomValue(deckProfile.profile);
   useEffect(() => {
-    form.setValue('request_retention', default_request_retention);
-    form.setValue('maximum_interval', default_maximum_interval);
-    form.setValue('w', `[${default_w.join(',')}]`);
+    form.setValue('request_retention', params.fsrs.request_retention);
+    form.setValue('maximum_interval', params.fsrs.maximum_interval);
+    form.setValue('w', JSON.stringify(params.fsrs.w));
     form.setValue('enable_fuzz', fuzz);
     form.setValue('enable_short_term', short_term);
-    form.setValue('card_limit', 50);
-    form.setValue('lapses', 8);
-  }, [form, fuzz, short_term]);
+    form.setValue('card_limit', CARDLIMT);
+    form.setValue('lapses', LAPSES);
+  }, [form, fuzz, params.fsrs, short_term]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // process w

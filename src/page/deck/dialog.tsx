@@ -26,22 +26,16 @@ import {
 import dynamic from 'next/dynamic';
 import LoadingSpinner from '@/components/loadingSpinner';
 import { useAtom, useAtomValue } from 'jotai';
-import {
-  fuzz as fuzzAtom,
-  shortTerm as shortTemAtom,
-  deckId as deckIdAtom,
-  openProfile,
-} from '@/atom/decks/profile';
+import { DeckProfileAtom } from '@/atom/decks/profile';
 const DeckForm = dynamic(() => import('./form'), {
   loading: LoadingSpinner,
   ssr: false,
 });
 
 export default function DeckDialog() {
-  const fuzz = useAtomValue(fuzzAtom);
-  const short_term = useAtomValue(shortTemAtom);
-  const [open, setOpen] = useAtom(openProfile);
-  const deckId = useAtomValue(deckIdAtom);
+  const deckProfile = useAtomValue(DeckProfileAtom);
+  const deckId = useAtomValue(deckProfile.deckId);
+  const [open, setOpen] = useAtom(deckProfile.openProfile);
   const drawerRef = useRef<HTMLDivElement>(null);
   const isDesktop = useMediaQuery('only screen and (max-width : 768px)');
   let DrawerToggle: ReactNode;
@@ -69,12 +63,7 @@ export default function DeckDialog() {
               </DialogDescription>
             </DialogHeader>
             <Suspense>
-              <DeckForm
-                loading={loading}
-                setLoading={setLoading}
-                fuzz={fuzz}
-                short_term={short_term}
-              />
+              <DeckForm loading={loading} setLoading={setLoading} />
             </Suspense>
             <DialogFooter>
               <DialogClose onClick={() => setOpen(false)}>
@@ -106,12 +95,7 @@ export default function DeckDialog() {
             </DrawerDescription>
           </DrawerHeader>
           <Suspense>
-            <DeckForm
-              loading={loading}
-              setLoading={setLoading}
-              fuzz={fuzz}
-              short_term={short_term}
-            />
+            <DeckForm loading={loading} setLoading={setLoading} />
           </Suspense>
           <DrawerFooter>
             <Button type='submit' onClick={handleSubmit} disabled={loading}>
