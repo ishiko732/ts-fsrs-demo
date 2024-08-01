@@ -53,6 +53,9 @@ export const getDecks = (uid: number) => {
     async () => {
       const decks: Deck[] = await prisma.deck.findMany({
         where: { uid },
+        orderBy:{
+          did: 'desc'
+        }
       });
       decks.push({
         did: 0,
