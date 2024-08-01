@@ -2,6 +2,7 @@ import { DeckCrud } from '@lib/deck/crud';
 import DeckItem from './deck';
 import { getUserTimeZone } from '@actions/userTimezone';
 import AddDeckItem from './add_deck';
+import DeckDialog from './dialog';
 
 export default async function DeckPage() {
   // const deckService = new DeckService(0);
@@ -18,6 +19,7 @@ export default async function DeckPage() {
   const { timezone, hourOffset } = await getUserTimeZone();
   return (
     <div className='container  pt-4 flex flex-wrap items-start'>
+      <DeckDialog />
       {list.map((deck) => (
         <DeckItem
           key={deck.did}
@@ -26,7 +28,7 @@ export default async function DeckPage() {
           hourOffset={hourOffset}
         />
       ))}
-      <AddDeckItem/>
+      <AddDeckItem />
     </div>
   );
 }

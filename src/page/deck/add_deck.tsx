@@ -1,27 +1,23 @@
 'use client';
-import LoadingSpinner from '@/components/loadingSpinner';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@lib/utils';
 import { CirclePlus } from 'lucide-react';
-import dynamic from 'next/dynamic';
-import { useState } from 'react';
-import { default_enable_fuzz, defualt_enable_short_term } from 'ts-fsrs';
 import DeckDialog from './dialog';
+import { useAtom } from 'jotai';
+import {
+  fuzz as fuzzAtom,
+  shortTerm as shortTemAtom,
+  openProfile,
+} from '@/atom/decks/profile';
 
 export default function AddDeckItem() {
-  const [fuzz, setFuzz] = useState(default_enable_fuzz);
-  const [shortTerm, setShortTerm] = useState(defualt_enable_short_term);
-  const [open, setOpen] = useState(false);
+  const [fuzz, setFuzz] = useAtom(fuzzAtom);
+  const [shortTerm, setShortTerm] = useAtom(shortTemAtom);
+  const [open, setOpen] = useAtom(openProfile);
   return (
     <>
-      <DeckDialog
-        fuzz={fuzz}
-        short_term={shortTerm}
-        open={open}
-        setOpen={setOpen}
-      />
       <div
         className={cn(
           'flex flex-col rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent w-full sm:w-[calc(50%-2rem)] md:w-[calc(33.33%-2rem)] m-2'

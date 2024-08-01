@@ -1,8 +1,5 @@
 'use client';
-import Link from 'next/link';
 import { useEffect } from 'react';
-import { signOut } from 'next-auth/react';
-import { ParametersType } from '@/lib/fsrs';
 import { z } from 'zod';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -18,7 +15,6 @@ import {
 } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Badge } from '@/components/ui/badge';
 import {
   default_maximum_interval,
   default_request_retention,
@@ -113,7 +109,7 @@ export default function DeckForm({
           name='name'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>request_retention</FormLabel>
+              <FormLabel>Deck Name</FormLabel>
               <FormControl>
                 <Input
                   placeholder='please enter the deck name'

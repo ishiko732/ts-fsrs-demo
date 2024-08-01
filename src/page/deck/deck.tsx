@@ -5,6 +5,7 @@ import type { FSRSParameters } from 'ts-fsrs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Suspense } from 'react';
 import DeckStatus from './count';
+import DeckActions from './actions';
 
 export default function DeckItem({
   deck,
@@ -25,7 +26,7 @@ export default function DeckItem({
       <div className='flex w-full flex-col gap-1'>
         <div className='flex items-center'>
           <div className='flex items-center gap-2'>
-            <span className='font-semibold'>{deck.name}</span>
+            <span className='font-semibold'>{`#${deck.did} ${deck.name}`}</span>
             <Badge>{f.enable_short_term ? 'Short-term' : 'Long-term'}</Badge>
             <span
               className={cn(
@@ -34,7 +35,7 @@ export default function DeckItem({
               )}
             />
           </div>
-          <div className='ml-auto text-xs text-foreground'>{`#${deck.did}`}</div>
+          <DeckActions deck={deck} />
         </div>
       </div>
       <Suspense fallback={<Skeleton className='h-16 w-full space-y-2' />}>

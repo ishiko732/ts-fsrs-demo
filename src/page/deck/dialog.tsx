@@ -25,23 +25,23 @@ import {
 } from '@/components/ui/dialog';
 import dynamic from 'next/dynamic';
 import LoadingSpinner from '@/components/loadingSpinner';
-
+import { useAtom, useAtomValue } from 'jotai';
+import {
+  fuzz as fuzzAtom,
+  shortTerm as shortTemAtom,
+  deckId as deckIdAtom,
+  openProfile,
+} from '@/atom/decks/profile';
 const DeckForm = dynamic(() => import('./form'), {
   loading: LoadingSpinner,
   ssr: false,
 });
 
-export default function DeckDialog({
-  fuzz,
-  short_term,
-  open,
-  setOpen,
-}: {
-  fuzz: boolean;
-  short_term: boolean;
-  open:boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+export default function DeckDialog() {
+  const fuzz = useAtomValue(fuzzAtom);
+  const short_term = useAtomValue(shortTemAtom);
+  const [open, setOpen] = useAtom(openProfile);
+  const deckId = useAtomValue(deckIdAtom);
   const drawerRef = useRef<HTMLDivElement>(null);
   const isDesktop = useMediaQuery('only screen and (max-width : 768px)');
   let DrawerToggle: ReactNode;
@@ -62,10 +62,10 @@ export default function DeckDialog({
           <DialogContent className='sm:max-w-[625px] border  border-b-stone-900 dark:border-white p-4 max-h-[800px] overflow-y-auto'>
             <DialogHeader>
               <DialogTitle className='flex justify-center items-center text-md'>
-                Add deck
+                {!deckId ? `Add deck` : 'Edit deck'}
               </DialogTitle>
               <DialogDescription className='flex justify-center items-center text-sm'>
-                Set your parameters.
+                Set your deck parameters.
               </DialogDescription>
             </DialogHeader>
             <Suspense>
@@ -99,10 +99,10 @@ export default function DeckDialog({
         >
           <DrawerHeader>
             <DrawerTitle className='flex justify-center items-center text-md'>
-              Edit profile
+              {!deckId ? `Add deck` : 'Edit deck'}
             </DrawerTitle>
             <DrawerDescription className='flex justify-center items-center text-sm'>
-              Set your parameters.
+              Set your deck parameters.
             </DrawerDescription>
           </DrawerHeader>
           <Suspense>
