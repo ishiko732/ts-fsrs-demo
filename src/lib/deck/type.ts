@@ -4,6 +4,7 @@ import { FSRS, FSRSParameters, RecordLog } from 'ts-fsrs';
 export type SearchTodayMemoryContextPage = {
   deckId: number;
   startTimestamp: number;
+  nextTimestamp:number,
   userNewCardlimit: number;
   deckTodayLearnedcount: number;
   page?: number;

@@ -7,6 +7,7 @@ import {
   getDecks,
   getNoteMemoryState,
   getNoteMemoryTotal,
+  getNoteTotalGroupByDeckId,
   getParamsByUserId_cache,
   states_prisma,
   updateDeck,
@@ -90,18 +91,32 @@ export async function getNumberOfNewCardsLearnedTodayAction(
 
 export async function getNoteMemoryTotalAction(
   did: number,
-  startTimestamp: number
+  startTimestamp: number,
+  nextTimestamp: number
 ) {
   const uid = await getSessionUserId();
   if (!uid) {
     throw new Error('user not found.');
   }
   const start = new Date(startTimestamp);
+  const count = await getNumberOfNewCardsLearnedTodayAction(
+    did,
+    startTimestamp,
+    nextTimestamp
+  );
+  const deck = await getParamsByUserId_cache(uid, did)();
   const res = {} as Record<PrismaState, number>;
   await Promise.all(
     states_prisma.map(
       async (state) =>
-        (res[state] = await getNoteMemoryTotal(uid, state, start, did))
+        (res[state] = await getNoteMemoryTotal(
+          uid,
+          state,
+          start,
+          did,
+          deck[did].card_limit,
+          count
+        ))
     )
   );
   return res;
@@ -111,6 +126,7 @@ export async function getNoteMemoryContextAction(
   deckId: number,
   state: PrismaState,
   startTimestamp: number,
+  nextTimestamp: number,
   limit: number,
   todayCount: number,
   pageSize: number,
@@ -122,7 +138,20 @@ export async function getNoteMemoryContextAction(
     throw new Error('user not found.');
   }
   const start = new Date(startTimestamp);
-  const total = await getNoteMemoryTotal(uid, state, start, deckId);
+  const count = await getNumberOfNewCardsLearnedTodayAction(
+    deckId,
+    startTimestamp,
+    nextTimestamp
+  );
+  const deck = await getParamsByUserId_cache(uid, deckId)();
+  const total = await getNoteMemoryTotal(
+    uid,
+    state,
+    start,
+    deckId,
+    deck[deckId].card_limit,
+    count
+  );
   const size = Math.min(pageSize, total);
   const noteMemoryStates = await getNoteMemoryState({
     uid,
@@ -142,4 +171,20 @@ export async function getNoteMemoryContextAction(
     loadPage: page,
     totalSize: total,
   } satisfies NoteMemoryStatePage;
+}
+
+export async function getNoteTotalGroupAction(deckId?: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const datum = await getNoteTotalGroupByDeckId(uid, deckId);
+  const res = {} as Record<PrismaState, number>;
+  states_prisma.forEach((state) => {
+    res[state] = 0;
+  });
+  for (const data of datum) {
+    res[data.state] = data._count;
+  }
+  return res;
 }

@@ -3,7 +3,7 @@ import {
   deleteDeckAction,
   getDecksAction,
   getNoteMemoryTotalAction,
-  getNumberOfNewCardsLearnedTodayAction,
+  getNoteTotalGroupAction,
   getParamsByUserIdAction,
   updateDeckAction,
 } from '@actions/userDeckService';
@@ -12,7 +12,7 @@ import { date_scheduler } from 'ts-fsrs';
 
 // allow server/client use this class
 export class DeckCrud {
-  async getList(deleted?:boolean): Promise<Deck[]> {
+  async getList(deleted?: boolean): Promise<Deck[]> {
     return await getDecksAction(deleted);
   }
   async get(did: number) {
@@ -40,14 +40,20 @@ export class DeckCrud {
       timezone,
       hourOffset
     );
-    const count_state = await getNoteMemoryTotalAction(did, startTimestamp);
-    return count_state;
+    return getNoteMemoryTotalAction(did, startTimestamp, nextTimestamp);
+  }
+
+  static async total(deckId?: number) {
+    return await getNoteTotalGroupAction(deckId);
   }
 }
 
 export const computedToday = (timezone: string, hourOffset: number) => {
   const clientTime = Intl.DateTimeFormat('en-US', {
     timeZone: timezone,
+    dateStyle: 'short',
+    timeStyle: 'short',
+    hourCycle: 'h24',
   }).format(new Date());
   let currentDate = new Date(clientTime);
   if (currentDate.getHours() < hourOffset) {

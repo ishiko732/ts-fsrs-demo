@@ -9,6 +9,10 @@ export default async function DeckStatus({
   hourOffset: number;
   did: number;
 }) {
+  const total = await DeckCrud.total(did);
   const detail = await DeckCrud.detail(did, timezone, hourOffset);
-  return <div>{JSON.stringify(detail)}</div>;
+  return<>
+  total: <div>{JSON.stringify(total)}</div>
+  detail: <div>{JSON.stringify(detail)}</div>
+  </>;
 }

@@ -1,5 +1,5 @@
 import 'server-only';
-import { generatorParameters } from 'ts-fsrs';
+import { generatorParameters, State } from 'ts-fsrs';
 import prisma from '@/lib/prisma';
 import { unstable_cache as cache, revalidateTag } from 'next/cache';
 import { Deck } from '@prisma/client';
@@ -138,11 +138,28 @@ export const states_prisma = [
 export const DEFAULT_DECK_ID = 0;
 const CARD_NULL = -1;
 const INVALID_DUE = Infinity;
+
+export async function getNoteTotalGroupByDeckId(uid: number, deckId?: number) {
+  return await prisma.card.groupBy({
+    where: {
+      deleted: false,
+      note: {
+        uid: uid,
+        did: deckId,
+      },
+    },
+    by: ['state'],
+    _count: true,
+  });
+}
+
 export async function getNoteMemoryTotal(
   uid: number,
   state: PrismaState,
   lte: Date,
-  deckId: number
+  deckId: number,
+  card_limit: number,
+  NewCardsLearnedTodayCount: number
 ) {
   return await prisma.note.count({
     where: {
@@ -156,6 +173,10 @@ export async function getNoteMemoryTotal(
         deleted: false,
       },
     },
+    take:
+      state === PrismaState.New
+        ? Math.max(0, card_limit - NewCardsLearnedTodayCount)
+        : undefined,
   });
 }
 

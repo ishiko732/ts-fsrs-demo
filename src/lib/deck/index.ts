@@ -96,6 +96,7 @@ export class DeckService implements IDeckService {
   todayMemoryContextPage = async ({
     deckId,
     startTimestamp,
+    nextTimestamp,
     userNewCardlimit,
     deckTodayLearnedcount,
     page,
@@ -111,6 +112,7 @@ export class DeckService implements IDeckService {
           deckId,
           state,
           startTimestamp,
+          nextTimestamp,
           userNewCardlimit,
           deckTodayLearnedcount,
           memoryPageSize,

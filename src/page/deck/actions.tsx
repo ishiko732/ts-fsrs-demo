@@ -38,7 +38,7 @@ export default async function DeckActions({ deck }: { deck: Deck }) {
               <action.Action
                 key={action.name}
                 deck={deck}
-                className=' transition-all hover:bg-accent m-0.5 px-1'
+                className=' transition-all hover:bg-accent m-0.5 px-1 text-base'
               />
             ))}
           </DropdownMenuContent>
