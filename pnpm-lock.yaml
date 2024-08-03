@@ -135,8 +135,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.4)
       ts-fsrs:
-        specifier: ^4.0.2
-        version: 4.0.2
+        specifier: 4.1.0
+        version: 4.1.0
       vaul:
         specifier: ^0.9.1
         version: 0.9.1(@types/react-dom@18.2.13)(@types/react@18.2.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2593,9 +2593,6 @@ packages:
   scheduler@0.23.2:
     resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
 
-  seedrandom@3.0.5:
-    resolution: {integrity: sha512-8OwmbklUNzwezjGInmZ+2clQmExQPvomqjL7LFqOYqtmuxRgQYqOD3mHaU+MvZn5FLUeVxVfQjwLZW/n/JFuqg==}
-
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
@@ -2776,8 +2773,8 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
-  ts-fsrs@4.0.2:
-    resolution: {integrity: sha512-mRF9olPJdpEH7TbLXLxMkWyUUIMkLNs7T3hDiHeAqtJBxxfhYkDswpr+YY1v2GJLDv1gDmAOkbSYnKp5W80gIA==}
+  ts-fsrs@4.1.0:
+    resolution: {integrity: sha512-yf2iTlNalJlIlVXR3ruLyKm1lxJ45y//naswqcdo+qnwbhL5XVCEwmKOgNYKZRRay9nlWyCCYJpF/DZTViLdxg==}
     engines: {node: '>=18.0.0'}
 
   ts-interface-checker@0.1.13:
@@ -5467,8 +5464,6 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
 
-  seedrandom@3.0.5: {}
-
   semver@6.3.1: {}
 
   semver@7.6.2: {}
@@ -5704,9 +5699,7 @@ snapshots:
     dependencies:
       typescript: 5.5.2
 
-  ts-fsrs@4.0.2:
-    dependencies:
-      seedrandom: 3.0.5
+  ts-fsrs@4.1.0: {}
 
   ts-interface-checker@0.1.13: {}
 
