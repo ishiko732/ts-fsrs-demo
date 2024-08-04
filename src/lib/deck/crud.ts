@@ -5,6 +5,7 @@ import {
   getNoteMemoryTotalAction,
   getNoteTotalGroupAction,
   getParamsByUserIdAction,
+  restoreDeckAction,
   updateDeckAction,
 } from '@actions/userDeckService';
 import { Deck } from '@prisma/client';
@@ -31,6 +32,11 @@ export class DeckCrud {
     // move: false => delete permanently(soft)
     return await deleteDeckAction(did, move);
   }
+
+  async restore(did: number) {
+    return await restoreDeckAction(did);
+  }
+
   static async detail(
     did: number,
     timezone: string = 'UTC',

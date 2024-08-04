@@ -7,6 +7,8 @@ import {
   DropdownMenuContent,
 } from '@radix-ui/react-dropdown-menu';
 import { DeleteDeck } from './actions/delete-deck';
+import { Action } from '@radix-ui/react-toast';
+import { RestoreDeck } from './actions/restore-deck';
 
 const actions = [
   {
@@ -20,6 +22,10 @@ const actions = [
     name: 'Delete Deck',
     Action: DeleteDeck,
   },
+  {
+    name:'Restore Deck',
+    Action: RestoreDeck,
+  }
   // { TODO: Implement this
   //   name: 'Install App',
   // },

@@ -131,6 +131,29 @@ export const deleteDeck = async (
   return res.length > 0;
 };
 
+export const restoreDeck = async (uid: number, deckId: number) => {
+  const noteIds = await prisma.note.findMany({
+    select: {
+      nid: true,
+    },
+    where: {
+      did: deckId,
+      uid: uid,
+    },
+  });
+  const res = await prisma.$transaction([
+    prisma.deck.update({
+      where: { did: deckId, uid },
+      data: { deleted: false },
+    }),
+    prisma.note.updateMany({
+      where: { nid: { in: noteIds.map((note) => note.nid) } },
+      data: { deleted: false },
+    }),
+  ]);
+  return res.length > 0;
+};
+
 export const states_prisma = [
   PrismaState.New,
   PrismaState.Learning,

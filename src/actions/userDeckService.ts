@@ -9,6 +9,7 @@ import {
   getNoteMemoryTotal,
   getNoteTotalGroupByDeckId,
   getParamsByUserId_cache,
+  restoreDeck,
   states_prisma,
   updateDeck,
 } from '@lib/deck/retriever';
@@ -63,6 +64,18 @@ export async function deleteDeckAction(did: number, move: boolean) {
     throw new Error('user not found.');
   }
   const res = await deleteDeck(uid, did, move);
+  revalidateTag(`actions/decks/${uid}/deleted/1`);
+  revalidateTag(`actions/decks/${uid}/deleted/0`);
+  revalidateTag(`actions/deck_params/${uid}`);
+  return res;
+}
+
+export async function restoreDeckAction(did: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const res = await restoreDeck(uid, did);
   revalidateTag(`actions/decks/${uid}/deleted/1`);
   revalidateTag(`actions/decks/${uid}/deleted/0`);
   revalidateTag(`actions/deck_params/${uid}`);
