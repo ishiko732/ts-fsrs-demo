@@ -1,4 +1,4 @@
-import { date_scheduler, fsrs, FSRSParameters } from 'ts-fsrs';
+import { fsrs, FSRSParameters } from 'ts-fsrs';
 import { Deck } from '@prisma/client';
 import {
   DeckMemoryContext,
@@ -9,10 +9,10 @@ import {
 import {
   getNoteMemoryContextAction,
   getNumberOfNewCardsLearnedTodayAction,
-  getParamsByUserIdAction,
 } from '@actions/userDeckService';
 import { computedToday } from './crud';
-import { DEFAULT_DECK_ID, states_prisma } from '@/constant';
+import { states_prisma } from '@/constant';
+import { deckCrud } from '@lib/container';
 const memoryPageSize = 50;
 
 export class DeckService implements IDeckService {
@@ -21,14 +21,7 @@ export class DeckService implements IDeckService {
   constructor(private deckId: number = 0) {}
   getDeck = async () => {
     if (!this.deck) {
-      const decks = await getParamsByUserIdAction(
-        this.deckId ?? DEFAULT_DECK_ID
-      );
-      if (decks[this.deckId]) {
-        this.deck = decks[this.deckId];
-      } else {
-        this.deck = decks[`${DEFAULT_DECK_ID}`];
-      }
+      this.deck = await deckCrud.get(this.deckId);
       this.algorithm_pamars = JSON.parse(
         this.deck.fsrs as string
       ) as FSRSParameters;

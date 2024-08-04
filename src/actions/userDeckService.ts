@@ -10,13 +10,13 @@ import {
   getNoteTotalGroupByDeckId,
   getParamsByUserId_cache,
   restoreDeck,
-  states_prisma,
   updateDeck,
 } from '@lib/deck/retriever';
 import { getNumberOfNewCardsLearnedToday } from '@lib/deck/retriever';
 import { Deck, State as PrismaState } from '@prisma/client';
 import { NoteMemoryStatePage } from '@lib/deck/type';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { states_prisma } from '@/constant';
 
 // Deck Crud
 
