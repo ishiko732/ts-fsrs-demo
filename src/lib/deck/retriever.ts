@@ -58,21 +58,23 @@ export const getDecks = (uid: number, deleted?: boolean) => {
           did: 'desc',
         },
       });
-      decks.push({
-        did: DEFAULT_DECK_ID,
-        uid,
-        name: 'Default',
-        fsrs: JSON.stringify(generatorParameters()),
-        extends: JSON.stringify({}),
-        deleted: false,
-        card_limit: CARDLIMT,
-        lapses: LAPSES,
-      });
+      if (!deleted) {
+        decks.push({
+          did: DEFAULT_DECK_ID,
+          uid,
+          name: 'Default',
+          fsrs: JSON.stringify(generatorParameters()),
+          extends: JSON.stringify({}),
+          deleted: false,
+          card_limit: CARDLIMT,
+          lapses: LAPSES,
+        });
+      }
       return decks;
     },
-    [`actions/decks/${uid}`],
+    [`actions/decks/${uid}/deleted/${deleted ? 1 : 0}`],
     {
-      tags: [`actions/decks/${uid}`],
+      tags: [`actions/decks/${uid}/deleted/${deleted ? 1 : 0}`],
     }
   ) satisfies () => Promise<Deck[]>;
 };

@@ -24,9 +24,9 @@ export async function getDecksAction(deleted?: boolean) {
   if (!uid) {
     throw new Error('user not found.');
   }
-  const get = getDecks(uid, deleted);
+  const data = getDecks(uid, deleted)();
 
-  return await get();
+  return data;
 }
 
 export async function addDeckAction(
@@ -40,7 +40,8 @@ export async function addDeckAction(
   // @ts-ignore
   delete deck.did;
   const res = await addDeck(uid, { ...deck, deleted: false });
-  revalidateTag(`actions/decks/${uid}`);
+  revalidateTag(`actions/decks/${uid}/deleted/1`);
+  revalidateTag(`actions/decks/${uid}/deleted/0`);
   return res;
 }
 
@@ -50,7 +51,8 @@ export async function updateDeckAction(deck: Omit<Deck, 'uid' | 'deleted'>) {
     throw new Error('user not found.');
   }
   const res = await updateDeck(uid, { ...deck, deleted: false });
-  revalidateTag(`actions/decks/${uid}`);
+  revalidateTag(`actions/decks/${uid}/deleted/1`);
+  revalidateTag(`actions/decks/${uid}/deleted/0`);
   revalidateTag(`actions/deck_params/${uid}`);
   return res;
 }
@@ -61,7 +63,8 @@ export async function deleteDeckAction(did: number, move: boolean) {
     throw new Error('user not found.');
   }
   const res = await deleteDeck(uid, did, move);
-  revalidateTag(`actions/decks/${uid}`);
+  revalidateTag(`actions/decks/${uid}/deleted/1`);
+  revalidateTag(`actions/decks/${uid}/deleted/0`);
   revalidateTag(`actions/deck_params/${uid}`);
   return res;
 }
