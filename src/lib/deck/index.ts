@@ -11,8 +11,8 @@ import {
   getNumberOfNewCardsLearnedTodayAction,
   getParamsByUserIdAction,
 } from '@actions/userDeckService';
-import { DEFAULT_DECK_ID, states_prisma } from './retriever';
 import { computedToday } from './crud';
+import { DEFAULT_DECK_ID, states_prisma } from '@/constant';
 const memoryPageSize = 50;
 
 export class DeckService implements IDeckService {

@@ -10,6 +10,7 @@ import {
   PartialRequired,
 } from './type';
 import { CARDLIMT, DEFAULT_DECK_ID, LAPSES } from '@/constant/deck';
+import { CARD_NULL, INVALID_DUE } from '@/constant';
 
 export const defaultParams = (uid: number) => {
   return {
@@ -153,15 +154,6 @@ export const restoreDeck = async (uid: number, deckId: number) => {
   ]);
   return res.length > 0;
 };
-
-export const states_prisma = [
-  PrismaState.New,
-  PrismaState.Learning,
-  PrismaState.Relearning,
-  PrismaState.Review,
-];
-const CARD_NULL = -1;
-const INVALID_DUE = Infinity;
 
 export async function getNoteTotalGroupByDeckId(uid: number, deckId?: number) {
   return await prisma.card.groupBy({
