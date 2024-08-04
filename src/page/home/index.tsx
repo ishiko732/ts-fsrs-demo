@@ -42,9 +42,9 @@ async function HomePage() {
           </ul>
         </div>
         <div className='items-center flex-1 '>
-          <Link href={'/note'} legacyBehavior>
+          <Link href={'/deck'} legacyBehavior>
             <Button className='m-2 w-full sm:w-auto min-w-6'>
-              Go to Notes
+              Go to Deck
             </Button>
           </Link>
           <Link href={'/card'} legacyBehavior>

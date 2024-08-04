@@ -1,3 +1,4 @@
+import { DEFAULT_DECK_ID } from '@/constant/deck';
 import {
   addDeckAction,
   deleteDeckAction,
@@ -17,7 +18,8 @@ export class DeckCrud {
     return await getDecksAction(deleted);
   }
   async get(did: number) {
-    return await getParamsByUserIdAction(did);
+    const datum = await getParamsByUserIdAction(did);
+    return datum[did] ? datum[did] : datum[DEFAULT_DECK_ID];
   }
 
   async create(deck: Omit<Deck, 'did' | 'uid' | 'deleted'>) {

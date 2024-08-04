@@ -9,7 +9,7 @@ import {
   NoteMomoryStateRequest,
   PartialRequired,
 } from './type';
-import { CARDLIMT, LAPSES } from '@/constant/deck';
+import { CARDLIMT, DEFAULT_DECK_ID, LAPSES } from '@/constant/deck';
 
 export const defaultParams = (uid: number) => {
   return {
@@ -160,7 +160,6 @@ export const states_prisma = [
   PrismaState.Relearning,
   PrismaState.Review,
 ];
-export const DEFAULT_DECK_ID = 0;
 const CARD_NULL = -1;
 const INVALID_DUE = Infinity;
 

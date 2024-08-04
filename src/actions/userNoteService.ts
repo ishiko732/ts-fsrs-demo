@@ -28,6 +28,7 @@ export async function getNoteTotalCount({
 export type NoteList = NoteSimpleInfo[];
 
 export type NoteSimpleInfo = {
+  did: number;
   nid: number;
   cid: number;
   question: string;
@@ -71,6 +72,7 @@ export async function getNotesBySessionUserId({
 
   return notes.map((note) => {
     return {
+      did: note.did,
       nid: note.nid,
       cid: note.card.cid,
       question: note.question,

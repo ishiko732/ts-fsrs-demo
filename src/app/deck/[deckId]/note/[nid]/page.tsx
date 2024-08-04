@@ -15,6 +15,7 @@ import { getUserNote } from '@/actions/userNoteService';
 import { redirect } from 'next/navigation';
 type Props = {
   params: {
+    deckId: string;
     nid: string;
   };
   searchParams: {
@@ -30,7 +31,9 @@ const getData = cache(async (nid: string, deleted: boolean) => {
 export default async function Page({ params, searchParams }: Props) {
   const deleted = searchParams.deleted === '1' ?? false;
   const note = await getUserNote(Number(params.nid), deleted).catch(() => {
-    redirect(`/api/auth/signin?callbackUrl=/note/${params.nid}`);
+    redirect(
+      `/api/auth/signin?callbackUrl=/deck/${params.deckId}/note/${params.nid}`
+    );
   });
   const logs = await findLogsByCid(note.card.cid);
 
