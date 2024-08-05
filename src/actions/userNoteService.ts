@@ -8,8 +8,16 @@ import {
   getNotes,
   restoreNoteByNid,
 } from '@/lib/note';
+import {
+  addNote,
+  deleteNote,
+  getNote_cache,
+  getNotesByDeckId,
+  getNotes as getNotesByNoteIds,
+  updateNote,
+} from '@lib/note/retriever';
 import { Card, Note, Prisma } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
 import { State, fixState } from 'ts-fsrs';
 
@@ -109,4 +117,80 @@ export async function getUserNote(nid: number, deleted: boolean) {
     redirect('/denied');
   }
   return note as Note & { card: Card };
+}
+
+export async function getNoteAction(nid: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const note = await getNote_cache(uid, nid)();
+  return note;
+}
+
+export async function getNotesByDeckIdAction(
+  deckId: number,
+  page: number = 1,
+  pageSize: number = 50
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const note = await getNotesByDeckId(uid, deckId, page, pageSize);
+  return note;
+}
+
+export async function getNotesByNoteIdsAction(noteIds: number[]) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const note = await getNotesByNoteIds(uid, noteIds);
+  return note;
+}
+
+export async function addNoteAction(
+  did: number,
+  note: Omit<Note, 'did' | 'uid' | 'deleted'>
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  return await addNote(uid, did, note);
+}
+
+export async function updateNoteAction(
+  did: number,
+  nid: number,
+  note: Partial<Omit<Note, 'did' | 'uid' | 'deleted'>>
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const res = await updateNote(uid, did, nid, note);
+  revalidateTag(`actions/note/${uid}/${nid}`);
+  return res;
+}
+
+export async function deleteNoteAction(nid: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const res = await deleteNote(uid, nid, false);
+  revalidateTag(`actions/note/${uid}/${nid}`);
+  return res;
+}
+
+export async function restoreNoteAction(nid: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const res = await deleteNote(uid, nid, true);
+  revalidateTag(`actions/note/${uid}/${nid}`);
+  return res;
 }

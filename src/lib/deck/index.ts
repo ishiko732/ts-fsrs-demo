@@ -11,9 +11,8 @@ import {
   getNumberOfNewCardsLearnedTodayAction,
 } from '@actions/userDeckService';
 import { computedToday } from './crud';
-import { states_prisma } from '@/constant';
+import { memoryPageSize, states_prisma } from '@/constant';
 import { deckCrud } from '@lib/container';
-const memoryPageSize = 50;
 
 export class DeckService implements IDeckService {
   private deck: Omit<Deck, 'deleted'> | undefined;

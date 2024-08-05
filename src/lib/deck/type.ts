@@ -1,10 +1,10 @@
 import { Card, Deck, Note, State as PrismaState } from '@prisma/client';
-import { FSRS, FSRSParameters, RecordLog } from 'ts-fsrs';
+import { FSRS, FSRSParameters, Grade, RecordLog } from 'ts-fsrs';
 
 export type SearchTodayMemoryContextPage = {
   deckId: number;
   startTimestamp: number;
-  nextTimestamp:number,
+  nextTimestamp: number;
   userNewCardlimit: number;
   deckTodayLearnedcount: number;
   page?: number;
@@ -28,20 +28,23 @@ export abstract class IDeckService {
   }: SearchTodayMemoryContextPage): Promise<NoteMemoryContext>;
 }
 
-abstract class INoteService {
-  abstract getNote(nid: number): Note;
-  abstract getCard(nid: number): Card;
-  abstract schduler(cid: number): void;
-  abstract undo(): void;
-  abstract rollback(): void;
-  abstract edit(nid: number): Note;
-  abstract previewRepeat(card: Card): RecordLog;
+export abstract class INoteService {
+  abstract getNote(nid: number): Promise<Note>;
+  abstract getCard(nid: number): Promise<Card>;
+  abstract edit(
+    nid: number,
+    note: Partial<Omit<Note, 'did' | 'uid' | 'deleted'>>
+  ): Promise<Note>;
+  abstract preview(cid: number, now: Date): Promise<RecordLog>;
+  abstract schduler(cid: number, now: Date, grade: Grade): Promise<boolean>;
+  abstract undo(): Promise<boolean>;
+  abstract rollback(): Promise<boolean>;
 }
 
 // deck
 export interface DeckMemoryState {
   uid: number;
-  deckId:number,
+  deckId: number;
   deckName: string;
   timezone: string;
   startTimestamp: number;
@@ -90,6 +93,5 @@ enum NoteOrder {
   Difficulty,
 }
 
-
 export type PartialRequired<T, K extends keyof T> = Partial<T> &
-  Required<Pick<T, K>>
+  Required<Pick<T, K>>;
