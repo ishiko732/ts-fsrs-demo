@@ -29,9 +29,9 @@ export const EditDeckProfile = ({
     setOpen(true);
   }, [deck, setProfile, setOpen]);
 
-  return (
+  return deck.did ? (
     <DropdownMenuItem onClick={handler} className={className}>
       <div>Edit Deck</div>
     </DropdownMenuItem>
-  );
+  ) : null;
 };

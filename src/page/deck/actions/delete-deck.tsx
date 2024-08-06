@@ -16,7 +16,7 @@ export const DeleteDeck = ({
     await deckCrud.delete(deck.did, true);
   }, [deck]);
 
-  return !deck.deleted ? (
+  return !deck.deleted&&deck.did ? (
     <DropdownMenuItem onClick={handler} className={className}>
       <div>Delete Deck</div>
     </DropdownMenuItem>
