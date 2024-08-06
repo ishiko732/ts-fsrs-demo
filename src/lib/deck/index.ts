@@ -38,10 +38,6 @@ export class DeckService implements IDeckService {
     return this.algorithm_pamars;
   };
 
-  getAlgorithm = async () => {
-    const params = await this.getAlgorithmParams();
-    return fsrs(params);
-  };
 
   getTodayMemoryContext = async (
     timezone: string,

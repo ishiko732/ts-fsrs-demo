@@ -1,7 +1,7 @@
 import { noteCrud } from '@lib/container';
 import { INoteService } from '@lib/deck/type';
 import { Note as PrimiseNote, Card as PrismaCard } from '@prisma/client';
-import { FSRS, Grade, RecordLog } from 'ts-fsrs';
+import { fsrs, FSRS, FSRSParameters, Grade, RecordLog } from 'ts-fsrs';
 
 export class ReviewService implements INoteService {
   private f: FSRS;
@@ -10,9 +10,14 @@ export class ReviewService implements INoteService {
   private box: number[] = [];
   private traces: PrimiseNote[] = [];
   private preview_start: number = 0;
-  constructor(f: FSRS) {
-    this.f = f;
+  constructor(params: FSRSParameters) {
+    this.f = fsrs(params);
   }
+
+  getAlgorithm = async () => {
+    return this.f;
+  };
+
   async getNote(nid: number): Promise<PrimiseNote> {
     let note = this.notes.get(nid);
     if (!note) {

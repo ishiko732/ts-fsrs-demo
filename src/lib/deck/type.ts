@@ -14,7 +14,6 @@ export type SearchTodayMemoryContextPage = {
 export abstract class IDeckService {
   abstract getDeck(): Promise<Omit<Deck, 'deleted'>>;
   abstract getAlgorithmParams(): Promise<FSRSParameters>;
-  abstract getAlgorithm(): Promise<FSRS>;
   abstract getTodayMemoryContext(
     timezone: string,
     hourOffset: number
