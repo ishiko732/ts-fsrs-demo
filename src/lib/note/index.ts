@@ -36,7 +36,7 @@ export class ReviewService implements INoteService {
     this.traces.push(old);
     return updated;
   }
-  async getCard(nid: number): Promise<PrismaCard> {
+  async getCard(cid: number): Promise<PrismaCard> {
     throw new Error('Method not implemented.');
   }
   async preview(cid: number, now: Date): Promise<RecordLog> {
@@ -64,6 +64,11 @@ export class ReviewService implements INoteService {
     return true;
   }
   async rollback(): Promise<boolean> {
+    const last = this.box.pop();
+    if (last === undefined) {
+      return false;
+    }
+    // restore card
     throw new Error('Method not implemented.');
   }
 }

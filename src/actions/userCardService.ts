@@ -7,7 +7,14 @@ import { notFound, redirect } from 'next/navigation';
 import { getUserFSRS } from './userParamsService';
 import { forgetAfterHandler } from '@/vendor/fsrsToPrisma/handler';
 import { CardInput, fixState } from 'ts-fsrs';
-import { Prisma } from '@prisma/client';
+import { Card, Prisma } from '@prisma/client';
+import {
+  addCard,
+  deleteNote,
+  getCardByCardId,
+  getCards,
+  updateCard,
+} from '@lib/card/retriever';
 
 type CardSimpleInfo = {
   cid: number;
@@ -118,4 +125,63 @@ export async function suspendCard(cid: number, suspended: boolean) {
     revalidatePath(`/note/${data.nid}`);
   }
   return data;
+}
+
+export async function getCardsAction(nid: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const note = await getCards(uid, nid);
+  return note;
+}
+
+export async function getCardByCardIdAction(cid: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const note = await getCardByCardId(uid, cid);
+  return note;
+}
+
+export async function addCardAction(
+  nid: number,
+  card: Omit<Card, 'nid' | 'deleted' | 'orderId'>
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  return await addCard(uid, nid, card);
+}
+
+export async function updateCardAction(
+  cid: number,
+  card: Omit<Card, 'nid' | 'deleted' | 'orderId'>
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const res = await updateCard(uid, cid, card);
+  return res;
+}
+
+export async function deleteCardAction(cid: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const res = await deleteNote(uid, cid, false);
+  return res;
+}
+
+export async function restoreNoteAction(cid: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const res = await deleteNote(uid, cid, false);
+  return res;
 }

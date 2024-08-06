@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Card" ADD COLUMN     "orderId" INTEGER NOT NULL DEFAULT 0;

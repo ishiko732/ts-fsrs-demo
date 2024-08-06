@@ -10,6 +10,7 @@ datasource db {
 
 model Revlog {
   lid               String   @id @unique @default(cuid())
+  uid               Int      @default(0)
   cid               Int
   grade             Rating
   state             State
@@ -29,6 +30,7 @@ model Revlog {
 
 model Card {
   cid            Int       @id @unique @default(autoincrement())
+  uid            Int       @default(0)
   due            DateTime  @default(now())
   stability      Float
   difficulty     Float
@@ -43,6 +45,7 @@ model Card {
   suspended      Boolean   @default(false)
   logs           Revlog[]
   deleted        Boolean   @default(false)
+  orderId        Int       @default(0)
 }
 
 model Parameters {

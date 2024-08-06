@@ -29,7 +29,7 @@ export abstract class IDeckService {
 
 export abstract class INoteService {
   abstract getNote(nid: number): Promise<Note>;
-  abstract getCard(nid: number): Promise<Card>;
+  abstract getCard(cid: number): Promise<Card>;
   abstract edit(
     nid: number,
     note: Partial<Omit<Note, 'did' | 'uid' | 'deleted'>>
