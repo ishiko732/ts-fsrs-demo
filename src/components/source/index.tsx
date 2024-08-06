@@ -40,4 +40,4 @@ export function QACard() {
         </>
     );
 }
-export type SourceNote = Note & { card: Card }
+export type SourceNote = Note & { cards: Card[] }

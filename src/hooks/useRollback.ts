@@ -16,7 +16,7 @@ export type Rollback = {
   >;
   rollbackAble: boolean;
   setRollbackAble: React.Dispatch<React.SetStateAction<boolean>>;
-  handleRollBack: () => Promise<(Note & { card: Card }) | undefined>;
+  handleRollBack: () => Promise<(Note & { cards: Card[] }) | undefined>;
 };
 
 export function useRollback({
@@ -39,16 +39,16 @@ export function useRollback({
       method: "PUT",
     })
       .then((res) => res.json())
-      .then((res) => res.next)) as Note & { card: Card };
+      .then((res) => res.next)) as Note & { cards: Card[] };
     startTransition(() => {
-      let state = fixState(rollbackNote.card.state); // prisma State -> FSRS State
+      let state = fixState(rollbackNote.cards[0].state); // prisma State -> FSRS State
       if (state === State.Relearning) {
         state = State.Learning;
       }
       // state = rollback state
       if (nextStateBox !== State.Review) {
         const updatNoteBox = noteBox[nextStateBox].filter(
-          (note) => note.card.cid !== cid
+          (note) => note.cards[0].cid !== cid
         ); // filter out the rollback note
         console.log(`Rollback Box:${State[nextStateBox]} to ${State[state]}`);
         if (nextStateBox === state) {

@@ -14,7 +14,7 @@ type DataResponse = {
   uid: number;
   now: Date;
   todayCount: number;
-  noteBox0: Array<Array<Note & { card: Card }>>;
+  noteBox0: Array<Array<Note & { cards: Card[] }>>;
 };
 
 const getData = cache(async (source?: string): Promise<DataResponse> => {
@@ -46,10 +46,12 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
       uid: uid,
       take: state === State.New ? Math.max(0, limit - todayCount) : undefined,
       query: {
-        card: {
-          state,
-          due: state === State.Review ? { lte: startOfDay } : undefined,
-          suspended: false,
+        cards: {
+          some: {
+            state,
+            due: state === State.Review ? { lte: startOfDay } : undefined,
+            suspended: false,
+          },
         },
         source: {
           equals: source,

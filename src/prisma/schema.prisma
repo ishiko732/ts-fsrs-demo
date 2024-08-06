@@ -92,9 +92,9 @@ model Note {
   source   String  @default("")
   sourceId String?
   extend   Json
-  card     Card?
   user     User?   @relation(fields: [uid], references: [uid])
   deleted  Boolean @default(false)
+  cards    Card[]
 
   @@index([uid])
   @@index([sourceId, source])

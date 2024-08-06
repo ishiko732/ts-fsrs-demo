@@ -12,15 +12,6 @@ type Query={
     cid:number;
 }
 
-// BUG not exist note
-export async function findCardByNid(nid:number){
-    const note=await getNoteByNid(nid)
-    if(!note || !note.card){  
-        throw new Error("note not found")
-    }
-
-    return note.card as Card&{note:Note}
-}
 
 export async function findCardByCid(cid:number){
     const card = await prisma.card.findUnique({
@@ -45,25 +36,26 @@ export async function schedulerCard<T extends Grade>(query:Partial<Query>,now:Da
     if(!query.nid && !query.cid){
         throw new Error("nid or cid not found")
     }
-    const cardByPrisma = query.cid? await findCardByCid(query.cid): 
-                                query.nid ? await findCardByNid(query.nid): null;
-    if(!cardByPrisma){  
-        throw new Error("card not found")
-    }
-    const { f, userParams } = await getFSRSBySessionUser(cardByPrisma.note.uid);
-    const card={
-        ...cardByPrisma,
-        nid:cardByPrisma.note.nid,
-        last_review:cardByPrisma.last_review?cardByPrisma.last_review:undefined
-    }
-    const repeatAfterHandlerExtendSuspended = repeatAfterHandler.bind(null,userParams.lapses)
-    const repeat = f.repeat(card,now,repeatAfterHandlerExtendSuspended)
-    console.debug(repeat)
-    if(grade){
-        return repeat[grade] as T extends Grade ? RepeatRecordLog : RecordLogPrisma
-    }else{
-        return repeat as T extends Grade ? RepeatRecordLog : RecordLogPrisma
-    }
+    throw new Error("not implemented");
+    // const cardByPrisma = query.cid? await findCardByCid(query.cid): 
+    //                             query.nid ? await findCardByNid(query.nid): null;
+    // if(!cardByPrisma){  
+    //     throw new Error("card not found")
+    // }
+    // const { f, userParams } = await getFSRSBySessionUser(cardByPrisma.note.uid);
+    // const card={
+    //     ...cardByPrisma,
+    //     nid:cardByPrisma.note.nid,
+    //     last_review:cardByPrisma.last_review?cardByPrisma.last_review:undefined
+    // }
+    // const repeatAfterHandlerExtendSuspended = repeatAfterHandler.bind(null,userParams.lapses)
+    // const repeat = f.repeat(card,now,repeatAfterHandlerExtendSuspended)
+    // console.debug(repeat)
+    // if(grade){
+    //     return repeat[grade] as T extends Grade ? RepeatRecordLog : RecordLogPrisma
+    // }else{
+    //     return repeat as T extends Grade ? RepeatRecordLog : RecordLogPrisma
+    // }
 }
 
 
@@ -127,31 +119,32 @@ export async function rollbackCard(query:Partial<Query>){
     if(!query.nid && !query.cid){
         throw new Error("nid or cid not found")
     }
-    const cardByPrisma =query.cid? await findCardByCid(query.cid): 
-                                query.nid? await findCardByNid(query.nid): null;
-    if(!cardByPrisma){  
-        throw new Error("card not found")
-    }
-    const [log,{f}] =await Promise.all([findLastLogByCid(cardByPrisma.cid), getFSRSBySessionUser(cardByPrisma.note.uid)])
-    if(!log){  
-        throw new Error("log not found")
-    }
-    const backCard = f.rollback(cardByPrisma,log,rollbackAfterHandler)
+    throw new Error("not implemented");
+    // const cardByPrisma =query.cid? await findCardByCid(query.cid): 
+    //                             query.nid? await findCardByNid(query.nid): null;
+    // if(!cardByPrisma){  
+    //     throw new Error("card not found")
+    // }
+    // const [log,{f}] =await Promise.all([findLastLogByCid(cardByPrisma.cid), getFSRSBySessionUser(cardByPrisma.note.uid)])
+    // if(!log){  
+    //     throw new Error("log not found")
+    // }
+    // const backCard = f.rollback(cardByPrisma,log,rollbackAfterHandler)
 
-    const res = await prisma.card.update({
-        where:{cid:cardByPrisma.cid},
-        data:{
-            ...backCard,
-            logs:{
-                delete:{
-                    lid:log.lid
-                }
-            }
-        },
-        include:{
-            logs:true
-        }
-    })
-    return await getNoteByCid(cardByPrisma.cid);
+    // const res = await prisma.card.update({
+    //     where:{cid:cardByPrisma.cid},
+    //     data:{
+    //         ...backCard,
+    //         logs:{
+    //             delete:{
+    //                 lid:log.lid
+    //             }
+    //         }
+    //     },
+    //     include:{
+    //         logs:true
+    //     }
+    // })
+    // return await getNoteByCid(cardByPrisma.cid);
 }
 

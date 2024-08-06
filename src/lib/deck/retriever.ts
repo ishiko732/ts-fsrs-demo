@@ -182,11 +182,13 @@ export async function getNoteMemoryTotal(
       uid,
       did: deckId,
       deleted: false,
-      card: {
-        suspended: false,
-        due: state === PrismaState.Review ? { lte: lte } : undefined,
-        state,
-        deleted: false,
+      cards: {
+        some: {
+          suspended: false,
+          due: state === PrismaState.Review ? { lte: lte } : undefined,
+          state,
+          deleted: false,
+        },
       },
     },
     take:
@@ -216,23 +218,25 @@ export async function getNoteMemoryState({
       uid,
       did: deckId,
       deleted: false,
-      card: {
-        suspended: false,
-        due: state === PrismaState.Review ? { lte: lte } : undefined,
-        state,
-        deleted: false,
-        cid:
-          state === PrismaState.New
-            ? undefined
-            : {
-                notIn: ignoreCardIds,
-              },
+      cards: {
+        some: {
+          suspended: false,
+          due: state === PrismaState.Review ? { lte: lte } : undefined,
+          state,
+          deleted: false,
+          cid:
+            state === PrismaState.New
+              ? undefined
+              : {
+                  notIn: ignoreCardIds,
+                },
+        },
       },
     },
     select: {
       nid: true,
       did: true,
-      card: {
+      cards: {
         select: {
           cid: true,
           due: true,
@@ -244,18 +248,18 @@ export async function getNoteMemoryState({
       state === PrismaState.New
         ? (page - 1) * stateNewPageSize
         : (page - 1) * pageSize,
-    orderBy: {
-      card: {
-        difficulty: 'desc',
-      },
-    },
+    // orderBy: {
+    //   cards: {
+    //     difficulty: 'desc',
+    //   },
+    // },
   });
   return notes.map((note) => {
     return {
       deckId: note.did,
       noteId: note.nid,
-      cardId: note.card?.cid || CARD_NULL,
-      due: note.card?.due?.getTime() || INVALID_DUE,
+      cardId: note.cards?.[0].cid || CARD_NULL,
+      due: note.cards?.[0].due?.getTime() || INVALID_DUE,
     };
   }) as NoteMemoryState[];
 }
@@ -270,18 +274,20 @@ export async function getNumberOfNewCardsLearnedToday(
     where: {
       uid: uid,
       did: deckId,
-      card: {
-        logs: {
-          some: {
-            review: {
-              gte: startOfDay,
-              lt: nextDay,
+      cards: {
+        some: {
+          logs: {
+            some: {
+              review: {
+                gte: startOfDay,
+                lt: nextDay,
+              },
+              state: PrismaState.New,
+              deleted: false,
             },
-            state: PrismaState.New,
-            deleted: false,
           },
+          deleted: false,
         },
-        deleted: false,
       },
       deleted: false,
     },

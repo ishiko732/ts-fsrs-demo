@@ -12,7 +12,7 @@ export type ChangeState = {
 
 export function useChangeState() {
   function updateStateBox(
-    noteBox: { [key in StateBox]: Array<Note & { card: Card }> },
+    noteBox: { [key in StateBox]: Array<Note & { cards: Card[] }> },
     currentType: StateBox,
     nextDue?: Date
   ) {
@@ -47,7 +47,7 @@ export function useChangeState() {
     change =
       change === State.Learning &&
       noteBox[State.Learning].length > 0 &&
-      fixDate(noteBox[State.Learning][0].card.due).getTime() -
+      fixDate(noteBox[State.Learning][0].cards[0].due).getTime() -
         new Date().getTime() >
         0
         ? randomNewOrReviewState(noteBox)
@@ -56,7 +56,7 @@ export function useChangeState() {
   }
 
   function randomNewOrReviewState(noteBox: {
-    [key in StateBox]: Array<Note & { card: Card }>;
+    [key in StateBox]: Array<Note & { cards: Card[] }>;
   }) {
     if (noteBox[State.New].length === 0) {
       return State.Review;

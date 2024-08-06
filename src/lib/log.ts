@@ -67,18 +67,20 @@ export async function getTodayLearnedNewCardCount(uid: number, startOfDay: Date,
     const p_count = prisma.note.count({
       where: {
         uid: uid,
-        card: {
-          logs: {
-            some: {
-              review: {
-                gte: startOfDay,
-                lt: nextDay,
+        cards: {
+          some:{
+            logs: {
+              some: {
+                review: {
+                  gte: startOfDay,
+                  lt: nextDay,
+                },
+                state: PrismaState.New,
+                deleted: false,
               },
-              state: PrismaState.New,
-              deleted: false,
             },
+            deleted: false,
           },
-          deleted: false,
         },
         source: source && source === "lingq" ? "lingq" : undefined,
         deleted: false,

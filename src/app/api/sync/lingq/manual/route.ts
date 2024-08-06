@@ -107,7 +107,7 @@ async function sync(
     };
     return prisma.note.create({
       data: note,
-      include: { card: true },
+      include: { cards: true },
     });
   });
   await prisma.$transaction(dates);

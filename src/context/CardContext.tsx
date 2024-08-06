@@ -27,14 +27,14 @@ type CardContextProps = {
   setCurrentType: React.Dispatch<React.SetStateAction<StateBox>>;
   schedule: RecordLog | undefined;
   setSchedule: React.Dispatch<React.SetStateAction<RecordLog | undefined>>;
-  noteBox: { [key in StateBox]: Array<Note & { card: Card }> };
+  noteBox: { [key in StateBox]: Array<Note & { cards: Card[] }> };
   setNoteBox: {
     [key in StateBox]: React.Dispatch<
-      React.SetStateAction<Array<Note & { card: Card }>>
+      React.SetStateAction<Array<Note & { cards: Card[] }>>
     >;
   };
   handleSchdule: (grade: Grade) => Promise<boolean>;
-  handleRollBack: () => Promise<(Note & { card: Card }) | undefined>;
+  handleRollBack: () => Promise<(Note & { cards: Card[] }) | undefined>;
   rollbackAble: boolean;
   DSR: DSR | undefined;
   setDSR: React.Dispatch<React.SetStateAction<DSR | undefined>>;
@@ -55,7 +55,7 @@ export function CardProvider({
   noteBox0,
 }: {
   children: ReactNode;
-  noteBox0: Array<Array<Note & { card: Card }>>;
+  noteBox0: Array<Array<Note & { cards: Card[] }>>;
 }) {
   const [open, setOpen] = useState(false);
   const cardHooks = useCardBoxes(noteBox0);

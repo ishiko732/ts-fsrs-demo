@@ -35,12 +35,12 @@ export async function addNote(data: Partial<NodeData> & { uid: number }) {
         question,
         answer,
         extend: data.extend ? JSON.stringify(data.extend) : "",
-        card: {
+        cards: {
           create: fc,
         },
         source: "manual",
       },
-      include: { card: true },
+      include: { cards: true },
     });
 }
 
@@ -58,12 +58,12 @@ export async function initProgeigoNote(uid: number, data: ProgeigoNodeData) {
       question,
       answer,
       extend: JSON.stringify(data),
-      card: {
+      cards: {
         create: fc,
       },
       source: 'プログラミング必須英単語600+'
     },
-    include: { card: true },
+    include: { cards: true },
   });
 }
 
@@ -83,9 +83,9 @@ export async function getNotes({ uid, take, query, order, skip }: { uid: number,
     where: where,
     orderBy: order,
     skip,
-    include: { card: true },
+    include: { cards: true },
   });
-  return notes as Array<Note & { card: Card }>;
+  return notes as Array<Note & { cards: Card[] }>;
 }
 
 export async function getNoteCount({ uid, query }: { uid: number, query?: Prisma.NoteWhereInput }) {
@@ -105,7 +105,7 @@ export async function getNoteByNid(nid: number, deleted: boolean = false) {
       deleted: deleted
     },
     include: {
-      card: true,
+      cards: true,
     },
   });
   return note;
@@ -114,13 +114,15 @@ export async function getNoteByNid(nid: number, deleted: boolean = false) {
 export async function getNoteByCid(cid: number, deleted: boolean = false) {
   const note = await prisma.note.findFirst({
     where: {
-      card: {
+      cards: {
+       some:{
         cid
+       }
       },
       deleted: deleted,
     },
     include: {
-      card: true,
+      cards: true,
     },
   });
   return note;
@@ -132,7 +134,7 @@ export async function getNoteByQuestion(question: string, deleted: boolean = fal
       deleted: deleted,
     },
     include: {
-      card: true,
+      cards: true,
     },
   });
   return note;
@@ -170,7 +172,7 @@ export async function deleteNoteByNid(nid: number) {
         deleted: true
       },
       where: {
-        cid: note?.card?.cid ?? -1
+        cid: note?.cards?.[0].cid ?? -1
       },
       data: {
         deleted: true
@@ -178,7 +180,7 @@ export async function deleteNoteByNid(nid: number) {
     }),
     prisma.revlog.updateMany({
       where: {
-        cid: note?.card?.cid ?? -1
+        cid: note?.cards?.[0].cid ?? -1
       },
       data: {
         deleted: true
@@ -197,7 +199,7 @@ export async function deleteNoteByNid(nid: number) {
       }
     })
   ]);
-  return { cid: note?.card?.cid, nid: note?.nid! } as { cid?: number, nid: number };
+  return { cid: note?.cards?.[0].cid, nid: note?.nid! } as { cid?: number, nid: number };
 }
 
 

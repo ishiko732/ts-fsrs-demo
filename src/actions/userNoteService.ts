@@ -82,17 +82,17 @@ export async function getNotesBySessionUserId({
     return {
       did: note.did,
       nid: note.nid,
-      cid: note.card.cid,
+      cid: note.cards[0].cid,
       question: note.question,
       answer: note.answer,
       source: note.source,
       sourceId: note?.sourceId ?? '',
-      D: note.card.difficulty,
-      S: note.card.stability,
-      due: note.card.due.getTime(),
-      last_review: note.card.last_review?.getTime() ?? 0,
-      state: fixState(note.card.state),
-      reps: note.card.reps,
+      D: note.cards[0].difficulty,
+      S: note.cards[0].stability,
+      due: note.cards[0].due.getTime(),
+      last_review: note.cards[0].last_review?.getTime() ?? 0,
+      state: fixState(note.cards[0].state),
+      reps: note.cards[0].reps,
       deleted: note.deleted,
     };
   });
@@ -116,7 +116,7 @@ export async function getUserNote(nid: number, deleted: boolean) {
   if (note?.uid !== uid) {
     redirect('/denied');
   }
-  return note as Note & { card: Card };
+  return note as Note & { cards: Card[] };
 }
 
 export async function getNoteAction(nid: number) {

@@ -35,7 +35,7 @@ export default async function Page({ params, searchParams }: Props) {
       `/api/auth/signin?callbackUrl=/deck/${params.deckId}/note/${params.nid}`
     );
   });
-  const logs = await findLogsByCid(note.card.cid);
+  const logs = await findLogsByCid(note.cards[0].cid);
 
   return (
     <>
@@ -75,7 +75,7 @@ export default async function Page({ params, searchParams }: Props) {
                   <span className='font-semibold'>Card[FSRS]</span>
                 </div>
                 <div className='flex h-full items-center justify-center p-6'>
-                  <FSRSDetail card={note.card} />
+                  <FSRSDetail cards={note.cards} />
                 </div>
               </ResizablePanel>
               <ResizableHandle

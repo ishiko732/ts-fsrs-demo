@@ -103,7 +103,7 @@ async function syncLingqs(user: DecryptSyncUser, lang: languageCode, next?: numb
             }
             return prisma.note.create({
                 data: note,
-                include: { card: true },
+                include: { cards: true },
             });
         })
         await prisma.$transaction(dates)
@@ -124,7 +124,7 @@ export async function updateNoteByLingq(uid: number, nid: number, lingq: Lingq) 
             nid: nid,
             uid: uid
         },
-        include: { card: true },
+        include: { cards: true },
     });
     if (!data) { // note not found
         return

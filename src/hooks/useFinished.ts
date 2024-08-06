@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CardBoxes } from "./useCardBoxes";
 
 const checkFinished = (
-  noteBox: { [key in StateBox]: Array<Note & { card: Card }> },
+  noteBox: { [key in StateBox]: Array<Note & { cards: Card[] }> },
   currentType: StateBox
 ) => {
   let current: StateBox = currentType;
@@ -14,7 +14,7 @@ const checkFinished = (
   for (; i < 3; i++) {
     if (noteBox[current].length > 0) {
       if (current === State.Learning) {
-        const due = fixDate(noteBox[current][0].card.due);
+        const due = fixDate(noteBox[current][0].cards[0].due);
         if (due.getTime() - new Date().getTime() > 0) {
           break;
         }

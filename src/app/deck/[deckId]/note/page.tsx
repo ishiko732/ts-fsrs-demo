@@ -41,7 +41,7 @@ function computerOrder(order: SortingState) {
         sort.id = 'difficulty';
       }
       _order = {
-        card: {
+        cards: {
           [sort.id]: sort.desc ? 'desc' : 'asc',
         },
       };
