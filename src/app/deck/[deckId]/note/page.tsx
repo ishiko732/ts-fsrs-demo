@@ -40,11 +40,11 @@ function computerOrder(order: SortingState) {
       } else if (sort.id === 'D') {
         sort.id = 'difficulty';
       }
-      _order = {
-        cards: {
-          [sort.id]: sort.desc ? 'desc' : 'asc',
-        },
-      };
+      // _order = {
+      //   cards: {
+      //     [sort.id]: sort.desc ? 'desc' : 'asc',
+      //   },
+      // };
     }
   }
   return _order;

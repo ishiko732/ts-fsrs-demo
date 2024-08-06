@@ -7,17 +7,18 @@ import {
   DropdownMenuContent,
 } from '@radix-ui/react-dropdown-menu';
 import { DeleteDeck } from './actions/delete-deck';
-import { Action } from '@radix-ui/react-toast';
 import { RestoreDeck } from './actions/restore-deck';
+import { ViewNote } from './actions/view-note';
 
 const actions = [
   {
     name: 'Edit Deck',
     Action: EditDeckProfile,
   },
-  // {
-  //   name: 'View Note',
-  // },
+  {
+    name: 'View Note',
+    Action: ViewNote,
+  },
   {
     name: 'Delete Deck',
     Action: DeleteDeck,
