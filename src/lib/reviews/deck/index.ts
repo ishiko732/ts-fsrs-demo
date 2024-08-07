@@ -5,7 +5,7 @@ import {
   IDeckService,
   NoteMemoryContext,
   SearchTodayMemoryContextPage,
-} from './type';
+} from '../type';
 import {
   getNoteMemoryContextAction,
   getNumberOfNewCardsLearnedTodayAction,

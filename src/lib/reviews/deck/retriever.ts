@@ -8,7 +8,7 @@ import {
   NoteMemoryState,
   NoteMomoryStateRequest,
   PartialRequired,
-} from './type';
+} from '../type';
 import { CARDLIMT, DEFAULT_DECK_ID, LAPSES } from '@/constant/deck';
 import { CARD_NULL, INVALID_DUE } from '@/constant';
 

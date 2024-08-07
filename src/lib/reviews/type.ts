@@ -40,6 +40,13 @@ export abstract class INoteService {
   abstract rollback(): Promise<boolean>;
 }
 
+export abstract class ICardService {
+  abstract getCard(cid: number): Promise<Card>;
+  abstract preview(cid: number, now: Date): Promise<RecordLog>;
+  abstract schduler(cid: number, now: Date, grade: Grade): Promise<boolean>;
+  abstract rollback(): Promise<boolean>;
+}
+
 // deck
 export interface DeckMemoryState {
   uid: number;

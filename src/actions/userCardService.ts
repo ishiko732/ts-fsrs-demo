@@ -14,7 +14,7 @@ import {
   getCardByCardId,
   getCards,
   updateCard,
-} from '@lib/card/retriever';
+} from '@lib/reviews/card/retriever';
 
 type CardSimpleInfo = {
   cid: number;

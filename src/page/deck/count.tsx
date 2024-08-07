@@ -1,4 +1,4 @@
-import { DeckCrud } from '@lib/deck/crud';
+import { DeckCrud } from '@lib/reviews/deck/crud';
 
 export default async function DeckStatus({
   timezone,

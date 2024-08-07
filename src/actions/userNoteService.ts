@@ -15,7 +15,7 @@ import {
   getNotesByDeckId,
   getNotes as getNotesByNoteIds,
   updateNote,
-} from '@lib/note/retriever';
+} from '@lib/reviews/note/retriever';
 import { Card, Note, Prisma } from '@prisma/client';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';

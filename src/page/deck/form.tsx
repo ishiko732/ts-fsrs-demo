@@ -21,7 +21,7 @@ import {
   default_w,
   generatorParameters,
 } from 'ts-fsrs';
-import { DeckCrud } from '@lib/deck/crud';
+import { DeckCrud } from '@lib/reviews/deck/crud';
 import { useAtom, useAtomValue } from 'jotai';
 import { DeckProfileAtom } from '@/atom/decks/profile';
 import { CARDLIMT, LAPSES } from '@/constant/deck';

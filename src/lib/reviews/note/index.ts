@@ -1,5 +1,5 @@
 import { noteCrud } from '@lib/container';
-import { INoteService } from '@lib/deck/type';
+import { INoteService } from '@lib/reviews/type';
 import { Note as PrimiseNote, Card as PrismaCard } from '@prisma/client';
 import { fsrs, FSRS, FSRSParameters, Grade, RecordLog } from 'ts-fsrs';
 

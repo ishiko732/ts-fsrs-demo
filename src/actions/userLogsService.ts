@@ -2,7 +2,7 @@
 
 import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import { exportLogsByUid } from '@/lib/log';
-import { addRevlog, getRevlogs } from '@lib/revlog/retriever';
+import { addRevlog, getRevlogs } from '@lib/reviews/revlog/retriever';
 import { Revlog } from '@prisma/client';
 
 export async function exportLogs() {

@@ -11,10 +11,10 @@ import {
   getParamsByUserId_cache,
   restoreDeck,
   updateDeck,
-} from '@lib/deck/retriever';
-import { getNumberOfNewCardsLearnedToday } from '@lib/deck/retriever';
+} from '@lib/reviews/deck/retriever';
+import { getNumberOfNewCardsLearnedToday } from '@lib/reviews/deck/retriever';
 import { Deck, State as PrismaState } from '@prisma/client';
-import { NoteMemoryStatePage } from '@lib/deck/type';
+import { NoteMemoryStatePage } from '@lib/reviews/type';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { states_prisma } from '@/constant';
 
