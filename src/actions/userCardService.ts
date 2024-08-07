@@ -10,7 +10,7 @@ import { CardInput, fixState } from 'ts-fsrs';
 import { Card, Prisma } from '@prisma/client';
 import {
   addCard,
-  deleteNote,
+  deleteCard,
   getCardByCardId,
   getCards,
   updateCard,
@@ -173,15 +173,15 @@ export async function deleteCardAction(cid: number) {
   if (!uid) {
     throw new Error('user not found.');
   }
-  const res = await deleteNote(uid, cid, false);
+  const res = await deleteCard(uid, cid, false);
   return res;
 }
 
-export async function restoreNoteAction(cid: number) {
+export async function restoreCardAction(cid: number) {
   const uid = await getSessionUserId();
   if (!uid) {
     throw new Error('user not found.');
   }
-  const res = await deleteNote(uid, cid, false);
+  const res = await deleteCard(uid, cid, false);
   return res;
 }

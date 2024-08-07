@@ -18,11 +18,11 @@ export async function getLogsAction(cid: number) {
   if (!uid) {
     throw new Error('user not found.');
   }
-  const note = await getRevlogs(uid, cid);
-  return note;
+  const logs = await getRevlogs(uid, cid);
+  return logs;
 }
 
-export async function adLogAction(
+export async function addLogAction(
   cid: number,
   log: Omit<Revlog, 'cid' | 'deleted'>
 ) {

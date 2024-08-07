@@ -56,7 +56,7 @@ export const updateCard = async (
   });
 };
 
-export const deleteNote = async (
+export const deleteCard = async (
   uid: number,
   cid: number,
   restore?: boolean
