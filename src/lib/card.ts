@@ -4,7 +4,7 @@ import prisma from "./prisma";
 import { findLastLogByCid } from "./log";
 import { getFSRSBySessionUser } from "./fsrs";
 import { Card, Note } from "@prisma/client";
-import { RecordLogPrisma, RepeatRecordLog, forgetAfterHandler, repeatAfterHandler, rollbackAfterHandler } from "@/vendor/fsrsToPrisma/handler";
+import { RecordLogPrisma, RepeatRecordLog, forgetAfterHandler, repeatAfterHandler, rollbackAfterHandler } from "@lib/reviews/card/fsrsToPrisma/handler";
 import { CardUpdatePayload } from "@/types";
 
 type Query={

@@ -15,8 +15,8 @@ export const getCards = async (uid: number, nid: number): Promise<Card[]> => {
 export const getCardByCardId = async (
   uid: number,
   cid: number
-): Promise<Card> => {
-  return prisma.card.findFirstOrThrow({
+): Promise<Card | null> => {
+  return prisma.card.findFirst({
     where: {
       cid,
       uid,
@@ -24,10 +24,24 @@ export const getCardByCardId = async (
   });
 };
 
+export const getCardByNoteIdAndOrderId = async (
+  uid: number,
+  nid: number,
+  orderId: number
+): Promise<Card | null> => {
+  return prisma.card.findFirst({
+    where: {
+      uid,
+      nid,
+      orderId,
+    },
+  });
+};
+
 export const addCard = async (
   uid: number,
   nid: number,
-  card: Omit<Card, 'nid' | 'deleted' | 'orderId'>,
+  card: Omit<Card, 'nid' | 'deleted' | 'orderId' | 'uid' | 'cid'>,
   orderId: number = 0
 ) => {
   return prisma.card.create({

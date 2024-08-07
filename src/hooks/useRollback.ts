@@ -1,4 +1,4 @@
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+import { StateBox } from "@lib/reviews/card/fsrsToPrisma/handler";
 import { Card, Note } from "@prisma/client";
 import { startTransition, useRef, useState } from "react";
 import { State, fixState } from "ts-fsrs";

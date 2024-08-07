@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { Grade, RecordLog, State } from "ts-fsrs";
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+import { StateBox } from "@lib/reviews/card/fsrsToPrisma/handler";
 import { useCardBoxes } from "@/hooks/useCardBoxes";
 import { useRollback } from "@/hooks/useRollback";
 import { DSR, useSchedule } from "@/hooks/useSchdule";

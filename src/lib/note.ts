@@ -1,7 +1,7 @@
 import { getSessionUserId } from "@/app/(auth)/api/auth/[...nextauth]/session";
 import prisma from "./prisma";
 import { ProgeigoNodeData, NodeData } from "@/types";
-import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
+import { createEmptyCardByPrisma } from "@lib/reviews/card/fsrsToPrisma";
 import { Card, Note, Prisma, PrismaPromise } from "@prisma/client";
 
 

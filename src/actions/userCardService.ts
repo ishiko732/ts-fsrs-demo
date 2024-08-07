@@ -5,13 +5,14 @@ import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
 import { getUserFSRS } from './userParamsService';
-import { forgetAfterHandler } from '@/vendor/fsrsToPrisma/handler';
+import { forgetAfterHandler } from '@lib/reviews/card/fsrsToPrisma/handler';
 import { CardInput, fixState } from 'ts-fsrs';
 import { Card, Prisma } from '@prisma/client';
 import {
   addCard,
   deleteCard,
   getCardByCardId,
+  getCardByNoteIdAndOrderId,
   getCards,
   updateCard,
 } from '@lib/reviews/card/retriever';
@@ -132,8 +133,8 @@ export async function getCardsAction(nid: number) {
   if (!uid) {
     throw new Error('user not found.');
   }
-  const note = await getCards(uid, nid);
-  return note;
+  const cards = await getCards(uid, nid);
+  return cards;
 }
 
 export async function getCardByCardIdAction(cid: number) {
@@ -141,19 +142,32 @@ export async function getCardByCardIdAction(cid: number) {
   if (!uid) {
     throw new Error('user not found.');
   }
-  const note = await getCardByCardId(uid, cid);
-  return note;
+  const card = await getCardByCardId(uid, cid);
+  return card;
 }
 
-export async function addCardAction(
+export async function getCardByNoteIdAndOrderIdAction(
   nid: number,
-  card: Omit<Card, 'nid' | 'deleted' | 'orderId'>
+  orderId: number
 ) {
   const uid = await getSessionUserId();
   if (!uid) {
     throw new Error('user not found.');
   }
-  return await addCard(uid, nid, card);
+  const card = await getCardByNoteIdAndOrderId(uid, nid, orderId);
+  return card;
+}
+
+export async function addCardAction(
+  nid: number,
+  card: Omit<Card, 'nid' | 'deleted' | 'orderId' | 'uid' | 'cid'>,
+  orderId: number = 0
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  return await addCard(uid, nid, card, orderId);
 }
 
 export async function updateCardAction(

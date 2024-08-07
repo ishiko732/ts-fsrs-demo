@@ -1,22 +1,11 @@
 import { noteCrud } from '@lib/container';
 import { INoteService } from '@lib/reviews/type';
-import { Note as PrimiseNote, Card as PrismaCard } from '@prisma/client';
-import { fsrs, FSRS, FSRSParameters, Grade, RecordLog } from 'ts-fsrs';
+import { Note as PrimiseNote } from '@prisma/client';
 
-export class ReviewService implements INoteService {
-  private f: FSRS;
+export class NoteService implements INoteService {
   private notes: Map<number, PrimiseNote> = new Map();
-  private cards: Map<number, PrismaCard> = new Map();
-  private box: number[] = [];
   private traces: PrimiseNote[] = [];
-  private preview_start: number = 0;
-  constructor(params: FSRSParameters) {
-    this.f = fsrs(params);
-  }
-
-  getAlgorithm = async () => {
-    return this.f;
-  };
+  constructor() {}
 
   async getNote(nid: number): Promise<PrimiseNote> {
     let note = this.notes.get(nid);
@@ -36,22 +25,6 @@ export class ReviewService implements INoteService {
     this.traces.push(old);
     return updated;
   }
-  async getCard(cid: number): Promise<PrismaCard> {
-    throw new Error('Method not implemented.');
-  }
-  async preview(cid: number, now: Date): Promise<RecordLog> {
-    const card = await this.getCard(cid);
-    const record = this.f.repeat(card, now);
-    this.preview_start = new Date().getTime();
-    return record;
-  }
-  async schduler(cid: number, now: Date, grade: Grade): Promise<boolean> {
-    const duration = Math.round(
-      (new Date().getTime() - this.preview_start) / 1000
-    );
-    this.box.push(cid);
-    throw new Error('Method not implemented.');
-  }
   async undo(): Promise<boolean> {
     // get last trace
     const last = this.traces.pop();
@@ -62,13 +35,5 @@ export class ReviewService implements INoteService {
     const updated = await noteCrud.update(last.nid, last.did, last);
     this.notes.set(last.nid, updated);
     return true;
-  }
-  async rollback(): Promise<boolean> {
-    const last = this.box.pop();
-    if (last === undefined) {
-      return false;
-    }
-    // restore card
-    throw new Error('Method not implemented.');
   }
 }

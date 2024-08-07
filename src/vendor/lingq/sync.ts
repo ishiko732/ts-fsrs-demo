@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { decryptLingqKey } from "./crypt";
 import { getLingqContext, getLingqs } from "./request";
-import { createEmptyCardByPrisma } from "../fsrsToPrisma";
+import { createEmptyCardByPrisma } from "../../lib/reviews/card/fsrsToPrisma";
 import { Prisma } from "@prisma/client";
 
 type SyncUser = {

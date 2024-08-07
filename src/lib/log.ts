@@ -1,7 +1,7 @@
 import { State as PrismaState } from "@prisma/client";
 import prisma from "./prisma";
 import { Rating, State, date_scheduler, fixRating, fixState } from "ts-fsrs";
-import { RevlogPrismaUnChecked } from "@/vendor/fsrsToPrisma/handler";
+import { RevlogPrismaUnChecked } from "@lib/reviews/card/fsrsToPrisma/handler";
 
 export async function findLogsByCid(cid: number, deleted: boolean = false) {
     const logs = await prisma.revlog.findMany({

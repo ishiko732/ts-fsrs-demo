@@ -1,4 +1,4 @@
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+import { StateBox } from "@lib/reviews/card/fsrsToPrisma/handler";
 import { Card, Note } from "@prisma/client";
 import { State, fixDate } from "ts-fsrs";
 

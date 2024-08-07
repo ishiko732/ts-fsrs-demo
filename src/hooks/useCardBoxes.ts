@@ -1,5 +1,5 @@
 "use client";
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+import { StateBox } from "@lib/reviews/card/fsrsToPrisma/handler";
 import { Card, Note } from "@prisma/client";
 import { useMemo, useState } from "react";
 import { State } from "ts-fsrs";

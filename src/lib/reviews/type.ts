@@ -29,18 +29,15 @@ export abstract class IDeckService {
 
 export abstract class INoteService {
   abstract getNote(nid: number): Promise<Note>;
-  abstract getCard(cid: number): Promise<Card>;
   abstract edit(
     nid: number,
     note: Partial<Omit<Note, 'did' | 'uid' | 'deleted'>>
   ): Promise<Note>;
-  abstract preview(cid: number, now: Date): Promise<RecordLog>;
-  abstract schduler(cid: number, now: Date, grade: Grade): Promise<boolean>;
   abstract undo(): Promise<boolean>;
-  abstract rollback(): Promise<boolean>;
 }
 
 export abstract class ICardService {
+  abstract create(nid: number, orderId: number): Promise<Card>;
   abstract getCard(cid: number): Promise<Card>;
   abstract preview(cid: number, now: Date): Promise<RecordLog>;
   abstract schduler(cid: number, now: Date, grade: Grade): Promise<boolean>;
