@@ -6,10 +6,10 @@ import {
   getNotesBySessionUserId,
 } from '@/actions/userNoteService';
 import DataTable from '@/components/note/data-table';
-import { getUserParams } from '@/actions/userParamsService';
 import { generatorParameters } from 'ts-fsrs';
 import { ColumnSort, SortingState } from '@tanstack/react-table';
 import Menu from '@/components/menu';
+import { deckCrud } from '@lib/container';
 
 export const revalidate = 0; // no cache
 
@@ -40,17 +40,18 @@ function computerOrder(order: SortingState) {
       } else if (sort.id === 'D') {
         sort.id = 'difficulty';
       }
-      _order = {
-        card: {
-          [sort.id]: sort.desc ? 'desc' : 'asc',
-        },
-      };
+      // _order = {
+      //   cards: {
+      //     [sort.id]: sort.desc ? 'desc' : 'asc',
+      //   },
+      // };
     }
   }
   return _order;
 }
 
 const querySQL = (
+  deckId: number,
   searchWord: string,
   deleted: boolean
 ): { query: Prisma.NoteWhereInput } => {
@@ -71,22 +72,24 @@ const querySQL = (
         },
       ],
       deleted: deleted,
+      did: deckId,
     },
   };
 };
 
 const getData = async (
+  deckId: number,
   take: number,
   searchWord: string,
   pageIndex: number = 1,
   order: SortingState,
   deleted: boolean
 ) => {
-  const _noteCount = getNoteTotalCount(querySQL(searchWord, deleted));
+  const _noteCount = getNoteTotalCount(querySQL(deckId, searchWord, deleted));
   const _notes = getNotesBySessionUserId({
     take: take === 0 ? undefined : take,
     skip: take * (pageIndex - 1),
-    ...querySQL(searchWord, deleted),
+    ...querySQL(deckId, searchWord, deleted),
     order: computerOrder(order),
   });
   const [noteCount, notes] = await Promise.all([_noteCount, _notes]).catch(
@@ -112,6 +115,9 @@ type NoteSortField =
   | 'Reps';
 
 type NotePageProps = {
+  params: {
+    deckId: string;
+  };
   searchParams: {
     page: string;
     take: string;
@@ -122,7 +128,8 @@ type NotePageProps = {
   };
 };
 
-export default async function Page({ searchParams }: NotePageProps) {
+export default async function Page({ params, searchParams }: NotePageProps) {
+  const deckId = Number(params.deckId ?? 0);
   const take = Number(searchParams['take']);
   const pageIndex = Number(searchParams['page']);
   if (
@@ -131,7 +138,7 @@ export default async function Page({ searchParams }: NotePageProps) {
     pageIndex < 1 ||
     take < 1
   ) {
-    redirect('/note?page=1&take=15');
+    redirect(`/deck/${deckId}/note?page=1&take=15`);
   }
   const keyword = searchParams.keyword ?? null;
   const sortField = searchParams.sort ?? [];
@@ -147,6 +154,7 @@ export default async function Page({ searchParams }: NotePageProps) {
     : null;
   const deleted = searchParams.deleted === '1' ?? false;
   const { notes, pageCount, noteCount } = await getData(
+    deckId,
     take,
     keyword ?? '',
     pageIndex,
@@ -154,13 +162,15 @@ export default async function Page({ searchParams }: NotePageProps) {
     deleted
   );
 
-  const params = await getUserParams();
+  const deck_profile = await deckCrud.get(deckId);
   return (
     <div className=' container'>
-      <Menu/>
+      <Menu />
       <DataTable
         data={notes}
-        fsrsParams={generatorParameters(params.data?.params)}
+        fsrsParams={generatorParameters(
+          JSON.parse(deck_profile.fsrs as string)
+        )}
         rowCount={noteCount}
         pageCount={pageCount}
         keyword={keyword}

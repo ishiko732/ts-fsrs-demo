@@ -5,10 +5,11 @@ import DateItem from '@/lib/formatDate';
 import Forget from './Forget';
 import Suspended from './Suspended';
 type Props = {
-  card: Card;
+  cards: Card[];
 };
 
-export default async function FSRSMsg({ card }: Props) {
+export default async function FSRSMsg({ cards }: Props) {
+  const card = cards[0];
   const f = fsrs();
   const retrievability = f.get_retrievability(card, new Date());
   return (

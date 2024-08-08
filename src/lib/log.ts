@@ -1,7 +1,7 @@
 import { State as PrismaState } from "@prisma/client";
 import prisma from "./prisma";
 import { Rating, State, date_scheduler, fixRating, fixState } from "ts-fsrs";
-import { RevlogPrismaUnChecked } from "@/vendor/fsrsToPrisma/handler";
+import { RevlogPrismaUnChecked } from "@lib/reviews/card/fsrsToPrisma/handler";
 
 export async function findLogsByCid(cid: number, deleted: boolean = false) {
     const logs = await prisma.revlog.findMany({
@@ -67,18 +67,20 @@ export async function getTodayLearnedNewCardCount(uid: number, startOfDay: Date,
     const p_count = prisma.note.count({
       where: {
         uid: uid,
-        card: {
-          logs: {
-            some: {
-              review: {
-                gte: startOfDay,
-                lt: nextDay,
+        cards: {
+          some:{
+            logs: {
+              some: {
+                review: {
+                  gte: startOfDay,
+                  lt: nextDay,
+                },
+                state: PrismaState.New,
+                deleted: false,
               },
-              state: PrismaState.New,
-              deleted: false,
             },
+            deleted: false,
           },
-          deleted: false,
         },
         source: source && source === "lingq" ? "lingq" : undefined,
         deleted: false,

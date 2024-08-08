@@ -1,5 +1,5 @@
 "use client";
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+import { StateBox } from "@lib/reviews/card/fsrsToPrisma/handler";
 import { Card, Note } from "@prisma/client";
 import { useMemo, useState } from "react";
 import { State } from "ts-fsrs";
@@ -7,15 +7,15 @@ import { State } from "ts-fsrs";
 export type CardBoxes = {
   currentType: StateBox;
   setCurrentType: React.Dispatch<React.SetStateAction<StateBox>>;
-  noteBox: { [key in StateBox]: Array<Note & { card: Card }> };
+  noteBox: { [key in StateBox]: Array<Note & { cards: Card[] }> };
   setNoteBox: {
     [key in StateBox]: React.Dispatch<
-      React.SetStateAction<Array<Note & { card: Card }>>
+      React.SetStateAction<Array<Note & { cards: Card[] }>>
     >;
   };
 };
 
-export function useCardBoxes(noteBox0: Array<Array<Note & { card: Card }>>) {
+export function useCardBoxes(noteBox0: Array<Array<Note & { cards: Card[] }>>) {
   const [NewCard, LearningCard, RelearningCard, ReviewCard] = noteBox0;
   const [NewCardBox, setNewCardBox] = useState(NewCard);
   const [LearningCardBox, setLearningCardBox] = useState(() => {

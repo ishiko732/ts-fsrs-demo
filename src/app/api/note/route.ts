@@ -1,7 +1,7 @@
-import { addNote } from "@/lib/note";
+import { addNote } from "@lib/note";
 import { NodeData } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
-import  { getAuthSession } from "@/auth/api/auth/[...nextauth]/session";
+import  { getAuthSession } from "@auth/session";
 
 interface Node {
   id: string;

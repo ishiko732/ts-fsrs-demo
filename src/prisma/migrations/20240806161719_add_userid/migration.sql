@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Card" ADD COLUMN     "uid" INTEGER NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "Revlog" ADD COLUMN     "uid" INTEGER NOT NULL DEFAULT 0;

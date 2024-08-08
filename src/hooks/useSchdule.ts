@@ -29,7 +29,7 @@ export type Schedule = {
   setDSR: React.Dispatch<React.SetStateAction<DSR | undefined>>;
   schedule: RecordLog | undefined;
   setSchedule: React.Dispatch<React.SetStateAction<RecordLog | undefined>>;
-  handleChange: (res: changeResponse, note: Note & { card: Card }) => boolean;
+  handleChange: (res: changeResponse, note: Note & { cards: Card[] }) => boolean;
   handleSchdule: (grade: Grade) => Promise<boolean>;
 };
 
@@ -50,20 +50,20 @@ export function useSchedule({
 
   const handleChange = function (
     res: changeResponse,
-    note: Note & { card: Card }
+    note: Note & { cards: Card[] }
   ) {
     const { nextState, nextDue, suspended } = res;
     if (nextDue) {
-      note.card.due = nextDue;
+      note.cards[0].due = nextDue;
     }
     const change = updateStateBox(noteBox, currentType, nextDue);
     // update state and data
-    let updatedNoteBox: Array<Note & { card: Card }> = [
+    let updatedNoteBox: Array<Note & { cards: Card[] }> = [
       ...noteBox[currentType],
     ];
     updatedNoteBox = updatedNoteBox.slice(1);
     updatedNoteBox = updatedNoteBox.toSorted(
-      (a, b) => fixDate(a.card.due).getTime() - fixDate(b.card.due).getTime()
+      (a, b) => fixDate(a.cards[0].due).getTime() - fixDate(b.cards[0].due).getTime()
     );
     startTransition(() => {
       // state update is marked as a transition, a slow re-render did not freeze the user interface.
@@ -82,7 +82,7 @@ export function useSchedule({
         setNoteBox[currentType](updatedNoteBox);
       }
       rollBackRef.current.push({
-        cid: note.card.cid,
+        cid: note.cards[0].cid,
         nextStateBox:
           nextState === State.Relearning ? State.Learning : nextState,
       });
@@ -104,14 +104,14 @@ export function useSchedule({
     const duration = now.getTime() - showTime;
     const res = await fetch(
       `/api/fsrs?cid=${
-        note.card.cid
+        note.cards[0].cid
       }&now=${now.getTime()}&offset=${now.getTimezoneOffset()}&grade=${grade}&duration=${duration}`,
       {
         method: "put",
       }
     ).then((res) => res.json());
     if (res.code === 0) {
-      console.log(`[cid:${note.card.cid}]duration:${duration}ms`);
+      console.log(`[cid:${note.cards[0].cid}]duration:${duration}ms`);
       handleChange(res, note);
       setOpen(false);
     }
@@ -124,7 +124,7 @@ export function useSchedule({
     if (note) {
       fetch(
         `/api/fsrs?cid=${
-          note.card.cid
+          note.cards[0].cid
         }&now=${now.getTime()}&offset=${now.getTimezoneOffset()}`,
         { method: "post" }
       )
@@ -133,16 +133,16 @@ export function useSchedule({
           setSchedule(res);
           setShowTime(new Date().getTime());
         });
-      if (note.card && note.card.state === "Review") {
+      if (note.cards && note.cards[0].state === "Review") {
         const r = fsrs().get_retrievability(
-          note.card,
+          note.cards[0],
           fixDate(new Date().toLocaleString("UTC", { timeZone: "UTC" })),
           true
         );
         if (r) {
           setDSR({
-            D: note.card.difficulty,
-            S: Math.round(note.card.stability),
+            D: note.cards[0].difficulty,
+            S: Math.round(note.cards[0].stability),
             R: r,
           });
         } else {

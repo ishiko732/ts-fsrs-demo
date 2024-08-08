@@ -10,6 +10,8 @@ datasource db {
 
 model Revlog {
   lid               String   @id @unique @default(cuid())
+  uid               Int      @default(0)
+  did               Int      @default(0)
   cid               Int
   grade             Rating
   state             State
@@ -25,10 +27,12 @@ model Revlog {
   deleted           Boolean  @default(false)
 
   @@index([cid])
+  @@index([did])
 }
 
 model Card {
   cid            Int       @id @unique @default(autoincrement())
+  uid            Int       @default(0)
   due            DateTime  @default(now())
   stability      Float
   difficulty     Float
@@ -43,6 +47,7 @@ model Card {
   suspended      Boolean   @default(false)
   logs           Revlog[]
   deleted        Boolean   @default(false)
+  orderId        Int       @default(0)
 }
 
 model Parameters {
@@ -59,28 +64,42 @@ model Parameters {
   lingq_counter     String?
 }
 
+model Deck {
+  did        Int     @id @default(autoincrement())
+  name       String
+  uid        Int
+  fsrs       Json
+  card_limit Int     @default(50)
+  lapses     Int     @default(8)
+  extends    Json
+  deleted    Boolean @default(false)
+}
+
 model User {
-  uid       Int        @id @unique @default(autoincrement())
-  name      String     @unique
-  password  String
-  oauthId   String
-  oauthType String     @default("local")
-  email     String     @unique
-  notes     Note[]
-  params    Parameters @relation(fields: [uid], references: [uid])
+  uid        Int        @id @unique @default(autoincrement())
+  name       String     @unique
+  password   String
+  oauthId    String
+  oauthType  String     @default("local")
+  email      String     @unique
+  notes      Note[]
+  params     Parameters @relation(fields: [uid], references: [uid])
+  timezone   String     @default("UTC")
+  hourOffset Int        @default(4)
 }
 
 model Note {
   nid      Int     @id @unique @default(autoincrement())
   uid      Int
+  did      Int     @default(0)
   question String  @default("")
   answer   String  @default("")
   source   String  @default("")
   sourceId String?
   extend   Json
-  card     Card?
   user     User?   @relation(fields: [uid], references: [uid])
   deleted  Boolean @default(false)
+  cards    Card[]
 
   @@index([uid])
   @@index([sourceId, source])

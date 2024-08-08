@@ -1,7 +1,7 @@
 import { getAuthSession } from "@/app/(auth)/api/auth/[...nextauth]/session";
 import { getFSRSParamsByUid } from "@/lib/fsrs";
 import prisma from "@/lib/prisma";
-import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
+import { createEmptyCardByPrisma } from "@lib/reviews/card/fsrsToPrisma";
 import { getLingqs } from "@/vendor/lingq/request";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -107,7 +107,7 @@ async function sync(
     };
     return prisma.note.create({
       data: note,
-      include: { card: true },
+      include: { cards: true },
     });
   });
   await prisma.$transaction(dates);

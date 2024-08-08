@@ -11,7 +11,7 @@ import { Separator } from '../ui/separator';
 export default function CardClient({
   noteBox,
 }: {
-  noteBox: Array<Array<Note & { card: Card }>>;
+  noteBox: Array<Array<Note & { cards: Card[] }>>;
 }) {
   return (
     <CardProvider noteBox0={noteBox}>
