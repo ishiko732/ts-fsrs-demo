@@ -270,25 +270,15 @@ export async function getNumberOfNewCardsLearnedToday(
   startOfDay: Date,
   nextDay: Date
 ) {
-  return prisma.note.count({
+  return prisma.revlog.count({
     where: {
-      uid: uid,
+      uid,
       did: deckId,
-      cards: {
-        some: {
-          logs: {
-            some: {
-              review: {
-                gte: startOfDay,
-                lt: nextDay,
-              },
-              state: PrismaState.New,
-              deleted: false,
-            },
-          },
-          deleted: false,
-        },
+      review: {
+        gte: startOfDay,
+        lt: nextDay,
       },
+      state: PrismaState.New,
       deleted: false,
     },
   });
