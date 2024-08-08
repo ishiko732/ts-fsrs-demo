@@ -59,9 +59,8 @@ export class DeckCrud {
 export const computedToday = (timezone: string, hourOffset: number) => {
   const clientTime = Intl.DateTimeFormat('en-US', {
     timeZone: timezone,
-    dateStyle: 'short',
-    timeStyle: 'short',
-    hourCycle: 'h24',
+    dateStyle: 'medium',
+    timeStyle: 'medium',
   }).format(new Date());
   let currentDate = new Date(clientTime);
   if (currentDate.getHours() < hourOffset) {
