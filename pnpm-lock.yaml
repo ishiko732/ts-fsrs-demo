@@ -94,7 +94,7 @@ importers:
         version: 1.1.4
       jotai:
         specifier: ^2.9.1
-        version: 2.9.1(@types/react@18.2.23)(react@18.3.1)
+        version: 2.9.2(@types/react@18.2.23)(react@18.3.1)
       lucide-react:
         specifier: ^0.395.0
         version: 0.395.0(react@18.3.1)
@@ -135,7 +135,7 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.4)
       ts-fsrs:
-        specifier: 4.1.1
+        specifier: ^4.1.1
         version: 4.1.1
       vaul:
         specifier: ^0.9.1
@@ -2052,8 +2052,8 @@ packages:
   jose@4.15.7:
     resolution: {integrity: sha512-L7ioP+JAuZe8v+T5+zVI9Tx8LtU8BL7NxkyDFVMv+Qr3JW0jSoYDedLtodaXwfqMpeCyx4WXFNyu9tJt4WvC1A==}
 
-  jotai@2.9.1:
-    resolution: {integrity: sha512-t4Q7FIqQB3N/1art4OcqdlEtPmQ2h4DNIzTFhvt06WE0kCpQ1QoG+1A1IGTaQBi2KdDRsnywj+ojmHHKgw6PDA==}
+  jotai@2.9.2:
+    resolution: {integrity: sha512-jIBXEadOHCziOuMY6HAy2KQcHipGhnsbF+twqh8Lcmcz/Yei0gdBtW5mOYdKmbQxGqkvfvXM3w/oHtJ2WNGSFg==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@types/react': '>=17.0.0'
@@ -4948,7 +4948,7 @@ snapshots:
 
   jose@4.15.7: {}
 
-  jotai@2.9.1(@types/react@18.2.23)(react@18.3.1):
+  jotai@2.9.2(@types/react@18.2.23)(react@18.3.1):
     optionalDependencies:
       '@types/react': 18.2.23
       react: 18.3.1
