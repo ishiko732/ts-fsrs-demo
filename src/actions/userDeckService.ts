@@ -195,12 +195,5 @@ export async function getNoteTotalGroupAction(deckId?: number) {
     throw new Error('user not found.');
   }
   const datum = await getNoteTotalGroupByDeckId(uid, deckId);
-  const res = {} as Record<PrismaState, number>;
-  states_prisma.forEach((state) => {
-    res[state] = 0;
-  });
-  for (const data of datum) {
-    res[data.state] = data._count;
-  }
-  return res;
+  return datum;
 }

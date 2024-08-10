@@ -10,7 +10,7 @@ import {
   PartialRequired,
 } from '../type';
 import { CARDLIMT, DEFAULT_DECK_ID, LAPSES } from '@/constant/deck';
-import { CARD_NULL, INVALID_DUE } from '@/constant';
+import { CARD_NULL, INVALID_DUE, states_prisma } from '@/constant';
 
 export const defaultParams = (uid: number) => {
   return {
@@ -156,17 +156,21 @@ export const restoreDeck = async (uid: number, deckId: number) => {
 };
 
 export async function getNoteTotalGroupByDeckId(uid: number, deckId?: number) {
-  return await prisma.card.groupBy({
-    where: {
-      deleted: false,
-      note: {
-        uid: uid,
-        did: deckId,
-      },
-    },
-    by: ['state'],
-    _count: true,
+  const res = {} as Record<PrismaState, number>;
+  const datum = <{ _count: BigInt; state?: PrismaState }[]>(
+    await prisma.$queryRaw`
+    select count(n.nid) as _count,state 
+    from "Note" n left join "Card" c on c.nid=n.nid 
+    where n.uid=${uid} and n.did=${deckId} 
+    group by c.state `
+  );
+  states_prisma.forEach((state) => {
+    res[state] = 0;
   });
+  for (const data of datum) {
+    res[data.state ?? PrismaState.New] += Number(data._count);
+  }
+  return res;
 }
 
 export async function getNoteMemoryTotal(
