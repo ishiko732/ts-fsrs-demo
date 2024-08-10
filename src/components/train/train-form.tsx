@@ -14,8 +14,15 @@ import FileTrain from './file-train-button';
 import { useForm } from 'react-hook-form';
 import { useTrainContext } from '@/context/TrainContext';
 import OwnTrain from './own-train-button';
+import dynamic from 'next/dynamic';
 
-export default function FSRSParamTrainForm({
+const NoSSR = dynamic(() => Promise.resolve(FSRSParamTrainForm), {
+  ssr: false,
+});
+
+export default NoSSR;
+
+function FSRSParamTrainForm({
   children,
 }: {
   children?: React.ReactNode;
@@ -30,7 +37,7 @@ export default function FSRSParamTrainForm({
   });
   return (
     <Form {...form}>
-      <form className='space-y-4 w-1/2 flex justify-center flex-col flex-1'>
+      <form className='space-y-4 w-1/2 flex justify-center flex-col flex-1' suppressHydrationWarning>
         <FormField
           control={form.control}
           name='timezone'

@@ -7,9 +7,16 @@ import { computerMinuteOffset, get_timezones } from '@/lib/date';
 import { useEffect, useRef } from 'react';
 import { Button } from '../ui/button';
 import { UseFormReturn } from 'react-hook-form';
+import dynamic from 'next/dynamic';
+
+const NoSSR = dynamic(() => Promise.resolve(OwnTrain), {
+  ssr: false,
+});
+
+export default NoSSR;
 
 const timezones = get_timezones();
-export default function OwnTrain({
+function OwnTrain({
   form,
 }: {
   form: UseFormReturn<
@@ -112,6 +119,7 @@ export default function OwnTrain({
         disabled={loading}
         onClick={handleClick}
         title='Training using your own revlog.'
+        suppressHydrationWarning
       >
         Train(by own Revlog)
       </Button>
