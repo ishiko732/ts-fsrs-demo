@@ -2,7 +2,7 @@ import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import type { Deck } from '@prisma/client';
 import Link from 'next/link';
 
-export const ViewNote = ({
+export const StartReview = ({
   deck,
   className,
 }: {
@@ -13,8 +13,8 @@ export const ViewNote = ({
     <>
       <DropdownMenuItem className={className} asChild>
         <div>
-          <Link href={`/deck/${deck.did}/note`}>View Note</Link>
-        </div> 
+        <Link href={`/deck/${deck.did}/card`} >Start Review</Link>
+        </div>
       </DropdownMenuItem>
     </>
   );

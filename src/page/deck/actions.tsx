@@ -9,6 +9,7 @@ import {
 import { DeleteDeck } from './actions/delete-deck';
 import { RestoreDeck } from './actions/restore-deck';
 import { ViewNote } from './actions/view-note';
+import { StartReview } from './actions/start-review';
 
 const actions = [
   {
@@ -18,6 +19,10 @@ const actions = [
   {
     name: 'View Note',
     Action: ViewNote,
+  },
+  {
+    name: 'Start Review',
+    Action: StartReview,
   },
   {
     name: 'Delete Deck',
