@@ -7,12 +7,13 @@ import {
   SearchTodayMemoryContextPage,
 } from '../type';
 import {
-  getNoteMemoryContextAction,
+  getReviewMemoryContextAction,
   getNumberOfNewCardsLearnedTodayAction,
 } from '@actions/userDeckService';
 import { computedToday } from './crud';
 import { memoryPageSize, states_prisma } from '@/constant';
 import { deckCrud } from '@lib/container';
+import { getUserTimeZone } from '@actions/userTimezone';
 
 export class DeckService implements IDeckService {
   private deck: Omit<Deck, 'deleted'> | undefined;
@@ -38,13 +39,10 @@ export class DeckService implements IDeckService {
     return this.algorithm_pamars;
   };
 
-
-  getTodayMemoryContext = async (
-    timezone: string,
-    hourOffset: number
-  ): Promise<DeckMemoryContext> => {
+  getTodayMemoryContext = async (): Promise<DeckMemoryContext> => {
+    const userTimezone = await getUserTimeZone();
     const { startTimestamp, nextTimestamp, startOfDay, nextOfDay } =
-      computedToday(timezone, hourOffset);
+      computedToday(userTimezone.timezone, userTimezone.hourOffset);
 
     const deck = await this.getDeck();
     const count = await getNumberOfNewCardsLearnedTodayAction(
@@ -53,26 +51,19 @@ export class DeckService implements IDeckService {
       nextTimestamp
     );
 
-    const noteContext: NoteMemoryContext = Object.create(null);
-
-    await Promise.all(
-      states_prisma.map(async (state) => {
-        noteContext[state] = await getNoteMemoryContextAction(
-          deck.did,
-          state,
-          startTimestamp,
-          deck.card_limit,
-          count,
-          memoryPageSize,
-          1
-        );
-      })
+    const noteContext: NoteMemoryContext = await getReviewMemoryContextAction(
+      deck.did,
+      startTimestamp,
+      memoryPageSize,
+      1
     );
+
     return {
       uid: deck.uid,
       deckId: deck.did,
       deckName: deck.name,
-      timezone,
+      timezone: userTimezone.timezone,
+      hoursOffset: userTimezone.hourOffset,
       startTimestamp,
       nextTimestamp,
       userNewCardlimit: deck.card_limit,
@@ -85,29 +76,20 @@ export class DeckService implements IDeckService {
     deckId,
     startTimestamp,
     nextTimestamp,
-    userNewCardlimit,
-    deckTodayLearnedcount,
     page,
+    pageSize = memoryPageSize,
     ignoreCardIds,
   }: SearchTodayMemoryContextPage): Promise<NoteMemoryContext> => {
     if ((page ?? 0) < 1) {
       throw new Error('page must be greater than 0');
     }
-    const noteContext: NoteMemoryContext = Object.create(null);
-    await Promise.all(
-      states_prisma.map(async (state) => {
-        noteContext[state] = await getNoteMemoryContextAction(
-          deckId,
-          state,
-          startTimestamp,
-          nextTimestamp,
-          userNewCardlimit,
-          deckTodayLearnedcount,
-          memoryPageSize,
-          page,
-          ignoreCardIds
-        );
-      })
+    const noteContext: NoteMemoryContext = await getReviewMemoryContextAction(
+      deckId,
+      startTimestamp,
+      nextTimestamp,
+      pageSize,
+      page,
+      ignoreCardIds
     );
     return noteContext;
   };

@@ -173,99 +173,168 @@ export async function getNoteTotalGroupByDeckId(uid: number, deckId?: number) {
   return res;
 }
 
-export async function getNoteMemoryTotal(
+export async function getReviewMemoryTotal(
   uid: number,
-  state: PrismaState,
   lte: Date,
   deckId: number,
   card_limit: number,
   NewCardsLearnedTodayCount: number
 ) {
-  return await prisma.note.count({
+  const new_card_max = Math.max(0, card_limit - NewCardsLearnedTodayCount);
+  const count = await prisma.card.groupBy({
     where: {
-      uid,
-      did: deckId,
-      deleted: false,
-      cards: {
-        some: {
+      OR: [
+        {
           suspended: false,
-          due: state === PrismaState.Review ? { lte: lte } : undefined,
-          state,
           deleted: false,
+          note: {
+            uid,
+            did: deckId,
+            deleted: false,
+          },
         },
-      },
+        {
+          suspended: false,
+          deleted: false,
+          state: PrismaState.Review,
+          due: {
+            lte,
+          },
+          note: {
+            uid,
+            did: deckId,
+            deleted: false,
+          },
+        },
+      ],
     },
-    take:
-      state === PrismaState.New
-        ? Math.max(0, card_limit - NewCardsLearnedTodayCount)
-        : undefined,
+    by: ['state'],
+    _count: true,
   });
+  const res = {} as Record<PrismaState, number>;
+  states_prisma.forEach((state) => {
+    res[state] = 0;
+  });
+  for (const data of count) {
+    res[data.state ?? PrismaState.New] += Number(data._count);
+  }
+  if (res[PrismaState.New] < new_card_max) {
+    const note_new = await prisma.note.count({
+      where: {
+        uid,
+        did: deckId,
+        deleted: false,
+      },
+      take: new_card_max,
+    });
+    res[PrismaState.New] += note_new;
+  }
+  res[PrismaState.New] = Math.min(res[PrismaState.New], new_card_max);
+  return res;
 }
 
-export async function getNoteMemoryState({
+export async function getReviewMemoryState({
   uid,
   deckId,
-  state,
   lte,
-  limit,
-  todayCount,
+  total,
   pageSize,
   page = 1,
   ignoreCardIds = [],
 }: NoteMomoryStateRequest) {
-  const stateNewPageSize =
-    state === PrismaState.New
-      ? Math.max(0, Math.min(pageSize, limit - todayCount))
-      : pageSize;
-  const notes = await prisma.note.findMany({
+  const new_card_max = Math.max(0, total[PrismaState.New]);
+  const cards = await prisma.card.findMany({
     where: {
-      uid,
-      did: deckId,
-      deleted: false,
-      cards: {
-        some: {
+      OR: [
+        {
           suspended: false,
-          due: state === PrismaState.Review ? { lte: lte } : undefined,
-          state,
           deleted: false,
-          cid:
-            state === PrismaState.New
-              ? undefined
-              : {
-                  notIn: ignoreCardIds,
-                },
+          note: {
+            uid,
+            did: deckId,
+            deleted: false,
+          },
+        },
+        {
+          suspended: false,
+          deleted: false,
+          state: PrismaState.Review,
+          due: {
+            lte,
+          },
+          note: {
+            uid,
+            did: deckId,
+            deleted: false,
+          },
+        },
+      ],
+      AND: {
+        cid: {
+          notIn: ignoreCardIds,
         },
       },
+    },
+    orderBy: {
+      state: 'desc',
     },
     select: {
       nid: true,
-      did: true,
-      cards: {
+      cid: true,
+      due: true,
+      state: true,
+      note: {
         select: {
-          cid: true,
-          due: true,
+          did: true,
         },
       },
     },
-    take: stateNewPageSize,
-    skip:
-      state === PrismaState.New
-        ? (page - 1) * stateNewPageSize
-        : (page - 1) * pageSize,
-    // orderBy: {
-    //   cards: {
-    //     difficulty: 'desc',
-    //   },
-    // },
+    take: pageSize,
+    skip: (page - 1) * pageSize,
   });
-  return notes.map((note) => {
-    return {
-      deckId: note.did,
-      noteId: note.nid,
-      cardId: note.cards?.[0].cid || CARD_NULL,
-      due: note.cards?.[0].due?.getTime() || INVALID_DUE,
-    };
-  }) as NoteMemoryState[];
+  const res: NoteMemoryState[] = [];
+  const datum = {} as Record<PrismaState, typeof cards>;
+  states_prisma.forEach((state) => {
+    datum[state] = [];
+  });
+  for (const data of cards) {
+    datum[data.state ?? PrismaState.New].push(data);
+  }
+ 
+  // fill new cards if not enough
+  // only fill new cards on the first page
+  if (datum[PrismaState.New].length < new_card_max && page === 1) {
+    const notes = await prisma.note.findMany({
+      where: {
+        uid,
+        did: deckId,
+        deleted: false,
+      },
+      take: Math.max(0, new_card_max - datum[PrismaState.New].length),
+    });
+    for (const note of notes) {
+      res.push({
+        deckId: note.did,
+        noteId: note.nid,
+        cardId: CARD_NULL,
+        due: INVALID_DUE,
+        state: PrismaState.New,
+      });
+    }
+  }
+  states_prisma.forEach((state) => {
+    const processed = datum[state].map((card) => {
+      return {
+        deckId: card.note.did,
+        noteId: card.nid,
+        cardId: card.cid || CARD_NULL,
+        due: card.due?.getTime() || INVALID_DUE,
+        state: card.state,
+      } satisfies NoteMemoryState;
+    });
+    res.push(...processed);
+  });
+  return res;
 }
 
 export async function getNumberOfNewCardsLearnedToday(

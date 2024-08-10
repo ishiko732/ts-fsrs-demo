@@ -5,8 +5,8 @@ import {
   addDeck,
   deleteDeck,
   getDecks,
-  getNoteMemoryState,
-  getNoteMemoryTotal,
+  getReviewMemoryState,
+  getReviewMemoryTotal,
   getNoteTotalGroupByDeckId,
   getParamsByUserId_cache,
   restoreDeck,
@@ -14,9 +14,8 @@ import {
 } from '@lib/reviews/deck/retriever';
 import { getNumberOfNewCardsLearnedToday } from '@lib/reviews/deck/retriever';
 import { Deck, State as PrismaState } from '@prisma/client';
-import { NoteMemoryStatePage } from '@lib/reviews/type';
+import { NoteMemoryContext } from '@lib/reviews/type';
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { states_prisma } from '@/constant';
 
 // Deck Crud
 
@@ -121,30 +120,20 @@ export async function getNoteMemoryTotalAction(
     nextTimestamp
   );
   const deck = await getParamsByUserId_cache(uid, did)();
-  const res = {} as Record<PrismaState, number>;
-  await Promise.all(
-    states_prisma.map(
-      async (state) =>
-        (res[state] = await getNoteMemoryTotal(
-          uid,
-          state,
-          start,
-          did,
-          deck[did].card_limit,
-          count
-        ))
-    )
+  const res = await getReviewMemoryTotal(
+    uid,
+    start,
+    did,
+    deck[did].card_limit,
+    count
   );
   return res;
 }
 
-export async function getNoteMemoryContextAction(
+export async function getReviewMemoryContextAction(
   deckId: number,
-  state: PrismaState,
   startTimestamp: number,
   nextTimestamp: number,
-  limit: number,
-  todayCount: number,
   pageSize: number,
   page: number = 1,
   ignoreCardIds?: number[]
@@ -160,33 +149,29 @@ export async function getNoteMemoryContextAction(
     nextTimestamp
   );
   const deck = await getParamsByUserId_cache(uid, deckId)();
-  const total = await getNoteMemoryTotal(
+  const total = await getReviewMemoryTotal(
     uid,
-    state,
     start,
     deckId,
     deck[deckId].card_limit,
     count
   );
-  const size = Math.min(pageSize, total);
-  const noteMemoryStates = await getNoteMemoryState({
+  const noteMemoryStates = await getReviewMemoryState({
     uid,
     deckId,
-    state,
     lte: start,
-    limit,
-    todayCount,
-    pageSize: size,
+    total,
+    pageSize: pageSize,
     page,
     ignoreCardIds,
   });
 
   return {
     memoryState: noteMemoryStates,
-    pageSize: size,
+    pageSize: noteMemoryStates.length,
     loadPage: page,
     totalSize: total,
-  } satisfies NoteMemoryStatePage;
+  } satisfies NoteMemoryContext;
 }
 
 export async function getNoteTotalGroupAction(deckId?: number) {

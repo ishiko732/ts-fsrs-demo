@@ -1,5 +1,5 @@
 import { Card, Deck, Note, State as PrismaState } from '@prisma/client';
-import { FSRS, FSRSParameters, Grade, RecordLog } from 'ts-fsrs';
+import { FSRSParameters, Grade, RecordLog } from 'ts-fsrs';
 
 export type SearchTodayMemoryContextPage = {
   deckId: number;
@@ -8,6 +8,7 @@ export type SearchTodayMemoryContextPage = {
   userNewCardlimit: number;
   deckTodayLearnedcount: number;
   page?: number;
+  pageSize: number;
   ignoreCardIds?: number[];
 };
 
@@ -50,6 +51,7 @@ export interface DeckMemoryState {
   deckId: number;
   deckName: string;
   timezone: string;
+  hoursOffset: number;
   startTimestamp: number;
   nextTimestamp: number;
   userNewCardlimit: number;
@@ -65,15 +67,14 @@ export interface NoteMemoryState {
   noteId: number;
   cardId: number;
   due: number; // due timestamp
+  state: PrismaState;
 }
 
 export interface NoteMomoryStateRequest {
   uid: number;
   deckId: number;
-  state: PrismaState;
   lte: Date;
-  limit: number;
-  todayCount: number;
+  total:Record<PrismaState, number>
   pageSize: number;
   page?: number;
   ignoreCardIds?: number[];
@@ -83,11 +84,15 @@ export interface NoteMemoryStatePage {
   memoryState: NoteMemoryState[];
   pageSize: number;
   loadPage: number;
-  totalSize: number;
+  // totalSize: number;
 }
 
 export type NoteMemoryContext = {
-  [key in PrismaState]: NoteMemoryStatePage;
+  // [key in PrismaState]: NoteMemoryStatePage;
+  memoryState: NoteMemoryState[];
+  pageSize: number;
+  loadPage: number;
+  totalSize: { [key in PrismaState]: number };
 };
 
 // TODO
