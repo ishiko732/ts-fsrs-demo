@@ -6,6 +6,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Suspense } from 'react';
 import DeckStatus from './count';
 import DeckActions from './actions';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function DeckItem({
   deck,
@@ -45,6 +47,14 @@ export default function DeckItem({
           hourOffset={hourOffset}
         />
       </Suspense>
+      <div className='flex justify-center flex-1 pt-4 gap-4'>
+        <Button asChild>
+          <Link href={`/deck/${deck.did}/note`}>View Note</Link>
+        </Button>
+        <Button asChild>
+          <Link href={`/deck/${deck.did}/card`}>Start Review</Link>
+        </Button>
+      </div>
     </div>
   );
 }

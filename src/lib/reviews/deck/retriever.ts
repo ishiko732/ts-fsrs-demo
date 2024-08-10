@@ -161,7 +161,7 @@ export async function getNoteTotalGroupByDeckId(uid: number, deckId?: number) {
     await prisma.$queryRaw`
     select count(n.nid) as _count,state 
     from "Note" n left join "Card" c on c.nid=n.nid 
-    where n.uid=${uid} and n.did=${deckId} 
+    where n.uid=${uid} and n.did=${deckId} and n.deleted = false
     group by c.state `
   );
   states_prisma.forEach((state) => {
