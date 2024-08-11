@@ -46,8 +46,6 @@ export default async function Page({ params, searchParams }: PageProps) {
       notes={notes}
       cards={cards}
     >
-      <div>TODO:{JSON.stringify(fsrs_params)}</div>
-      <div>context:{JSON.stringify(context)}</div>
       <StatusBar />
     </HydrateAtoms>
   );

@@ -22,6 +22,12 @@ export class CardService extends EventEmitter implements ICardService {
     this.lapses = lapses;
   }
 
+  init(deckId: number, lapses: number, parameters?: FSRSParameters) {
+    this.f = fsrs(parameters);
+    this.deckId = deckId;
+    this.lapses = lapses;
+  }
+
   async create(nid: number, orderId: number): Promise<PrismaCard> {
     const empty_card = createEmptyCardByPrisma();
     const card = await cardCrud.create(nid, empty_card, orderId);

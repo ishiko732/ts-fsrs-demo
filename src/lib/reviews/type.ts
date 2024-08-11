@@ -13,6 +13,7 @@ export type SearchTodayMemoryContextPage = {
 };
 
 export abstract class IDeckService {
+  abstract init(deckId: number): void;
   abstract getDeck(): Promise<Omit<Deck, 'deleted'>>;
   abstract getAlgorithmParams(): Promise<FSRSParameters>;
   abstract getTodayMemoryContext(
@@ -47,6 +48,11 @@ type FSRSActionReturn = {
 };
 
 export abstract class ICardService {
+  abstract init(
+    deckId: number,
+    lapses: number,
+    parameters?: FSRSParameters
+  ): void;
   abstract create(nid: number, orderId: number): Promise<Card>;
   abstract getCard(cid: number): Promise<Card>;
   abstract preview(cid: number, now: Date): Promise<RecordLog>;

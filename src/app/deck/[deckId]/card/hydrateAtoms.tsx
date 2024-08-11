@@ -5,6 +5,7 @@ import {
   ReviewBarAtom,
   ReviewCore,
   ReviewSvc,
+  useListeners,
 } from '@/atom/decks/review';
 import { StateBox, states_prisma } from '@/constant';
 import { CardService } from '@lib/reviews/card';
@@ -14,6 +15,7 @@ import { DeckMemoryContext } from '@lib/reviews/type';
 import { Card, Note, State } from '@prisma/client';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
+import { useMemo } from 'react';
 import { FSRSParameters } from 'ts-fsrs';
 
 type HydrateAtomsProps = {
@@ -41,42 +43,13 @@ export const HydrateAtoms = ({
     [ReviewCore.notePage.currentPage, page.pageSize],
   ]);
   // Svc
-  useHydrateAtoms([
-    [ReviewSvc.deck, new DeckService(deckMemory.deckId)],
-    [ReviewSvc.note, new NoteService()],
-    [
-      ReviewSvc.card,
-      new CardService(deckMemory.deckId, deckContext.lapsers, fsrsParams),
-    ],
-  ]);
-
+  const deckSvc = useAtomValue(ReviewSvc.deck);
   const noteSvc = useAtomValue(ReviewSvc.note);
   const cardSvc = useAtomValue(ReviewSvc.card);
+  deckSvc.init(deckMemory.deckId);
+  cardSvc.init(deckMemory.deckId, deckContext.lapsers, fsrsParams);
 
-  // init event emitter [boxes]
-  const boxes_new = useSetAtom(Boxes.New);
-  const boxes_learning = useSetAtom(Boxes.Learning);
-  const boxes_review = useSetAtom(Boxes.Review);
-  cardSvc.on('full block', (hydrate_boxes: Record<StateBox, Card[]>) => {
-    boxes_new((pre) => {
-      const data = new Set([...pre, ...hydrate_boxes[State.New]]);
-      return Array.from(data);
-    });
-    boxes_learning((pre) => {
-      const data = new Set([...pre, ...hydrate_boxes[State.Learning]]);
-      return Array.from(data);
-    });
-    boxes_review((pre) => {
-      const data = new Set([...pre, ...hydrate_boxes[State.Review]]);
-      return Array.from(data);
-    });
-  });
-
-  // init event emitter [CurrentStateAtom]
-  const currentType = useSetAtom(CurrentStateAtom);
-  cardSvc.on('current type', async(type: State) => {
-    currentType(type === State.Relearning ? State.Learning : type);
-  });
+  useListeners()
 
   noteSvc.hydrate(notes);
   cardSvc.hydrate(cards);

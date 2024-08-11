@@ -19,6 +19,14 @@ export class DeckService implements IDeckService {
   private deck: Omit<Deck, 'deleted'> | undefined;
   private algorithm_pamars: FSRSParameters | undefined;
   constructor(private deckId: number = 0) {}
+
+  init = (deckId: number) => {
+    this.deckId = deckId;
+    if (this.deck) {
+      this.deck = undefined;
+      this.algorithm_pamars = undefined;
+    }
+  };
   getDeck = async () => {
     if (!this.deck) {
       this.deck = await deckCrud.get(this.deckId);
