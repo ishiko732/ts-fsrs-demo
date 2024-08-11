@@ -3,14 +3,17 @@ import { ICardService } from '../type';
 import { Card as PrismaCard } from '@prisma/client';
 import { cardCrud } from '@lib/container';
 import { createEmptyCardByPrisma } from './fsrsToPrisma';
+import { rollbackAction, schdulerAction } from '@actions/userCardService';
 
-class CardService implements ICardService {
+export class CardService implements ICardService {
   private f: FSRS;
   private cards: Map<number, PrismaCard> = new Map();
   private box: number[] = [];
   private preview_start: number = 0;
-  constructor(parameters: FSRSParameters) {
+  private deckId = 0;
+  constructor(deckId: number, parameters: FSRSParameters) {
     this.f = fsrs(parameters);
+    this.deckId = deckId;
   }
 
   async create(nid: number, orderId: number): Promise<PrismaCard> {
@@ -34,17 +37,24 @@ class CardService implements ICardService {
     this.preview_start = new Date().getTime();
     return record;
   }
-  async schduler(cid: number, now: Date, grade: Grade): Promise<boolean> {
+  async schduler(cid: number, now: Date, grade: Grade) {
     const duration = Math.round((now.getTime() - this.preview_start) / 1000);
     this.box.push(cid);
-    throw new Error('Method not implemented.');
+    const schduler = await schdulerAction(
+      this.deckId,
+      cid,
+      now.getTime(),
+      grade,
+      duration
+    );
+    return schduler;
   }
-  async rollback(): Promise<boolean> {
-    const last = this.box.pop();
-    if (last === undefined) {
-      return false;
+  async rollback() {
+    const last_cid = this.box.pop();
+    if (last_cid === undefined) {
+      return null;
     }
-    // restore card
-    throw new Error('Method not implemented.');
+    const rollback = await rollbackAction(this.deckId, last_cid);
+    return rollback;
   }
 }

@@ -37,12 +37,23 @@ export abstract class INoteService {
   abstract undo(): Promise<boolean>;
 }
 
+type FSRSActionReturn = {
+  nextState: PrismaState;
+  nextDue: number;
+  nid: number;
+  did: number;
+};
+
 export abstract class ICardService {
   abstract create(nid: number, orderId: number): Promise<Card>;
   abstract getCard(cid: number): Promise<Card>;
   abstract preview(cid: number, now: Date): Promise<RecordLog>;
-  abstract schduler(cid: number, now: Date, grade: Grade): Promise<boolean>;
-  abstract rollback(): Promise<boolean>;
+  abstract schduler(
+    cid: number,
+    now: Date,
+    grade: Grade
+  ): Promise<FSRSActionReturn>;
+  abstract rollback(): Promise<FSRSActionReturn | null>;
 }
 
 // deck
@@ -74,7 +85,7 @@ export interface NoteMomoryStateRequest {
   uid: number;
   deckId: number;
   lte: Date;
-  total:Record<PrismaState, number>
+  total: Record<PrismaState, number>;
   pageSize: number;
   page?: number;
   ignoreCardIds?: number[];

@@ -1,9 +1,9 @@
-import { CardUpdatePayload, CardUpdateRequired } from "@/types";
+import { CardUpdatePayload, CardUpdateRequired } from '@/types';
 import {
   State as PrismaState,
   Rating as PrismaRating,
   Prisma,
-} from "@prisma/client";
+} from '@prisma/client';
 import {
   Card,
   Grade,
@@ -13,10 +13,10 @@ import {
   RecordLogItem,
   ReviewLog,
   State,
-} from "ts-fsrs";
+} from 'ts-fsrs';
 
 export interface CardPrismaUnChecked
-  extends Omit<Card, "cid" | "nid" | "last_review" | "state"> {
+  extends Omit<Card, 'cid' | 'nid' | 'last_review' | 'state'> {
   cid?: number;
   nid?: number;
   last_review: Date | null;
@@ -25,7 +25,7 @@ export interface CardPrismaUnChecked
 }
 
 export interface RevlogPrismaUnChecked
-  extends Omit<ReviewLog, "cid" | "nid" | "state" | "rating"> {
+  extends Omit<ReviewLog, 'cid' | 'nid' | 'state' | 'rating'> {
   lid: string;
   cid: number;
   nid: number;
@@ -74,20 +74,42 @@ export function repeatAfterHandler(lapses: number, recordLog: RecordLog) {
   return record;
 }
 
+export function nextAfterHandler(lapses: number, recordLogItem: RecordLogItem) {
+  const { card, log } = recordLogItem;
+  // lapses use userParams.lapses
+  const suspended =
+    log.rating === Rating.Again && card.lapses > 0 && card.lapses % lapses == 0;
+  return {
+    card: {
+      ...(card as Card & { cid: number; nid: number }),
+      due: card.due,
+      state: State[card.state] as PrismaState,
+      last_review: card.last_review ?? null,
+      suspended: suspended,
+    },
+    logs: {
+      ...(log as unknown as RevlogPrismaUnChecked),
+      state: State[log.state] as PrismaState,
+      grade: Rating[log.rating] as PrismaRating,
+    },
+  };
+}
 
-export function rollbackAfterHandler(card: Card):Prisma.XOR<Prisma.CardUpdateInput, Prisma.CardUncheckedUpdateInput>{
-    return {
-        due: card.due,
-        stability: card.stability,
-        difficulty: card.difficulty,
-        elapsed_days: card.elapsed_days,
-        scheduled_days: card.scheduled_days,
-        reps: card.reps,
-        lapses: card.lapses,
-        state: State[card.state] as PrismaState,
-        last_review: card.last_review ?? null,
-        suspended: false,
-    };
+export function rollbackAfterHandler(
+  card: Card
+): Prisma.XOR<Prisma.CardUpdateInput, Prisma.CardUncheckedUpdateInput> {
+  return {
+    due: card.due,
+    stability: card.stability,
+    difficulty: card.difficulty,
+    elapsed_days: card.elapsed_days,
+    scheduled_days: card.scheduled_days,
+    reps: card.reps,
+    lapses: card.lapses,
+    state: State[card.state] as PrismaState,
+    last_review: card.last_review ?? null,
+    suspended: false,
+  };
 }
 
 export function forgetAfterHandler(
