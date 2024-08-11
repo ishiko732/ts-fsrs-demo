@@ -1,19 +1,25 @@
-import { FSRS, RecordLog, Grade, FSRSParameters, fsrs, Card } from 'ts-fsrs';
+import { FSRS, RecordLog, Grade, FSRSParameters, fsrs } from 'ts-fsrs';
 import { ICardService } from '../type';
-import { Card as PrismaCard } from '@prisma/client';
+import { Card as PrismaCard, State as PrismaState } from '@prisma/client';
 import { cardCrud } from '@lib/container';
 import { createEmptyCardByPrisma } from './fsrsToPrisma';
 import { rollbackAction, schdulerAction } from '@actions/userCardService';
+import EventEmitter from 'events';
+import { StateBox } from '@/constant';
+import { nextAfterHandler } from './fsrsToPrisma/handler';
 
-export class CardService implements ICardService {
+export class CardService extends EventEmitter implements ICardService {
   private f: FSRS;
   private cards: Map<number, PrismaCard> = new Map();
   private box: number[] = [];
   private preview_start: number = 0;
-  private deckId = 0;
-  constructor(deckId: number, parameters?: FSRSParameters) {
+  private deckId;
+  private lapses;
+  constructor(deckId: number, lapses: number, parameters?: FSRSParameters) {
+    super();
     this.f = fsrs(parameters);
     this.deckId = deckId;
+    this.lapses = lapses;
   }
 
   async create(nid: number, orderId: number): Promise<PrismaCard> {
@@ -35,18 +41,28 @@ export class CardService implements ICardService {
     const card = await this.getCard(cid);
     const record = this.f.repeat(card, now);
     this.preview_start = new Date().getTime();
+    this.emit('preview', card.state);
     return record;
   }
   async schduler(cid: number, now: Date, grade: Grade) {
     const duration = Math.round((now.getTime() - this.preview_start) / 1000);
     this.box.push(cid);
-    const schduler = await schdulerAction(
+    const schduler = schdulerAction(
       this.deckId,
       cid,
       now.getTime(),
       grade,
       duration
     );
+    const afterHandler = nextAfterHandler.bind(this, this.lapses);
+    const card = this.cards.get(cid)!;
+    const record = this.f.next(card, now, grade, afterHandler);
+    this.emit('schduler', card.state, {
+      nextState: record.card.state,
+      nextDue: new Date(record.card.due).getTime(),
+      nid: card.nid as number,
+      did: this.deckId,
+    });
     return schduler;
   }
   async rollback() {
@@ -59,9 +75,20 @@ export class CardService implements ICardService {
   }
 
   async hydrate(cards: PrismaCard[]): Promise<void> {
+    const boxes = {
+      [PrismaState.New]: [],
+      [PrismaState.Learning]: [],
+      [PrismaState.Review]: [],
+    } as Record<StateBox, PrismaCard[]>;
     for (const card of cards) {
       this.cards.set(card.cid, card);
       console.debug('hydrate card', card.cid);
+      const state =
+        card.state === PrismaState.Relearning
+          ? PrismaState.Learning
+          : card.state;
+      boxes[state].push(card);
     }
+    this.emit('full block', boxes);
   }
 }

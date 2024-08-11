@@ -71,6 +71,7 @@ export interface DeckMemoryState {
   nextTimestamp: number;
   userNewCardlimit: number;
   deckTodayLearnedcount: number;
+  lapsers: number;
 }
 
 export interface DeckMemoryContext extends DeckMemoryState {

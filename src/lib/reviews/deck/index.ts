@@ -69,6 +69,7 @@ export class DeckService implements IDeckService {
       userNewCardlimit: deck.card_limit,
       deckTodayLearnedcount: count,
       noteContext: noteContext,
+      lapsers: deck.lapses,
     } satisfies DeckMemoryContext;
   };
 
