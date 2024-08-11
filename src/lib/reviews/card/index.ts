@@ -11,7 +11,7 @@ export class CardService implements ICardService {
   private box: number[] = [];
   private preview_start: number = 0;
   private deckId = 0;
-  constructor(deckId: number, parameters: FSRSParameters) {
+  constructor(deckId: number, parameters?: FSRSParameters) {
     this.f = fsrs(parameters);
     this.deckId = deckId;
   }

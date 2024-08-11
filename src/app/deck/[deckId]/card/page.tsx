@@ -1,4 +1,6 @@
 import { DeckService } from '@lib/reviews/deck';
+import StatusBar from './StatusBar';
+import { HydrateAtoms } from './hydrateAtoms';
 
 type PageProps = {
   params: {
@@ -27,9 +29,10 @@ export default async function Page({ params, searchParams }: PageProps) {
     context.noteContext = noteContext;
   }
   return (
-    <>
+    <HydrateAtoms deckContext={context} fsrsParams={fsrs_params}>
       <div>TODO:{JSON.stringify(fsrs_params)}</div>
       <div>context:{JSON.stringify(context)}</div>
-    </>
+      <StatusBar />
+    </HydrateAtoms>
   );
 }
