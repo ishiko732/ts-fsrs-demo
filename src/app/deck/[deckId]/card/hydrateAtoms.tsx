@@ -4,6 +4,8 @@ import { CardService } from '@lib/reviews/card';
 import { DeckService } from '@lib/reviews/deck';
 import { NoteService } from '@lib/reviews/note';
 import { DeckMemoryContext } from '@lib/reviews/type';
+import { Card, Note } from '@prisma/client';
+import { useAtomValue } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { FSRSParameters } from 'ts-fsrs';
 
@@ -11,12 +13,16 @@ type HydrateAtomsProps = {
   deckContext: DeckMemoryContext;
   fsrsParams: FSRSParameters;
   children: React.ReactNode;
+  cards: Card[];
+  notes: Note[];
 };
 
 export const HydrateAtoms = ({
   deckContext,
   fsrsParams,
   children,
+  cards,
+  notes,
 }: HydrateAtomsProps) => {
   // Init Core
   const { noteContext, ...deckMemory } = deckContext;
@@ -33,6 +39,11 @@ export const HydrateAtoms = ({
     [ReviewSvc.note, new NoteService()],
     [ReviewSvc.card, new CardService(deckMemory.deckId, fsrsParams)],
   ]);
+
+  const noteSvc = useAtomValue(ReviewSvc.note);
+  const cardSvc = useAtomValue(ReviewSvc.card);
+  noteSvc.hydrate(notes);
+  cardSvc.hydrate(cards);
 
   // total -- statusBar.tsx
   const total = page.totalSize;

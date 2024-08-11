@@ -32,3 +32,6 @@ export const ReviewSvc = {
   note: atom(new NoteService()),
   card: atom(new CardService(DEFAULT_DECK_ID)),
 };
+
+export const currentNote = atom({});
+export const currentCard = atom({});

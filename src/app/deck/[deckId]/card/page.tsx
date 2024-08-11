@@ -1,6 +1,8 @@
 import { DeckService } from '@lib/reviews/deck';
 import StatusBar from './StatusBar';
 import { HydrateAtoms } from './hydrateAtoms';
+import { cardCrud, noteCrud } from '@lib/container';
+import { CARD_NULL } from '@/constant';
 
 type PageProps = {
   params: {
@@ -28,8 +30,22 @@ export default async function Page({ params, searchParams }: PageProps) {
     });
     context.noteContext = noteContext;
   }
+  const noteIds = context.noteContext.memoryState.map((note) => note.noteId);
+  const cardIds = context.noteContext.memoryState
+    .map((note) => note.cardId)
+    .filter((cardId) => cardId !== CARD_NULL);
+  const [notes, cards] = await Promise.all([
+    noteCrud.gets(noteIds),
+    cardCrud.gets(cardIds),
+  ]);
+
   return (
-    <HydrateAtoms deckContext={context} fsrsParams={fsrs_params}>
+    <HydrateAtoms
+      deckContext={context}
+      fsrsParams={fsrs_params}
+      notes={notes}
+      cards={cards}
+    >
       <div>TODO:{JSON.stringify(fsrs_params)}</div>
       <div>context:{JSON.stringify(context)}</div>
       <StatusBar />

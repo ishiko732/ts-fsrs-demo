@@ -57,4 +57,11 @@ export class CardService implements ICardService {
     const rollback = await rollbackAction(this.deckId, last_cid);
     return rollback;
   }
+
+  async hydrate(cards: PrismaCard[]): Promise<void> {
+    for (const card of cards) {
+      this.cards.set(card.cid, card);
+      console.debug('hydrate card', card.cid);
+    }
+  }
 }

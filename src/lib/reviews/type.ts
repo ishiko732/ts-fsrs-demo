@@ -35,6 +35,8 @@ export abstract class INoteService {
     note: Partial<Omit<Note, 'did' | 'uid' | 'deleted'>>
   ): Promise<Note>;
   abstract undo(): Promise<boolean>;
+
+  abstract hydrate(notes: Note[]): Promise<void>;
 }
 
 type FSRSActionReturn = {
@@ -54,6 +56,8 @@ export abstract class ICardService {
     grade: Grade
   ): Promise<FSRSActionReturn>;
   abstract rollback(): Promise<FSRSActionReturn | null>;
+
+  abstract hydrate(cards: Card[]): Promise<void>;
 }
 
 // deck

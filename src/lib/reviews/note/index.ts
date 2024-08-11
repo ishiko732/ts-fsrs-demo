@@ -36,4 +36,11 @@ export class NoteService implements INoteService {
     this.notes.set(last.nid, updated);
     return true;
   }
+
+  async hydrate(notes: PrimiseNote[]): Promise<void> {
+    for (const note of notes) {
+      this.notes.set(note.nid, note);
+      console.debug('hydrate note', note.nid);
+    }
+  }
 }

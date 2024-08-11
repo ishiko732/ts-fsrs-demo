@@ -26,6 +26,13 @@ export class NoteCrud {
     return res;
   }
 
+  async gets(nids: number[]) {
+    const datum = await Promise.all(
+      nids.map(async (nid) => getNoteAction(nid))
+    );
+    return datum.filter((note) => note !== null);
+  }
+
   async create(deckId: number, note: Omit<Note, 'did' | 'uid' | 'deleted'>) {
     return await addNoteAction(deckId, note);
   }

@@ -21,6 +21,14 @@ export class CardCrud {
     }
     return res;
   }
+
+  async gets(cids: number[]) {
+    const datum = await Promise.all(
+      cids.map(async (cid) => getCardByCardIdAction(cid))
+    );
+    return datum.filter((card) => card !== null);
+  }
+
   async getByNote(nid: number, orderId: number): Promise<Card | null> {
     return getCardByNoteIdAndOrderIdAction(nid, orderId);
   }
