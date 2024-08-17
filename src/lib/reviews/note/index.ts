@@ -1,11 +1,14 @@
 import { noteCrud } from '@lib/container';
 import { INoteService } from '@lib/reviews/type';
 import { Note as PrimiseNote } from '@prisma/client';
+import EventEmitter from 'events';
 
-export class NoteService implements INoteService {
+export class NoteService extends EventEmitter implements INoteService {
   private notes: Map<number, PrimiseNote> = new Map();
   private traces: PrimiseNote[] = [];
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   async getNote(nid: number): Promise<PrimiseNote> {
     let note = this.notes.get(nid);
@@ -43,4 +46,14 @@ export class NoteService implements INoteService {
       console.debug('hydrate note', note.nid);
     }
   }
+
+  review = () => {
+    // get note by random
+    if (!this.notes.size) {
+      return 0;
+    }
+    const index = Math.floor(Math.random() * this.notes.size);
+    const nid = Array.from(this.notes.keys())[index];
+    return nid;
+  };
 }

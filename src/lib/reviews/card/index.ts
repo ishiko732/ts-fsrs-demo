@@ -41,6 +41,7 @@ export class CardService extends EventEmitter implements ICardService {
       card = await cardCrud.get(cid);
       this.cards.set(card.cid, card);
     }
+    this.emit('current type', card.state);
     return card;
   }
   async preview(cid: number, now: Date): Promise<RecordLog> {
@@ -63,7 +64,8 @@ export class CardService extends EventEmitter implements ICardService {
     const afterHandler = nextAfterHandler.bind(this, this.lapses);
     const card = this.cards.get(cid)!;
     const record = this.f.next(card, now, grade, afterHandler);
-    this.emit('schduler', card.state, {
+    this.emit('scheduler', {
+      currentState: card.state,
       nextState: record.card.state,
       nextDue: new Date(record.card.due).getTime(),
       nid: card.nid as number,

@@ -8,13 +8,11 @@ import {
   DeckMemoryInit,
   DEFAULT_DECK_ID,
   LAPSES,
-  memoryPageSize,
   StateBox,
 } from '@/constant';
 import { CardService } from '@lib/reviews/card';
 import { NoteMemoryState } from '@lib/reviews/type';
 import { useRef } from 'react';
-import { resolve } from 'path';
 import { cardCrud, noteCrud } from '@lib/container';
 
 export const ReviewBarAtom = {
@@ -109,6 +107,14 @@ export function useListeners(page: number) {
     console.log('on full block');
   }
   // init event emitter [CurrentStateAtom]
+  // scheduler
+  const setBarAtom = {
+    [PrismaState.New]: useSetAtom(ReviewBarAtom.New),
+    [PrismaState.Learning]: useSetAtom(ReviewBarAtom.Learning),
+    [PrismaState.Relearning]: useSetAtom(ReviewBarAtom.Relearning),
+    [PrismaState.Review]: useSetAtom(ReviewBarAtom.Review),
+  };
+  // 1.update ReviewBarAtom
   const currentType = useSetAtom(CurrentStateAtom);
   if (!loadedRef.current) {
     cardSvc.on('current type', async (type: PrismaState) => {
@@ -118,6 +124,35 @@ export function useListeners(page: number) {
     });
     console.log('on current type');
   }
+  if (!loadedRef.current) {
+    cardSvc.on(
+      'scheduler',
+      ({
+        nextState,
+        currentState,
+      }: {
+        nextState: PrismaState;
+        currentState: PrismaState;
+      }) => {
+        const currentBarAtom = setBarAtom[currentState];
+        const nextBarAtom = setBarAtom[nextState];
+        const keep =
+          (currentState === PrismaState.Learning &&
+            nextState === PrismaState.Learning) ||
+          (currentState === PrismaState.Relearning &&
+            nextState === PrismaState.Relearning);
+
+        if (nextState === PrismaState.Review) {
+          nextBarAtom((pre) => pre - 1);
+        }
+        if (currentState === PrismaState.New || !keep) {
+          currentBarAtom((pre) => pre - 1);
+        }
+      }
+    );
+    console.log('on scheduler');
+  }
+
   if (window) {
     // debug
     Reflect.set(window, 'svc', { deckSvc, noteSvc, cardSvc });
