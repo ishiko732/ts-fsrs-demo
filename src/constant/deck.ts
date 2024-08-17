@@ -15,4 +15,5 @@ export const DeckMemoryInit: DeckMemoryState = {
   nextTimestamp: 0 + 86400,
   userNewCardlimit: 0,
   deckTodayLearnedcount: 0,
+  lapsers: LAPSES,
 };

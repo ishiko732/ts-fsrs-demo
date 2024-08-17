@@ -1,11 +1,6 @@
-import { fsrs, FSRSParameters } from 'ts-fsrs';
+import { FSRSParameters } from 'ts-fsrs';
 import { Deck } from '@prisma/client';
-import {
-  DeckMemoryContext,
-  IDeckService,
-  NoteMemoryContext,
-  SearchTodayMemoryContextPage,
-} from '../type';
+import { DeckMemoryContext, IDeckService, NoteMemoryContext } from '../type';
 import {
   getReviewMemoryContextAction,
   getNumberOfNewCardsLearnedTodayAction,
@@ -18,6 +13,11 @@ import { getUserTimeZone } from '@actions/userTimezone';
 export class DeckService implements IDeckService {
   private deck: Omit<Deck, 'deleted'> | undefined;
   private algorithm_pamars: FSRSParameters | undefined;
+  startTimestamp: number = 0;
+  nextTimestamp: number = 0;
+  noteContext = {} as NoteMemoryContext;
+  page: number = 1;
+  pageSize = memoryPageSize;
   constructor(private deckId: number = 0) {}
 
   init = (deckId: number) => {
@@ -47,7 +47,9 @@ export class DeckService implements IDeckService {
     return this.algorithm_pamars;
   };
 
-  getTodayMemoryContext = async (): Promise<DeckMemoryContext> => {
+  getTodayMemoryContext = async (
+    pageSize: number = memoryPageSize
+  ): Promise<DeckMemoryContext> => {
     const userTimezone = await getUserTimeZone();
     const { startTimestamp, nextTimestamp, startOfDay, nextOfDay } =
       computedToday(userTimezone.timezone, userTimezone.hourOffset);
@@ -62,7 +64,7 @@ export class DeckService implements IDeckService {
     const noteContext: NoteMemoryContext = await getReviewMemoryContextAction(
       deck.did,
       startTimestamp,
-      memoryPageSize,
+      pageSize,
       1
     );
 
@@ -81,22 +83,26 @@ export class DeckService implements IDeckService {
     } satisfies DeckMemoryContext;
   };
 
-  todayMemoryContextPage = async ({
-    deckId,
-    startTimestamp,
-    nextTimestamp,
-    page,
-    pageSize = memoryPageSize,
-    ignoreCardIds,
-  }: SearchTodayMemoryContextPage): Promise<NoteMemoryContext> => {
+  hydrate = (context: DeckMemoryContext) => {
+    this.startTimestamp = context.startTimestamp;
+    this.nextTimestamp = context.nextTimestamp;
+    this.page = context.noteContext.loadPage;
+    this.noteContext = context.noteContext;
+    this.pageSize = context.noteContext.pageSize;
+  };
+
+  todayMemoryContextPage = async (
+    page: number,
+    ignoreCardIds: number[] = []
+  ): Promise<NoteMemoryContext> => {
     if ((page ?? 0) < 1) {
       throw new Error('page must be greater than 0');
     }
     const noteContext: NoteMemoryContext = await getReviewMemoryContextAction(
-      deckId,
-      startTimestamp,
-      nextTimestamp,
-      pageSize,
+      this.deckId,
+      this.startTimestamp,
+      this.nextTimestamp,
+      this.pageSize,
       page,
       ignoreCardIds
     );

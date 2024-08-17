@@ -49,8 +49,9 @@ export const HydrateAtoms = ({
   deckSvc.init(deckMemory.deckId);
   cardSvc.init(deckMemory.deckId, deckContext.lapsers, fsrsParams);
 
-  useListeners()
+  useListeners(deckContext.noteContext.loadPage);
 
+  deckSvc.hydrate(deckContext);
   noteSvc.hydrate(notes);
   cardSvc.hydrate(cards);
 

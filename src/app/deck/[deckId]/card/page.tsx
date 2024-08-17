@@ -19,15 +19,8 @@ export default async function Page({ params, searchParams }: PageProps) {
   const fsrs_params = await deckSvc.getAlgorithmParams();
   const context = await deckSvc.getTodayMemoryContext();
   if (page > 1) {
-    const noteContext = await deckSvc.todayMemoryContextPage({
-      startTimestamp: context.startTimestamp,
-      userNewCardlimit: context.userNewCardlimit,
-      deckTodayLearnedcount: context.deckTodayLearnedcount,
-      deckId: context.deckId,
-      nextTimestamp: context.nextTimestamp,
-      page: page,
-      pageSize: Number(pageSize),
-    });
+    deckSvc.hydrate(context);
+    const noteContext = await deckSvc.todayMemoryContextPage(page);
     context.noteContext = noteContext;
   }
   const noteIds = context.noteContext.memoryState.map((note) => note.noteId);

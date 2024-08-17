@@ -3,10 +3,19 @@ import { Card, State as PrismaState } from '@prisma/client';
 import { generatorParameters } from 'ts-fsrs';
 import { DeckService } from '@lib/reviews/deck';
 import { NoteService } from '@lib/reviews/note';
-import { DeckMemoryInit, DEFAULT_DECK_ID, LAPSES, StateBox } from '@/constant';
+import {
+  CARD_NULL,
+  DeckMemoryInit,
+  DEFAULT_DECK_ID,
+  LAPSES,
+  memoryPageSize,
+  StateBox,
+} from '@/constant';
 import { CardService } from '@lib/reviews/card';
 import { NoteMemoryState } from '@lib/reviews/type';
 import { useRef } from 'react';
+import { resolve } from 'path';
+import { cardCrud, noteCrud } from '@lib/container';
 
 export const ReviewBarAtom = {
   [PrismaState.New]: atom(0),
@@ -43,14 +52,16 @@ export const Boxes = {
   [PrismaState.Review]: atom([] as Card[]),
 } as Record<StateBox, PrimitiveAtom<Card[]>>;
 
-export function useListeners() {
+export function useListeners(page: number) {
   // init event emitter [boxes]
+  const deckSvc = useAtomValue(ReviewSvc.deck);
   const noteSvc = useAtomValue(ReviewSvc.note);
   const cardSvc = useAtomValue(ReviewSvc.card);
   const boxes_new = useSetAtom(Boxes.New);
   const boxes_learning = useSetAtom(Boxes.Learning);
   const boxes_review = useSetAtom(Boxes.Review);
   const loadedRef = useRef(false);
+  const pageRef = useRef<number[]>([page]);
   if (!loadedRef.current) {
     cardSvc.on('full block', (hydrate_boxes: Record<StateBox, Card[]>) => {
       boxes_new((pre) => {
@@ -65,6 +76,35 @@ export function useListeners() {
         const data = new Set([...pre, ...hydrate_boxes[PrismaState.Review]]);
         return Array.from(data);
       });
+
+      setTimeout(() => {
+        new Promise(async () => {
+          const page = deckSvc.page + 1;
+          if (pageRef.current.includes(page)) return;
+          pageRef.current.push(page);
+          const nextContext = await deckSvc.todayMemoryContextPage(
+            page,
+            cardSvc.getLoadedCardIds()
+          );
+          if (!nextContext.memoryState.length) {
+            cardSvc.removeAllListeners('full block');
+            return;
+          }
+          const noteIds = nextContext.memoryState.map((note) => note.noteId);
+          const cardIds = nextContext.memoryState
+            .map((note) => note.cardId)
+            .filter((cardId) => cardId !== CARD_NULL);
+          const [notes, cards] = await Promise.all([
+            noteCrud.gets(noteIds),
+            cardCrud.gets(cardIds),
+          ]);
+          noteSvc.hydrate(notes);
+          cardSvc.hydrate(cards);
+          console.log('new load', nextContext.loadPage);
+          console.log(nextContext);
+          debugger;
+        });
+      }, 50);
     });
     console.log('on full block');
   }
@@ -77,6 +117,10 @@ export function useListeners() {
       );
     });
     console.log('on current type');
+  }
+  if (window) {
+    // debug
+    Reflect.set(window, 'svc', { deckSvc, noteSvc, cardSvc });
   }
   loadedRef.current = true;
 }

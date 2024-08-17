@@ -97,4 +97,8 @@ export class CardService extends EventEmitter implements ICardService {
     }
     this.emit('full block', boxes);
   }
+
+  getLoadedCardIds = () => {
+    return Array.from(this.cards.keys());
+  };
 }

@@ -1,32 +1,15 @@
 import { Card, Deck, Note, State as PrismaState } from '@prisma/client';
 import { FSRSParameters, Grade, RecordLog } from 'ts-fsrs';
 
-export type SearchTodayMemoryContextPage = {
-  deckId: number;
-  startTimestamp: number;
-  nextTimestamp: number;
-  userNewCardlimit: number;
-  deckTodayLearnedcount: number;
-  page?: number;
-  pageSize: number;
-  ignoreCardIds?: number[];
-};
-
 export abstract class IDeckService {
   abstract init(deckId: number): void;
   abstract getDeck(): Promise<Omit<Deck, 'deleted'>>;
   abstract getAlgorithmParams(): Promise<FSRSParameters>;
-  abstract getTodayMemoryContext(
-    timezone: string,
-    hourOffset: number
-  ): Promise<DeckMemoryContext>;
-  abstract todayMemoryContextPage({
-    startTimestamp,
-    userNewCardlimit,
-    deckTodayLearnedcount,
-    page,
-    ignoreCardIds,
-  }: SearchTodayMemoryContextPage): Promise<NoteMemoryContext>;
+  abstract getTodayMemoryContext(pageSize: number): Promise<DeckMemoryContext>;
+  abstract todayMemoryContextPage(
+    page: number,
+    ignoreCardIds: number[]
+  ): Promise<NoteMemoryContext>;
 }
 
 export abstract class INoteService {
