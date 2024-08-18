@@ -42,12 +42,16 @@ model Card {
   lapses         Int
   state          State     @default(New)
   last_review    DateTime?
-  nid            Int       @unique
+  nid            Int
   note           Note      @relation(fields: [nid], references: [nid])
   suspended      Boolean   @default(false)
   logs           Revlog[]
   deleted        Boolean   @default(false)
   orderId        Int       @default(0)
+
+  @@unique([nid, orderId])
+  @@index([nid])
+  @@index([orderId])
 }
 
 model Parameters {
