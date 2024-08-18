@@ -87,6 +87,8 @@ export async function schdulerAction(
         create: {
           ...recordItem.logs,
           duration,
+          uid:deck.uid,
+          did:deck.did
         },
       },
     },

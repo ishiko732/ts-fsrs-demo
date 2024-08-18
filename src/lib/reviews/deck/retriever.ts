@@ -161,19 +161,27 @@ export const restoreDeck = async (uid: number, deckId: number) => {
 };
 
 export async function getNoteTotalGroupByDeckId(uid: number, deckId?: number) {
-  const res = {} as Record<PrismaState, number>;
-  const datum = <{ _count: BigInt; state?: PrismaState }[]>(
-    await prisma.$queryRaw`
+  const res: Record<PrismaState, number> = {
+    [PrismaState.New]: 0,
+    [PrismaState.Learning]: 0,
+    [PrismaState.Review]: 0,
+    [PrismaState.Relearning]: 0,
+  };
+  const datum = <{ _count: BigInt; state?: number }[]>await prisma.$queryRaw`
     select count(n.nid) as _count,state 
     from "Note" n left join "Card" c on c.nid=n.nid 
     where n.uid=${uid} and n.did=${deckId} and n.deleted = false
-    group by c.state `
-  );
-  states_prisma.forEach((state) => {
-    res[state] = 0;
-  });
+    group by c.state `;
+  const stateString: Record<string, PrismaState> = {
+    [0]: PrismaState.New,
+    [1]: PrismaState.Learning,
+    [2]: PrismaState.Review,
+    [3]: PrismaState.Relearning,
+  };
+
   for (const data of datum) {
-    res[data.state ?? PrismaState.New] += Number(data._count);
+    const state = stateString[`${data.state ?? 0}` as string];
+    res[state] += Number(data._count);
   }
   return res;
 }
@@ -197,6 +205,9 @@ export async function getReviewMemoryTotal(
             did: deckId,
             deleted: false,
           },
+          state: {
+            not: PrismaState.Review,
+          },
         },
         {
           suspended: false,
@@ -216,6 +227,7 @@ export async function getReviewMemoryTotal(
     by: ['state'],
     _count: true,
   });
+  console.log(new Date(lte), lte.getTime(), count);
   const res = {} as Record<PrismaState, number>;
   states_prisma.forEach((state) => {
     res[state] = 0;
@@ -261,7 +273,7 @@ export async function getReviewMemoryState({
             uid,
             did: deckId,
             deleted: false,
-          }
+          },
         },
         {
           suspended: false,
