@@ -115,13 +115,19 @@ export function useListeners(page: number) {
           (currentState === PrismaState.Learning &&
             nextState === PrismaState.Learning) ||
           (currentState === PrismaState.Relearning &&
-            nextState === PrismaState.Relearning);
+            nextState === PrismaState.Relearning) ||
+          (currentState === PrismaState.Review &&
+            nextState === PrismaState.Review);
 
-        if (nextState === PrismaState.Review) {
-          nextBarAtom((pre) => pre - 1);
-        }
         if (currentState === PrismaState.New || !keep) {
           currentBarAtom((pre) => pre - 1);
+        }
+        if (
+          (nextState === PrismaState.Learning ||
+            nextState === PrismaState.Relearning) &&
+          !keep
+        ) {
+          nextBarAtom((pre) => pre + 1);
         }
         console.log('on scheduler');
       }
