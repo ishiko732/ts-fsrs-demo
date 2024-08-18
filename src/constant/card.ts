@@ -13,5 +13,6 @@ export type StateBox = Exclude<PrismaState, 'Relearning'>;
 // 1: Learning
 // 2: Review
 
-export const CARD_NULL = -1;
+export const CARD_NULL = 0;
 export const INVALID_DUE = Infinity;
+export const DEFAULT_ORDERID = 0;

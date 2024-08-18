@@ -3,6 +3,7 @@ import StatusBar from './StatusBar';
 import { HydrateAtoms } from './hydrateAtoms';
 import { cardCrud, noteCrud } from '@lib/container';
 import { CARD_NULL } from '@/constant';
+import NoteHelper from './NoteHelper';
 
 type PageProps = {
   params: {
@@ -39,6 +40,7 @@ export default async function Page({ params, searchParams }: PageProps) {
       notes={notes}
       cards={cards}
     >
+      <NoteHelper />
       <StatusBar />
     </HydrateAtoms>
   );

@@ -73,6 +73,7 @@ export interface NoteMemoryState {
   cardId: number;
   due: number; // due timestamp
   state: PrismaState;
+  orderId: number;
 }
 
 export interface NoteMomoryStateRequest {

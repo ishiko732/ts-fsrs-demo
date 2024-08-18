@@ -1,5 +1,6 @@
+'use client';
 import { Atom, atom, PrimitiveAtom, useAtomValue, useSetAtom } from 'jotai';
-import { Card, State as PrismaState } from '@prisma/client';
+import { Card as PrismaCard, Note, State as PrismaState } from '@prisma/client';
 import { generatorParameters } from 'ts-fsrs';
 import { DeckService } from '@lib/reviews/deck';
 import { NoteService } from '@lib/reviews/note';
@@ -22,8 +23,6 @@ export const ReviewBarAtom = {
   [PrismaState.Review]: atom(0),
 };
 
-export const CurrentStateAtom = atom(PrismaState.New as PrismaState);
-
 // reviewInit
 // src/app/deck/[deckId]/card/hydrateAtoms.tsx
 export const ReviewCore = {
@@ -41,14 +40,18 @@ export const ReviewSvc = {
   card: atom(new CardService(DEFAULT_DECK_ID, LAPSES)),
 };
 
-export const currentNoteId = atom(-1);
-export const currentCardId = atom(-1);
+export const currentNoteId = atom(0);
+export const currentCardId = atom(0);
+export const currentNote = atom<Note | null>();
+export const currentCard = atom<PrismaCard | null>();
+
+export const CurrentStateAtom = atom(PrismaState.New as PrismaState);
 
 export const Boxes = {
-  [PrismaState.New]: atom([] as Card[]),
-  [PrismaState.Learning]: atom([] as Card[]),
-  [PrismaState.Review]: atom([] as Card[]),
-} as Record<StateBox, PrimitiveAtom<Card[]>>;
+  [PrismaState.New]: atom([] as PrismaCard[]),
+  [PrismaState.Learning]: atom([] as PrismaCard[]),
+  [PrismaState.Review]: atom([] as PrismaCard[]),
+} as Record<StateBox, PrimitiveAtom<PrismaCard[]>>;
 
 export function useListeners(page: number) {
   // init event emitter [boxes]
@@ -61,7 +64,7 @@ export function useListeners(page: number) {
   const loadedRef = useRef(false);
   const pageRef = useRef<number[]>([page]);
   if (!loadedRef.current) {
-    cardSvc.on('full block', (hydrate_boxes: Record<StateBox, Card[]>) => {
+    cardSvc.on('full block', (hydrate_boxes: Record<StateBox, PrismaCard[]>) => {
       boxes_new((pre) => {
         const data = new Set([...pre, ...hydrate_boxes[PrismaState.New]]);
         return Array.from(data);
@@ -75,36 +78,36 @@ export function useListeners(page: number) {
         return Array.from(data);
       });
 
-      setTimeout(() => {
-        new Promise(async () => {
-          const page = deckSvc.page + 1;
-          if (pageRef.current.includes(page)) return;
-          pageRef.current.push(page);
-          const nextContext = await deckSvc.todayMemoryContextPage(
-            page,
-            cardSvc.getLoadedCardIds()
-          );
-          if (!nextContext.memoryState.length) {
-            cardSvc.removeAllListeners('full block');
-            return;
-          }
-          const noteIds = nextContext.memoryState.map((note) => note.noteId);
-          const cardIds = nextContext.memoryState
-            .map((note) => note.cardId)
-            .filter((cardId) => cardId !== CARD_NULL);
-          const [notes, cards] = await Promise.all([
-            noteCrud.gets(noteIds),
-            cardCrud.gets(cardIds),
-          ]);
-          noteSvc.hydrate(notes);
-          cardSvc.hydrate(cards);
-          console.log('new load', nextContext.loadPage);
-          console.log(nextContext);
-          debugger;
-        });
-      }, 50);
+      // setTimeout(() => {
+      //   new Promise(async () => {
+      //     const page = deckSvc.page + 1;
+      //     if (pageRef.current.includes(page)) return;
+      //     pageRef.current.push(page);
+      //     const nextContext = await deckSvc.todayMemoryContextPage(
+      //       page,
+      //       cardSvc.getLoadedCardIds()
+      //     );
+      //     if (!nextContext.memoryState.length) {
+      //       cardSvc.removeAllListeners('full block');
+      //       return;
+      //     }
+      //     const noteIds = nextContext.memoryState.map((note) => note.noteId);
+      //     const cardIds = nextContext.memoryState
+      //       .map((note) => note.cardId)
+      //       .filter((cardId) => cardId !== CARD_NULL);
+      //     const [notes, cards] = await Promise.all([
+      //       noteCrud.gets(noteIds),
+      //       cardCrud.gets(cardIds),
+      //     ]);
+      //     noteSvc.hydrate(notes);
+      //     cardSvc.hydrate(cards);
+      //     console.log('new load', nextContext.loadPage);
+      //     console.log(nextContext);
+      //     debugger;
+      //   });
+      // }, 50);
+      console.log('on full block');
     });
-    console.log('on full block');
   }
   // init event emitter [CurrentStateAtom]
   // scheduler
@@ -121,8 +124,8 @@ export function useListeners(page: number) {
       currentType(
         type === PrismaState.Relearning ? PrismaState.Learning : type
       );
+      console.log('on current type');
     });
-    console.log('on current type');
   }
   if (!loadedRef.current) {
     cardSvc.on(
@@ -148,12 +151,12 @@ export function useListeners(page: number) {
         if (currentState === PrismaState.New || !keep) {
           currentBarAtom((pre) => pre - 1);
         }
+        console.log('on scheduler');
       }
     );
-    console.log('on scheduler');
   }
 
-  if (window) {
+  if (typeof window !== 'undefined') {
     // debug
     Reflect.set(window, 'svc', { deckSvc, noteSvc, cardSvc });
   }

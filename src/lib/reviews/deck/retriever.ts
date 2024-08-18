@@ -10,7 +10,12 @@ import {
   PartialRequired,
 } from '../type';
 import { CARDLIMT, DEFAULT_DECK_ID, LAPSES } from '@/constant/deck';
-import { CARD_NULL, INVALID_DUE, states_prisma } from '@/constant';
+import {
+  CARD_NULL,
+  DEFAULT_ORDERID,
+  INVALID_DUE,
+  states_prisma,
+} from '@/constant';
 
 export const defaultParams = (uid: number) => {
   return {
@@ -249,11 +254,14 @@ export async function getReviewMemoryState({
         {
           suspended: false,
           deleted: false,
+          state: {
+            not: PrismaState.Review,
+          },
           note: {
             uid,
             did: deckId,
             deleted: false,
-          },
+          }
         },
         {
           suspended: false,
@@ -283,6 +291,7 @@ export async function getReviewMemoryState({
       cid: true,
       due: true,
       state: true,
+      orderId: true,
       note: {
         select: {
           did: true,
@@ -300,7 +309,7 @@ export async function getReviewMemoryState({
   for (const data of cards) {
     datum[data.state ?? PrismaState.New].push(data);
   }
- 
+
   // fill new cards if not enough
   // only fill new cards on the first page
   if (datum[PrismaState.New].length < new_card_max && page === 1) {
@@ -309,6 +318,9 @@ export async function getReviewMemoryState({
         uid,
         did: deckId,
         deleted: false,
+        nid: {
+          notIn: datum[PrismaState.New].map((card) => card.nid),
+        },
       },
       take: Math.max(0, new_card_max - datum[PrismaState.New].length),
     });
@@ -319,6 +331,7 @@ export async function getReviewMemoryState({
         cardId: CARD_NULL,
         due: INVALID_DUE,
         state: PrismaState.New,
+        orderId: DEFAULT_ORDERID,
       });
     }
   }
@@ -330,6 +343,7 @@ export async function getReviewMemoryState({
         cardId: card.cid || CARD_NULL,
         due: card.due?.getTime() || INVALID_DUE,
         state: card.state,
+        orderId: card.orderId,
       } satisfies NoteMemoryState;
     });
     res.push(...processed);

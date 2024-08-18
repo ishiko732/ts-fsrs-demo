@@ -64,6 +64,7 @@ export class DeckService implements IDeckService {
     const noteContext: NoteMemoryContext = await getReviewMemoryContextAction(
       deck.did,
       startTimestamp,
+      nextTimestamp,
       pageSize,
       1
     );

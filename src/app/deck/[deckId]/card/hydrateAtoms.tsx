@@ -1,21 +1,14 @@
 'use client';
 import {
-  Boxes,
-  CurrentStateAtom,
   ReviewBarAtom,
   ReviewCore,
   ReviewSvc,
   useListeners,
 } from '@/atom/decks/review';
-import { StateBox, states_prisma } from '@/constant';
-import { CardService } from '@lib/reviews/card';
-import { DeckService } from '@lib/reviews/deck';
-import { NoteService } from '@lib/reviews/note';
 import { DeckMemoryContext } from '@lib/reviews/type';
-import { Card, Note, State } from '@prisma/client';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { Card, Note } from '@prisma/client';
+import { useAtomValue } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
-import { useMemo } from 'react';
 import { FSRSParameters } from 'ts-fsrs';
 
 type HydrateAtomsProps = {
@@ -49,9 +42,9 @@ export const HydrateAtoms = ({
   deckSvc.init(deckMemory.deckId);
   cardSvc.init(deckMemory.deckId, deckContext.lapsers, fsrsParams);
 
-  useListeners(deckContext.noteContext.loadPage);
-
+  useListeners(page.loadPage);
   deckSvc.hydrate(deckContext);
+  noteSvc.importMemory(noteContext.memoryState);
   noteSvc.hydrate(notes);
   cardSvc.hydrate(cards);
 
