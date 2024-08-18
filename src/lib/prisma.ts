@@ -11,10 +11,10 @@ const prisma =
     log: [
       'warn',
       'error',
-      {
-        level: 'query',
-        emit: process.env.NODE_ENV === 'production' ? 'event' : 'stdout',
-      },
+      // {
+      //   level: 'query',
+      //   emit: process.env.NODE_ENV === 'production' ? 'event' : 'stdout',
+      // },
     ],
   });
 

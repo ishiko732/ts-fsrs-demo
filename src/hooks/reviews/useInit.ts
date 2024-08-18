@@ -24,7 +24,6 @@ export const useReviewsInit = () => {
       new Promise(async () => {
         let data: PrismaCard | null = null;
         if (!cid) {
-          debugger;
           console.log('create card', nid, orderId);
           data = await cardSvc.create(nid, orderId);
           review.update(data.cid);
@@ -55,8 +54,8 @@ export const useReviewsInit = () => {
   ]);
 
   return {
-    note,
-    card,
+    note: note ?? null,
+    card: card ?? null,
     noteId,
     cardId,
   };
