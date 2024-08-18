@@ -5,7 +5,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import ThemeProvider from '@/context/ThemesProvider';
 import { cn } from '@/lib/utils';
-import { Inter as FontSans } from "next/font/google";
+import { Inter as FontSans } from 'next/font/google';
 import NavBar from '@/components/nav-bar';
 
 export const metadata: Metadata = {
@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 
 // See https://ui.shadcn.com/docs/installation/next
 const inter = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 
 export default async function RootLayout({
   children,
@@ -46,8 +46,8 @@ export default async function RootLayout({
           >
             <NavBar />
             {children}
-            <SpeedInsights />
-            <Analytics />
+            <SpeedInsights debug={false} />
+            <Analytics debug={false} />
           </ThemeProvider>
         </AuthProvider>
       </body>
