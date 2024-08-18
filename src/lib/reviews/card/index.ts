@@ -1,5 +1,5 @@
 import { FSRS, RecordLog, Grade, FSRSParameters, fsrs } from 'ts-fsrs';
-import { ICardService } from '../type';
+import { ICardService, TEmitOption } from '../type';
 import { Card as PrismaCard, State as PrismaState } from '@prisma/client';
 import { cardCrud } from '@lib/container';
 import { createEmptyCardByPrisma } from './fsrsToPrisma';
@@ -35,20 +35,22 @@ export class CardService extends EventEmitter implements ICardService {
     return card;
   }
 
-  async getCard(cid: number): Promise<PrismaCard> {
+  async getCard(cid: number, option?: TEmitOption): Promise<PrismaCard> {
     let card = this.cards.get(cid);
     if (!card) {
       card = await cardCrud.get(cid);
       this.cards.set(card.cid, card);
     }
-    this.emit('current type', card.state);
+    if (option?.emit ?? true) {
+      this.emit('current', card.state, cid);
+    }
     return card;
   }
   async preview(cid: number, now: Date): Promise<RecordLog> {
-    const card = await this.getCard(cid);
+    const card = await this.getCard(cid, { emit: false });
     const record = this.f.repeat(card, now);
     this.preview_start = new Date().getTime();
-    this.emit('preview', card.state);
+    this.emit('preview', card);
     return record;
   }
   async schduler(cid: number, now: Date, grade: Grade) {
@@ -68,8 +70,10 @@ export class CardService extends EventEmitter implements ICardService {
       currentState: card.state,
       nextState: record.card.state,
       nextDue: new Date(record.card.due).getTime(),
-      nid: card.nid as number,
       did: this.deckId,
+      nid: card.nid as number,
+      cid: card.cid,
+      orderId: card.orderId,
     });
     return schduler;
   }

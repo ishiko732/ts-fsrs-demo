@@ -79,7 +79,7 @@ export function nextAfterHandler(lapses: number, recordLogItem: RecordLogItem) {
   // lapses use userParams.lapses
   const suspended =
     log.rating === Rating.Again && card.lapses > 0 && card.lapses % lapses == 0;
-  return {
+  const data = {
     card: {
       ...(card as Card & { cid: number; nid: number }),
       due: card.due,
@@ -93,6 +93,8 @@ export function nextAfterHandler(lapses: number, recordLogItem: RecordLogItem) {
       grade: Rating[log.rating] as PrismaRating,
     },
   };
+  Reflect.deleteProperty(data.logs, 'rating');
+  return data;
 }
 
 export function rollbackAfterHandler(

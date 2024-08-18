@@ -1,10 +1,6 @@
 'use client';
-import {
-  ReviewBarAtom,
-  ReviewCore,
-  ReviewSvc,
-  useListeners,
-} from '@/atom/decks/review';
+import { ReviewBarAtom, ReviewCore, ReviewSvc } from '@/atom/decks/review';
+import { useListeners } from '@hooks/reviews/useListeners';
 import { DeckMemoryContext } from '@lib/reviews/type';
 import { Card, Note } from '@prisma/client';
 import { useAtomValue } from 'jotai';

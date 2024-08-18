@@ -30,6 +30,10 @@ type FSRSActionReturn = {
   did: number;
 };
 
+export type TEmitOption = {
+  emit: boolean;
+};
+
 export abstract class ICardService {
   abstract init(
     deckId: number,
@@ -37,7 +41,7 @@ export abstract class ICardService {
     parameters?: FSRSParameters
   ): void;
   abstract create(nid: number, orderId: number): Promise<Card>;
-  abstract getCard(cid: number): Promise<Card>;
+  abstract getCard(cid: number, option?: TEmitOption): Promise<Card>;
   abstract preview(cid: number, now: Date): Promise<RecordLog>;
   abstract schduler(
     cid: number,

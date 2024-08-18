@@ -1,9 +1,8 @@
 import { DeckService } from '@lib/reviews/deck';
-import StatusBar from './StatusBar';
-import { HydrateAtoms } from './hydrateAtoms';
+import { HydrateAtoms } from './HydrateAtoms';
 import { cardCrud, noteCrud } from '@lib/container';
 import { CARD_NULL } from '@/constant';
-import NoteHelper from './NoteHelper';
+import { ReviewContainer } from './Container';
 
 type PageProps = {
   params: {
@@ -40,8 +39,7 @@ export default async function Page({ params, searchParams }: PageProps) {
       notes={notes}
       cards={cards}
     >
-      <NoteHelper />
-      <StatusBar />
+      <ReviewContainer />
     </HydrateAtoms>
   );
 }
