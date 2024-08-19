@@ -56,7 +56,7 @@ export class NoteService extends EventEmitter implements INoteService {
     }
   }
 
-  review = () => {
+  _review = () => {
     // get note by random
     if (!this.notes.size) {
       return {
@@ -81,5 +81,11 @@ export class NoteService extends EventEmitter implements INoteService {
       data: { nid, cid, orderId },
       update,
     };
+  };
+
+  schduler = (nid: number = 0, cid: number = 0, orderId: number = 0) => {
+    const key = `${nid}-${cid}-${orderId}`;
+    this.note_card_relation.delete(key);
+    return this._review();
   };
 }

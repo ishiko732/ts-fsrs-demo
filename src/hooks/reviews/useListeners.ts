@@ -4,12 +4,16 @@ import {
   CurrentStateAtom,
   Boxes,
   CurrentPreviewAtom,
+  currentNote,
+  currentCard,
+  currentNoteId,
+  currentCardId,
 } from '@/atom/decks/review';
 import { StateBox } from '@/constant';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { use, useRef } from 'react';
-import { Card as PrismaCard, Note, State as PrismaState } from '@prisma/client';
-import { RecordLog } from 'ts-fsrs';
+import { useRef } from 'react';
+import { Card as PrismaCard, State as PrismaState } from '@prisma/client';
+import { TEmitCardScheduler, TEmitNoteScheduler } from '@lib/reviews/type';
 
 export function useListeners(page: number) {
   // init event emitter [boxes]
@@ -102,13 +106,7 @@ export function useListeners(page: number) {
   if (!loadedRef.current) {
     cardSvc.on(
       'scheduler',
-      ({
-        nextState,
-        currentState,
-      }: {
-        nextState: PrismaState;
-        currentState: PrismaState;
-      }) => {
+      ({ nextState, currentState, nid, cid, orderId }: TEmitCardScheduler) => {
         const currentBarAtom = setBarAtom[currentState];
         const nextBarAtom = setBarAtom[nextState];
         const keep =
@@ -129,9 +127,35 @@ export function useListeners(page: number) {
         ) {
           nextBarAtom((pre) => pre + 1);
         }
+        noteSvc.emit('scheduler', { nid, cid, orderId });
         console.log('on scheduler');
       }
     );
+  }
+
+  // 4. update current note and card
+  const setNoteId = useSetAtom(currentNoteId);
+  const setNote = useSetAtom(currentNote);
+  const setCardId = useSetAtom(currentCardId);
+  const setCard = useSetAtom(currentCard);
+  if (!loadedRef.current) {
+    noteSvc.on('scheduler', async (prev?: TEmitNoteScheduler) => {
+      const next = noteSvc.schduler(prev?.nid, prev?.cid, prev?.orderId);
+      const { nid, cid, orderId } = next.data;
+      let data: PrismaCard | null = null;
+      if (!cid) {
+        console.log('create card', nid, orderId);
+        data = await cardSvc.create(nid, orderId);
+        next.update(data.cid);
+      } else {
+        data = await cardSvc.getCard(cid);
+      }
+      setCardId(data.cid);
+      setCard(data);
+      setNoteId(nid);
+      const note = await noteSvc.getNote(nid);
+      setNote(note);
+    });
   }
 
   if (typeof window !== 'undefined') {

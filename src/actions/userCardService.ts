@@ -87,8 +87,8 @@ export async function schdulerAction(
         create: {
           ...recordItem.logs,
           duration,
-          uid:deck.uid,
-          did:deck.did
+          uid: deck.uid,
+          did: deck.did,
         },
       },
     },
@@ -193,6 +193,10 @@ export async function addCardAction(
   const uid = await getSessionUserId();
   if (!uid) {
     throw new Error('user not found.');
+  }
+  const existed = await getCardByNoteIdAndOrderId(uid, nid, orderId);
+  if (existed) {
+    return existed;
   }
   return await addCard(uid, nid, card, orderId);
 }

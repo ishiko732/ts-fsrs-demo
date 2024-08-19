@@ -113,3 +113,19 @@ enum NoteOrder {
 
 export type PartialRequired<T, K extends keyof T> = Partial<T> &
   Required<Pick<T, K>>;
+
+export type TEmitCardScheduler = {
+  currentState: PrismaState;
+  nextState: PrismaState;
+  nextDue: number;
+  did: number;
+  nid: number;
+  cid: number;
+  orderId: number;
+};
+
+export type TEmitNoteScheduler = {
+  nid: number;
+  cid: number;
+  orderId: number;
+};

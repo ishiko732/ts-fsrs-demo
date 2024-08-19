@@ -1,5 +1,5 @@
 import { FSRS, RecordLog, Grade, FSRSParameters, fsrs } from 'ts-fsrs';
-import { ICardService, TEmitOption } from '../type';
+import { ICardService, TEmitOption, TEmitCardScheduler } from '../type';
 import { Card as PrismaCard, State as PrismaState } from '@prisma/client';
 import { cardCrud } from '@lib/container';
 import { createEmptyCardByPrisma } from './fsrsToPrisma';
@@ -75,7 +75,7 @@ export class CardService extends EventEmitter implements ICardService {
       nid: card.nid as number,
       cid: card.cid,
       orderId: card.orderId,
-    });
+    } satisfies TEmitCardScheduler);
     return schduler;
   }
   async rollback() {
