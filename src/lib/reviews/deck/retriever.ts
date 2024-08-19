@@ -241,6 +241,18 @@ export async function getReviewMemoryTotal(
         uid,
         did: deckId,
         deleted: false,
+        cards: {
+          none: {
+            state: {
+              in: [
+                PrismaState.Review,
+                PrismaState.Learning,
+                PrismaState.Relearning,
+                PrismaState.New
+              ],
+            },
+          },
+        },
       },
       take: new_card_max,
     });
@@ -332,6 +344,18 @@ export async function getReviewMemoryState({
         deleted: false,
         nid: {
           notIn: datum[PrismaState.New].map((card) => card.nid),
+        },
+        cards: {
+          none: {
+            state: {
+              in: [
+                PrismaState.Review,
+                PrismaState.Learning,
+                PrismaState.Relearning,
+                PrismaState.New
+              ],
+            },
+          },
         },
       },
       take: Math.max(0, new_card_max - datum[PrismaState.New].length),

@@ -99,6 +99,10 @@ export function useListeners(page: number) {
       const record = await cardSvc.preview(cid, now);
       setCurrentPreview(record);
       console.log('on current card', record);
+      if (typeof window !== 'undefined' && 'container' in window) {
+        // debug
+        Reflect.set(window.container!, 'current', { type, record });
+      }
     });
   }
 
@@ -117,6 +121,7 @@ export function useListeners(page: number) {
           (currentState === PrismaState.Review &&
             nextState === PrismaState.Review);
 
+        let remove_rel = true;
         if (currentState === PrismaState.New || !keep) {
           currentBarAtom((pre) => pre - 1);
         }
@@ -126,8 +131,9 @@ export function useListeners(page: number) {
           !keep
         ) {
           nextBarAtom((pre) => pre + 1);
+          remove_rel = false;
         }
-        noteSvc.emit('scheduler', { nid, cid, orderId });
+        noteSvc.emit('scheduler', { nid, cid, orderId, remove: remove_rel });
         console.log('on scheduler');
       }
     );
@@ -142,25 +148,42 @@ export function useListeners(page: number) {
     noteSvc.on('scheduler', async (prev?: TEmitNoteScheduler) => {
       const next = noteSvc.schduler(prev?.nid, prev?.cid, prev?.orderId);
       const { nid, cid, orderId } = next.data;
-      let data: PrismaCard | null = null;
+      let card: PrismaCard | null = null;
       if (!cid) {
         console.log('create card', nid, orderId);
-        data = await cardSvc.create(nid, orderId);
-        next.update(data.cid);
+        card = await cardSvc.create(nid, orderId);
+        next.update(card.cid);
       } else {
-        data = await cardSvc.getCard(cid);
+        card = await cardSvc.getCard(cid);
       }
-      setCardId(data.cid);
-      setCard(data);
+      setCardId(card.cid);
+      setCard(card);
       setNoteId(nid);
-      const note = await noteSvc.getNote(nid);
-      setNote(note);
+      if (nid) {
+        const note = await noteSvc.getNote(nid);
+        setNote(note);
+        if (typeof window !== 'undefined' && 'container' in window) {
+          // debug
+          Reflect.set(window.container!, 'media', { note, card });
+        }
+      } else {
+        if (typeof window !== 'undefined' && 'container' in window) {
+          // debug
+          Reflect.set(window.container!, 'finish', {
+            status: true,
+            last: prev,
+          });
+        }
+      }
     });
   }
 
   if (typeof window !== 'undefined') {
     // debug
-    Reflect.set(window, 'svc', { deckSvc, noteSvc, cardSvc });
+    Reflect.set(window, 'container', {});
+    if ('container' in window) {
+      Reflect.set(window.container!, 'svc', { deckSvc, noteSvc, cardSvc });
+    }
   }
   loadedRef.current = true;
 }

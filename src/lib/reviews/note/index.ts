@@ -58,7 +58,7 @@ export class NoteService extends EventEmitter implements INoteService {
 
   _review = () => {
     // get note by random
-    if (!this.notes.size) {
+    if (!this.note_card_relation.size) {
       return {
         data: {
           nid: 0,
@@ -68,8 +68,9 @@ export class NoteService extends EventEmitter implements INoteService {
         update: () => true,
       };
     }
-    const index = Math.floor(Math.random() * this.notes.size);
+    const index = Math.floor(Math.random() * this.note_card_relation.size);
     const rel = Array.from(this.note_card_relation)[index];
+    console.log(rel);
     const [nid, cid, orderId] = rel.split('-').map(Number);
     const update = (cid: number) => {
       const key = `${nid}-${cid}-${orderId}`;
@@ -83,9 +84,16 @@ export class NoteService extends EventEmitter implements INoteService {
     };
   };
 
-  schduler = (nid: number = 0, cid: number = 0, orderId: number = 0) => {
+  schduler = (
+    nid: number = 0,
+    cid: number = 0,
+    orderId: number = 0,
+    remove: boolean = true
+  ) => {
     const key = `${nid}-${cid}-${orderId}`;
-    this.note_card_relation.delete(key);
+    if (remove) {
+      this.note_card_relation.delete(key);
+    }
     return this._review();
   };
 }
