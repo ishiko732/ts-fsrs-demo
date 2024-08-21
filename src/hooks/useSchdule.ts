@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { changeResponse } from "@/context/CardContext";
-import { CardBoxes } from "./useCardBoxes";
-import { Card, Note } from "@prisma/client";
-import { ChangeState, useChangeState } from "./useChangeState";
-import { Grade, RecordLog, State, fixDate, fsrs } from "ts-fsrs";
-import { startTransition, useEffect, useState } from "react";
-import { Rollback } from "./useRollback";
-import debounce from "@/lib/debounce";
-import callHandler from "@/components/source/call";
+import { changeResponse } from '@/context/CardContext';
+import { CardBoxes } from './useCardBoxes';
+import { Card, Note } from '@prisma/client';
+import { ChangeState, useChangeState } from './useChangeState';
+import { Grade, RecordLog, State, fixDate, fsrs } from 'ts-fsrs';
+import { startTransition, useEffect, useState } from 'react';
+import { Rollback } from './useRollback';
+import { debounce } from '@/lib/utils';
+import callHandler from '@/components/source/call';
 
 type SchduleProps = CardBoxes &
   Rollback & {
@@ -29,7 +29,10 @@ export type Schedule = {
   setDSR: React.Dispatch<React.SetStateAction<DSR | undefined>>;
   schedule: RecordLog | undefined;
   setSchedule: React.Dispatch<React.SetStateAction<RecordLog | undefined>>;
-  handleChange: (res: changeResponse, note: Note & { cards: Card[] }) => boolean;
+  handleChange: (
+    res: changeResponse,
+    note: Note & { cards: Card[] }
+  ) => boolean;
   handleSchdule: (grade: Grade) => Promise<boolean>;
 };
 
@@ -63,7 +66,8 @@ export function useSchedule({
     ];
     updatedNoteBox = updatedNoteBox.slice(1);
     updatedNoteBox = updatedNoteBox.toSorted(
-      (a, b) => fixDate(a.cards[0].due).getTime() - fixDate(b.cards[0].due).getTime()
+      (a, b) =>
+        fixDate(a.cards[0].due).getTime() - fixDate(b.cards[0].due).getTime()
     );
     startTransition(() => {
       // state update is marked as a transition, a slow re-render did not freeze the user interface.
@@ -107,7 +111,7 @@ export function useSchedule({
         note.cards[0].cid
       }&now=${now.getTime()}&offset=${now.getTimezoneOffset()}&grade=${grade}&duration=${duration}`,
       {
-        method: "put",
+        method: 'put',
       }
     ).then((res) => res.json());
     if (res.code === 0) {
@@ -126,17 +130,17 @@ export function useSchedule({
         `/api/fsrs?cid=${
           note.cards[0].cid
         }&now=${now.getTime()}&offset=${now.getTimezoneOffset()}`,
-        { method: "post" }
+        { method: 'post' }
       )
         .then((res) => res.json())
         .then((res) => {
           setSchedule(res);
           setShowTime(new Date().getTime());
         });
-      if (note.cards && note.cards[0].state === "Review") {
+      if (note.cards && note.cards[0].state === 'Review') {
         const r = fsrs().get_retrievability(
           note.cards[0],
-          fixDate(new Date().toLocaleString("UTC", { timeZone: "UTC" })),
+          fixDate(new Date().toLocaleString('UTC', { timeZone: 'UTC' })),
           true
         );
         if (r) {

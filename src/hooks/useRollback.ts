@@ -1,9 +1,9 @@
-import { StateBox } from "@lib/reviews/card/fsrsToPrisma/handler";
-import { Card, Note } from "@prisma/client";
-import { startTransition, useRef, useState } from "react";
-import { State, fixState } from "ts-fsrs";
-import { CardBoxes } from "./useCardBoxes";
-import debounce from "@/lib/debounce";
+import { StateBox } from '@lib/reviews/card/fsrsToPrisma/handler';
+import { Card, Note } from '@prisma/client';
+import { startTransition, useRef, useState } from 'react';
+import { State, fixState } from 'ts-fsrs';
+import { CardBoxes } from './useCardBoxes';
+import { debounce } from '@/lib/utils';
 
 type RollBackProps = CardBoxes & {
   open: boolean;
@@ -36,7 +36,7 @@ export function useRollback({
     }
     const { cid, nextStateBox } = rollBackRef.current.pop()!;
     const rollbackNote = (await fetch(`/api/fsrs?cid=${cid}&rollback=1`, {
-      method: "PUT",
+      method: 'PUT',
     })
       .then((res) => res.json())
       .then((res) => res.next)) as Note & { cards: Card[] };
