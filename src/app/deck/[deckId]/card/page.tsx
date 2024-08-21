@@ -4,6 +4,8 @@ import { cardCrud, noteCrud } from '@lib/container';
 import { CARD_NULL } from '@/constant';
 import { ReviewContainer } from './Container';
 
+export const dynamic = 'force-dynamic';
+
 type PageProps = {
   params: {
     deckId: string;
