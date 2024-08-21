@@ -5,10 +5,11 @@ import DateItem from '@/lib/formatDate';
 import Forget from './Forget';
 import Suspended from './Suspended';
 type Props = {
+  did: number;
   cards: Card[];
 };
 
-export default async function FSRSMsg({ cards }: Props) {
+export default async function FSRSMsg({ did, cards }: Props) {
   const card = cards[0];
   const f = fsrs();
   const retrievability = f.get_retrievability(card, new Date());
@@ -49,7 +50,7 @@ export default async function FSRSMsg({ cards }: Props) {
           </div>
         )}
         <div className='mt-2 flex py-4 justify-center items-center'>
-          <Forget cid={card.cid} />
+          <Forget did={did} cid={card.cid} />
           <Suspended cid={card.cid} suspend={card.suspended} className='ml-2' />
         </div>
       </div>

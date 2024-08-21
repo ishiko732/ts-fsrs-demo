@@ -47,7 +47,7 @@ async function HomePage() {
               Go to Deck
             </Button>
           </Link>
-          <Link href={'/card'} legacyBehavior>
+          <Link href={'/deck/0/card'} legacyBehavior>
             <Button className='m-2 w-full sm:w-auto min-w-6'>
               Go to Review
             </Button>

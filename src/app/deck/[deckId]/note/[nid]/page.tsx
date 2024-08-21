@@ -75,7 +75,7 @@ export default async function Page({ params, searchParams }: Props) {
                   <span className='font-semibold'>Card[FSRS]</span>
                 </div>
                 <div className='flex h-full items-center justify-center p-6'>
-                  <FSRSDetail cards={note.cards} />
+                  <FSRSDetail did={+params.deckId} cards={note.cards} />
                 </div>
               </ResizablePanel>
               <ResizableHandle
