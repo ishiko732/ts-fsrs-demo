@@ -129,3 +129,9 @@ export type TEmitNoteScheduler = {
   cid: number;
   orderId: number;
 };
+
+// export type TEmitNoteScheduler = {
+//   nid: number;
+//   cid: number;
+//   orderId: number;
+// };

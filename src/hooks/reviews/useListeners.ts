@@ -133,6 +133,13 @@ export function useListeners(page: number) {
           nextBarAtom((pre) => pre + 1);
           remove_rel = false;
         }
+
+        if (
+          currentState === PrismaState.Review &&
+          nextState === PrismaState.Review
+        ) {
+          currentBarAtom((pre) => pre - 1);
+        }
         noteSvc.emit('scheduler', { nid, cid, orderId, remove: remove_rel });
         console.log('on scheduler');
       }
