@@ -1,4 +1,5 @@
 import { ReviewSvc } from '@/atom/decks/review';
+import debounce from '@lib/debounce';
 import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
 
@@ -8,5 +9,5 @@ export const useRollback = () => {
     cardSvc.rollback();
   }, [cardSvc]);
 
-  return handlerRollback;
+  return debounce(handlerRollback);
 };

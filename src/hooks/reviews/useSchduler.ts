@@ -1,4 +1,5 @@
 import {  ReviewSvc } from '@/atom/decks/review';
+import debounce from '@lib/debounce';
 import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
 import { Grade } from 'ts-fsrs';
@@ -13,5 +14,5 @@ export const useScheduler = () => {
     [cardSvc]
   );
 
-  return handlerSchduler;
+  return debounce(handlerSchduler);
 };
