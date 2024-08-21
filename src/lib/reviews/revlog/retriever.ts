@@ -12,6 +12,9 @@ export const getRevlogs = async (
       uid,
       cid,
     },
+    orderBy: {
+      review: 'desc',
+    },
   });
 };
 
