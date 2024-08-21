@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { SetStateAction, useAtom, useAtomValue } from 'jotai';
 import {
@@ -13,6 +13,8 @@ import { useKeyPress } from '@hooks/reviews/useKeyPress';
 import { Grade, Grades, Rating, RecordLog, show_diff_message } from 'ts-fsrs';
 import { cn } from '@lib/utils';
 import LoadingSpinner from '@/components/loadingSpinner';
+import { useScheduler } from '@hooks/reviews/useSchduler';
+import { useRollback } from '@hooks/reviews/useRollback';
 
 interface PreviewButtonProps {
   open: boolean;
@@ -37,9 +39,11 @@ const ShowAnswer = ({ setOpen }: PreviewButtonProps) => {
 const Preview = ({
   recordLog,
   cardId,
+  handlerSchduler,
 }: {
   recordLog: RecordLog | null;
   cardId: number;
+  handlerSchduler: (cardId: number, grade: Grade) => Promise<void>;
 }) => {
   const cardSvc = useAtomValue(ReviewSvc.card);
   const color = ['bg-red-500', 'bg-orange-500', 'bg-blue-500', 'bg-green-500'];
@@ -49,14 +53,6 @@ const Preview = ({
     'hover:bg-blue-600',
     'hover:bg-green-600',
   ];
-
-  const handlerSchduler = useCallback(
-    async (grade: Grade) => {
-      const now = new Date();
-      cardSvc.schduler(cardId, now, grade);
-    },
-    [cardId, cardSvc]
-  );
   if (!recordLog) {
     return <LoadingSpinner />;
   }
@@ -77,7 +73,7 @@ const Preview = ({
             color[index],
             hoverColor[index]
           )}
-          onClick={async (e) => handlerSchduler(index + 1)}
+          onClick={async (e) => handlerSchduler(cardId, index + 1)}
           title={time}
         >
           <span>{Rating[(index + 1) as Grade]}</span>
@@ -98,9 +94,15 @@ function PreviewButton() {
   const [open, setOpen] = useAtom(DisplayAnswer);
   const cardId = useAtomValue(currentCardId);
   const recordLog = useAtomValue(CurrentPreviewAtom);
-  useKeyPress({ open, setOpen });
+  const handlerSchduler = useScheduler();
+  const handlerRollback = useRollback();
+  useKeyPress({ open, setOpen, handlerSchduler, handlerRollback });
   return open ? (
-    <Preview recordLog={recordLog ?? null} cardId={cardId} />
+    <Preview
+      recordLog={recordLog ?? null}
+      cardId={cardId}
+      handlerSchduler={handlerSchduler}
+    />
   ) : (
     <ShowAnswer open={open} setOpen={setOpen} />
   );

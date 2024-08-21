@@ -1,5 +1,10 @@
 import { FSRS, RecordLog, Grade, FSRSParameters, fsrs } from 'ts-fsrs';
-import { ICardService, TEmitOption, TEmitCardScheduler } from '../type';
+import {
+  ICardService,
+  TEmitOption,
+  TEmitCardScheduler,
+  TEmitCardRollback,
+} from '../type';
 import { Card as PrismaCard, State as PrismaState } from '@prisma/client';
 import { cardCrud } from '@lib/container';
 import { createEmptyCardByPrisma } from './fsrsToPrisma';
@@ -81,9 +86,20 @@ export class CardService extends EventEmitter implements ICardService {
   async rollback() {
     const last_cid = this.box.pop();
     if (last_cid === undefined) {
+      console.warn('no card to rollback');
       return null;
     }
     const rollback = await rollbackAction(this.deckId, last_cid);
+    const card = await cardCrud.get(last_cid);
+    this.cards.set(card.cid, card);
+    this.emit('rollback', {
+      did: this.deckId,
+      cid: last_cid,
+      orderId: card.orderId,
+      nid: card.nid,
+      nextState: rollback.nextState,
+      nextDue: rollback.nextDue,
+    } satisfies TEmitCardRollback);
     return rollback;
   }
 

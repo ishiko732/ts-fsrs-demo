@@ -130,8 +130,11 @@ export type TEmitNoteScheduler = {
   orderId: number;
 };
 
-// export type TEmitNoteScheduler = {
-//   nid: number;
-//   cid: number;
-//   orderId: number;
-// };
+export type TEmitCardRollback = {
+  did: number;
+  nid: number;
+  cid: number;
+  orderId: number;
+  nextState: PrismaState;
+  nextDue: number;
+};

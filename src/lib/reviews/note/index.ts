@@ -96,4 +96,12 @@ export class NoteService extends EventEmitter implements INoteService {
     }
     return this._review();
   };
+
+  rollback = (nid: number, cid: number, orderId: number) => {
+    const rel = `${nid}-${cid}-${orderId}`;
+    if(!this.note_card_relation.has(rel)) {
+      this.note_card_relation.add(rel);
+    }
+    return true;
+  };
 }

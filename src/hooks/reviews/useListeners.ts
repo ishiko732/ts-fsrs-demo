@@ -9,12 +9,17 @@ import {
   currentNoteId,
   currentCardId,
   DisplayFinish,
+  DisplayAnswer,
 } from '@/atom/decks/review';
 import { StateBox } from '@/constant';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useRef } from 'react';
 import { Card as PrismaCard, State as PrismaState } from '@prisma/client';
-import { TEmitCardScheduler, TEmitNoteScheduler } from '@lib/reviews/type';
+import {
+  TEmitCardRollback,
+  TEmitCardScheduler,
+  TEmitNoteScheduler,
+} from '@lib/reviews/type';
 
 export function useListeners(page: number) {
   // init event emitter [boxes]
@@ -152,6 +157,7 @@ export function useListeners(page: number) {
   const setNote = useSetAtom(currentNote);
   const setCardId = useSetAtom(currentCardId);
   const setCard = useSetAtom(currentCard);
+  const setOpen = useSetAtom(DisplayAnswer);
   if (!loadedRef.current) {
     noteSvc.on('scheduler', async (prev?: TEmitNoteScheduler) => {
       const next = noteSvc.schduler(prev?.nid, prev?.cid, prev?.orderId);
@@ -184,6 +190,7 @@ export function useListeners(page: number) {
           });
         }
       }
+      setOpen(false);
     });
   }
 
@@ -193,6 +200,25 @@ export function useListeners(page: number) {
     cardSvc.on('finish', async (prev?: TEmitNoteScheduler) => {
       console.log('on finish', prev);
       setFinish(true);
+    });
+  }
+
+  // extra rollback
+  if (!loadedRef.current) {
+    cardSvc.on('rollback', async (data: TEmitCardRollback) => {
+      console.log('on rollback', data);
+      if (data.nid == 0 || data.cid == 0) {
+        console.warn('rollback error', data);
+        return;
+      }
+      noteSvc.rollback(data.nid, data.cid, data.orderId);
+      setNoteId(data.nid);
+      setNote(await noteSvc.getNote(data.nid));
+      setCardId(data.cid);
+      setCard(await cardSvc.getCard(data.cid));
+      const nextBarAtom = setBarAtom[data.nextState];
+      nextBarAtom((pre) => pre + 1);
+      setOpen(false);
     });
   }
 

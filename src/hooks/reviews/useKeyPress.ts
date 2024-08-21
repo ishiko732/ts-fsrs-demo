@@ -1,14 +1,27 @@
 import { SetStateAction, useCallback, useEffect } from 'react';
+import { useScheduler } from './useSchduler';
+import { Grade } from 'ts-fsrs';
 
 interface PreviewButtonProps {
   open: boolean;
   setOpen: (update: SetStateAction<boolean>) => void;
+  handlerSchduler: (cardId: number, grade: Grade) => Promise<void>;
+  handlerRollback: () => Promise<void>;
 }
 
-export function useKeyPress({ open, setOpen }: PreviewButtonProps) {
+export function useKeyPress({
+  open,
+  setOpen,
+  handlerSchduler,
+  handlerRollback,
+}: PreviewButtonProps) {
   const handleKeyPress = useCallback(
     async (event: React.KeyboardEvent<HTMLElement>) => {
       // Call updateCalc here
+      let cid = 0;
+      if (window?.container?.media?.card?.cid) {
+        cid = window?.container?.media?.card?.cid;
+      }
       if (!open && event.code === 'Space') {
         setOpen(true);
       } else if (open) {
@@ -17,13 +30,12 @@ export function useKeyPress({ open, setOpen }: PreviewButtonProps) {
           case '2':
           case '3':
           case '4':
-            // await handleSchdule(Number(event.key) as Grade);
+            cid && (await handlerSchduler(cid, Number(event.key) as Grade));
             break;
         }
       }
-
       if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
-        // await handleRollBack();
+        await handlerRollback();
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
