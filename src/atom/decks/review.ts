@@ -55,3 +55,4 @@ export const Boxes = {
 // show
 export const DisplayAnswer = atom(false);
 export const DisplayDSR = atom(false);
+export const DisplayFinish = atom(false);

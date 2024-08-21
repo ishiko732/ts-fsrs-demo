@@ -8,6 +8,7 @@ import {
   currentCard,
   currentNoteId,
   currentCardId,
+  DisplayFinish,
 } from '@/atom/decks/review';
 import { StateBox } from '@/constant';
 import { useAtomValue, useSetAtom } from 'jotai';
@@ -174,6 +175,7 @@ export function useListeners(page: number) {
           Reflect.set(window.container!, 'media', { note, card });
         }
       } else {
+        cardSvc.emit('finish', prev);
         if (typeof window !== 'undefined' && 'container' in window) {
           // debug
           Reflect.set(window.container!, 'finish', {
@@ -182,6 +184,15 @@ export function useListeners(page: number) {
           });
         }
       }
+    });
+  }
+
+  // 5. update finish
+  const setFinish = useSetAtom(DisplayFinish);
+  if (!loadedRef.current) {
+    cardSvc.on('finish', async (prev?: TEmitNoteScheduler) => {
+      console.log('on finish', prev);
+      setFinish(true);
     });
   }
 
