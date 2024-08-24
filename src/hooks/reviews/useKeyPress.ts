@@ -15,32 +15,30 @@ export function useSchdulerKeyPress({
   const handleKeyPress = useCallback(
     async (event: KeyboardEvent) => {
       // Call updateCalc here
-      let cid = 0;
-      if (window?.container?.media?.card?.cid) {
-        cid = window?.container?.media?.card?.cid;
-      } else {
-        return;
-      }
-      if (!window.container?.keypressed?.open) {
-        return;
-      }
-      switch (event.key) {
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-          cid && (await handlerSchduler(cid, Number(event.key) as Grade));
-          Reflect.set(window.container!, 'keypressed', {
-            key: event.code,
-            open: false,
-            cid: cid,
-          });
-          break;
-      }
       if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
         await handlerRollback();
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      if (window.container?.keypressed?.open) {
+        let cid = 0;
+        if (window?.container?.media?.card?.cid) {
+          cid = window?.container?.media?.card?.cid;
+        } else {
+          return;
+        }
+        switch (event.key) {
+          case '1':
+          case '2':
+          case '3':
+          case '4':
+            cid && (await handlerSchduler(cid, Number(event.key) as Grade));
+            Reflect.set(window.container!, 'keypressed', {
+              key: event.code,
+              open: false,
+              cid: cid,
+            });
+            break;
+        }
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
