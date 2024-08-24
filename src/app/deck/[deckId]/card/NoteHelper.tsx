@@ -3,20 +3,30 @@ import { DisplayAnswer } from '@/atom/decks/review';
 import LoadingSpinner from '@/components/loadingSpinner';
 import { useReviewsInit } from '@hooks/reviews/useInit';
 import { TemplateProvider } from '@lib/reviews/note/template';
+import { EditNoteBtn } from '@lib/reviews/note/template/extra/EditNote';
 import { useAtomValue } from 'jotai';
+import { NoteDialog } from './NoteDialog';
 function NoteHelper() {
-  const { card, note, noteId } = useReviewsInit();
+  const { card, note, noteId, noteSvc } = useReviewsInit();
   const open = useAtomValue(DisplayAnswer);
   if (!noteId || !note) {
     return <LoadingSpinner />;
   }
 
   const source = note?.source ?? '';
-  const { FrontTemplate, BackTemplate } = TemplateProvider.getTemplate(source);
+  const { FrontTemplate, BackTemplate, useEditNoteByReview } =
+    TemplateProvider.getTemplate(source);
 
   return (
     <>
-      <FrontTemplate note={note} />
+      <NoteDialog
+        note={note}
+        noteSvc={noteSvc}
+        useEditNoteByReview={useEditNoteByReview}
+      />
+      <FrontTemplate note={note}>
+        <EditNoteBtn />
+      </FrontTemplate>
       <BackTemplate open={open} note={note} />
     </>
   );

@@ -56,3 +56,4 @@ export const Boxes = {
 export const DisplayAnswer = atom(false);
 export const DisplayDSR = atom(false);
 export const DisplayFinish = atom(false);
+export const DisplayNoteDialog = atom(false);

@@ -72,6 +72,9 @@ export const updateNote = async (
     where: { did: did, uid: uid, nid: nid },
     data: {
       ...note,
+      did: did,
+      nid: nid,
+      uid: uid,
       extend: note.extend ? JSON.stringify(note.extend) : '',
     },
   });

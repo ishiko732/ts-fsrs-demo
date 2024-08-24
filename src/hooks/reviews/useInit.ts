@@ -26,5 +26,6 @@ export const useReviewsInit = () => {
     card: card ?? null,
     noteId,
     cardId,
+    noteSvc,
   };
 };

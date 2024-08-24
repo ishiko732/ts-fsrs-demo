@@ -25,9 +25,10 @@ export class NoteService extends EventEmitter implements INoteService {
     note: Partial<Omit<PrimiseNote, 'did' | 'uid' | 'deleted'>>
   ): Promise<PrimiseNote> {
     const old = await this.getNote(nid);
-    const updated = await noteCrud.update(old.nid, old.did, note);
+    const updated = await noteCrud.update(old.did, old.nid, note);
     this.notes.set(nid, updated);
     this.traces.push(old);
+    this.emit('edit', updated);
     return updated;
   }
   async undo(): Promise<boolean> {
@@ -37,7 +38,7 @@ export class NoteService extends EventEmitter implements INoteService {
       return false;
     }
     // restore note
-    const updated = await noteCrud.update(last.nid, last.did, last);
+    const updated = await noteCrud.update(last.did, last.nid, last);
     this.notes.set(last.nid, updated);
     return true;
   }

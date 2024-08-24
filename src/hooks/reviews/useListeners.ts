@@ -14,7 +14,11 @@ import {
 import { StateBox } from '@/constant';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useRef } from 'react';
-import { Card as PrismaCard, State as PrismaState } from '@prisma/client';
+import {
+  Card as PrismaCard,
+  State as PrismaState,
+  Note as PrismaNote,
+} from '@prisma/client';
 import {
   TEmitCardRollback,
   TEmitCardScheduler,
@@ -219,6 +223,14 @@ export function useListeners(page: number) {
       const nextBarAtom = setBarAtom[data.nextState];
       nextBarAtom((pre) => pre + 1);
       setOpen(false);
+    });
+  }
+
+  // extra edit note
+  if (!loadedRef.current) {
+    noteSvc.on('edit', async (note: PrismaNote) => {
+      setNoteId(note.nid);
+      setNote(note);
     });
   }
 
