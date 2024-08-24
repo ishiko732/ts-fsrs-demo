@@ -74,6 +74,11 @@ declare global {
         note: NoteService;
         deck: DeckService;
       };
+      keypressed?: {
+        code: string;
+        open: boolean;
+        cid?: number;
+      };
     };
   }
 }

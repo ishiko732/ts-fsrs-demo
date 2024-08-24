@@ -9,12 +9,13 @@ import {
   DisplayAnswer,
   ReviewSvc,
 } from '@/atom/decks/review';
-import { useKeyPress } from '@hooks/reviews/useKeyPress';
+import { useSchdulerKeyPress } from '@hooks/reviews/useKeyPress';
 import { Grade, Grades, Rating, RecordLog, show_diff_message } from 'ts-fsrs';
 import { cn } from '@lib/utils';
 import LoadingSpinner from '@/components/loadingSpinner';
 import { useScheduler } from '@hooks/reviews/useSchduler';
 import { useRollback } from '@hooks/reviews/useRollback';
+import { useOpenKeyPress } from '@hooks/reviews/useOpenKeyPress';
 
 interface PreviewButtonProps {
   open: boolean;
@@ -22,6 +23,7 @@ interface PreviewButtonProps {
 }
 
 const ShowAnswer = ({ setOpen }: PreviewButtonProps) => {
+  useOpenKeyPress();
   return (
     <Button
       className='mt-4 tooltip tooltip-bottom w-full'
@@ -45,7 +47,6 @@ const Preview = ({
   cardId: number;
   handlerSchduler: (cardId: number, grade: Grade) => Promise<void>;
 }) => {
-  const cardSvc = useAtomValue(ReviewSvc.card);
   const color = ['bg-red-500', 'bg-orange-500', 'bg-blue-500', 'bg-green-500'];
   const hoverColor = [
     'hover:bg-red-600',
@@ -96,7 +97,7 @@ function PreviewButton() {
   const recordLog = useAtomValue(CurrentPreviewAtom);
   const handlerSchduler = useScheduler();
   const handlerRollback = useRollback();
-  useKeyPress({ open, setOpen, handlerSchduler, handlerRollback });
+  useSchdulerKeyPress({ handlerSchduler, handlerRollback });
   return open ? (
     <Preview
       recordLog={recordLog ?? null}
