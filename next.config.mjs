@@ -14,12 +14,8 @@ const nextConfig = {
     return [
       {
         source: "/api/lingq/local/:path*",
-        destination: "https://fsrs.parallelveil.com/api/lingq/:path*",
+        destination: "https://fsrs.parallelveil.com/api/proxy/lingq/:path*",
       },
-      {
-        source: '/lingq/api/:path*',
-        destination: 'https://www.lingq.com/api/:path*',
-      }
     ];
   },
   // compiler: {
