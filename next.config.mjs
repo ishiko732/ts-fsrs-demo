@@ -11,9 +11,9 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    return [
+    return process.env.NODE_ENV === 'production' ? [] : [
       {
-        source: "/api/lingq/local/:path*",
+        source: "/api/proxy/lingq/:path*",
         destination: "https://fsrs.parallelveil.com/api/proxy/lingq/:path*",
       },
     ];
