@@ -11,16 +11,14 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    return [
-      {
-        source: "/api/lingq/local/:path*",
-        destination: "https://fsrs.parallelveil.com/api/lingq/:path*",
-      },
-      {
-        source: '/lingq/:path*',
-        destination: 'https://www.lingq.com/:path*',
-      }
-    ];
+    return {
+      fallback: [
+        {
+          source: "/lingq/:path*",
+          destination: 'https://www.lingq.com/:path*',
+        }
+      ]
+    }
   },
   // compiler: {
   //   removeConsole: process.env.NODE_ENV === "production",
