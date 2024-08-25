@@ -24,8 +24,7 @@ const handler = async (
     if (contentType?.includes('application/json')) {
       body = JSON.parse(await request.json());
     } else if (contentType?.includes('multipart/form-data')) {
-      const formData = await request.formData();
-      body = Object.fromEntries(formData.entries());
+      body = await request.formData();
     } else {
       body = await request.text();
     }
