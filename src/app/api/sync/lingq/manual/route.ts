@@ -1,8 +1,8 @@
 import { getAuthSession } from "@/app/(auth)/api/auth/[...nextauth]/session";
 import { getFSRSParamsByUid } from "@/lib/fsrs";
 import prisma from "@/lib/prisma";
+import { getLingqs } from "@lib/apps/lingq/request";
 import { createEmptyCardByPrisma } from "@lib/reviews/card/fsrsToPrisma";
-import { getLingqs } from "@/vendor/lingq/request";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

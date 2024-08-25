@@ -8,8 +8,9 @@ import {
 import prisma from './prisma';
 import { Parameters } from '@prisma/client';
 import { FSRSPutParams } from '@/types';
-import { decryptLingqKey, encryptLingqKey } from '@/vendor/lingq/crypt';
+
 import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
+import { decryptKey, encryptKey } from './crypt';
 
 export type ParametersType = {
   params: FSRSParameters;
@@ -50,10 +51,7 @@ async function processArrayParameters(
     params.lingq_counter &&
     params.lingq_token.length > 0
   ) {
-    lingq_token = await decryptLingqKey(
-      params.lingq_token,
-      params.lingq_counter
-    );
+    lingq_token = await decryptKey(params.lingq_token, params.lingq_counter);
   }
 
   return {
@@ -73,7 +71,7 @@ export async function updateParameters(params: FSRSPutParams) {
   let counter = null,
     token = null;
   if (params.lingq_token && params.lingq_token.length > 0) {
-    const { lingq_token, lingq_counter } = await encryptLingqKey(
+    const { token: lingq_token, counter: lingq_counter } = await encryptKey(
       params.lingq_token
     );
     token = lingq_token;

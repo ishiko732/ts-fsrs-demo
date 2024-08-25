@@ -1,7 +1,10 @@
-import { SyncWaitUser, getLingqLanguageCode, syncUser } from '@/vendor/lingq/sync';
-import { kv } from "@vercel/kv";
+import {
+  getLingqLanguageCode,
+  syncUser,
+  SyncWaitUser,
+} from '@lib/apps/lingq/sync';
+import { kv } from '@vercel/kv';
 import { NextResponse, type NextRequest } from 'next/server';
-
 
 const globalForLingq = global as unknown as { syncUser?: SyncWaitUser[] };
 
@@ -17,9 +20,9 @@ export async function GET(request: NextRequest) {
   const msg = users.map(async (user) => {
     return {
       ...user,
-      langs: await getLingqLanguageCode(user)
-    }
-  })
+      langs: await getLingqLanguageCode(user),
+    };
+  });
   const data = await Promise.all(msg);
   if (process.env.NODE_ENV === 'production') {
     await kv.set('lingq:syncUser', JSON.stringify(data));
@@ -28,4 +31,3 @@ export async function GET(request: NextRequest) {
   }
   return NextResponse.json({ success: true });
 }
-

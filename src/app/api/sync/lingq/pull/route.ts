@@ -1,4 +1,4 @@
-import { SyncWaitUser, getLingqLanguageCode, syncLingqs, syncUser } from '@/vendor/lingq/sync';
+import { getLingqLanguageCode, syncLingqs, syncUser, SyncWaitUser } from "@lib/apps/lingq/sync";
 import { kv } from "@vercel/kv";
 import { NextResponse, type NextRequest } from 'next/server';
 

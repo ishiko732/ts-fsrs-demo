@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
-import { decryptLingqKey } from "./crypt";
+import { decryptKey } from "../../crypt";
 import { getLingqContext, getLingqs } from "./request";
-import { createEmptyCardByPrisma } from "../../lib/reviews/card/fsrsToPrisma";
+import { createEmptyCardByPrisma } from "../../reviews/card/fsrsToPrisma";
 import { Prisma } from "@prisma/client";
 
 type SyncUser = {
@@ -35,7 +35,7 @@ async function syncUser() {
     const promise = users.map(async (syncUser) => {
         return {
             uid: syncUser.uid,
-            token: await decryptLingqKey(syncUser.lingq_token, syncUser.lingq_counter)
+            token: await decryptKey(syncUser.lingq_token, syncUser.lingq_counter)
         } as DecryptSyncUser
     })
     return Promise.all(promise)

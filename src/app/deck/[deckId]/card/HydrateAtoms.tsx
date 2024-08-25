@@ -1,5 +1,6 @@
 'use client';
 import { ReviewBarAtom, ReviewCore, ReviewSvc } from '@/atom/decks/review';
+import { useExtraService } from '@hooks/reviews/useExtraHelper';
 import { useListeners } from '@hooks/reviews/useListeners';
 import { DeckMemoryContext } from '@lib/reviews/type';
 import { Card, Note } from '@prisma/client';
@@ -53,5 +54,6 @@ export const HydrateAtoms = ({
     [ReviewBarAtom.Review, total.Review],
   ]);
 
+  useExtraService();
   return <>{children}</>;
 };
