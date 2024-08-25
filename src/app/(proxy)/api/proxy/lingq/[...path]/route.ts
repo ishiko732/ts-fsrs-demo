@@ -19,10 +19,10 @@ const handler = async (
     targetUrl += `?${searchParams.toString()}`;
   }
   // build request options
-  let body;
+  let body: string | FormData | null = null;
   try {
     if (contentType?.includes('application/json')) {
-      body = JSON.parse(await request.json());
+      body = JSON.stringify(await request.json()) as string;
     } else if (contentType?.includes('multipart/form-data')) {
       body = await request.formData();
     } else {
