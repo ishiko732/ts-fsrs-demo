@@ -1,5 +1,5 @@
 import { getKeyAction, setKeyAction } from '@actions/useExtraService';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
 export async function GET() {
   function buf2hex(buffer: ArrayBuffer) {
@@ -20,7 +20,7 @@ export async function GET() {
   return NextResponse.json({ key: buf2hex(exported) });
 }
 
-export async function POST(request: NextResponse) {
+export async function POST(request: NextRequest) {
   const json = (await request.json()) as
     | { token: string; type: 'get'; counter: string }
     | { key: string; type: 'set' };
