@@ -22,7 +22,7 @@ const handler = async (
   let body;
   try {
     if (contentType?.includes('application/json')) {
-      body = await request.json();
+      body = JSON.parse(await request.json());
     } else if (contentType?.includes('multipart/form-data')) {
       const formData = await request.formData();
       body = Object.fromEntries(formData.entries());
@@ -46,10 +46,7 @@ const handler = async (
         Authorization: token,
         'user-agent': userAgent,
       },
-      body:
-        request.method !== 'GET' && request.method !== 'HEAD'
-          ? JSON.stringify(body)
-          : null,
+      body: request.method !== 'GET' && request.method !== 'HEAD' ? body : null,
     });
 
     // return response from target server
