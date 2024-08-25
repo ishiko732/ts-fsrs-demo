@@ -10,6 +10,7 @@ const handler = async (
   const headersList = headers();
   const token = headersList.get('authorization') ?? ''; // TOKEN
   const userAgent = headersList.get('user-agent') ?? ''; // USER-AGENT
+  const contentType = headersList.get('content-type');
   const searchParams = request.nextUrl.searchParams;
 
   // build target URL
@@ -19,14 +20,21 @@ const handler = async (
   }
   // build request options
   let body;
-  const contentType = headersList.get('content-type');
-  if (contentType?.includes('application/json')) {
-    body = await request.json();
-  } else if (contentType?.includes('multipart/form-data')) {
-    const formData = await request.formData();
-    body = Object.fromEntries(formData.entries());
-  } else {
-    body = await request.text();
+  try {
+    if (contentType?.includes('application/json')) {
+      body = await request.json();
+    } else if (contentType?.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      body = Object.fromEntries(formData.entries());
+    } else {
+      body = await request.text();
+    }
+  } catch (error) {
+    console.error(`[${method}:${targetUrl}]Error parsing request: ${error}`);
+    return NextResponse.json(
+      { message: 'Error parsing request', url: targetUrl, method },
+      { status: 400 }
+    );
   }
 
   // send request to target server
@@ -51,7 +59,7 @@ const handler = async (
     console.error(`[${method}:${targetUrl}]Error forwarding request: ${error}`);
     return NextResponse.json(
       { message: 'Error forwarding request', url: targetUrl, method },
-      { status: 500 }
+      { status: 502 }
     );
   }
 };
