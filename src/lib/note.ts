@@ -4,35 +4,23 @@ import { ProgeigoNodeData, NodeData } from '@/types';
 import { createEmptyCardByPrisma } from '@lib/reviews/card/fsrsToPrisma';
 import { Card, Note, Prisma, PrismaPromise } from '@prisma/client';
 
-export async function initProgeigoNote(uid: number, data: ProgeigoNodeData) {
-  const question = data.英単語;
-  const answer = data.意味;
-  if (!question || !answer) {
-    return false;
-  }
-
-  const fc = createEmptyCardByPrisma();
-  return prisma.note.create({
-    data: {
-      uid,
-      question,
-      answer,
-      extend: JSON.stringify(data),
-      cards: {
-        create: fc,
-      },
-      source: 'プログラミング必須英単語600+',
-    },
-    include: { cards: true },
-  });
-}
-
 export async function initProgeigoNotes(
   uid: number,
+  deckId: number,
   dates: ProgeigoNodeData[]
 ) {
-  const all = dates.map((note) => initProgeigoNote(uid, note));
-  return Promise.all(all);
+  const datum = dates.map((node) => {
+    return {
+      uid,
+      did: deckId,
+      question: node.英単語,
+      answer: node.意味,
+      source: 'ProgeigoNote',
+      sourceId: `${node.$rowIndex}`,
+      extend: JSON.stringify(node),
+    } satisfies Omit<Note, 'nid' | 'deleted'>;
+  });
+  return prisma.note.createMany({ data: datum });
 }
 
 export async function getNotes({

@@ -1,15 +1,15 @@
-import prisma from "@/lib/prisma";
+import prisma from '@/lib/prisma';
 import {
   default_enable_fuzz,
   default_maximum_interval,
   default_request_retention,
   default_w,
-} from "ts-fsrs";
-import progeigo from "@/../public/プログラミング必須英単語600+.json" assert { type: "json" };
-import { initProgeigoNotes } from "@/lib/note";
-import { ProgeigoNodeData, UserCreatedRequired } from "@/types";
-import { getUserByEmail, getUserByOauthId } from "@/lib/user";
-import { User, Parameters } from "@prisma/client";
+} from 'ts-fsrs';
+import progeigo from '@/../public/プログラミング必須英単語600+.json' assert { type: 'json' };
+import { initProgeigoNotes } from '@/lib/note';
+import { ProgeigoNodeData, UserCreatedRequired } from '@/types';
+import { getUserByEmail, getUserByOauthId } from '@/lib/user';
+import { User, Parameters } from '@prisma/client';
 
 // init user and fsrs config
 export async function initUserAndFSRS(
@@ -37,18 +37,19 @@ export async function initUserAndFSRS(
       },
     });
   if (!params.user) {
-    throw new Error("user not found");
+    throw new Error('user not found');
   }
   return params as Parameters & { user: User };
 }
 
 // init progeigo dates
 export async function initProgeigoDates(uid: number) {
-  console.log("init dates");
+  console.log('init dates');
   const dates: ProgeigoNodeData[] = progeigo.data.英単語.map(
     (node) => node.data
   ) as ProgeigoNodeData[];
-  return initProgeigoNotes(uid, dates.slice(0, 60));
+
+  return initProgeigoNotes(uid, 0, dates.slice(0, 60));
 }
 
 // find or init user
