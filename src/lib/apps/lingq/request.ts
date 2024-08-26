@@ -1,4 +1,4 @@
-const BaseUrl = '/lingq/api';
+const BaseUrl = '/api/proxy/lingq';
 
 async function streamToString(stream: ReadableStream) {
   const reader = stream.getReader();
@@ -24,9 +24,10 @@ export async function request<T>(
   }
   if (options.method === 'GET' || options.method === 'HEAD') {
     if (options.body != null) {
-      const params = JSON.parse(options.body as string) as {
-        [key: string]: string;
-      };
+      const params = JSON.parse(options.body as string) as Record<
+        string,
+        string
+      >;
       for (const [key, value] of Object.entries(params)) {
         if (value) searchParams.append(key, value);
       }
@@ -34,22 +35,22 @@ export async function request<T>(
     options.body = undefined;
   }
   const Authorization = `Token ${token}`;
-  console.log(url_path);
-  const response = await fetch(
-    `${url_path}${searchParams.size > 0 ? searchParams.toString() : ''}`,
-    {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization,
-        ...options.headers,
-      },
-      next: {
-        revalidate,
-      },
-    }
-  );
+  const finalUrl = `${url_path}${
+    searchParams.size > 0 ? `?${searchParams.toString()}` : ''
+  }`;
+  const response = await fetch(finalUrl, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization,
+      ...options.headers,
+    },
+    next: {
+      revalidate,
+    },
+    cache: 'no-cache',
+  });
   if (!response.ok) {
     throw new Error(response.statusText);
   }

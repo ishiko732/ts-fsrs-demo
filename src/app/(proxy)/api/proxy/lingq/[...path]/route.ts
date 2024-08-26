@@ -21,12 +21,14 @@ const handler = async (
   // build request options
   let body: string | FormData | null = null;
   try {
-    if (contentType?.includes('application/json')) {
-      body = JSON.stringify(await request.json()) as string;
-    } else if (contentType?.includes('multipart/form-data')) {
-      body = await request.formData();
-    } else {
-      body = await request.text();
+    if (method !== 'GET' && method !== 'HEAD') {
+      if (contentType?.includes('application/json')) {
+        body = JSON.stringify(await request.json()) as string;
+      } else if (contentType?.includes('multipart/form-data')) {
+        body = await request.formData();
+      } else {
+        body = await request.text();
+      }
     }
   } catch (error) {
     console.error(`[${method}:${targetUrl}]Error parsing request: ${error}`);
@@ -45,13 +47,18 @@ const handler = async (
         Authorization: token,
         'user-agent': userAgent,
       },
-      body: request.method !== 'GET' && request.method !== 'HEAD' ? body : null,
+      body: method !== 'GET' && method !== 'HEAD' ? body : null,
+      next: {
+        revalidate: false,
+      },
+      cache: 'no-cache',
     });
 
     // return response from target server
     const responseData = await response.json();
     return NextResponse.json(responseData, { status: response.status });
   } catch (error) {
+    console.error(error);
     console.error(`[${method}:${targetUrl}]Error forwarding request: ${error}`);
     return NextResponse.json(
       { message: 'Error forwarding request', url: targetUrl, method },

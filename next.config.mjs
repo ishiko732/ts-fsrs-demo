@@ -10,14 +10,6 @@ const nextConfig = {
       },
     ],
   },
-  async rewrites() {
-    return process.env.NODE_ENV === 'production' ? [] : [
-      {
-        source: "/api/proxy/lingq/:path*",
-        destination: "https://fsrs.parallelveil.com/api/proxy/lingq/:path*",
-      },
-    ];
-  },
   // compiler: {
   //   removeConsole: process.env.NODE_ENV === "production",
   // },
