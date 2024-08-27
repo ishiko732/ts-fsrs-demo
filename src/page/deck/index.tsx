@@ -3,6 +3,7 @@ import { getUserTimeZone } from '@actions/userTimezone';
 import AddDeckItem from './add_deck';
 import DeckDialog from './dialog';
 import { deckCrud } from '@lib/container';
+import { InstallAppsDialog } from './install-apps-dialog';
 
 export default async function DeckPage({ deleted }: { deleted?: boolean }) {
   // const deckService = new DeckService(0);
@@ -18,6 +19,7 @@ export default async function DeckPage({ deleted }: { deleted?: boolean }) {
   const { timezone, hourOffset } = await getUserTimeZone();
   return (
     <div className='container  pt-4 flex flex-wrap items-start'>
+      <InstallAppsDialog />
       <DeckDialog />
       {list.map((deck) => (
         <DeckItem

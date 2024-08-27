@@ -10,6 +10,7 @@ import { DeleteDeck } from './actions/delete-deck';
 import { RestoreDeck } from './actions/restore-deck';
 import { ViewNote } from './actions/view-note';
 import { StartReview } from './actions/start-review';
+import { InstallApp } from './actions/install-apps';
 
 const actions = [
   {
@@ -32,9 +33,10 @@ const actions = [
     name: 'Restore Deck',
     Action: RestoreDeck,
   },
-  // { TODO: Implement this
-  //   name: 'Install App',
-  // },
+  { 
+    name: 'Install App',
+    Action: InstallApp
+  },
 ];
 
 export default async function DeckActions({ deck }: { deck: Deck }) {
