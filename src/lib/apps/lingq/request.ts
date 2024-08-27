@@ -1,3 +1,5 @@
+import type { TGetLingqContext, TGetLingqTTS, TLingqReview } from './types';
+
 const BaseUrl = '/api/proxy/lingq';
 
 async function streamToString(stream: ReadableStream) {
@@ -62,12 +64,7 @@ export async function getLingqContext({
   page_size,
   page,
   token,
-}: {
-  language?: languageCode;
-  page_size?: number;
-  page?: number;
-  token: string;
-}): Promise<Contexts> {
+}: TGetLingqContext): Promise<Contexts> {
   return request<Contexts>('v2/contexts', token, {
     body: JSON.stringify({ language, page_size, page }),
     method: 'GET',
@@ -115,13 +112,7 @@ export async function changeLingqStatus({
   status,
   extended_status,
   token,
-}: {
-  language: languageCode;
-  id: number;
-  status: LingqStatus;
-  extended_status: LingqExtendedStatus;
-  token: string;
-}): Promise<Lingq> {
+}: TLingqReview): Promise<Lingq> {
   return request<Lingq>(`v3/${language}/cards/${id}/`, token, {
     body: JSON.stringify({ status, extended_status }),
     method: 'PATCH',
@@ -132,11 +123,7 @@ export async function getLingqTTS({
   language,
   text,
   token,
-}: {
-  language: languageCode;
-  text: string;
-  token: string;
-}): Promise<LingqTTS> {
+}: TGetLingqTTS): Promise<LingqTTS> {
   let app_name, voice;
   if (language === 'ja') {
     app_name = 'gCloudTTS';
