@@ -34,7 +34,7 @@ const InstallLingq = ({
   const [language, setLanguage] = useState(params?.language ?? '');
   const [languages, setLanguages] = useState<string[]>([]);
   const [message, setmessage] = useState('');
-  const handlerClick = async (language: string = '') => {
+  const handlerClick = async (lang: string = language) => {
     if (!lingqToken) {
       setmessage('Please enter a valid LingQ API Key');
       return;
@@ -42,7 +42,7 @@ const InstallLingq = ({
       setmessage('');
     }
     setLoading(true);
-    await installHandler({ token: lingqToken, language });
+    await installHandler({ token: lingqToken, language: lang });
     setLoading(false);
   };
   useEffect(() => {
