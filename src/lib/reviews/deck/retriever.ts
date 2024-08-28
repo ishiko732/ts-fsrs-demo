@@ -109,6 +109,35 @@ export const updateDeck = async (
   });
 };
 
+export const updateDeckExtend = async (
+  uid: number,
+  deckId: number,
+  service: string,
+  install: boolean,
+  extend: object = {}
+) => {
+  const deck_db = await prisma.deck.findUnique({
+    where: { did: deckId, uid },
+    select: { extends: true },
+  });
+  if (!deck_db) {
+    throw new Error('deck not found');
+  }
+  let extends_data = deck_db.extends as Record<string, object>;
+  if (install && extend) {
+    extends_data[service] = extend;
+  } else {
+    Reflect.deleteProperty(extends_data, service);
+  }
+
+  return prisma.deck.update({
+    where: { did: deckId, uid: uid },
+    data: {
+      extends: extends_data,
+    },
+  });
+};
+
 export const deleteDeck = async (
   uid: number,
   deckId: number,

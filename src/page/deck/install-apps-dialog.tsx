@@ -16,8 +16,9 @@ import {
 } from '@/components/ui/dialog';
 import { Apps } from '@lib/apps';
 import { TAppData, TAppProps } from '@lib/apps/types';
+import { deckCrud } from '@lib/container';
 import { useAtom, useAtomValue } from 'jotai';
-import { Box, PackageMinus, PackagePlus } from 'lucide-react';
+import { Box } from 'lucide-react';
 
 export function InstallAppsDialog() {
   const deckApps = useAtomValue(DeckAppsAtom);
@@ -29,6 +30,14 @@ export function InstallAppsDialog() {
   const installHandler = async (service: string, params: object) => {
     setInstalledApps((prev) => {
       prev.set(service, params);
+      new Promise(async () => {
+        await deckCrud.updateExtend(
+          deckId,
+          service,
+          true, // install
+          params
+        );
+      });
       return new Map(prev);
     });
     return true;
@@ -37,6 +46,13 @@ export function InstallAppsDialog() {
   const removeHandler = async (service: string) => {
     setInstalledApps((prev) => {
       prev.delete(service);
+      new Promise(async () => {
+        await deckCrud.updateExtend(
+          deckId,
+          service,
+          false // install
+        );
+      });
       return new Map(prev);
     });
     return true;

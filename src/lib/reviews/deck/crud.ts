@@ -8,6 +8,7 @@ import {
   getParamsByUserIdAction,
   restoreDeckAction,
   updateDeckAction,
+  updateDeckExtendAction,
 } from '@actions/userDeckService';
 import { Deck } from '@prisma/client';
 import { date_scheduler } from 'ts-fsrs';
@@ -28,6 +29,15 @@ export class DeckCrud {
 
   async update(deck: Omit<Deck, 'uid' | 'deleted' | 'extends'>) {
     return await updateDeckAction(deck);
+  }
+
+  async updateExtend(
+    deckId: number,
+    service: string,
+    install: boolean,
+    extend?: object
+  ) {
+    return await updateDeckExtendAction(deckId, service, install, extend);
   }
   async delete(did: number, move: boolean) {
     // move: true => move to default deck

@@ -11,11 +11,12 @@ import {
   getParamsByUserId_cache,
   restoreDeck,
   updateDeck,
+  updateDeckExtend,
 } from '@lib/reviews/deck/retriever';
 import { getNumberOfNewCardsLearnedToday } from '@lib/reviews/deck/retriever';
-import { Deck, State as PrismaState } from '@prisma/client';
+import { Deck } from '@prisma/client';
 import { NoteMemoryContext } from '@lib/reviews/type';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidateTag } from 'next/cache';
 
 // Deck Crud
 
@@ -53,6 +54,23 @@ export async function updateDeckAction(
     throw new Error('user not found.');
   }
   const res = await updateDeck(uid, { ...deck, deleted: false });
+  revalidateTag(`actions/decks/${uid}/deleted/1`);
+  revalidateTag(`actions/decks/${uid}/deleted/0`);
+  revalidateTag(`actions/deck_params/${uid}`);
+  return res;
+}
+
+export async function updateDeckExtendAction(
+  deckId: number,
+  service: string,
+  install: boolean,
+  extend?: object
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const res = await updateDeckExtend(uid, deckId, service, install, extend);
   revalidateTag(`actions/decks/${uid}/deleted/1`);
   revalidateTag(`actions/decks/${uid}/deleted/0`);
   revalidateTag(`actions/deck_params/${uid}`);
