@@ -20,6 +20,7 @@ import {
 
 interface TAppPrams extends Object {
   token: string;
+  language: string;
 }
 
 const InstallLingq = ({
@@ -30,6 +31,7 @@ const InstallLingq = ({
 }: TAppProps<TAppPrams>) => {
   const [loading, setLoading] = useState(false);
   const [lingqToken, setLingqToken] = useState(params?.token ?? '');
+  const [language, setLanguage] = useState(params?.language ?? '');
   const [languages, setLanguages] = useState<string[]>([]);
   const [message, setmessage] = useState('');
   const handlerClick = async (language: string = '') => {
@@ -81,9 +83,11 @@ const InstallLingq = ({
         <>
           <Label htmlFor='language'>Language</Label>
           <Select
+            value={language}
             onValueChange={async (value) => {
               console.log('onValueChange', value);
               await handlerClick(value);
+              setLanguage(value);
             }}
           >
             <SelectTrigger>

@@ -25,7 +25,7 @@ export function InstallAppsDialog() {
   const deckId = useAtomValue(deckApps.deckId);
   const [open, setOpen] = useAtom(deckApps.openInstall);
   const [installedApps, setInstalledApps] = useAtom(deckApps.apps);
-  const apps = Apps;
+  console.log(installedApps)
 
   const installHandler = async (service: string, params: object) => {
     setInstalledApps((prev) => {

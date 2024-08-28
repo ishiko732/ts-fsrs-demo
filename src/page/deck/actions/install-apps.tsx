@@ -20,8 +20,8 @@ export const InstallApp = ({
   const handler = useCallback(() => {
     const extend = deck.extends as Record<string, object>;
     const map = new Map<string, object>();
-    for (const key in Object.keys(extend)) {
-      map.set(key, extend[key]);
+    for (const [key, value] of Object.entries(extend)) {
+      map.set(key, value);
     }
     setDeckId(deck.did);
     setOpen(true);
