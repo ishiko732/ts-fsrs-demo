@@ -35,6 +35,17 @@ export class CardService extends EventEmitter implements ICardService {
 
   async create(nid: number, orderId: number): Promise<PrismaCard> {
     const empty_card = createEmptyCardByPrisma();
+    if (nid === 0) {
+      console.error('nid is 0');
+      return {
+        ...empty_card,
+        uid: 0,
+        orderId: 0,
+        deleted: false,
+        cid: 0,
+        nid: 0,
+      };
+    }
     const card = await cardCrud.create(nid, empty_card, orderId);
     this.cards.set(card.cid, card);
     this.emit('current', card.state, card.cid);

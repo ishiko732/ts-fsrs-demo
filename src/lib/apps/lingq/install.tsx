@@ -132,6 +132,7 @@ const LingqAppData: TAppData = {
   name: 'Lingq Service',
   //   description: ' install Lingq Service',
   component: InstallLingq,
+  service: LingqService,
 } as TAppData;
 
 export default LingqAppData;

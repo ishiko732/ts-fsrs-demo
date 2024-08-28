@@ -1,4 +1,4 @@
-import { LingqService } from '@lib/apps/lingq';
+import { Apps } from '@lib/apps';
 import { useRef } from 'react';
 
 export const useExtraService = () => {
@@ -10,6 +10,8 @@ export const useExtraService = () => {
     if (typeof window.extra === 'undefined') {
       Reflect.set(window, 'extra', {});
     }
-    Reflect.set(window.extra, 'lingq', new LingqService());
+    Apps.map((app) => {
+      Reflect.set(window.extra, app.name, new app.service());
+    });
   }
 };
