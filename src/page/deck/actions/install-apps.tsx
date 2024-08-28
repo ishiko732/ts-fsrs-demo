@@ -18,7 +18,7 @@ export const InstallApp = ({
   const setInstalledApps = useSetAtom(deckApps.apps);
 
   const handler = useCallback(() => {
-    const extend = JSON.parse(deck.extends as string) as Record<string, object>;
+    const extend = deck.extends as Record<string, object>;
     const map = new Map<string, object>();
     for (const key in Object.keys(extend)) {
       map.set(key, extend[key]);
