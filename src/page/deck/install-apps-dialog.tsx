@@ -44,7 +44,12 @@ export function InstallAppsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className='sm:max-w-[460px] max-h-[80%] overflow-y-auto'>
+      <DialogContent
+        className='sm:max-w-[460px] max-h-[80%] overflow-y-auto'
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Install Apps</DialogTitle>
           <DialogDescription>
