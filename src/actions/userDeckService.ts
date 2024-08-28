@@ -45,7 +45,9 @@ export async function addDeckAction(
   return res;
 }
 
-export async function updateDeckAction(deck: Omit<Deck, 'uid' | 'deleted'>) {
+export async function updateDeckAction(
+  deck: Omit<Deck, 'uid' | 'deleted' | 'extends'>
+) {
   const uid = await getSessionUserId();
   if (!uid) {
     throw new Error('user not found.');
@@ -119,12 +121,13 @@ export async function getNoteMemoryTotalAction(
     startTimestamp,
     nextTimestamp
   );
-  const deck = await getParamsByUserId_cache(uid, did)();
+  const decks = await getParamsByUserId_cache(uid, did)();
+  const deck = decks[did];
   const res = await getReviewMemoryTotal(
     uid,
     start,
     did,
-    deck[did].card_limit,
+    deck.card_limit,
     count
   );
   return res;

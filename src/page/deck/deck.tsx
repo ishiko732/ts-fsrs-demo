@@ -8,6 +8,7 @@ import DeckStatus from './count';
 import DeckActions from './actions';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { JsonObject } from '@prisma/client/runtime/library';
 
 export default function DeckItem({
   deck,
@@ -18,7 +19,7 @@ export default function DeckItem({
   timezone: string;
   hourOffset: number;
 }) {
-  const f: FSRSParameters = JSON.parse(deck.fsrs as string);
+  const f: FSRSParameters = deck.fsrs as object as FSRSParameters;
   return (
     <div
       className={cn(

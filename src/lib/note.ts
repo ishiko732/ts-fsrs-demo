@@ -1,8 +1,8 @@
 import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import prisma from './prisma';
-import { ProgeigoNodeData, NodeData } from '@/types';
-import { createEmptyCardByPrisma } from '@lib/reviews/card/fsrsToPrisma';
+import { ProgeigoNodeData } from '@/types';
 import { Card, Note, Prisma, PrismaPromise } from '@prisma/client';
+import { JsonObject } from '@prisma/client/runtime/library';
 
 export async function initProgeigoNotes(
   uid: number,
@@ -17,7 +17,7 @@ export async function initProgeigoNotes(
       answer: node.意味,
       source: 'ProgeigoNote',
       sourceId: `${node.$rowIndex}`,
-      extend: JSON.stringify(node),
+      extend: node as unknown as JsonObject,
     } satisfies Omit<Note, 'nid' | 'deleted'>;
   });
   return prisma.note.createMany({ data: datum });

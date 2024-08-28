@@ -18,7 +18,7 @@ export const EditDeckProfile = ({
   const setOpen = useSetAtom(deckProfile.openProfile);
 
   const handler = useCallback(() => {
-    const fsrs = JSON.parse(deck.fsrs as string) as FSRSParameters;
+    const fsrs = deck.fsrs as object as FSRSParameters;
     setProfile({
       name: deck.name,
       did: deck.did,

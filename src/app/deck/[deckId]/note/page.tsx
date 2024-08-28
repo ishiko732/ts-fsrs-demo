@@ -10,6 +10,7 @@ import { generatorParameters } from 'ts-fsrs';
 import { ColumnSort, SortingState } from '@tanstack/react-table';
 import Menu from '@/components/menu';
 import { deckCrud } from '@lib/container';
+import { JsonObject } from '@prisma/client/runtime/library';
 
 export const revalidate = 0; // no cache
 
@@ -168,9 +169,7 @@ export default async function Page({ params, searchParams }: NotePageProps) {
       <Menu />
       <DataTable
         data={notes}
-        fsrsParams={generatorParameters(
-          JSON.parse(deck_profile.fsrs as string)
-        )}
+        fsrsParams={generatorParameters(deck_profile.fsrs as JsonObject)}
         rowCount={noteCount}
         pageCount={pageCount}
         keyword={keyword}

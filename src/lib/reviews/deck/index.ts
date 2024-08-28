@@ -30,9 +30,7 @@ export class DeckService implements IDeckService {
   getDeck = async () => {
     if (!this.deck) {
       this.deck = await deckCrud.get(this.deckId);
-      this.algorithm_pamars = JSON.parse(
-        this.deck.fsrs as string
-      ) as FSRSParameters;
+      this.algorithm_pamars = this.deck.fsrs as object as FSRSParameters;
     }
     return this.deck;
   };

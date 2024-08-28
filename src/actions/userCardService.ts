@@ -9,7 +9,7 @@ import {
   rollbackAfterHandler,
 } from '@lib/reviews/card/fsrsToPrisma/handler';
 import { fsrs, Grade, TypeConvert } from 'ts-fsrs';
-import { Card, Prisma } from '@prisma/client';
+import { Card } from '@prisma/client';
 import {
   addCard,
   deleteCard,
@@ -19,6 +19,7 @@ import {
   updateCard,
 } from '@lib/reviews/card/retriever';
 import { DeckService } from '@lib/reviews/deck';
+import { JsonObject } from '@prisma/client/runtime/library';
 
 export async function forgetAction(
   did: number,
@@ -75,7 +76,7 @@ export async function schdulerAction(
   }
   const deckSvc = new DeckService(did);
   const deck = await deckSvc.getDeck();
-  const f = fsrs(JSON.parse(deck.fsrs as string));
+  const f = fsrs(deck.fsrs as JsonObject);
   const afterHandler = nextAfterHandler.bind(null, deck.lapses);
   const now = new Date(timestamp);
   const recordItem = f.next(card, now, grade, afterHandler);
@@ -131,7 +132,7 @@ export async function rollbackAction(did: number, cid: number) {
   }
   const deckSvc = new DeckService(did);
   const deck = await deckSvc.getDeck();
-  const f = fsrs(JSON.parse(deck.fsrs as string));
+  const f = fsrs(deck.fsrs as JsonObject);
   const backCard = f.rollback(card, log, rollbackAfterHandler);
   const res = await prisma.card.update({
     where: { cid: card.cid },

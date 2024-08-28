@@ -95,22 +95,21 @@ export default function DeckForm({
       enable_short_term: values.enable_short_term,
     });
     const curd = new DeckCrud();
-    if(params.did){
+    if (params.did) {
       const res = await curd.update({
         did: params.did,
         name: values.name,
-        fsrs: JSON.stringify(f_params),
+        fsrs: f_params as object,
         card_limit: values.card_limit,
         lapses: values.lapses,
-        extends: JSON.stringify({}),
       });
-    }else{
+    } else {
       const res = await curd.create({
         name: values.name,
-        fsrs: JSON.stringify(f_params),
+        fsrs: f_params as object,
         card_limit: values.card_limit,
         lapses: values.lapses,
-        extends: JSON.stringify({}),
+        extends: {},
       });
     }
     setLoading(false);

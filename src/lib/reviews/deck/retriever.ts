@@ -22,10 +22,10 @@ export const defaultParams = (uid: number) => {
     did: DEFAULT_DECK_ID,
     uid: uid,
     name: 'Default',
-    fsrs: JSON.stringify(generatorParameters()),
+    fsrs: generatorParameters() as object,
     card_limit: CARDLIMT,
     lapses: LAPSES,
-    extends: JSON.stringify({}),
+    extends: {},
   } satisfies Omit<Deck, 'deleted'>;
 };
 
@@ -50,7 +50,7 @@ export const getParamsByUserId_cache = (uid: number, deckId?: number) => {
     {
       tags: [`actions/deck_params/${uid}`],
     }
-  ) satisfies () => Promise<Record<string, Omit<Deck, 'deleted'>>>;
+  ) as () => Promise<Record<number, Omit<Deck, 'deleted'>>>;
 };
 
 // crud
@@ -69,8 +69,8 @@ export const getDecks = (uid: number, deleted?: boolean) => {
           did: DEFAULT_DECK_ID,
           uid,
           name: 'Default',
-          fsrs: JSON.stringify(generatorParameters()),
-          extends: JSON.stringify({}),
+          fsrs: generatorParameters() as object,
+          extends: {},
           deleted: false,
           card_limit: CARDLIMT,
           lapses: LAPSES,
@@ -98,14 +98,13 @@ export const addDeck = async (uid: number, deck: Omit<Deck, 'did' | 'uid'>) => {
 
 export const updateDeck = async (
   uid: number,
-  deck: PartialRequired<Deck, 'did'>
+  deck: PartialRequired<Omit<Deck, 'extends'>, 'did'>
 ) => {
   return prisma.deck.update({
     where: { did: deck.did, uid: uid },
     data: {
       ...deck,
       fsrs: deck.fsrs!,
-      extends: deck.extends!,
     },
   });
 };
@@ -248,7 +247,7 @@ export async function getReviewMemoryTotal(
                 PrismaState.Review,
                 PrismaState.Learning,
                 PrismaState.Relearning,
-                PrismaState.New
+                PrismaState.New,
               ],
             },
           },
@@ -352,7 +351,7 @@ export async function getReviewMemoryState({
                 PrismaState.Review,
                 PrismaState.Learning,
                 PrismaState.Relearning,
-                PrismaState.New
+                PrismaState.New,
               ],
             },
           },

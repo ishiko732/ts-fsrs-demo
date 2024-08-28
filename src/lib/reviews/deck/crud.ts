@@ -26,7 +26,7 @@ export class DeckCrud {
     return await addDeckAction(deck);
   }
 
-  async update(deck: Omit<Deck, 'uid' | 'deleted'>) {
+  async update(deck: Omit<Deck, 'uid' | 'deleted' | 'extends'>) {
     return await updateDeckAction(deck);
   }
   async delete(did: number, move: boolean) {
