@@ -7,6 +7,7 @@ import ThemeProvider from '@/context/ThemesProvider';
 import { cn } from '@/lib/utils';
 import { Inter as FontSans } from 'next/font/google';
 import NavBar from '@/components/nav-bar';
+import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
   title: 'ts-fsrs demo',
@@ -50,6 +51,7 @@ export default async function RootLayout({
             <Analytics debug={false} />
           </ThemeProvider>
         </AuthProvider>
+        <Toaster />
       </body>
     </html>
   );

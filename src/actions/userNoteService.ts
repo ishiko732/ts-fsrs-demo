@@ -8,6 +8,7 @@ import {
   getNotes,
   restoreNoteByNid,
 } from '@/lib/note';
+import prisma from '@lib/prisma';
 import {
   addNote,
   deleteNote,
@@ -152,13 +153,37 @@ export async function getNotesByNoteIdsAction(noteIds: number[]) {
 
 export async function addNoteAction(
   did: number,
-  note: Omit<Note, 'did' | 'uid' | 'deleted'>
+  note: Omit<Note, 'did' | 'uid' | 'deleted' | 'nid'>
 ) {
   const uid = await getSessionUserId();
   if (!uid) {
     throw new Error('user not found.');
   }
   return await addNote(uid, did, note);
+}
+
+export async function addNotesAction(
+  did: number,
+  notes: Omit<Note, 'did' | 'uid' | 'deleted' | 'nid'>[]
+) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const merge_data: (Omit<Note, 'nid' | 'extend'> & {
+    extend: Prisma.InputJsonValue;
+  })[] = notes.map((note) => {
+    return {
+      ...note,
+      did,
+      uid,
+      deleted: false,
+      extend: (note.extend ? note.extend : {}) as Prisma.InputJsonValue,
+    };
+  });
+  return await prisma.note.createMany({
+    data: merge_data,
+  });
 }
 
 export async function updateNoteAction(

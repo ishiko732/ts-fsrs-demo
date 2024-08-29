@@ -1,7 +1,9 @@
+import { getNotExistSourceIds } from '@actions/useExtraService';
+import { IAppService, ToastType } from '../types';
 import { getLingqContext, getLingqs } from './request';
-import { TGetLingqs } from './types';
+import { TAppPrams, TGetLingqs } from './types';
 
-export class LingqService {
+export class LingqService implements IAppService<TAppPrams, void> {
   // get data
   async getLingqLanguageCode(token: string) {
     return getLingqContext({ token });
@@ -19,4 +21,30 @@ export class LingqService {
     });
     return data;
   }
+
+  async pull(deckId: number, params: TAppPrams, handleToast?: ToastType) {
+    let page = 0;
+    let data;
+    do {
+      page++;
+      data = await this.getLingqs({
+        token: params.token,
+        language: params.language as languageCode,
+        page: page,
+        page_size: 50,
+      });
+      handleToast?.({
+        title: 'success',
+        description: `Page ${page} fetched`,
+      });
+      if (data.results.length === 0 || data.next === null) {
+        break;
+      }
+      // TODO
+      // teExigetNotExistSourceIds()
+    } while (data.next);
+  }
+  // push: (params: TAppPrams) => Promise<unknown>;
+  // sync: (params: TAppPrams) => Promise<unknown>;
+  // flow: (params: TAppPrams) => Promise<unknown>;
 }

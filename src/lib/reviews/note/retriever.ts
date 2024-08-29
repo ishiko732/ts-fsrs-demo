@@ -50,7 +50,7 @@ export const getNotesByDeckId = async (
 export const addNote = async (
   uid: number,
   did: number,
-  note: Omit<Note, 'did' | 'uid' | 'deleted'>
+  note: Omit<Note, 'did' | 'uid' | 'deleted' | 'nid'>
 ) => {
   return prisma.note.create({
     data: {

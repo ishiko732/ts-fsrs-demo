@@ -6,6 +6,7 @@ import {
 } from '@actions/userDeckService';
 import {
   addNoteAction,
+  addNotesAction,
   deleteNoteAction,
   getNoteAction,
   updateNoteAction,
@@ -33,8 +34,18 @@ export class NoteCrud {
     return datum.filter((note) => note !== null);
   }
 
-  async create(deckId: number, note: Omit<Note, 'did' | 'uid' | 'deleted'>) {
+  async create(
+    deckId: number,
+    note: Omit<Note, 'did' | 'uid' | 'deleted' | 'nid'>
+  ) {
     return await addNoteAction(deckId, note);
+  }
+
+  async creates(
+    deckId: number,
+    notes: Omit<Note, 'did' | 'uid' | 'deleted' | 'nid'>[]
+  ) {
+    return await addNotesAction(deckId, notes);
   }
 
   async update(

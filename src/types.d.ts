@@ -4,7 +4,7 @@ import {
   Card as PrismaCard,
   Note as PrismaNote,
 } from '@prisma/client';
-import { CardService, DeckService, NoteService } from '@lib/reviews';
+import type { CardService, DeckService, NoteService } from '@lib/reviews';
 import { RecordLog } from 'ts-fsrs';
 
 interface NodeData {
@@ -70,9 +70,9 @@ declare global {
         note: PrismaNote;
       };
       svc: {
-        card: CardService;
-        note: NoteService;
-        deck: DeckService;
+        cardSvc: CardService;
+        noteSvc: NoteService;
+        deckSvc: DeckService;
       };
       keypressed?: {
         code: string;

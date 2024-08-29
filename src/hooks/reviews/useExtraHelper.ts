@@ -11,7 +11,7 @@ export const useExtraService = () => {
       Reflect.set(window, 'extra', {});
     }
     Apps.map((app) => {
-      Reflect.set(window.extra, app.name, new app.service());
+      Reflect.set(window.extra, app.name, Reflect.construct(app.service, []));
     });
   }
 };

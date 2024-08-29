@@ -17,11 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { TAppPrams } from './types';
 
-interface TAppPrams extends Object {
-  token: string;
-  language: string;
-}
 
 const InstallLingq = ({
   install,

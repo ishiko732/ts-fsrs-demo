@@ -1,5 +1,6 @@
 import React from 'react';
 import GoDecks from './GoDecks';
+import { SyncExtra } from './SyncExtra';
 
 export default function Finish() {
   return (
@@ -10,6 +11,7 @@ export default function Finish() {
             <div className='max-w-md'>
               <h1 className='text-5xl font-bold'>Great job!🎉🎉🎉</h1>
               <p className='py-6'>You have finished this project for now.</p>
+              <SyncExtra />
               <GoDecks />
             </div>
           </div>

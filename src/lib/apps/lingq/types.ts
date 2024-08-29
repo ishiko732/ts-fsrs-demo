@@ -25,3 +25,8 @@ export type TLingqReview = {
   extended_status: LingqExtendedStatus;
   token: string;
 };
+
+export interface TAppPrams extends Object {
+  token: string;
+  language: string;
+}
