@@ -1,4 +1,5 @@
 import { ReviewSvc } from '@/atom/decks/review';
+import { toastEmitter } from '@hooks/useToastListeners';
 // import { useToast } from '@/components/ui/use-toast';
 import { Apps } from '@lib/apps';
 import type { IAppService } from '@lib/apps/types';
@@ -55,12 +56,11 @@ export const useExtraService = () => {
                   message: (err as Error).message,
                 };
               });
-            // TODO
-            // toast({
-            //   title: `${name} - ${process.status ? 'Success' : 'Error'}`,
-            //   description: process.message,
-            //   variant: process.status ? 'default' : 'destructive',
-            // });
+            toastEmitter.emit('toast', {
+              title: `${name} - ${process.status ? 'Success' : 'Error'}`,
+              description: process.message,
+              variant: process.status ? 'default' : 'destructive',
+            });
           }
         }
       }
