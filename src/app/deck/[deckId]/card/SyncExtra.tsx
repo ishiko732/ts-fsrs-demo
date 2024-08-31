@@ -2,10 +2,9 @@
 
 import LoadingSpinner from '@/components/loadingSpinner';
 import { useToast } from '@/components/ui/use-toast';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import type { DeckService } from '@lib/reviews/deck';
 import type { IAppService } from '@lib/apps/types';
-import { Box } from 'lucide-react';
 
 export function SyncExtra() {
   const { toast } = useToast();
