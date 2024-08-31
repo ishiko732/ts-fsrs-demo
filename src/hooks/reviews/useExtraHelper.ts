@@ -39,8 +39,9 @@ export const useExtraService = () => {
           typeof app.sync === 'function'
         ) {
           if (app.allowCall(note?.source ?? '')) {
+            const extend = deck.extends as Record<string, object>;
             const process = await app
-              .sync(deck, note, data)
+              .sync(extend[name], note, data)
               .then((res) => {
                 return {
                   status: true,

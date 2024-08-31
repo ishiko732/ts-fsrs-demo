@@ -123,7 +123,7 @@ export class LingqService implements IAppService<TAppPrams, void> {
 
   async sync(params: TAppPrams, note: Note, scheduler: TEmitCardScheduler) {
     if (!params.token) {
-      return;
+      throw new Error('Lingq Token is required');
     }
     const { status, extended_status } = this.checkReviewStatus(
       scheduler.nextState,
