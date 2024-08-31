@@ -1,28 +1,33 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import EventEmitter from 'events';
 import { Toast } from '@/components/ui/use-toast';
 import { ToastType } from '@lib/apps/types';
 
-export const toastEmitter = new EventEmitter();
+class ToastEmitter extends EventEmitter {
+  constructor() {
+    super();
+  }
+  emitToast(data: Toast) {
+    this.emit('toast', data);
+  }
+}
+
+export const toastEmitter = new ToastEmitter();
 
 export function useToastListeners(toast: ToastType) {
-  const loadedRef = useRef(false);
-  const handler = useCallback(() => {
-    (data: Toast) => {
-      toast(data);
-    };
-  }, [toast]);
+  const handler = (data: Toast) => {
+    toast(data);
+  };
+  if (typeof window !== 'undefined') {
+    Reflect.set(window, 'toast', toastEmitter);
+  }
   useEffect(() => {
-    if (!loadedRef.current) {
-      console.log('[EventEmitter] load toast listeners');
-      loadedRef.current = true;
-      toastEmitter.on('toast', handler);
-    }
+    console.log('[EventEmitter] load toast listeners');
+    toastEmitter.on('toast', handler);
     return () => {
       console.log('[EventEmitter] remove toast listeners');
       toastEmitter.removeListener('toast', handler);
-      loadedRef.current = false;
     };
-  });
+  }, []);
 }
