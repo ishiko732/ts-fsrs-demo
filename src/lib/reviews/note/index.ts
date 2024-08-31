@@ -85,7 +85,7 @@ export class NoteService extends EventEmitter implements INoteService {
     };
   };
 
-  schduler = (
+  scheduler = (
     nid: number = 0,
     cid: number = 0,
     orderId: number = 0,

@@ -5,7 +5,7 @@ import { Apps } from '@lib/apps';
 import type { IAppService } from '@lib/apps/types';
 import type { TEmitCardScheduler } from '@lib/reviews/type';
 import { useAtomValue } from 'jotai';
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export const useExtraService = () => {
   // init event emitter [boxes]
@@ -16,20 +16,9 @@ export const useExtraService = () => {
   const loadedEmitterRef = useRef(false);
   // const { toast } = useToast();
 
-  if (typeof window !== 'undefined' && !loadedWindowRef.current) {
-    loadedWindowRef.current = true;
-    // load extra service
-    if (typeof window.extra === 'undefined') {
-      Reflect.set(window, 'extra', {});
-    }
-    Apps.map((app) => {
-      Reflect.set(window.extra, app.name, Reflect.construct(app.service, []));
-    });
-  }
-
   // 3. Scheduler
-  if (!loadedEmitterRef.current) {
-    cardSvc.on('scheduler', async (data: TEmitCardScheduler) => {
+  const handlerScheduler = useCallback(
+    async (data: TEmitCardScheduler) => {
       const deck = await deckSvc.getDeck();
       const note = await noteSvc.getNote(data.nid);
       for (const [name, _app] of Object.entries(window.extra)) {
@@ -64,7 +53,32 @@ export const useExtraService = () => {
           }
         }
       }
-    });
+    },
+    [deckSvc, noteSvc]
+  );
+
+  useEffect(() => {
+    if (!loadedEmitterRef.current) {
+      loadedEmitterRef.current = true;
+      console.log('[EventEmitter] load extra service');
+      cardSvc.on('scheduler', handlerScheduler);
+    }
+
+    return () => {
+      console.log('[EventEmitter] remove extra service');
+      cardSvc.removeListener('scheduler', handlerScheduler);
+      loadedEmitterRef.current = false; // 重新设置标志以便于下次正确注册监听器
+    };
+  }, [cardSvc, handlerScheduler]);
+
+  // 确保 window.extra 只设置一次
+  if (typeof window !== 'undefined' && !loadedWindowRef.current) {
+    loadedWindowRef.current = true;
+    if (typeof window.extra === 'undefined') {
+      window.extra = {}; // 直接设置，无需使用Reflect
+      Apps.map((app) => {
+        window.extra[app.name] = Reflect.construct(app.service, []);
+      });
+    }
   }
-  loadedEmitterRef.current = true;
 };

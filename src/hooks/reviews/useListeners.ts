@@ -13,7 +13,7 @@ import {
 } from '@/atom/decks/review';
 import { StateBox } from '@/constant';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useRef } from 'react';
+import { use, useCallback, useEffect, useRef } from 'react';
 import {
   Card as PrismaCard,
   State as PrismaState,
@@ -33,60 +33,50 @@ export function useListeners(page: number) {
   const boxes_new = useSetAtom(Boxes.New);
   const boxes_learning = useSetAtom(Boxes.Learning);
   const boxes_review = useSetAtom(Boxes.Review);
-  const loadedRef = useRef(false);
+  const loadedRef = useRef({
+    'full block': false,
+    current: false,
+    'scheduler-note': false,
+    'scheduler-card': false,
+    finish: false,
+    rollback: false,
+    edit: false,
+  });
   const pageRef = useRef<number[]>([page]);
-  if (!loadedRef.current) {
-    cardSvc.on(
-      'full block',
-      (hydrate_boxes: Record<StateBox, PrismaCard[]>) => {
-        boxes_new((pre) => {
-          const data = new Set([...pre, ...hydrate_boxes[PrismaState.New]]);
-          return Array.from(data);
-        });
-        boxes_learning((pre) => {
-          const data = new Set([
-            ...pre,
-            ...hydrate_boxes[PrismaState.Learning],
-          ]);
-          return Array.from(data);
-        });
-        boxes_review((pre) => {
-          const data = new Set([...pre, ...hydrate_boxes[PrismaState.Review]]);
-          return Array.from(data);
-        });
+  const handlerCardSvcFullBlock = useCallback(
+    (hydrate_boxes: Record<StateBox, PrismaCard[]>) => {
+      boxes_new((pre) => {
+        const data = new Set([...pre, ...hydrate_boxes[PrismaState.New]]);
+        return Array.from(data);
+      });
+      boxes_learning((pre) => {
+        const data = new Set([...pre, ...hydrate_boxes[PrismaState.Learning]]);
+        return Array.from(data);
+      });
+      boxes_review((pre) => {
+        const data = new Set([...pre, ...hydrate_boxes[PrismaState.Review]]);
+        return Array.from(data);
+      });
+      console.log('on full block');
+    },
+    [boxes_new, boxes_learning, boxes_review]
+  );
 
-        // setTimeout(() => {
-        //   new Promise(async () => {
-        //     const page = deckSvc.page + 1;
-        //     if (pageRef.current.includes(page)) return;
-        //     pageRef.current.push(page);
-        //     const nextContext = await deckSvc.todayMemoryContextPage(
-        //       page,
-        //       cardSvc.getLoadedCardIds()
-        //     );
-        //     if (!nextContext.memoryState.length) {
-        //       cardSvc.removeAllListeners('full block');
-        //       return;
-        //     }
-        //     const noteIds = nextContext.memoryState.map((note) => note.noteId);
-        //     const cardIds = nextContext.memoryState
-        //       .map((note) => note.cardId)
-        //       .filter((cardId) => cardId !== CARD_NULL);
-        //     const [notes, cards] = await Promise.all([
-        //       noteCrud.gets(noteIds),
-        //       cardCrud.gets(cardIds),
-        //     ]);
-        //     noteSvc.hydrate(notes);
-        //     cardSvc.hydrate(cards);
-        //     console.log('new load', nextContext.loadPage);
-        //     console.log(nextContext);
-        //     debugger;
-        //   });
-        // }, 50);
-        console.log('on full block');
+  useEffect(() => {
+    if (!loadedRef.current['full block']) {
+      console.log('[EventEmitter] cardSvc load full block ');
+      cardSvc.on('full block', handlerCardSvcFullBlock);
+      loadedRef.current['full block'] = true;
+    }
+
+    return () => {
+      if (loadedRef.current) {
+        console.log('[EventEmitter] cardSvc remove full block ');
+        cardSvc.removeListener('full block', handlerCardSvcFullBlock);
+        loadedRef.current['full block'] = false;
       }
-    );
-  }
+    };
+  }, []);
   // init event emitter [CurrentStateAtom]
   // scheduler
   const setBarAtom = {
@@ -99,8 +89,8 @@ export function useListeners(page: number) {
   // 2.update PreviewButton
   const setCurrentType = useSetAtom(CurrentStateAtom);
   const setCurrentPreview = useSetAtom(CurrentPreviewAtom);
-  if (!loadedRef.current) {
-    cardSvc.on('current', async (type: PrismaState, cid: number) => {
+  const handlerCardSvcCurrent = useCallback(
+    async (type: PrismaState, cid: number) => {
       setCurrentType(
         type === PrismaState.Relearning ? PrismaState.Learning : type
       );
@@ -113,48 +103,75 @@ export function useListeners(page: number) {
         // debug
         Reflect.set(window.container!, 'current', { type, record });
       }
-    });
-  }
-
-  // 3. update Schduler
-  if (!loadedRef.current) {
-    cardSvc.on(
-      'scheduler',
-      ({ nextState, currentState, nid, cid, orderId }: TEmitCardScheduler) => {
-        const currentBarAtom = setBarAtom[currentState];
-        const nextBarAtom = setBarAtom[nextState];
-        const keep =
-          (currentState === PrismaState.Learning &&
-            nextState === PrismaState.Learning) ||
-          (currentState === PrismaState.Relearning &&
-            nextState === PrismaState.Relearning) ||
-          (currentState === PrismaState.Review &&
-            nextState === PrismaState.Review);
-
-        let remove_rel = true;
-        if (currentState === PrismaState.New || !keep) {
-          currentBarAtom((pre) => pre - 1);
-        }
-        if (
-          (nextState === PrismaState.Learning ||
-            nextState === PrismaState.Relearning) &&
-          !keep
-        ) {
-          nextBarAtom((pre) => pre + 1);
-          remove_rel = false;
-        }
-
-        if (
-          currentState === PrismaState.Review &&
-          nextState === PrismaState.Review
-        ) {
-          currentBarAtom((pre) => pre - 1);
-        }
-        noteSvc.emit('scheduler', { nid, cid, orderId, remove: remove_rel });
-        console.log('on scheduler');
+    },
+    [cardSvc, setCurrentType, setCurrentPreview]
+  );
+  useEffect(() => {
+    if (!loadedRef.current['current']) {
+      console.log('[EventEmitter] cardSvc load current ');
+      cardSvc.on('current', handlerCardSvcCurrent);
+      loadedRef.current['current'] = true;
+    }
+    return () => {
+      if (loadedRef.current['current']) {
+        console.log('[EventEmitter] cardSvc remove current ');
+        cardSvc.removeListener('current', handlerCardSvcCurrent);
+        loadedRef.current['current'] = false;
       }
-    );
-  }
+    };
+  }, []);
+
+  // 3. update Scheduler
+  const handlerCardSvcScheduler = useCallback(
+    ({ nextState, currentState, nid, cid, orderId }: TEmitCardScheduler) => {
+      const currentBarAtom = setBarAtom[currentState];
+      const nextBarAtom = setBarAtom[nextState];
+      const keep =
+        (currentState === PrismaState.Learning &&
+          nextState === PrismaState.Learning) ||
+        (currentState === PrismaState.Relearning &&
+          nextState === PrismaState.Relearning) ||
+        (currentState === PrismaState.Review &&
+          nextState === PrismaState.Review);
+
+      let remove_rel = true;
+      if (currentState === PrismaState.New || !keep) {
+        currentBarAtom((pre) => pre - 1);
+      }
+      if (
+        (nextState === PrismaState.Learning ||
+          nextState === PrismaState.Relearning) &&
+        !keep
+      ) {
+        nextBarAtom((pre) => pre + 1);
+        remove_rel = false;
+      }
+
+      if (
+        currentState === PrismaState.Review &&
+        nextState === PrismaState.Review
+      ) {
+        currentBarAtom((pre) => pre - 1);
+      }
+      noteSvc.emit('scheduler', { nid, cid, orderId, remove: remove_rel });
+      console.log('on scheduler');
+    },
+    [setBarAtom, noteSvc]
+  );
+  useEffect(() => {
+    if (!loadedRef.current['scheduler-card']) {
+      console.log('[EventEmitter] cardSvc load scheduler ');
+      cardSvc.on('scheduler', handlerCardSvcScheduler);
+      loadedRef.current['scheduler-card'] = true;
+    }
+    return () => {
+      if (loadedRef.current['scheduler-card']) {
+        console.log('[EventEmitter] cardSvc remove scheduler ');
+        cardSvc.removeListener('scheduler', handlerCardSvcScheduler);
+        loadedRef.current['scheduler-card'] = false;
+      }
+    };
+  }, []);
 
   // 4. update current note and card
   const setNoteId = useSetAtom(currentNoteId);
@@ -162,9 +179,9 @@ export function useListeners(page: number) {
   const setCardId = useSetAtom(currentCardId);
   const setCard = useSetAtom(currentCard);
   const setOpen = useSetAtom(DisplayAnswer);
-  if (!loadedRef.current) {
-    noteSvc.on('scheduler', async (prev?: TEmitNoteScheduler) => {
-      const next = noteSvc.schduler(prev?.nid, prev?.cid, prev?.orderId);
+  const handlerNoteSvcScheduler = useCallback(
+    async (prev?: TEmitNoteScheduler) => {
+      const next = noteSvc.scheduler(prev?.nid, prev?.cid, prev?.orderId);
       const { nid, cid, orderId } = next.data;
       let card: PrismaCard | null = null;
       if (!cid) {
@@ -195,22 +212,50 @@ export function useListeners(page: number) {
         }
       }
       setOpen(false);
-    });
-  }
+    },
+    [noteSvc, cardSvc, setCardId, setCard, setNoteId, setNote, setOpen]
+  );
+
+  useEffect(() => {
+    if (!loadedRef.current['scheduler-note']) {
+      console.log('[EventEmitter] noteSvc load scheduler ');
+      noteSvc.on('scheduler', handlerNoteSvcScheduler);
+    }
+    return () => {
+      if (loadedRef.current['scheduler-note']) {
+        console.log('[EventEmitter] noteSvc remove scheduler ');
+        noteSvc.removeListener('scheduler', handlerNoteSvcScheduler);
+        loadedRef.current['scheduler-note'] = false;
+      }
+    };
+  }, []);
 
   // 5. update finish
   const setFinish = useSetAtom(DisplayFinish);
-  if (!loadedRef.current) {
-    cardSvc.on('finish', async (prev?: TEmitNoteScheduler) => {
-      console.log('on finish', prev);
+  const handlerCardSvcFinish = useCallback(
+    async (prev?: TEmitNoteScheduler) => {
       setFinish(true);
-    });
-  }
+    },
+    []
+  );
+  useEffect(() => {
+    if (!loadedRef.current['finish']) {
+      console.log('[EventEmitter] cardSvc load finish ');
+      cardSvc.on('finish', handlerCardSvcFinish);
+      loadedRef.current['finish'] = true;
+    }
+    return () => {
+      if (loadedRef.current['finish']) {
+        console.log('[EventEmitter] cardSvc remove finish ');
+        cardSvc.removeListener('finish', handlerCardSvcFinish);
+        loadedRef.current['finish'] = false;
+      }
+    };
+  }, []);
 
   // extra rollback
-  if (!loadedRef.current) {
-    cardSvc.on('rollback', async (data: TEmitCardRollback) => {
-      console.log('on rollback', data);
+  const handlerCardSvcRollback = useCallback(
+    async (data: TEmitCardRollback) => {
       if (data.nid == 0 || data.cid == 0) {
         console.warn('rollback error', data);
         return;
@@ -223,16 +268,55 @@ export function useListeners(page: number) {
       const nextBarAtom = setBarAtom[data.nextState];
       nextBarAtom((pre) => pre + 1);
       setOpen(false);
-    });
-  }
+    },
+    [
+      noteSvc,
+      cardSvc,
+      setNoteId,
+      setNote,
+      setCardId,
+      setCard,
+      setBarAtom,
+      setOpen,
+    ]
+  );
+  useEffect(() => {
+    if (!loadedRef.current['rollback']) {
+      console.log('[EventEmitter] cardSvc load rollback ');
+      cardSvc.on('rollback', handlerCardSvcRollback);
+      loadedRef.current['rollback'] = true;
+    }
+    return () => {
+      if (loadedRef.current['rollback']) {
+        console.log('[EventEmitter] cardSvc remove rollback ');
+        cardSvc.removeListener('rollback', handlerCardSvcRollback);
+        loadedRef.current['rollback'] = false;
+      }
+    };
+  }, []);
 
-  // extra edit note
-  if (!loadedRef.current) {
-    noteSvc.on('edit', async (note: PrismaNote) => {
+  const handlerNoteSvcEdit = useCallback(
+    async (note: PrismaNote) => {
       setNoteId(note.nid);
       setNote(note);
-    });
-  }
+    },
+    [setNoteId, setNote]
+  );
+  // extra edit note
+  useEffect(() => {
+    if (!loadedRef.current['edit']) {
+      console.log('[EventEmitter] noteSvc load edit ');
+      noteSvc.on('edit', handlerNoteSvcEdit);
+      loadedRef.current['edit'] = true
+    }
+    return () => {
+      if (loadedRef.current['edit']) {
+        console.log('[EventEmitter] noteSvc remove edit ');
+        noteSvc.removeListener('edit', handlerNoteSvcEdit);
+        loadedRef.current['edit'] = false;
+      }
+    };
+  }, []);
 
   if (typeof window !== 'undefined') {
     // debug
@@ -241,5 +325,4 @@ export function useListeners(page: number) {
       Reflect.set(window.container!, 'svc', { deckSvc, noteSvc, cardSvc });
     }
   }
-  loadedRef.current = true;
 }
