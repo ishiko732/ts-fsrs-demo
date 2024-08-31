@@ -48,9 +48,6 @@ const handler = async (
         'user-agent': userAgent,
       },
       body: method !== 'GET' && method !== 'HEAD' ? body : null,
-      next: {
-        revalidate: 0,
-      },
       cache: 'no-cache',
     });
 
