@@ -57,7 +57,7 @@ export const addNote = async (
       ...note,
       uid: uid,
       did: did,
-      extend: note.extend ? JSON.stringify(note.extend) : '',
+      extend: note.extend ? note.extend : {},
     },
   });
 };
@@ -75,7 +75,7 @@ export const updateNote = async (
       did: did,
       nid: nid,
       uid: uid,
-      extend: note.extend ? JSON.stringify(note.extend) : '',
+      extend: note.extend ? note.extend : {},
     },
   });
 };

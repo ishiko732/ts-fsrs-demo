@@ -4,8 +4,7 @@ import GoNotes from '@/components/record/GoBack';
 import FSRSDetail from '@/components/record/FSRSMsg';
 import { findLogsByCid } from '@/lib/log';
 import LogTable from '@/components/record/LogTable';
-import { SourceNote } from '@/components/source';
-import DisplayMsg from '@/components/source/display';
+import DisplayMsg from '@/components/source/display/default';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -13,6 +12,7 @@ import {
 } from '@/components/ui/resizable';
 import { getUserNote } from '@/actions/userNoteService';
 import { redirect } from 'next/navigation';
+import { Note } from '@prisma/client';
 type Props = {
   params: {
     deckId: string;
@@ -24,7 +24,7 @@ type Props = {
 };
 
 const getData = cache(async (nid: string, deleted: boolean) => {
-  const note = (await getNoteByNid(Number(nid), deleted)) as SourceNote | null;
+  const note = (await getNoteByNid(Number(nid), deleted)) as Note | null;
   return note;
 });
 

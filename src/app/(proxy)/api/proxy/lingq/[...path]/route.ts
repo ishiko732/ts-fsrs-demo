@@ -49,7 +49,7 @@ const handler = async (
       },
       body: method !== 'GET' && method !== 'HEAD' ? body : null,
       next: {
-        revalidate: false,
+        revalidate: 0,
       },
       cache: 'no-cache',
     });

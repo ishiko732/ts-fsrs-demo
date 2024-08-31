@@ -24,7 +24,7 @@ function NoteHelper() {
         noteSvc={noteSvc}
         useEditNoteByReview={useEditNoteByReview}
       />
-      <FrontTemplate note={note}>
+      <FrontTemplate note={note} open={open}>
         <EditNoteBtn />
       </FrontTemplate>
       <BackTemplate open={open} note={note} />

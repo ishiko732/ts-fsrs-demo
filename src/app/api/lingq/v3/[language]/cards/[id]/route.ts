@@ -4,7 +4,6 @@ import {
   changeLingqHints,
   changeLingqStatus,
 } from '@lib/apps/lingq/request';
-import { updateNoteByLingq } from '@lib/apps/lingq/sync';
 
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -59,17 +58,17 @@ export async function PATCH(
       extended_status,
     });
     const nid = request.headers.get('noteId');
-    if (nid && !isNaN(Number(nid))) {
-      await updateNote(Number(nid), data);
-    }
+    // if (nid && !isNaN(Number(nid))) {
+    //   await updateNote(Number(nid), data);
+    // }
   }
   return NextResponse.json(data);
 }
 
-async function updateNote(nid: number, data: Lingq) {
-  const session = await getAuthSession();
-  if (!session || !session.user) {
-    return;
-  }
-  return updateNoteByLingq(Number(session.user.id), nid, data);
-}
+// async function updateNote(nid: number, data: Lingq) {
+//   const session = await getAuthSession();
+//   if (!session || !session.user) {
+//     return;
+//   }
+//   return updateNoteByLingq(Number(session.user.id), nid, data);
+// }

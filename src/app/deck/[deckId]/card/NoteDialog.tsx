@@ -1,5 +1,5 @@
 'use client';
-import React, { Suspense, useRef, useState } from 'react';
+import React, { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { ITemplate } from '@lib/reviews/note/template/types';
 import { Note } from '@prisma/client';
@@ -17,6 +16,7 @@ import LoadingSpinner from '@/components/loadingSpinner';
 import { DrawerClose } from '@/components/ui/drawer';
 import { useAtom } from 'jotai';
 import { DisplayNoteDialog } from '@/atom/decks/review';
+import { useToast } from '@/components/ui/use-toast';
 
 type Props = {
   note: Note;
@@ -32,6 +32,29 @@ export function NoteDialog({ note, noteSvc, useEditNoteByReview }: Props) {
     open,
     setOpen,
   });
+  const { toast } = useToast();
+
+  const handlerClick = async () => {
+    const process = await handler()
+      .then((res) => {
+        return {
+          status: true,
+          message: 'Note updated successfully',
+        };
+      })
+      .catch((err) => {
+        console.error(err);
+        return {
+          status: false,
+          message: (err as Error).message,
+        };
+      });
+    toast({
+      title: process.status ? 'Success' : 'Error',
+      description: process.message,
+      variant: process.status ? 'default' : 'destructive',
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -43,11 +66,9 @@ export function NoteDialog({ note, noteSvc, useEditNoteByReview }: Props) {
         <Suspense>{Component}</Suspense>
         <DialogFooter>
           <DrawerClose onClick={() => setOpen(false)} asChild>
-            <Button variant='outline'>
-              Cancel
-            </Button>
+            <Button variant='outline'>Cancel</Button>
           </DrawerClose>
-          <Button onClick={handler} disabled={loading}>
+          <Button onClick={handlerClick} disabled={loading}>
             {loading && <LoadingSpinner />}Save
           </Button>
         </DialogFooter>

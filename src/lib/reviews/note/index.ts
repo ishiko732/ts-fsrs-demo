@@ -1,18 +1,18 @@
 import { noteCrud } from '@lib/container';
 import { INoteService, NoteMemoryState } from '@lib/reviews/type';
-import { Note as PrimiseNote } from '@prisma/client';
+import { Note as PrismaNote } from '@prisma/client';
 import EventEmitter from 'events';
 
 export class NoteService extends EventEmitter implements INoteService {
-  private notes: Map<number, PrimiseNote> = new Map();
-  private traces: PrimiseNote[] = [];
+  private notes: Map<number, PrismaNote> = new Map();
+  private traces: PrismaNote[] = [];
   // noteId-cardId-orderId
   private note_card_relation: Set<string> = new Set();
   constructor() {
     super();
   }
 
-  async getNote(nid: number): Promise<PrimiseNote> {
+  async getNote(nid: number): Promise<PrismaNote> {
     let note = this.notes.get(nid);
     if (!note) {
       note = await noteCrud.get(nid);
@@ -22,8 +22,8 @@ export class NoteService extends EventEmitter implements INoteService {
   }
   async edit(
     nid: number,
-    note: Partial<Omit<PrimiseNote, 'did' | 'uid' | 'deleted'>>
-  ): Promise<PrimiseNote> {
+    note: Partial<Omit<PrismaNote, 'did' | 'uid' | 'deleted'>>
+  ): Promise<PrismaNote> {
     const old = await this.getNote(nid);
     const updated = await noteCrud.update(old.did, old.nid, note);
     this.notes.set(nid, updated);
@@ -43,7 +43,7 @@ export class NoteService extends EventEmitter implements INoteService {
     return true;
   }
 
-  async hydrate(notes: PrimiseNote[]): Promise<void> {
+  async hydrate(notes: PrismaNote[]): Promise<void> {
     for (const note of notes) {
       this.notes.set(note.nid, note);
       // console.debug('hydrate note', note.nid);

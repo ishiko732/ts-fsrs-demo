@@ -1,7 +1,5 @@
-import { nextTick } from 'process';
 import { useCallback, useEffect } from 'react';
 import { Grade } from 'ts-fsrs';
-import { number } from 'zod';
 
 interface PreviewButtonProps {
   handlerSchduler: (cardId: number, grade: Grade) => Promise<void>;

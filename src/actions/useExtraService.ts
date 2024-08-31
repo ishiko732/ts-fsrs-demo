@@ -40,3 +40,22 @@ export async function getNotExistSourceIds(
   const nonExistPks = sourceIds.filter((pk) => !existPks.includes(pk));
   return nonExistPks;
 }
+
+export async function getSourceInfo(deckId: number, noteId: number) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const sourceInfo = await prisma.note.findMany({
+    where: {
+      did: deckId,
+      uid: uid,
+      nid: noteId,
+    },
+    select: {
+      source: true,
+      sourceId: true,
+    },
+  });
+  return sourceInfo;
+}

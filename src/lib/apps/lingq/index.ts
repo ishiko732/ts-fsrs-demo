@@ -1,13 +1,17 @@
 import { getNotExistSourceIds } from '@actions/useExtraService';
 import { IAppService, ToastType } from '../types';
-import { getLingqContext, getLingqs } from './request';
+import { changeLingqStatus, getLingqContext, getLingqs } from './request';
 import { TAppPrams, TGetLingqs } from './types';
 import { noteCrud } from '@lib/container';
-import { Note } from '@prisma/client';
+import { Note, State } from '@prisma/client';
+import { TEmitCardScheduler } from '@lib/reviews/type';
 
 const source = 'lingq';
-const pageSize = 50
+const pageSize = 50;
 export class LingqService implements IAppService<TAppPrams, void> {
+  allowCall(source: string) {
+    return source === 'lingq' || source === 'Lingq Service';
+  }
   // get data
   async getLingqLanguageCode(token: string) {
     return getLingqContext({ token });
@@ -83,7 +87,7 @@ export class LingqService implements IAppService<TAppPrams, void> {
           title: 'success',
           description: `Page ${page} created ${res} notes`,
         });
-      } 
+      }
     } while (data.next);
   }
 
@@ -114,9 +118,60 @@ export class LingqService implements IAppService<TAppPrams, void> {
     }
     return Object.keys(transliteration)
       .map((key) => `${key}:${mergeText(transliteration[key])}`)
-      .join('');
+      .join(';');
   }
+
+  async sync(params: TAppPrams, note: Note, scheduler: TEmitCardScheduler) {
+    if (!params.token) {
+      return;
+    }
+    const { status, extended_status } = this.checkReviewStatus(
+      scheduler.nextState,
+      scheduler.nextDue
+    );
+
+    const formData = new FormData();
+    formData.append('status', status.toString());
+    formData.append('extended_status', extended_status.toString());
+    const data = await changeLingqStatus({
+      language: params.language as languageCode,
+      id: Number(note.sourceId),
+      token: params.token,
+      status,
+      extended_status,
+    });
+  }
+
+  private checkReviewStatus(
+    nextState: TEmitCardScheduler['nextState'],
+    nextDue: TEmitCardScheduler['nextDue']
+  ) {
+    let status = 0;
+    let extended_status = 0;
+    if (nextState != State.Review) {
+      status = 0; // LingqStatus.New;
+      extended_status = 0; //LingqExtendedStatus.Learning;
+    } else if (nextDue) {
+      const now = new Date().getTime();
+      const diff = Math.floor((nextDue - now) / (1000 * 60 * 60 * 24));
+      //Ref https://github.com/thags/lingqAnkiSync/issues/34
+      if (diff > 15) {
+        status = 3; // LingqStatus.Learned;
+        extended_status = 3; // LingqExtendedStatus.Known;
+      } else if (diff > 7 && diff <= 15) {
+        status = 3; // LingqStatus.Learned;
+        extended_status = 0; //LingqExtendedStatus.Learning;
+      } else if (diff > 3 && diff <= 7) {
+        status = 2; // LingqStatus.Familiar;
+        extended_status = 0; // LingqExtendedStatus.Learning;
+      } else {
+        status = 1; // LingqStatus.Recognized;
+        extended_status = 0; // LingqExtendedStatus.Learning;
+      }
+    }
+    return { status, extended_status };
+  }
+
   // push: (params: TAppPrams) => Promise<unknown>;
-  // sync: (params: TAppPrams) => Promise<unknown>;
   // flow: (params: TAppPrams) => Promise<unknown>;
 }
