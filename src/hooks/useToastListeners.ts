@@ -9,25 +9,26 @@ class ToastEmitter extends EventEmitter {
     super();
   }
   emitToast(data: Toast) {
-    this.emit('toast', data);
+    return this.emit('toast', data);
   }
 }
 
 export const toastEmitter = new ToastEmitter();
 
 export function useToastListeners(toast: ToastType) {
-  const handler = (data: Toast) => {
-    toast(data);
-  };
-  if (typeof window !== 'undefined') {
-    Reflect.set(window, 'toast', toastEmitter);
-  }
   useEffect(() => {
+    const handler = (data: Toast) => {
+      toast(data);
+    };
+    if (typeof window !== 'undefined') {
+      Reflect.set(window, 'toast', toastEmitter);
+    }
     console.log('[EventEmitter] load toast listeners');
     toastEmitter.on('toast', handler);
     return () => {
       console.log('[EventEmitter] remove toast listeners');
       toastEmitter.removeListener('toast', handler);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
