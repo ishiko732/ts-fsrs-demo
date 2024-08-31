@@ -2,12 +2,12 @@ import { useCallback, useEffect } from 'react';
 import { Grade } from 'ts-fsrs';
 
 interface PreviewButtonProps {
-  handlerSchduler: (cardId: number, grade: Grade) => Promise<void>;
+  handlerScheduler: (cardId: number, grade: Grade) => Promise<void>;
   handlerRollback: () => Promise<void>;
 }
 
 export function useSchdulerKeyPress({
-  handlerSchduler,
+  handlerScheduler,
   handlerRollback,
 }: PreviewButtonProps) {
   const handleKeyPress = useCallback(
@@ -28,7 +28,7 @@ export function useSchdulerKeyPress({
           case '2':
           case '3':
           case '4':
-            cid && (await handlerSchduler(cid, Number(event.key) as Grade));
+            cid && (await handlerScheduler(cid, Number(event.key) as Grade));
             Reflect.set(window.container!, 'keypressed', {
               key: event.code,
               open: false,
@@ -43,12 +43,12 @@ export function useSchdulerKeyPress({
   );
   useEffect(() => {
     // attach the event listener
-    console.log('[Effect]Register SchdulerKeyPress');
+    console.log('[Effect]Register SchedulerKeyPress');
     document.addEventListener('keydown', handleKeyPress);
 
     // remove the event listener
     return () => {
-      console.log('[Effect]remove SchdulerKeyPress');
+      console.log('[Effect]remove SchedulerKeyPress');
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, [handleKeyPress]);

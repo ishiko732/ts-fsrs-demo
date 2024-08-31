@@ -8,7 +8,7 @@ import {
 import { Card as PrismaCard, State as PrismaState } from '@prisma/client';
 import { cardCrud } from '@lib/container';
 import { createEmptyCardByPrisma } from './fsrsToPrisma';
-import { rollbackAction, schdulerAction } from '@actions/userCardService';
+import { rollbackAction, schedulerAction } from '@actions/userCardService';
 import EventEmitter from 'events';
 import { StateBox } from '@/constant';
 import { nextAfterHandler } from './fsrsToPrisma/handler';
@@ -70,10 +70,10 @@ export class CardService extends EventEmitter implements ICardService {
     this.emit('preview', card);
     return record;
   }
-  async schduler(cid: number, now: Date, grade: Grade) {
+  async scheduler(cid: number, now: Date, grade: Grade) {
     const duration = Math.round((now.getTime() - this.preview_start) / 1000);
     this.box.push(cid);
-    const schduler = schdulerAction(
+    const scheduler = schedulerAction(
       this.deckId,
       cid,
       now.getTime(),
@@ -92,7 +92,7 @@ export class CardService extends EventEmitter implements ICardService {
       cid: card.cid,
       orderId: card.orderId,
     } satisfies TEmitCardScheduler);
-    return schduler;
+    return scheduler;
   }
   async rollback() {
     const last_cid = this.box.pop();
@@ -122,13 +122,13 @@ export class CardService extends EventEmitter implements ICardService {
     } as Record<StateBox, PrismaCard[]>;
     for (const card of cards) {
       this.cards.set(card.cid, card);
-      console.debug('hydrate card', card.cid);
       const state =
         card.state === PrismaState.Relearning
           ? PrismaState.Learning
           : card.state;
       boxes[state].push(card);
     }
+    console.debug('hydrate card', cards.map((c) => c.cid).join(','));
     this.emit('full block', boxes);
   }
 

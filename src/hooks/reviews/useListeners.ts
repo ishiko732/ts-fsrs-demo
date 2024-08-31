@@ -1,3 +1,4 @@
+'use client';
 import {
   ReviewSvc,
   ReviewBarAtom,
@@ -12,8 +13,8 @@ import {
   DisplayAnswer,
 } from '@/atom/decks/review';
 import { StateBox } from '@/constant';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { use, useCallback, useEffect, useRef } from 'react';
+import { useSetAtom } from 'jotai';
+import { useCallback, useRef } from 'react';
 import {
   Card as PrismaCard,
   State as PrismaState,
@@ -25,24 +26,13 @@ import {
   TEmitNoteScheduler,
 } from '@lib/reviews/type';
 
-export function useListeners(page: number) {
+export function useListeners() {
   // init event emitter [boxes]
-  const deckSvc = useAtomValue(ReviewSvc.deck);
-  const noteSvc = useAtomValue(ReviewSvc.note);
-  const cardSvc = useAtomValue(ReviewSvc.card);
+  const { deck: deckSvc, note: noteSvc, card: cardSvc } = ReviewSvc;
   const boxes_new = useSetAtom(Boxes.New);
   const boxes_learning = useSetAtom(Boxes.Learning);
   const boxes_review = useSetAtom(Boxes.Review);
-  const loadedRef = useRef({
-    'full block': false,
-    current: false,
-    'scheduler-note': false,
-    'scheduler-card': false,
-    finish: false,
-    rollback: false,
-    edit: false,
-  });
-  const pageRef = useRef<number[]>([page]);
+  const loadedRef = useRef(false);
   const handlerCardSvcFullBlock = useCallback(
     (hydrate_boxes: Record<StateBox, PrismaCard[]>) => {
       boxes_new((pre) => {
@@ -57,26 +47,10 @@ export function useListeners(page: number) {
         const data = new Set([...pre, ...hydrate_boxes[PrismaState.Review]]);
         return Array.from(data);
       });
-      console.log('on full block');
     },
     [boxes_new, boxes_learning, boxes_review]
   );
 
-  useEffect(() => {
-    if (!loadedRef.current['full block']) {
-      console.log('[EventEmitter] cardSvc load full block ');
-      cardSvc.on('full block', handlerCardSvcFullBlock);
-      loadedRef.current['full block'] = true;
-    }
-
-    return () => {
-      if (loadedRef.current) {
-        console.log('[EventEmitter] cardSvc remove full block ');
-        cardSvc.removeListener('full block', handlerCardSvcFullBlock);
-        loadedRef.current['full block'] = false;
-      }
-    };
-  }, []);
   // init event emitter [CurrentStateAtom]
   // scheduler
   const setBarAtom = {
@@ -106,20 +80,6 @@ export function useListeners(page: number) {
     },
     [cardSvc, setCurrentType, setCurrentPreview]
   );
-  useEffect(() => {
-    if (!loadedRef.current['current']) {
-      console.log('[EventEmitter] cardSvc load current ');
-      cardSvc.on('current', handlerCardSvcCurrent);
-      loadedRef.current['current'] = true;
-    }
-    return () => {
-      if (loadedRef.current['current']) {
-        console.log('[EventEmitter] cardSvc remove current ');
-        cardSvc.removeListener('current', handlerCardSvcCurrent);
-        loadedRef.current['current'] = false;
-      }
-    };
-  }, []);
 
   // 3. update Scheduler
   const handlerCardSvcScheduler = useCallback(
@@ -158,20 +118,6 @@ export function useListeners(page: number) {
     },
     [setBarAtom, noteSvc]
   );
-  useEffect(() => {
-    if (!loadedRef.current['scheduler-card']) {
-      console.log('[EventEmitter] cardSvc load scheduler ');
-      cardSvc.on('scheduler', handlerCardSvcScheduler);
-      loadedRef.current['scheduler-card'] = true;
-    }
-    return () => {
-      if (loadedRef.current['scheduler-card']) {
-        console.log('[EventEmitter] cardSvc remove scheduler ');
-        cardSvc.removeListener('scheduler', handlerCardSvcScheduler);
-        loadedRef.current['scheduler-card'] = false;
-      }
-    };
-  }, []);
 
   // 4. update current note and card
   const setNoteId = useSetAtom(currentNoteId);
@@ -179,56 +125,40 @@ export function useListeners(page: number) {
   const setCardId = useSetAtom(currentCardId);
   const setCard = useSetAtom(currentCard);
   const setOpen = useSetAtom(DisplayAnswer);
-  const handlerNoteSvcScheduler = useCallback(
-    async (prev?: TEmitNoteScheduler) => {
-      const next = noteSvc.scheduler(prev?.nid, prev?.cid, prev?.orderId);
-      const { nid, cid, orderId } = next.data;
-      let card: PrismaCard | null = null;
-      if (!cid) {
-        console.log('create card', nid, orderId);
-        card = await cardSvc.create(nid, orderId);
-        next.update(card.cid);
-      } else {
-        card = await cardSvc.getCard(cid);
-      }
-      setCardId(card.cid);
-      setCard(card);
-      setNoteId(nid);
-      if (nid) {
-        const note = await noteSvc.getNote(nid);
-        setNote(note);
-        if (typeof window !== 'undefined' && 'container' in window) {
-          // debug
-          Reflect.set(window.container!, 'media', { note, card });
-        }
-      } else {
-        cardSvc.emit('finish', prev);
-        if (typeof window !== 'undefined' && 'container' in window) {
-          // debug
-          Reflect.set(window.container!, 'finish', {
-            status: true,
-            last: prev,
-          });
-        }
-      }
-      setOpen(false);
-    },
-    [noteSvc, cardSvc, setCardId, setCard, setNoteId, setNote, setOpen]
-  );
-
-  useEffect(() => {
-    if (!loadedRef.current['scheduler-note']) {
-      console.log('[EventEmitter] noteSvc load scheduler ');
-      noteSvc.on('scheduler', handlerNoteSvcScheduler);
+  const handlerNoteSvcScheduler = async (prev?: TEmitNoteScheduler) => {
+    const next = noteSvc.scheduler(prev?.nid, prev?.cid, prev?.orderId);
+    const { nid, cid, orderId } = next.data;
+    let card: PrismaCard | null = null;
+    if (!cid) {
+      console.log('create card', nid, orderId);
+      card = await cardSvc.create(nid, orderId);
+      next.update(card.cid);
+    } else {
+      card = await cardSvc.getCard(cid);
+      console.log('load card', cid, card);
     }
-    return () => {
-      if (loadedRef.current['scheduler-note']) {
-        console.log('[EventEmitter] noteSvc remove scheduler ');
-        noteSvc.removeListener('scheduler', handlerNoteSvcScheduler);
-        loadedRef.current['scheduler-note'] = false;
+    setCardId(card.cid);
+    setCard(card);
+    setNoteId(nid);
+    if (nid) {
+      const note = await noteSvc.getNote(nid);
+      setNote(note);
+      if (typeof window !== 'undefined' && 'container' in window) {
+        // debug
+        Reflect.set(window.container!, 'media', { note, card });
       }
-    };
-  }, []);
+    } else {
+      cardSvc.emit('finish', prev);
+      if (typeof window !== 'undefined' && 'container' in window) {
+        // debug
+        Reflect.set(window.container!, 'finish', {
+          status: true,
+          last: prev,
+        });
+      }
+    }
+    setOpen(false);
+  };
 
   // 5. update finish
   const setFinish = useSetAtom(DisplayFinish);
@@ -236,22 +166,8 @@ export function useListeners(page: number) {
     async (prev?: TEmitNoteScheduler) => {
       setFinish(true);
     },
-    []
+    [setFinish]
   );
-  useEffect(() => {
-    if (!loadedRef.current['finish']) {
-      console.log('[EventEmitter] cardSvc load finish ');
-      cardSvc.on('finish', handlerCardSvcFinish);
-      loadedRef.current['finish'] = true;
-    }
-    return () => {
-      if (loadedRef.current['finish']) {
-        console.log('[EventEmitter] cardSvc remove finish ');
-        cardSvc.removeListener('finish', handlerCardSvcFinish);
-        loadedRef.current['finish'] = false;
-      }
-    };
-  }, []);
 
   // extra rollback
   const handlerCardSvcRollback = useCallback(
@@ -280,20 +196,6 @@ export function useListeners(page: number) {
       setOpen,
     ]
   );
-  useEffect(() => {
-    if (!loadedRef.current['rollback']) {
-      console.log('[EventEmitter] cardSvc load rollback ');
-      cardSvc.on('rollback', handlerCardSvcRollback);
-      loadedRef.current['rollback'] = true;
-    }
-    return () => {
-      if (loadedRef.current['rollback']) {
-        console.log('[EventEmitter] cardSvc remove rollback ');
-        cardSvc.removeListener('rollback', handlerCardSvcRollback);
-        loadedRef.current['rollback'] = false;
-      }
-    };
-  }, []);
 
   const handlerNoteSvcEdit = useCallback(
     async (note: PrismaNote) => {
@@ -302,21 +204,30 @@ export function useListeners(page: number) {
     },
     [setNoteId, setNote]
   );
-  // extra edit note
-  useEffect(() => {
-    if (!loadedRef.current['edit']) {
-      console.log('[EventEmitter] noteSvc load edit ');
-      noteSvc.on('edit', handlerNoteSvcEdit);
-      loadedRef.current['edit'] = true
-    }
-    return () => {
-      if (loadedRef.current['edit']) {
-        console.log('[EventEmitter] noteSvc remove edit ');
-        noteSvc.removeListener('edit', handlerNoteSvcEdit);
-        loadedRef.current['edit'] = false;
-      }
-    };
-  }, []);
+
+  if (!loadedRef.current) {
+    loadedRef.current = true;
+    console.log('[EventEmitter] cardSvc load full block ');
+    cardSvc.on('full block', handlerCardSvcFullBlock);
+
+    console.log('[EventEmitter] cardSvc load current ');
+    cardSvc.on('current', handlerCardSvcCurrent);
+
+    console.log('[EventEmitter] cardSvc load scheduler ');
+    cardSvc.on('scheduler', handlerCardSvcScheduler);
+
+    console.log('[EventEmitter] noteSvc load scheduler ');
+    noteSvc.on('scheduler', handlerNoteSvcScheduler);
+
+    console.log('[EventEmitter] cardSvc load finish ');
+    cardSvc.on('finish', handlerCardSvcFinish);
+
+    console.log('[EventEmitter] cardSvc load rollback ');
+    cardSvc.on('rollback', handlerCardSvcRollback);
+    // extra edit note
+    console.log('[EventEmitter] noteSvc load edit ');
+    noteSvc.on('edit', handlerNoteSvcEdit);
+  }
 
   if (typeof window !== 'undefined') {
     // debug

@@ -9,7 +9,6 @@ import { useAtomValue } from 'jotai';
 import { useEffect } from 'react';
 
 export const useReviewsInit = () => {
-  const noteSvc = useAtomValue(ReviewSvc.note);
   const noteId = useAtomValue(currentNoteId);
   const cardId = useAtomValue(currentCardId);
   const note = useAtomValue(currentNote);
@@ -17,15 +16,15 @@ export const useReviewsInit = () => {
 
   useEffect(() => {
     if (!noteId) {
-      noteSvc.emit('scheduler');
+      ReviewSvc.note.emit('scheduler');
     }
-  }, [noteId, noteSvc]);
+  }, [noteId]);
 
   return {
     note: note ?? null,
     card: card ?? null,
     noteId,
     cardId,
-    noteSvc,
+    noteSvc: ReviewSvc.note,
   };
 };

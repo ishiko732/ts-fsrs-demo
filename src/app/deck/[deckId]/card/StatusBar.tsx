@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { useHydrateAtoms } from 'jotai/utils';
 import { CurrentStateAtom, ReviewBarAtom } from '@/atom/decks/review';
 import { State as PrismaState } from '@prisma/client';
 import { useAtomValue } from 'jotai';

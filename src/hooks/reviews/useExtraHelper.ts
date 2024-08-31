@@ -1,20 +1,15 @@
 import { ReviewSvc } from '@/atom/decks/review';
 import { toastEmitter } from '@hooks/useToastListeners';
-// import { useToast } from '@/components/ui/use-toast';
 import { Apps } from '@lib/apps';
 import type { IAppService } from '@lib/apps/types';
 import type { TEmitCardScheduler } from '@lib/reviews/type';
-import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useRef } from 'react';
 
 export const useExtraService = () => {
   // init event emitter [boxes]
-  const deckSvc = useAtomValue(ReviewSvc.deck);
-  const noteSvc = useAtomValue(ReviewSvc.note);
-  const cardSvc = useAtomValue(ReviewSvc.card);
+  const { deck: deckSvc, note: noteSvc, card: cardSvc } = ReviewSvc;
   const loadedWindowRef = useRef(false);
   const loadedEmitterRef = useRef(false);
-  // const { toast } = useToast();
 
   // 3. Scheduler
   const handlerScheduler = useCallback(
@@ -45,7 +40,7 @@ export const useExtraService = () => {
                   message: (err as Error).message,
                 };
               });
-            toastEmitter.emit('toast', {
+            toastEmitter.emitToast({
               title: `${name} - ${process.status ? 'Success' : 'Error'}`,
               description: process.message,
               variant: process.status ? 'default' : 'destructive',
@@ -54,7 +49,7 @@ export const useExtraService = () => {
         }
       }
     },
-    [deckSvc, noteSvc]
+    []
   );
 
   useEffect(() => {

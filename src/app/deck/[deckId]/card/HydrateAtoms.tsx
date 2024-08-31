@@ -1,10 +1,9 @@
 'use client';
-import { ReviewBarAtom, ReviewCore, ReviewSvc } from '@/atom/decks/review';
+import { ReviewBarAtom, ReviewSvc } from '@/atom/decks/review';
 import { useExtraService } from '@hooks/reviews/useExtraHelper';
 import { useListeners } from '@hooks/reviews/useListeners';
 import { DeckMemoryContext } from '@lib/reviews/type';
 import { Card, Note } from '@prisma/client';
-import { useAtomValue } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { FSRSParameters } from 'ts-fsrs';
 
@@ -16,30 +15,24 @@ type HydrateAtomsProps = {
   notes: Note[];
 };
 
-export const HydrateAtoms = ({
+export function HydrateAtoms({
   deckContext,
   fsrsParams,
   children,
   cards,
   notes,
-}: HydrateAtomsProps) => {
+}: HydrateAtomsProps) {
   // Init Core
   const { noteContext, ...deckMemory } = deckContext;
   const { memoryState, ...page } = noteContext;
-  useHydrateAtoms([
-    [ReviewCore.deckMemory, deckMemory],
-    [ReviewCore.fsrsParams, fsrsParams],
-    [ReviewCore.noteMemory, memoryState],
-    [ReviewCore.notePage.currentPage, page.pageSize],
-  ]);
   // Svc
-  const deckSvc = useAtomValue(ReviewSvc.deck);
-  const noteSvc = useAtomValue(ReviewSvc.note);
-  const cardSvc = useAtomValue(ReviewSvc.card);
+  const deckSvc = ReviewSvc.deck;
+  const noteSvc = ReviewSvc.note;
+  const cardSvc = ReviewSvc.card;
   deckSvc.init(deckMemory.deckId);
   cardSvc.init(deckMemory.deckId, deckContext.lapsers, fsrsParams);
 
-  useListeners(page.loadPage);
+  useListeners();
   deckSvc.hydrate(deckContext);
   noteSvc.importMemory(noteContext.memoryState);
   noteSvc.hydrate(notes);
@@ -56,4 +49,4 @@ export const HydrateAtoms = ({
 
   useExtraService();
   return <>{children}</>;
-};
+}

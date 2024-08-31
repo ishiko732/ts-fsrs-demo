@@ -63,7 +63,7 @@ export async function suspendCard(cid: number, suspended: boolean) {
   return data;
 }
 
-export async function schdulerAction(
+export async function schedulerAction(
   did: number,
   cid: number,
   timestamp: number,

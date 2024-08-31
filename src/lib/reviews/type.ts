@@ -43,7 +43,7 @@ export abstract class ICardService {
   abstract create(nid: number, orderId: number): Promise<Card>;
   abstract getCard(cid: number, option?: TEmitOption): Promise<Card>;
   abstract preview(cid: number, now: Date): Promise<RecordLog>;
-  abstract schduler(
+  abstract scheduler(
     cid: number,
     now: Date,
     grade: Grade

@@ -141,8 +141,9 @@ class LingqTemplate implements ITemplate {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [extend, setExtend] = useState<string>();
-    const darkMode = useTheme().theme === 'dark';
-    console.log(darkMode);
+    const { theme, systemTheme } = useTheme();
+    const themeMode =
+      theme === 'dark' ? 'dark' : theme === 'system' ? systemTheme : 'light';
     const handler = async () => {
       setLoading(true);
       await noteSvc.edit(note.nid, {
@@ -203,7 +204,7 @@ class LingqTemplate implements ITemplate {
               fontFamily:
                 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             }}
-            data-color-mode={darkMode ? 'dark' : 'light'}
+            data-color-mode={themeMode}
           />
         </div>
       </div>

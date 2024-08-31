@@ -7,7 +7,6 @@ import {
   currentCardId,
   CurrentPreviewAtom,
   DisplayAnswer,
-  ReviewSvc,
 } from '@/atom/decks/review';
 import { useSchdulerKeyPress } from '@hooks/reviews/useKeyPress';
 import { Grade, Grades, Rating, RecordLog, show_diff_message } from 'ts-fsrs';
@@ -97,7 +96,7 @@ function PreviewButton() {
   const recordLog = useAtomValue(CurrentPreviewAtom);
   const handlerSchduler = useScheduler();
   const handlerRollback = useRollback();
-  useSchdulerKeyPress({ handlerSchduler, handlerRollback });
+  useSchdulerKeyPress({ handlerScheduler: handlerSchduler, handlerRollback });
   return open ? (
     <Preview
       recordLog={recordLog ?? null}
