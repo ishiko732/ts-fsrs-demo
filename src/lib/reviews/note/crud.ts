@@ -45,7 +45,8 @@ export class NoteCrud {
     deckId: number,
     notes: Omit<Note, 'did' | 'uid' | 'deleted' | 'nid'>[]
   ) {
-    return await addNotesAction(deckId, notes);
+    const data = await addNotesAction(deckId, notes);
+    return data.count;
   }
 
   async update(

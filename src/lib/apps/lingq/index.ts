@@ -2,7 +2,11 @@ import { getNotExistSourceIds } from '@actions/useExtraService';
 import { IAppService, ToastType } from '../types';
 import { getLingqContext, getLingqs } from './request';
 import { TAppPrams, TGetLingqs } from './types';
+import { noteCrud } from '@lib/container';
+import { Note } from '@prisma/client';
 
+const source = 'lingq';
+const pageSize = 50
 export class LingqService implements IAppService<TAppPrams, void> {
   // get data
   async getLingqLanguageCode(token: string) {
@@ -31,7 +35,7 @@ export class LingqService implements IAppService<TAppPrams, void> {
         token: params.token,
         language: params.language as languageCode,
         page: page,
-        page_size: 50,
+        page_size: pageSize,
       });
       handleToast?.({
         title: 'success',
@@ -40,9 +44,77 @@ export class LingqService implements IAppService<TAppPrams, void> {
       if (data.results.length === 0 || data.next === null) {
         break;
       }
-      // TODO
-      // teExigetNotExistSourceIds()
+      const hash: { [key: string]: Lingq } = {};
+      const sourceIds = data.results.map((lingq) => {
+        hash[`${lingq.pk}`] = lingq;
+        return `${lingq.pk}`;
+      });
+      const notExistsSourceIds = await getNotExistSourceIds(
+        deckId,
+        source,
+        sourceIds
+      );
+      if (notExistsSourceIds.length) {
+        const notes: Omit<Note, 'did' | 'uid' | 'deleted' | 'nid'>[] = [];
+        for (const sourceId of notExistsSourceIds) {
+          const note = hash[sourceId];
+          if (note) {
+            notes.push({
+              question: note.term.replace(/\s+/g, ''),
+              answer: this.mergeTransliteration(note.transliteration),
+              source: source,
+              sourceId: sourceId,
+              extend: {
+                pk: note.pk,
+                term: note.term,
+                fragment: note.fragment,
+                notes: note.notes,
+                words: note.words,
+                hints: note.hints,
+                tags: note.tags,
+                transliteration: note.transliteration,
+                lang: params.language,
+              },
+            });
+          }
+        }
+        const res = await noteCrud.creates(deckId, notes);
+        handleToast?.({
+          title: 'success',
+          description: `Page ${page} created ${res} notes`,
+        });
+      } 
     } while (data.next);
+  }
+
+  private mergeTransliteration(transliteration: LingqTransliteration) {
+    function mergeText(
+      text:
+        | string
+        | string[]
+        | { [key: string]: string }[]
+        | { [key: string]: string }
+    ) {
+      if (text === undefined) {
+        return '';
+      }
+      if (Array.isArray(text)) {
+        let merge = '';
+        for (let t of text) {
+          merge += mergeText(t);
+        }
+        return merge;
+      }
+      if (typeof text === 'string') {
+        return text;
+      }
+      return Object.keys(text)
+        .map((key) => `${key}${text[key]}`)
+        .join('');
+    }
+    return Object.keys(transliteration)
+      .map((key) => `${key}:${mergeText(transliteration[key])}`)
+      .join('');
   }
   // push: (params: TAppPrams) => Promise<unknown>;
   // sync: (params: TAppPrams) => Promise<unknown>;
