@@ -3,7 +3,8 @@ import { HydrateAtoms } from './HydrateAtoms';
 import { cardCrud, noteCrud } from '@lib/container';
 import { CARD_NULL } from '@/constant';
 import { ReviewContainer } from './Container';
-import { Provider } from 'jotai';
+import ReviewProvider from '@context/ReviewContext';
+import { ReviewListener } from '../../review-listener';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,7 +37,8 @@ export default async function Page({ params, searchParams }: PageProps) {
   ]);
 
   return (
-    <Provider>
+    <ReviewProvider>
+      <ReviewListener />
       <HydrateAtoms
         deckContext={context}
         fsrsParams={fsrs_params}
@@ -45,6 +47,6 @@ export default async function Page({ params, searchParams }: PageProps) {
       >
         <ReviewContainer />
       </HydrateAtoms>
-    </Provider>
+    </ReviewProvider>
   );
 }

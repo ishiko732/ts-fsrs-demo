@@ -7,7 +7,7 @@ import ThemeProvider from '@/context/ThemesProvider';
 import { cn } from '@/lib/utils';
 import { Inter as FontSans } from 'next/font/google';
 import NavBar from '@/components/nav-bar';
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from '@/components/ui/toaster';
 import { ReviewListener } from './deck/review-listener';
 
 export const metadata: Metadata = {
@@ -39,6 +39,7 @@ export default async function RootLayout({
           inter.variable
         )}
       >
+        <Toaster />
         <AuthProvider>
           <ThemeProvider
             attribute='class'
@@ -52,8 +53,6 @@ export default async function RootLayout({
             <Analytics debug={false} />
           </ThemeProvider>
         </AuthProvider>
-        <Toaster />
-        <ReviewListener/>
       </body>
     </html>
   );

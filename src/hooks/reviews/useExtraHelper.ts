@@ -49,6 +49,7 @@ export const useExtraService = () => {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -61,7 +62,7 @@ export const useExtraService = () => {
 
     return () => {
       console.log('[EventEmitter] remove extra service');
-      cardSvc.removeListener('scheduler', handlerScheduler);
+      cardSvc.off('scheduler', handlerScheduler);
       loadedEmitterRef.current = false; // 重新设置标志以便于下次正确注册监听器
     };
   }, [cardSvc, handlerScheduler]);

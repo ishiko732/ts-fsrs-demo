@@ -1,10 +1,12 @@
 'use client';
 import { useExtraService } from '@hooks/reviews/useExtraHelper';
-// import { useListeners } from '@hooks/reviews/useListeners';
+import { useCardService } from '@hooks/reviews/useCardService';
+import { useNoteService } from '@hooks/reviews/useNoteService';
 
 export const ReviewListener = () => {
-  // useListeners();
-  // useExtraService();
+  useExtraService();
+  useNoteService();
+  useCardService();
 
   return null;
 };

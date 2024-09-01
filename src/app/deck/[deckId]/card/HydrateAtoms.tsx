@@ -1,7 +1,5 @@
 'use client';
 import { ReviewBarAtom, ReviewSvc } from '@/atom/decks/review';
-import { useExtraService } from '@hooks/reviews/useExtraHelper';
-import { useListeners } from '@hooks/reviews/useListeners';
 import { DeckMemoryContext } from '@lib/reviews/type';
 import { Card, Note } from '@prisma/client';
 import { useHydrateAtoms } from 'jotai/utils';
@@ -32,7 +30,6 @@ export function HydrateAtoms({
   deckSvc.init(deckMemory.deckId);
   cardSvc.init(deckMemory.deckId, deckContext.lapsers, fsrsParams);
 
-  useListeners();
   deckSvc.hydrate(deckContext);
   noteSvc.importMemory(noteContext.memoryState);
   noteSvc.hydrate(notes);
@@ -46,7 +43,5 @@ export function HydrateAtoms({
     [ReviewBarAtom.Relearning, total.Relearning],
     [ReviewBarAtom.Review, total.Review],
   ]);
-
-  useExtraService();
   return <>{children}</>;
 }

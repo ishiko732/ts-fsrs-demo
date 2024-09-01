@@ -1,30 +1,22 @@
 import {
   ReviewSvc,
   currentNoteId,
-  currentCardId,
-  currentNote,
-  currentCard,
 } from '@/atom/decks/review';
-import { useAtomValue } from 'jotai';
-import { useEffect } from 'react';
+import { useStore } from 'jotai';
+import { useEffect, useRef } from 'react';
 
 export const useReviewsInit = () => {
-  const noteId = useAtomValue(currentNoteId);
-  const cardId = useAtomValue(currentCardId);
-  const note = useAtomValue(currentNote);
-  const card = useAtomValue(currentCard);
+  const initdRef = useRef(false);
+  const store = useStore();
 
   useEffect(() => {
+    const noteId = store.get(currentNoteId);
     if (!noteId) {
-      ReviewSvc.note.emit('scheduler');
+      if (!initdRef.current) {
+        initdRef.current = true;
+        const emitStatus = ReviewSvc.note.emit('scheduler');
+        console.log(`emitStatus: ${emitStatus}`);
+      }
     }
-  }, [noteId]);
-
-  return {
-    note: note ?? null,
-    card: card ?? null,
-    noteId,
-    cardId,
-    noteSvc: ReviewSvc.note,
-  };
+  }, [store]);
 };
