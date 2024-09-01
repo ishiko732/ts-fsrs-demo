@@ -38,6 +38,10 @@ export const Boxes = {
 
 // show
 export const DisplayAnswer = atom(false);
-export const DisplayDSR = atom(false);
 export const DisplayFinish = atom(false);
 export const DisplayNoteDialog = atom(false);
+export const DisplayDSR = atom({
+  D: 0,
+  S: 0,
+  R: '',
+});
