@@ -34,7 +34,7 @@ export default async function DeckStatus({
       </div>
       <Separator className='my-4' />
       <div className='space-y-1'>
-        <h4 className='text-sm font-medium leading-none'>Current Plain</h4>
+        <h4 className='text-sm font-medium leading-none'>Current Plan</h4>
         <div className='flex h-5 items-center space-x-4 text-sm'>
           {Object.entries(detail).map(([key, value], index) => {
             return (
