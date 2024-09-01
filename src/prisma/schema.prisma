@@ -54,20 +54,6 @@ model Card {
   @@index([orderId])
 }
 
-model Parameters {
-  uid               Int     @id @unique @default(autoincrement())
-  request_retention Float   @default(0.9)
-  maximum_interval  Int     @default(36500)
-  w                 Json
-  enable_fuzz       Boolean @default(false)
-  enable_short_term Boolean @default(true)
-  card_limit        Int     @default(50)
-  lapses            Int     @default(8)
-  user              User?
-  lingq_token       String?
-  lingq_counter     String?
-}
-
 model Deck {
   did        Int     @id @default(autoincrement())
   name       String
@@ -80,16 +66,15 @@ model Deck {
 }
 
 model User {
-  uid        Int        @id @unique @default(autoincrement())
-  name       String     @unique
+  uid        Int    @id @unique @default(autoincrement())
+  name       String @unique
   password   String
   oauthId    String
-  oauthType  String     @default("local")
-  email      String     @unique
+  oauthType  String @default("local")
+  email      String @unique
   notes      Note[]
-  params     Parameters @relation(fields: [uid], references: [uid])
-  timezone   String     @default("UTC")
-  hourOffset Int        @default(4)
+  timezone   String @default("UTC")
+  hourOffset Int    @default(4)
 }
 
 model Note {

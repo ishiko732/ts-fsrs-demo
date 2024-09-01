@@ -9,37 +9,25 @@ import progeigo from '@/../public/プログラミング必須英単語600+.json'
 import { initProgeigoNotes } from '@/lib/note';
 import { ProgeigoNodeData, UserCreatedRequired } from '@/types';
 import { getUserByEmail, getUserByOauthId } from '@/lib/user';
-import { User, Parameters } from '@prisma/client';
+import { User } from '@prisma/client';
 
 // init user and fsrs config
 export async function initUserAndFSRS(
   profile: UserCreatedRequired
-): Promise<Parameters & { user: User }> {
-  const params: Parameters & { user: User | null } =
-    await prisma.parameters.create({
-      data: {
-        request_retention: default_request_retention,
-        maximum_interval: default_maximum_interval,
-        w: JSON.stringify(default_w),
-        enable_fuzz: default_enable_fuzz,
-        user: {
-          create: {
-            name: profile.name,
-            password: profile.password,
-            email: profile.email,
-            oauthId: profile.oauthId,
-            oauthType: profile.oauthType,
-          },
-        },
-      },
-      include: {
-        user: true,
-      },
-    });
-  if (!params.user) {
-    throw new Error('user not found');
+): Promise<User> {
+  const user = await prisma.user.create({
+    data: {
+      name: profile.name,
+      password: profile.password,
+      email: profile.email,
+      oauthId: profile.oauthId,
+      oauthType: profile.oauthType,
+    },
+  });
+  if (!user) {
+    throw new Error('Failed to create user');
   }
-  return params as Parameters & { user: User };
+  return user;
 }
 
 // init progeigo dates
@@ -64,8 +52,7 @@ export async function initUser(profile: UserCreatedRequired) {
     user = await getUserByEmail(profile.email);
   }
   if (!user) {
-    const params = await initUserAndFSRS(profile);
-    user = params.user;
+    user = await initUserAndFSRS(profile);
     await initProgeigoDates(user.uid);
   }
   return user;
