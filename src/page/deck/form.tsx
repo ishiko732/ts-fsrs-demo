@@ -15,18 +15,13 @@ import {
 } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  default_maximum_interval,
-  default_request_retention,
-  default_w,
-  generatorParameters,
-} from 'ts-fsrs';
+import { default_w, generatorParameters } from 'ts-fsrs';
 import { DeckCrud } from '@lib/reviews/deck/crud';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { DeckProfileAtom } from '@/atom/decks/profile';
-import { CARDLIMT, LAPSES } from '@/constant/deck';
 const formSchema = z.object({
   name: z.coerce.string(),
+  desc: z.coerce.string(),
   request_retention: z.coerce
     .number()
     .min(0.7, { message: 'Value must be at least 0.7' })
@@ -99,6 +94,7 @@ export default function DeckForm({
       const res = await curd.update({
         did: params.did,
         name: values.name,
+        desc: values.desc,
         fsrs: f_params as object,
         card_limit: values.card_limit,
         lapses: values.lapses,
@@ -106,6 +102,7 @@ export default function DeckForm({
     } else {
       const res = await curd.create({
         name: values.name,
+        desc: values.desc,
         fsrs: f_params as object,
         card_limit: values.card_limit,
         lapses: values.lapses,
@@ -132,6 +129,23 @@ export default function DeckForm({
               <FormControl>
                 <Input
                   placeholder='please enter the deck name'
+                  {...field}
+                  type='text'
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='desc'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Deck Description</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder='please enter the deck description'
                   {...field}
                   type='text'
                 />

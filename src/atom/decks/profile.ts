@@ -20,6 +20,7 @@ export const DeckProfileAtom = atom({
   shortTerm: atom(defualt_enable_short_term),
   profile: atom({
     name: '',
+    desc: '',
     did: 0,
     card_limit: 50,
     lapses: 8,

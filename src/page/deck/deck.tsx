@@ -9,6 +9,7 @@ import DeckActions from './actions';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { JsonObject } from '@prisma/client/runtime/library';
+import { Separator } from '@/components/ui/separator';
 
 export default function DeckItem({
   deck,
@@ -41,6 +42,12 @@ export default function DeckItem({
           <DeckActions deck={deck} />
         </div>
       </div>
+      <div className='space-y-1 pt-2'>
+        <p className='text-sm text-muted-foreground'>
+          {deck.desc || 'No description'}
+        </p>
+      </div>
+      <Separator className='my-4' />
       <Suspense fallback={<Skeleton className='h-16 w-full space-y-2' />}>
         <DeckStatus
           did={deck.did}

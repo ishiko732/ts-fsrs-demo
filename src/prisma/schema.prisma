@@ -57,6 +57,7 @@ model Card {
 model Deck {
   did        Int     @id @default(autoincrement())
   name       String
+  desc       String  @default("")
   uid        Int
   fsrs       Json
   card_limit Int     @default(50)

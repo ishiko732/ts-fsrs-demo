@@ -3,7 +3,7 @@ import { DeckProfileAtom } from '@/atom/decks/profile';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import type { Deck } from '@prisma/client';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { use, useCallback } from 'react';
+import { useCallback } from 'react';
 import { FSRSParameters } from 'ts-fsrs';
 
 export const EditDeckProfile = ({
@@ -21,6 +21,7 @@ export const EditDeckProfile = ({
     const fsrs = deck.fsrs as object as FSRSParameters;
     setProfile({
       name: deck.name,
+      desc: deck.desc,
       did: deck.did,
       card_limit: deck.card_limit,
       lapses: deck.lapses,

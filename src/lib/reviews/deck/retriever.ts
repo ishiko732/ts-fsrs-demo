@@ -17,11 +17,12 @@ import {
   states_prisma,
 } from '@/constant';
 
-export const defaultParams = (uid: number) => {
+export const defaultDeck = (uid: number) => {
   return {
     did: DEFAULT_DECK_ID,
     uid: uid,
     name: 'Default',
+    desc: 'If you wish to use other scheduling/fuzzing options, please create a new deck.',
     fsrs: generatorParameters() as object,
     card_limit: CARDLIMT,
     lapses: LAPSES,
@@ -33,7 +34,7 @@ export const getParamsByUserId_cache = (uid: number, deckId?: number) => {
   return cache(
     async () => {
       if (deckId === DEFAULT_DECK_ID) {
-        return { [DEFAULT_DECK_ID]: defaultParams(uid) };
+        return { [DEFAULT_DECK_ID]: defaultDeck(uid) };
       }
       const decks: Deck[] = await prisma.deck.findMany({
         where: { uid, did: deckId },
@@ -43,7 +44,7 @@ export const getParamsByUserId_cache = (uid: number, deckId?: number) => {
         const { deleted, ...rest } = data;
         resp[data.did] = rest;
       }
-      resp[`${DEFAULT_DECK_ID}`] = defaultParams(uid);
+      resp[`${DEFAULT_DECK_ID}`] = defaultDeck(uid);
       return resp;
     },
     [`actions/deck_params/${uid}/deck/${deckId}`],
@@ -66,14 +67,8 @@ export const getDecks = (uid: number, deleted?: boolean) => {
       });
       if (!deleted) {
         decks.push({
-          did: DEFAULT_DECK_ID,
-          uid,
-          name: 'Default',
-          fsrs: generatorParameters() as object,
-          extends: {},
+          ...defaultDeck(uid),
           deleted: false,
-          card_limit: CARDLIMT,
-          lapses: LAPSES,
         });
       }
       return decks;
