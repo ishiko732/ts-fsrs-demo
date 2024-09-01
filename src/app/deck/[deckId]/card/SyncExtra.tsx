@@ -2,13 +2,14 @@
 
 import LoadingSpinner from '@/components/loadingSpinner';
 import { useToast } from '@/components/ui/use-toast';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DeckService } from '@lib/reviews/deck';
 import type { IAppService } from '@lib/apps/types';
 
 export function SyncExtra() {
   const { toast } = useToast();
   const loadedRef = useRef(false);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     const not_exist_svc = svcUndefined();
@@ -42,6 +43,7 @@ export function SyncExtra() {
           });
         }
       }
+      setDone(true);
     });
   }, []);
 
@@ -51,10 +53,16 @@ export function SyncExtra() {
 
   return (
     <>
-      <div className='flex  justify-center items-center pb-4'>
-        <LoadingSpinner />
-        <span>Wait Extra Service Syncing ...</span>
-      </div>
+      {!done ? (
+        <div className='flex  justify-center items-center pb-4'>
+          <LoadingSpinner />
+          <span>Wait Extra Service Syncing ...</span>
+        </div>
+      ) : (
+        <div className='flex  justify-center items-center pb-4'>
+          <span>Extra Service Syncing Done</span>
+        </div>
+      )}
     </>
   );
 }
