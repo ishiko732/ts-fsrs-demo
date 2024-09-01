@@ -10,8 +10,9 @@ import { cardCrud } from '@lib/container';
 import { createEmptyCardByPrisma } from './fsrsToPrisma';
 import { rollbackAction, schedulerAction } from '@actions/userCardService';
 import EventEmitter from 'events';
-import { StateBox } from '@/constant';
+import { DEFAULT_DECK_ID, LAPSES, StateBox } from '@/constant';
 import { nextAfterHandler } from './fsrsToPrisma/handler';
+import { toastEmitter } from '@hooks/useToastListeners';
 
 export class CardService extends EventEmitter implements ICardService {
   private f: FSRS;
@@ -20,11 +21,25 @@ export class CardService extends EventEmitter implements ICardService {
   private preview_start: number = 0;
   private deckId;
   private lapses;
+  private reset_cnt = 0;
   constructor(deckId: number, lapses: number, parameters?: FSRSParameters) {
     super();
     this.f = fsrs(parameters);
     this.deckId = deckId;
     this.lapses = lapses;
+  }
+  reset(): void {
+    this.deckId = DEFAULT_DECK_ID;
+    this.lapses = LAPSES;
+    this.cards = new Map();
+    this.box = [];
+    this.preview_start = 0;
+    if(this.reset_cnt++){
+      toastEmitter.emitToast({
+        title:`Card Service - #${this.reset_cnt}`,
+        description: 'reset success',
+      })
+    }
   }
 
   init(deckId: number, lapses: number, parameters?: FSRSParameters) {
@@ -130,6 +145,17 @@ export class CardService extends EventEmitter implements ICardService {
     }
     console.debug('hydrate card', cards.map((c) => c.cid).join(','));
     this.emit('full block', boxes);
+  }
+
+  async getDSR(cid: number) {
+    const card = await this.getCard(cid, { emit: false });
+    const now = new Date();
+    const r = this.f.get_retrievability(card, now, true);
+    return {
+      D: card.difficulty,
+      S: card.stability,
+      R: r,
+    };
   }
 
   getLoadedCardIds = () => {

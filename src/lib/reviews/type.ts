@@ -2,6 +2,7 @@ import { Card, Deck, Note, State as PrismaState } from '@prisma/client';
 import { FSRSParameters, Grade, RecordLog } from 'ts-fsrs';
 
 export abstract class IDeckService {
+  abstract reset(): void;
   abstract init(deckId: number): void;
   abstract getDeck(): Promise<Omit<Deck, 'deleted'>>;
   abstract getAlgorithmParams(): Promise<FSRSParameters>;
@@ -13,6 +14,7 @@ export abstract class IDeckService {
 }
 
 export abstract class INoteService {
+  abstract reset(): void;
   abstract getNote(nid: number): Promise<Note>;
   abstract edit(
     nid: number,
@@ -35,6 +37,7 @@ export type TEmitOption = {
 };
 
 export abstract class ICardService {
+  abstract reset(): void;
   abstract init(
     deckId: number,
     lapses: number,
@@ -51,6 +54,11 @@ export abstract class ICardService {
   abstract rollback(): Promise<FSRSActionReturn | null>;
 
   abstract hydrate(cards: Card[]): Promise<void>;
+  abstract getDSR(cid: number): Promise<{
+    D: number;
+    S: number;
+    R: number | string | undefined;
+  }>;
 }
 
 // deck

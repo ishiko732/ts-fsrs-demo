@@ -9,9 +9,6 @@ const templates: { [key: string]: ITemplate } = {
   lingq: lingqTemplate,
 };
 
-export class TemplateProvider {
-  static getTemplate(source: string) {
-    const template = templates[source];
-    return template ?? defaultTemplate;
-  }
+export function TemplateProvider(source: string) {
+  return templates[source] ?? defaultTemplate;
 }

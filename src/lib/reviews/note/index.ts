@@ -1,3 +1,4 @@
+import { toastEmitter } from '@hooks/useToastListeners';
 import { noteCrud } from '@lib/container';
 import { INoteService, NoteMemoryState } from '@lib/reviews/type';
 import { Note as PrismaNote } from '@prisma/client';
@@ -8,8 +9,21 @@ export class NoteService extends EventEmitter implements INoteService {
   private traces: PrismaNote[] = [];
   // noteId-cardId-orderId
   private note_card_relation: Set<string> = new Set();
+  private reset_cnt = 0;
   constructor() {
     super();
+  }
+
+  reset() {
+    this.notes = new Map();
+    this.traces = [];
+    this.note_card_relation = new Set();
+    if (this.reset_cnt++) {
+      toastEmitter.emitToast({
+        title: `Note Service - #${this.reset_cnt}`,
+        description: 'reset success',
+      });
+    }
   }
 
   async getNote(nid: number): Promise<PrismaNote> {
@@ -25,11 +39,16 @@ export class NoteService extends EventEmitter implements INoteService {
     note: Partial<Omit<PrismaNote, 'did' | 'uid' | 'deleted'>>
   ): Promise<PrismaNote> {
     const old = await this.getNote(nid);
-    const updated = await noteCrud.update(old.did, old.nid, note);
-    this.notes.set(nid, updated);
-    this.traces.push(old);
-    this.emit('edit', updated);
-    return updated;
+    try {
+      const updated = await noteCrud.update(old.did, old.nid, note);
+      this.notes.set(nid, updated);
+      this.traces.push(old);
+      this.emit('edit', updated);
+      return updated;
+    } catch (err) {
+      this.emit('edit', null, err);
+      return old;
+    }
   }
   async undo(): Promise<boolean> {
     // get last trace
@@ -100,7 +119,7 @@ export class NoteService extends EventEmitter implements INoteService {
 
   rollback = (nid: number, cid: number, orderId: number) => {
     const rel = `${nid}-${cid}-${orderId}`;
-    if(!this.note_card_relation.has(rel)) {
+    if (!this.note_card_relation.has(rel)) {
       this.note_card_relation.add(rel);
     }
     return true;
