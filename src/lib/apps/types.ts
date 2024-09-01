@@ -1,6 +1,6 @@
 import type { useToast } from '@/components/ui/use-toast';
 import { TEmitCardScheduler } from '@lib/reviews/type';
-import { Note } from '@prisma/client';
+import { Deck, Note } from '@prisma/client';
 
 export type TAppData = {
   name: string;
@@ -8,6 +8,20 @@ export type TAppData = {
   component: (data: TAppProps) => React.ReactNode;
   service: typeof IAppService;
 };
+
+export type TAppMenuData = {
+  allow_service: string;
+  menu: {
+    name: string;
+    action: (data: TAppMenuAction) => React.ReactNode;
+  }[];
+};
+
+export interface TAppMenuAction {
+  deck: Deck;
+  params: TAppProps['params'];
+  className: string;
+}
 
 export type TAppProps<T extends object = object> = {
   install: boolean;

@@ -1,3 +1,5 @@
+import { Deck } from '@prisma/client';
+
 export type TGetLingqs = {
   language: languageCode;
   token: string;
@@ -29,4 +31,10 @@ export type TLingqReview = {
 export interface TAppPrams extends Object {
   token: string;
   language: string;
+}
+
+export interface TAppMenus {
+  deck: Deck;
+  params: TAppPrams;
+  className: string;
 }

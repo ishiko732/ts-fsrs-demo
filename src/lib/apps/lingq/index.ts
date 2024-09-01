@@ -5,6 +5,7 @@ import { TAppPrams, TGetLingqs } from './types';
 import { noteCrud } from '@lib/container';
 import { Note, State } from '@prisma/client';
 import { TEmitCardScheduler } from '@lib/reviews/type';
+import { toastEmitter } from '@hooks/useToastListeners';
 
 const source = 'lingq';
 const pageSize = 50;
@@ -30,7 +31,7 @@ export class LingqService implements IAppService<TAppPrams, void> {
     return data;
   }
 
-  async pull(deckId: number, params: TAppPrams, handleToast?: ToastType) {
+  async pull(deckId: number, params: TAppPrams) {
     let page = 0;
     let data;
     do {
@@ -41,8 +42,8 @@ export class LingqService implements IAppService<TAppPrams, void> {
         page: page,
         page_size: pageSize,
       });
-      handleToast?.({
-        title: 'success',
+      toastEmitter.emitToast({
+        title: 'Lingq Service - success',
         description: `Page ${page} fetched`,
       });
       if (data.results.length === 0 || data.next === null) {
@@ -83,8 +84,8 @@ export class LingqService implements IAppService<TAppPrams, void> {
           }
         }
         const res = await noteCrud.creates(deckId, notes);
-        handleToast?.({
-          title: 'success',
+        toastEmitter.emitToast({
+          title: 'Lingq Service - success',
           description: `Page ${page} created ${res} notes`,
         });
       }

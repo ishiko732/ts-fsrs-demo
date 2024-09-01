@@ -8,22 +8,13 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 import { DeleteDeck } from './actions/delete-deck';
 import { RestoreDeck } from './actions/restore-deck';
-import { ViewNote } from './actions/view-note';
-import { StartReview } from './actions/start-review';
 import { InstallApp } from './actions/install-apps';
+import { AppMenus } from '@lib/apps/menus';
 
 const actions = [
   {
     name: 'Edit Deck',
     Action: EditDeckProfile,
-  },
-  {
-    name: 'View Note',
-    Action: ViewNote,
-  },
-  {
-    name: 'Start Review',
-    Action: StartReview,
   },
   {
     name: 'Delete Deck',
@@ -33,13 +24,33 @@ const actions = [
     name: 'Restore Deck',
     Action: RestoreDeck,
   },
-  { 
+  {
     name: 'Install App',
-    Action: InstallApp
+    Action: InstallApp,
+  },
+  {
+    name: '<hr>',
   },
 ];
 
 export default async function DeckActions({ deck }: { deck: Deck }) {
+  const extend = deck.extends as Record<string, object>;
+  const extra_actions = [];
+
+  for (const app of AppMenus) {
+    if (app.allow_service in extend) {
+      const menus = app.menu;
+      for (const menu of menus) {
+        extra_actions.push({
+          name: menu.name,
+          Action: menu.action,
+          service: app.allow_service,
+        });
+      }
+    }
+  }
+  console.log(extra_actions);
+
   return (
     <div className='ml-auto cursor-pointer'>
       <DropdownMenu>
@@ -50,13 +61,35 @@ export default async function DeckActions({ deck }: { deck: Deck }) {
           className='bg-white dark:bg-black py-4 rounded-md'
           align='end'
         >
-          {actions.map((action) => (
-            <action.Action
-              key={action.name}
-              deck={deck}
-              className=' transition-all hover:bg-accent m-0.5 px-1 text-base'
-            />
-          ))}
+          {actions.map((action) =>
+            action.Action ? (
+              <action.Action
+                key={action.name}
+                deck={deck}
+                className=' transition-all hover:bg-accent m-0.5 px-1 text-base'
+              />
+            ) : (
+              <hr
+                key={action.name}
+                className='border-t border-stone-500 dark:border-gray-600'
+              />
+            )
+          )}
+          {extra_actions.map((action) =>
+            action.Action ? (
+              <action.Action
+                key={action.name}
+                deck={deck}
+                params={extend[action.service]}
+                className=' transition-all hover:bg-accent m-0.5 px-1 text-base'
+              />
+            ) : (
+              <hr
+                key={action.name}
+                className='border-t border-stone-500 dark:border-gray-600'
+              />
+            )
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
