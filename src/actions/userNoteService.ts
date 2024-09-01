@@ -181,9 +181,14 @@ export async function addNotesAction(
       extend: (note.extend ? note.extend : {}) as Prisma.InputJsonValue,
     };
   });
-  return await prisma.note.createMany({
+  const data =  await prisma.note.createMany({
     data: merge_data,
   });
+
+  revalidateTag(`actions/decks/${uid}/deleted/1`);
+  revalidateTag(`actions/decks/${uid}/deleted/0`);
+  revalidatePath(`/deck`);
+  return data
 }
 
 export async function updateNoteAction(

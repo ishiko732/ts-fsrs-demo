@@ -38,7 +38,7 @@ export default async function DeckActions({ deck }: { deck: Deck }) {
   const extra_actions = [];
 
   for (const app of AppMenus) {
-    if (app.allow_service in extend) {
+    if (app.allow_service in extend || app.allow_service === 'Global Service') {
       const menus = app.menu;
       for (const menu of menus) {
         extra_actions.push({
