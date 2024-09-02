@@ -9,7 +9,7 @@ const Audio = forwardRef<HTMLAudioElement, AudioProps>((props, ref) => {
 
   return (
     <div className="flex justify-center py-2">
-      <audio src={url} controls ref={ref} {...restProps}></audio>
+      <audio src={url} controls ref={ref} autoPlay {...restProps}></audio>
     </div>
   );
 });
