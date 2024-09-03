@@ -21,7 +21,7 @@ import { useAtomValue } from 'jotai';
 import { DeckProfileAtom } from '@/atom/decks/profile';
 const formSchema = z.object({
   name: z.coerce.string(),
-  desc: z.coerce.string(),
+  desc: z.coerce.string().default(''),
   request_retention: z.coerce
     .number()
     .min(0.7, { message: 'Value must be at least 0.7' })
@@ -94,7 +94,7 @@ export default function DeckForm({
       const res = await curd.update({
         did: params.did,
         name: values.name,
-        desc: values.desc,
+        desc: values.desc || '',
         fsrs: f_params as object,
         card_limit: values.card_limit,
         lapses: values.lapses,
@@ -102,7 +102,7 @@ export default function DeckForm({
     } else {
       const res = await curd.create({
         name: values.name,
-        desc: values.desc,
+        desc: values.desc || '',
         fsrs: f_params as object,
         card_limit: values.card_limit,
         lapses: values.lapses,

@@ -10,6 +10,7 @@ import { DeleteDeck } from './actions/delete-deck';
 import { RestoreDeck } from './actions/restore-deck';
 import { InstallApp } from './actions/install-apps';
 import { AppMenus } from '@lib/apps/menus';
+import { getDeckNoteSizeAction } from '@actions/userDeckService';
 
 const actions = [
   {
@@ -36,7 +37,7 @@ const actions = [
 export default async function DeckActions({ deck }: { deck: Deck }) {
   const extend = deck.extends as Record<string, object>;
   const extra_actions = [];
-
+  const noteSize = await getDeckNoteSizeAction(deck.did)
   for (const app of AppMenus) {
     if (app.allow_service in extend || app.allow_service === 'Global Service') {
       const menus = app.menu;
@@ -45,11 +46,11 @@ export default async function DeckActions({ deck }: { deck: Deck }) {
           name: menu.name,
           Action: menu.action,
           service: app.allow_service,
+          noteSize: noteSize,
         });
       }
     }
   }
-  console.log(extra_actions);
 
   return (
     <div className='ml-auto cursor-pointer'>
@@ -81,6 +82,7 @@ export default async function DeckActions({ deck }: { deck: Deck }) {
                 key={action.name}
                 deck={deck}
                 params={extend[action.service]}
+                note_size={action.noteSize}
                 className=' transition-all hover:bg-accent m-0.5 px-1 text-base'
               />
             ) : (
