@@ -1,17 +1,8 @@
 'use server';
 
 import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
-import { exportLogsByUid } from '@/lib/log';
 import { addRevlog, getRevlogs } from '@lib/reviews/revlog/retriever';
 import { Revlog } from '@prisma/client';
-
-export async function exportLogs() {
-  const uid = await getSessionUserId();
-  if (!uid) {
-    return [];
-  }
-  return await exportLogsByUid(uid);
-}
 
 export async function getLogsAction(cid: number) {
   const uid = await getSessionUserId();

@@ -1,4 +1,5 @@
 import { TAppMenuData } from '../types';
+import { ExportRevlog } from './export-revlog';
 import { FSRSReschedule } from './fsrs-reschedule';
 import { InitProgeigoDates } from './init-progeigo';
 
@@ -11,6 +12,10 @@ const actions = [
   {
     name: 'Reschedule',
     action: FSRSReschedule,
+  },
+  {
+    name: 'Export Revlog',
+    action: ExportRevlog,
   },
 ];
 
