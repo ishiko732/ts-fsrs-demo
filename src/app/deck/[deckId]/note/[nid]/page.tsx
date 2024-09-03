@@ -2,7 +2,6 @@ import { getNoteByNid } from '@/lib/note';
 import { cache } from 'react';
 import GoNotes from '@/components/record/GoBack';
 import FSRSDetail from '@/components/record/FSRSMsg';
-import { findLogsByCid } from '@/lib/log';
 import LogTable from '@/components/record/LogTable';
 import DisplayMsg from '@/components/source/display/default';
 import {
@@ -13,6 +12,7 @@ import {
 import { getUserNote } from '@/actions/userNoteService';
 import { redirect } from 'next/navigation';
 import { Note } from '@prisma/client';
+import { findLogsByCid } from '@actions/useExportService';
 type Props = {
   params: {
     deckId: string;
