@@ -8,8 +8,8 @@ import {
   RevlogPrismaUnChecked,
   rollbackAfterHandler,
 } from '@lib/reviews/card/fsrsToPrisma/handler';
-import { fsrs, Grade, TypeConvert } from 'ts-fsrs';
-import { Card } from '@prisma/client';
+import { fsrs, FSRSParameters, Grade, TypeConvert } from 'ts-fsrs';
+import { Card, State } from '@prisma/client';
 import {
   addCard,
   deleteCard,
@@ -20,6 +20,7 @@ import {
 } from '@lib/reviews/card/retriever';
 import { DeckService } from '@lib/reviews/deck';
 import { JsonObject } from '@prisma/client/runtime/library';
+import { deckCrud } from '@lib/container';
 
 export async function forgetAction(
   did: number,
@@ -230,4 +231,56 @@ export async function restoreCardAction(cid: number) {
   }
   const res = await deleteCard(uid, cid, false);
   return res;
+}
+
+// extra
+
+export async function rescheduleAction(deckId: number, cardIds?: number[]) {
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  // get all card
+  const cards = await prisma.card.findMany({
+    where: {
+      uid: uid,
+      note: {
+        did: deckId,
+      },
+      state: State.Review,
+      cid: {
+        in: cardIds?.length ? cardIds : undefined,
+      },
+    },
+    orderBy: {
+      last_review: 'asc',
+    },
+  });
+
+  const params = (await deckCrud.get(deckId)).fsrs as unknown as FSRSParameters;
+
+  return _reschedule(params, cards);
+}
+
+async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
+  if (cards.length === 0) {
+    return false;
+  }
+  const f = fsrs(parameters);
+  const rescheduled_cards = f.reschedule(cards);
+  if (rescheduled_cards.length === 0) {
+    return true;
+  }
+  console.time(`reschedule`);
+  await prisma.$transaction(
+    rescheduled_cards.map((data) =>
+      prisma.card.update({
+        where: { cid: data.cid },
+        data: data,
+      })
+    )
+  );
+  console.timeEnd(`reschedule`);
+  console.time(`reschedule: ${rescheduled_cards.length}cards`);
+  return true;
 }
