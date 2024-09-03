@@ -14,9 +14,27 @@ export const getNote_cache = (uid: number, nid: number) => {
     },
     [`actions/note/${uid}/${nid}`],
     {
-      tags: [`actions/${uid}/${nid}`],
+      tags: [`actions/note/${uid}/${nid}`],
     }
   ) satisfies () => Promise<Note | null>;
+};
+
+export const getDeckNoteSize_cache = (uid: number, deckId?: number) => {
+  return cache(
+    async () => {
+      return await prisma.note.count({
+        where: {
+          uid,
+          did: deckId,
+          deleted: false,
+        },
+      });
+    },
+    [`actions/deck/size/${uid}/${deckId}`],
+    {
+      tags: [`actions/deck/size/${uid}/${deckId}`],
+    }
+  ) satisfies () => Promise<number>;
 };
 
 // crud

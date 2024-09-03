@@ -8,10 +8,13 @@ import { Note } from '@prisma/client';
 import { toastEmitter } from '@hooks/useToastListeners';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 
-export function InitProgeigoDates({ deck, className }: TAppMenuAction) {
+export function InitProgeigoDates({
+  deck,
+  className,
+  note_size,
+}: TAppMenuAction) {
   const extend = deck.extends as Record<string, object>;
-  console.log(deck.name, Object.keys(extend).length);
-  if (Object.keys(extend).length !== 0) {
+  if (Object.keys(extend).length !== 0 || note_size > 0) {
     return null;
   }
 

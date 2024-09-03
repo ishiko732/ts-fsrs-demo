@@ -17,6 +17,7 @@ import { getNumberOfNewCardsLearnedToday } from '@lib/reviews/deck/retriever';
 import { Deck } from '@prisma/client';
 import { NoteMemoryContext } from '@lib/reviews/type';
 import { revalidateTag } from 'next/cache';
+import { getDeckNoteSize_cache } from '@lib/reviews/note/retriever';
 
 // Deck Crud
 
@@ -201,5 +202,15 @@ export async function getNoteTotalGroupAction(deckId?: number) {
     throw new Error('user not found.');
   }
   const datum = await getNoteTotalGroupByDeckId(uid, deckId);
+  return datum;
+}
+
+
+export async function getDeckNoteSizeAction(deckId?:number){
+  const uid = await getSessionUserId();
+  if (!uid) {
+    throw new Error('user not found.');
+  }
+  const datum = await getDeckNoteSize_cache(uid, deckId)();
   return datum;
 }

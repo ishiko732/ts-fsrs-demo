@@ -21,6 +21,7 @@ export interface TAppMenuAction {
   deck: Deck;
   params: TAppProps['params'];
   className: string;
+  note_size: number;
 }
 
 export type TAppProps<T extends object = object> = {
