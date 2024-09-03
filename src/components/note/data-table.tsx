@@ -238,8 +238,8 @@ export const columns: (f: FSRS, now: number) => ColumnDef<NoteSimpleInfo>[] = (
                   legacyBehavior
                   href={
                     noteSimpleInfo.deleted
-                      ? `/note/${noteSimpleInfo.nid}?deleted=1`
-                      : `/note/${noteSimpleInfo.nid}`
+                      ? `/deck/${noteSimpleInfo.did}/note/${noteSimpleInfo.nid}?deleted=1`
+                      : `/deck/${noteSimpleInfo.did}/note/${noteSimpleInfo.nid}`
                   }
                   key={noteSimpleInfo.nid}
                 >
@@ -305,7 +305,7 @@ export default function DataTable({
       const newSearchParams = new URLSearchParams(searchParams?.toString());
 
       for (const [key, value] of Object.entries(params)) {
-        if (value === null || value === undefined) {
+        if (value === null || value === undefined || Number.isNaN(value)) {
           newSearchParams.delete(key);
         } else if (Array.isArray(value)) {
           newSearchParams.delete(key);
@@ -323,7 +323,9 @@ export default function DataTable({
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
       pageIndex: Number(searchParams?.get('page') ?? '1') - 1,
-      pageSize: Math.ceil(rowCount / pageCount),
+      pageSize: Number.isNaN(Math.ceil(rowCount / pageCount))
+        ? 15
+        : Math.ceil(rowCount / pageCount),
     });
 
   const pagination = React.useMemo(
@@ -348,7 +350,7 @@ export default function DataTable({
       router.push(
         `${pathname}?${createQueryString({
           page: pageIndex + 1,
-          take: pageSize,
+          take: Number.isNaN(pageSize) ? 15 : pageSize,
           sort: sortParams,
           ...Object.assign({}, ...sortAsc),
           keyword: keywords ?? null,

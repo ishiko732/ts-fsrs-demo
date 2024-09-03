@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "hourOffset" INTEGER NOT NULL DEFAULT 4,
+ADD COLUMN     "timezone" TEXT NOT NULL DEFAULT 'UTC';

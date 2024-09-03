@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import Link from 'next/link';
 import UserProfile from './user-profile';
-import Setting from './setting';
+// import Setting from './setting';
 import Logout from './logout';
 
 const NavBar = async ({ children }: { children?: ReactNode }) => {
@@ -28,7 +28,7 @@ const NavBar = async ({ children }: { children?: ReactNode }) => {
           </Button>
         ) : (
           <>
-            <Setting />
+            {/* <Setting /> */}
             <Logout />
           </>
         )}

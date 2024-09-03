@@ -19,13 +19,13 @@ import {
   DialogDescription,
 } from '@radix-ui/react-dialog';
 import { DialogClose, DialogFooter, DialogHeader } from '../ui/dialog';
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 import LoadingSpinner from '../loadingSpinner';
 
-const FSRSConfig = dynamic(() => import('./FSRSConfig'), {
-  loading: LoadingSpinner,
-  ssr: false,
-});
+// const FSRSConfig = dynamic(() => import('./FSRSConfig'), {
+//   loading: LoadingSpinner,
+//   ssr: false,
+// });
 
 export default function Setting() {
   const [open, setOpen] = useState(false);
@@ -55,9 +55,9 @@ export default function Setting() {
                 Set your parameters.
               </DialogDescription>
             </DialogHeader>
-            <Suspense>
+            {/* <Suspense>
               <FSRSConfig loading={loading} setLoading={setLoading} />
-            </Suspense>
+            </Suspense> */}
             <DialogFooter>
               <DialogClose onClick={() => setOpen(false)}>
                 <Button className='w-full' variant='outline'>
@@ -87,9 +87,9 @@ export default function Setting() {
               Set your parameters.
             </DrawerDescription>
           </DrawerHeader>
-          <Suspense>
+          {/* <Suspense>
             <FSRSConfig loading={loading} setLoading={setLoading} />
-          </Suspense>
+          </Suspense> */}
           <DrawerFooter>
             <Button type='submit' onClick={handleSubmit} disabled={loading}>
               {loading && <LoadingSpinner />}Save changes

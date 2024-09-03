@@ -13,7 +13,7 @@ import NextDayStartAt from './nextDayStartAt';
 import FileTrain from './file-train-button';
 import { useForm } from 'react-hook-form';
 import { useTrainContext } from '@/context/TrainContext';
-import OwnTrain from './own-train-button';
+// import OwnTrain from './own-train-button';
 import dynamic from 'next/dynamic';
 
 const NoSSR = dynamic(() => Promise.resolve(FSRSParamTrainForm), {
@@ -81,7 +81,7 @@ function FSRSParamTrainForm({
           </div>
           <div>
             <label>using your own revlog：</label>
-            <OwnTrain form={form} />
+            {/* <OwnTrain form={form} /> */}
           </div>
         </div>
 
