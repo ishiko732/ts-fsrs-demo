@@ -79,7 +79,7 @@ export default async function DeckActions({ deck }: { deck: Deck }) {
           {extra_actions.map((action) =>
             action.Action ? (
               <action.Action
-                key={action.name}
+                key={`${deck.did}-${action.name}`}
                 deck={deck}
                 params={extend[action.service]}
                 note_size={action.noteSize}
