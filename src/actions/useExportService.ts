@@ -75,7 +75,7 @@ export async function exportLogsAction(
       review_time: log.review.getTime(),
       review_rating: TypeConvert.rating(log.grade),
       review_state: to_revlogState(log.state),
-      review_duration: Math.max(log.duration, 60) * 1000,
+      review_duration: log.duration * 1000,
     };
   });
   return resp;
