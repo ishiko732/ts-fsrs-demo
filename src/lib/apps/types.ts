@@ -37,7 +37,6 @@ export abstract class IAppService<T extends object = object, R = unknown> {
   abstract pull: (
     deckId: number,
     params: T,
-    handleToast?: ToastType
   ) => Promise<R>;
   abstract sync: (
     params: T,
