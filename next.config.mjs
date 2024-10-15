@@ -10,16 +10,6 @@ const nextConfig = {
       },
     ],
   },
-  async rewrites() {
-    return {
-      fallback: [
-        {
-          source: "/lingq/:path*",
-          destination: 'https://www.lingq.com/:path*',
-        }
-      ]
-    }
-  },
   // compiler: {
   //   removeConsole: process.env.NODE_ENV === "production",
   // },

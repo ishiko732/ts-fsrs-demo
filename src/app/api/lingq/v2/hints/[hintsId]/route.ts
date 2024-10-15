@@ -1,7 +1,5 @@
-import {
-  deleteHints,
-  getHints,
-} from "@/vendor/lingq/request";
+
+import { getHints, deleteHints } from "@lib/apps/lingq/request";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
