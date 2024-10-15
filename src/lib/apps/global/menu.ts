@@ -9,10 +9,10 @@ const actions = [
     name: 'Init Progeigo',
     action: InitProgeigoDates,
   },
-  {
-    name: 'Reschedule',
-    action: FSRSReschedule,
-  },
+  // {
+  //   name: 'Reschedule',
+  //   action: FSRSReschedule,
+  // },
   {
     name: 'Export Revlog',
     action: ExportRevlog,

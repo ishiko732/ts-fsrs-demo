@@ -24,10 +24,10 @@ export function useToastListeners(toast: ToastType) {
     if (typeof window !== 'undefined') {
       Reflect.set(window, 'toast', toastEmitter);
     }
-    console.log('[EventEmitter] load toast listeners');
+    console.debug('[EventEmitter] load toast listeners');
     toastEmitter.on('toast', handler);
     return () => {
-      console.log('[EventEmitter] remove toast listeners');
+      console.debug('[EventEmitter] remove toast listeners');
       toastEmitter.removeListener('toast', handler);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

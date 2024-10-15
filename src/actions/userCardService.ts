@@ -259,28 +259,30 @@ export async function rescheduleAction(deckId: number, cardIds?: number[]) {
 
   const params = (await deckCrud.get(deckId)).fsrs as unknown as FSRSParameters;
 
-  return _reschedule(params, cards);
+  // @TODO
+  throw new Error('Not implemented');
+  // return _reschedule(params, cards);
 }
 
-async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
-  if (cards.length === 0) {
-    return false;
-  }
-  const f = fsrs(parameters);
-  const rescheduled_cards = f.reschedule(cards);
-  if (rescheduled_cards.length === 0) {
-    return true;
-  }
-  console.time(`reschedule`);
-  await prisma.$transaction(
-    rescheduled_cards.map((data) =>
-      prisma.card.update({
-        where: { cid: data.cid },
-        data: data,
-      })
-    )
-  );
-  console.timeEnd(`reschedule`);
-  console.time(`reschedule: ${rescheduled_cards.length}cards`);
-  return true;
-}
+// async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
+//   if (cards.length === 0) {
+//     return false;
+//   }
+//   const f = fsrs(parameters);
+//   const rescheduled_cards = f.reschedule(cards);
+//   if (rescheduled_cards.length === 0) {
+//     return true;
+//   }
+//   console.time(`reschedule`);
+//   await prisma.$transaction(
+//     rescheduled_cards.map((data) =>
+//       prisma.card.update({
+//         where: { cid: data.cid },
+//         data: data,
+//       })
+//     )
+//   );
+//   console.timeEnd(`reschedule`);
+//   console.time(`reschedule: ${rescheduled_cards.length}cards`);
+//   return true;
+// }
