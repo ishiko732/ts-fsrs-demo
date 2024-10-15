@@ -1,13 +1,12 @@
 'use client';
 
 import LoadingSpinner from '@/components/loadingSpinner';
-import { useToast } from '@/components/ui/use-toast';
 import { useEffect, useRef, useState } from 'react';
 import type { DeckService } from '@lib/reviews/deck';
 import type { IAppService } from '@lib/apps/types';
+import { toastEmitter } from '@hooks/useToastListeners';
 
 export function SyncExtra() {
-  const { toast } = useToast();
   const loadedRef = useRef(false);
   const [done, setDone] = useState(false);
 
@@ -25,19 +24,19 @@ export function SyncExtra() {
       for (const [service, params] of Object.entries(extend)) {
         const svc = extra[service];
         if (svc) {
-          toast({
+          toastEmitter.emitToast({
             title: service,
             description: `Service ${service} found , run pull`,
           });
-          await svc.pull(deck.did, params, toast);
+          await svc.pull(deck.did, params);
           setTimeout(() => {
-            toast({
+            toastEmitter.emitToast({
               title: service,
               description: `Service ${service} found , run pull done`,
             });
           }, 0);
         } else {
-          toast({
+          toastEmitter.emitToast({
             title: 'Extra Service Syncing',
             description: `Service ${service} not found`,
           });
