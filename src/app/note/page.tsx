@@ -145,7 +145,7 @@ export default async function Page({ searchParams }: NotePageProps) {
     : searchParams.sort
     ? [{ id: sortField, desc: searchParams[`${sortField}Asc`] === '0' }]
     : null;
-  const deleted = searchParams.deleted === '1' ?? false;
+  const deleted = searchParams.deleted === '1';
   const { notes, pageCount, noteCount } = await getData(
     take,
     keyword ?? '',
@@ -157,7 +157,7 @@ export default async function Page({ searchParams }: NotePageProps) {
   const params = await getUserParams();
   return (
     <div className=' container'>
-      <Menu/>
+      <Menu />
       <DataTable
         data={notes}
         fsrsParams={generatorParameters(params.data?.params)}

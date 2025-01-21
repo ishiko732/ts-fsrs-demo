@@ -1,5 +1,5 @@
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 
 export default function useQueryParams() {
   const searchParams = useSearchParams();
@@ -8,7 +8,10 @@ export default function useQueryParams() {
 
   const createQueryString = useCallback(
     (kvs: { queryName: string; value: string }[]) => {
-      const params = new URLSearchParams(searchParams);
+      const params = new URLSearchParams();
+      for (const [key, value] of searchParams.entries()) {
+        params.set(key, value);
+      }
       kvs.forEach(({ queryName, value }) => {
         params.set(queryName, value);
       });

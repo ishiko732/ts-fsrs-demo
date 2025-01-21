@@ -32,7 +32,8 @@ export async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
     return false;
   }
   const f = fsrs(parameters);
-  const rescheduled_cards = f.reschedule(cards);
+  // TODO f.reschedule(cards)
+  const rescheduled_cards:any[] = [];
   if (rescheduled_cards.length === 0) {
     return true;
   }

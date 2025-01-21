@@ -35,7 +35,7 @@ export async function encryptLingqKey(key: string) {
         encodeKey
     );
     lingq_token = buf2hex(lingq_token)
-    counter = buf2hex(counter)
+    counter = buf2hex(counter.buffer)
     return { lingq_token, lingq_counter: counter }
 }
 

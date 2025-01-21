@@ -28,7 +28,7 @@ const getData = cache(async (nid: string, deleted: boolean) => {
 });
 
 export default async function Page({ params, searchParams }: Props) {
-  const deleted = searchParams.deleted === '1' ?? false;
+  const deleted = searchParams.deleted === '1';
   const note = await getUserNote(Number(params.nid), deleted).catch(() => {
     redirect(`/api/auth/signin?callbackUrl=/note/${params.nid}`);
   });
