@@ -25,10 +25,10 @@ function OwnTrain({
     undefined
   >;
 }) {
-  const workerRef = useRef<Worker>();
+  const workerRef = useRef<Worker>(undefined);
   const trainTimeRef = useRef<number>(0);
   const startRef = useRef<number>(0);
-  const timeIdRef = useRef<NodeJS.Timeout>();
+  const timeIdRef = useRef<NodeJS.Timeout>(undefined);
   const {
     loading,
     setLoading,

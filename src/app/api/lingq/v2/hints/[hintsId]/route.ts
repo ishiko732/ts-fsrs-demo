@@ -4,10 +4,8 @@ import {
 } from "@/vendor/lingq/request";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { hintsId: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ hintsId: string }> }) {
+  const params = await props.params;
   const token = request.headers.get("Authorization");
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });
@@ -19,10 +17,8 @@ export async function GET(
   return NextResponse.json(data);
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { hintsId: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ hintsId: string }> }) {
+  const params = await props.params;
   const token = request.headers.get("authorization");
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });

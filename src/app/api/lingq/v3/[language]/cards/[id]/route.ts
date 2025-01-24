@@ -9,8 +9,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { language: string; id: string } }
+  props: { params: Promise<{ language: string; id: string }> }
 ) {
+  const params = await props.params;
   const token = request.headers.get("Authorization");
   if (!token) {
     return NextResponse.json({ error: "token not found" }, { status: 401 });
@@ -25,8 +26,9 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { language: string; id: string } }
+  props: { params: Promise<{ language: string; id: string }> }
 ) {
+  const params = await props.params;
   const token = request.headers.get("authorization");
   const formData = await request.formData();
   const status = Number(formData.get("status")) as LingqStatus;

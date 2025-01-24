@@ -112,17 +112,18 @@ type NoteSortField =
   | 'Reps';
 
 type NotePageProps = {
-  searchParams: {
+  searchParams: Promise<{
     page: string;
     take: string;
     keyword: string;
     sort: NoteSortField;
     [key: string]: string | string[];
     deleted: '1' | '0';
-  };
+  }>;
 };
 
-export default async function Page({ searchParams }: NotePageProps) {
+export default async function Page(props: NotePageProps) {
+  const searchParams = await props.searchParams;
   const take = Number(searchParams['take']);
   const pageIndex = Number(searchParams['page']);
   if (

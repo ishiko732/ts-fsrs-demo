@@ -20,8 +20,8 @@ export default function FileTrain({
     undefined
   >;
 }) {
-  const workerRef = useRef<Worker>();
-  const timeIdRef = useRef<NodeJS.Timeout>();
+  const workerRef = useRef<Worker>(undefined);
+  const timeIdRef = useRef<NodeJS.Timeout>(undefined);
   const {
     loading,
     setLoading,

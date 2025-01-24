@@ -7,7 +7,7 @@ const handler = async (
   params: { params: { path: string[] } }
 ) => {
   const method = request.method; // METHOD
-  const headersList = headers();
+  const headersList = await headers();
   const token = headersList.get('authorization') ?? ''; // TOKEN
   const userAgent = headersList.get('user-agent') ?? ''; // USER-AGENT
   const contentType = headersList.get('content-type');

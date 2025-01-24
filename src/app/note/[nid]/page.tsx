@@ -14,12 +14,12 @@ import {
 import { getUserNote } from '@/actions/userNoteService';
 import { redirect } from 'next/navigation';
 type Props = {
-  params: {
+  params: Promise<{
     nid: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     deleted: '1' | '0';
-  };
+  }>;
 };
 
 const getData = cache(async (nid: string, deleted: boolean) => {
@@ -27,7 +27,9 @@ const getData = cache(async (nid: string, deleted: boolean) => {
   return note;
 });
 
-export default async function Page({ params, searchParams }: Props) {
+export default async function Page(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const deleted = searchParams.deleted === '1';
   const note = await getUserNote(Number(params.nid), deleted).catch(() => {
     redirect(`/api/auth/signin?callbackUrl=/note/${params.nid}`);

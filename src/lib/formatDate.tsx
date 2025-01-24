@@ -1,11 +1,9 @@
-import { headers } from "next/headers";
+import { headers, type UnsafeUnwrappedHeaders } from "next/headers";
 import DateItem from "@/components/DateItem";
 import { DateInput } from "ts-fsrs";
 
 function getLang() {
-  return (
-    headers().get("accept-language")?.split(",")[0].toUpperCase()! || "en-us"
-  );
+  return ((headers() as unknown as UnsafeUnwrappedHeaders).get("accept-language")?.split(",")[0].toUpperCase()! || "en-us");
 }
 
 export default function FormattedDate({

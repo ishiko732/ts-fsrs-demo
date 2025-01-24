@@ -1,10 +1,8 @@
 import { getLingqs } from "@/vendor/lingq/request";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { language: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ language: string }> }) {
+  const params = await props.params;
   const url = new URL(request.url);
   const page_size = url.searchParams.get("page_size");
   const page = url.searchParams.get("page");

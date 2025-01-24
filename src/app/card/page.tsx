@@ -66,11 +66,12 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
   };
 });
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: { source?: string };
-}) {
+export default async function Page(
+  props: {
+    searchParams: Promise<{ source?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const { noteBox0 } = await getData(searchParams.source);
   const noteBox = noteBox0.map((noteBox) =>
     noteBox.sort(() => Math.random() - Math.random())

@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { language: string; hintsId: string } }
+  props: { params: Promise<{ language: string; hintsId: string }> }
 ) {
+  const params = await props.params;
   const token = request.headers.get("Authorization");
   const url = new URL(request.url);
   const locale = url.searchParams.get("locale") || "zh-cn";
