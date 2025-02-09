@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '@prisma/client';
-import { fsrs } from 'ts-fsrs';
+import { fsrs, S_MIN } from 'ts-fsrs';
 import DateItem from '@/lib/formatDate';
 import Forget from './Forget';
 import Suspended from './Suspended';
@@ -10,6 +10,9 @@ type Props = {
 
 export default async function FSRSMsg({ card }: Props) {
   const f = fsrs();
+  // fix: s=0 https://github.com/ishiko732/ts-fsrs-demo/issues/52
+  card.stability = Math.max(S_MIN, card.stability);
+
   const retrievability = f.get_retrievability(card, new Date());
   return (
     <>
