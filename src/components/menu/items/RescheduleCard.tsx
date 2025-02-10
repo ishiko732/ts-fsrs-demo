@@ -4,7 +4,6 @@ import RescheduledSubmitButton from '../submit/RescheduledSubmit';
 import { _findCardsByUid, _reschedule } from '@/lib/reschedule';
 import { getFSRSParamsByUid } from '@/lib/fsrs';
 import { FSRSParameters } from 'ts-fsrs';
-import { Card } from '@prisma/client';
 
 async function rescheduledCardAction(
   uid: number,
@@ -13,7 +12,7 @@ async function rescheduledCardAction(
   pageSize: number = 300
 ) {
   'use server';
-  const cards: Card[] = await _findCardsByUid({ uid, page, pageSize });
+  const cards = await _findCardsByUid({ uid, page, pageSize });
   return await _reschedule(params, cards);
 }
 

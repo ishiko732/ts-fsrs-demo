@@ -1,7 +1,13 @@
-import { getSessionUserId } from "@/app/(auth)/api/auth/[...nextauth]/session";
-import prisma from "./prisma";
-import { FSRSParameters, fsrs } from "ts-fsrs";
-import { Card, State } from "@prisma/client";
+import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
+import prisma from './prisma';
+import {
+  FSRSHistory,
+  FSRSParameters,
+  TypeConvert,
+  fsrs,
+  Card as FSRSCard,
+} from 'ts-fsrs';
+import { Card, Revlog, State } from '@prisma/client';
 
 export async function reschedule(
   parameters: FSRSParameters,
@@ -12,7 +18,7 @@ export async function reschedule(
   }
   if (!uid) return false;
 
-  // get all card
+  // get all card and logs
   const cards = await prisma.card.findMany({
     where: {
       note: {
@@ -20,19 +26,43 @@ export async function reschedule(
       },
       state: State.Review,
     },
+    include: {
+      logs: true,
+    },
     orderBy: {
-      last_review: "asc",
+      last_review: 'asc',
     },
   });
+
   return _reschedule(parameters, cards);
 }
 
-export async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
+export async function _reschedule(
+  parameters: FSRSParameters,
+  cards: (Card & { logs: Revlog[] })[]
+) {
   if (cards.length === 0) {
     return false;
   }
   const f = fsrs(parameters);
-  const rescheduled_cards = f.reschedule(cards);
+
+  const rescheduled_cards: (FSRSCard & { cid: number })[] = [];
+  for (const card of cards) {
+    const logs: FSRSHistory[] = card.logs.map((log) => {
+      return {
+        rating: TypeConvert.rating(log.grade),
+        review: log.review,
+        due: log.due,
+        state: TypeConvert.state(log.state),
+      };
+    });
+    const record = f.reschedule(card, logs);
+    if (record.reschedule_item) {
+      rescheduled_cards.push(
+        record.reschedule_item.card as FSRSCard & { cid: number }
+      );
+    }
+  }
   if (rescheduled_cards.length === 0) {
     return true;
   }
@@ -41,7 +71,11 @@ export async function _reschedule(parameters: FSRSParameters, cards: Card[]) {
     rescheduled_cards.map((data) =>
       prisma.card.update({
         where: { cid: data.cid },
-        data: data,
+        data: {
+          stability: data.stability,
+          difficulty: data.difficulty,
+          due: data.due,
+        },
       })
     )
   );
@@ -57,7 +91,7 @@ type Query = {
   due?: Date;
 };
 
-export async function _findCardsByUid({ uid, page, pageSize, due }: Query) {
+export async function _findCardsByUid({ uid, page, pageSize, due }: Query):Promise<(Card & { logs: Revlog[] })[]> {
   return prisma.card.findMany({
     where: {
       note: {
@@ -72,8 +106,11 @@ export async function _findCardsByUid({ uid, page, pageSize, due }: Query) {
     },
     take: pageSize,
     skip: pageSize * (page - 1),
+    include: {
+      logs: true,
+    },
     orderBy: {
-      last_review: "asc",
+      last_review: 'asc',
     },
   });
 }
