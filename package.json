@@ -74,5 +74,10 @@
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "bcrypt"
+    ]
   }
 }
