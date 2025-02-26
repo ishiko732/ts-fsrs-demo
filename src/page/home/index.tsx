@@ -8,12 +8,7 @@ export const dynamic = 'force-static';
 
 async function HomePage() {
   const { dependencies } = packageInfo;
-  const coreDeps = [
-    '@prisma/client',
-    'next',
-    'ts-fsrs',
-    'fsrs-browser',
-  ] as const;
+  const coreDeps = ['@prisma/client', 'next', 'ts-fsrs'] as const;
   return (
     <>
       <div className='absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] '>
@@ -52,9 +47,9 @@ async function HomePage() {
               Go to Review
             </Button>
           </Link>
-          <Link href={'/train'} legacyBehavior>
+          <Link href={'https://fsrs-online-training.vercel.app/'} legacyBehavior>
             <Button className='m-2 w-full sm:w-auto min-w-6'>
-              Go to Train <Badge className='badge badge-ghost'>alpha</Badge>
+              Go to Train <Badge className='badge badge-ghost'>beta</Badge>
             </Button>
           </Link>
         </div>
