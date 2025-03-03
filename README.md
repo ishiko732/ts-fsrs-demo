@@ -1,5 +1,11 @@
 # TS-FSRS-Demo
 
+## Train
+
+You can now use this port for training: https://optimizer.parallelveil.com
+
+Open Source Code: https://github.com/ishiko732/analyzer-and-train
+
 ## introduction
 
 Interval Repeat Flashcard Demo with Basic Simple Features Designed based on Next.js App Router, ts-fsrs, and Prisma.
