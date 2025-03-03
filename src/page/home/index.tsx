@@ -47,7 +47,7 @@ async function HomePage() {
               Go to Review
             </Button>
           </Link>
-          <Link href={'https://fsrs-online-training.vercel.app/'} target="_blank" rel='noopener noreferrer'>
+          <Link href={'https://optimizer.parallelveil.com/'} target="_blank" rel='noopener noreferrer'>
             <Button className='m-2 w-full sm:w-auto min-w-6'>
               Go to Train <Badge className='badge badge-ghost'>beta</Badge>
             </Button>
