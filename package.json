@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "db:studio": "npx prisma studio",
     "db:pull": "npx prisma db pull",
     "db:push": "npx prisma db push",
