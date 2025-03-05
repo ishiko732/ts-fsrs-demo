@@ -1,16 +1,17 @@
 'use client';
-import Link from 'next/link';
-import React from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
   HoverCard,
-  HoverCardTrigger,
   HoverCardContent,
+  HoverCardTrigger,
 } from '@radix-ui/react-hover-card';
 import { Building2 } from 'lucide-react';
 import Image from 'next/image';
-import { Badge } from '../ui/badge';
+import Link from 'next/link';
+import React from 'react';
 import { FSRSVersion } from 'ts-fsrs';
+
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Badge } from '../ui/badge';
 const Logo = ({ env }: { env: string }) => {
   const matchVersion = FSRSVersion.match(/\bv?(\d+\.\d+\.\d+)\b/);
   return (

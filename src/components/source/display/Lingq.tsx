@@ -2,7 +2,7 @@ import { SourceNote } from "..";
 
 export default async function DisplayMsg({ note }: { note: SourceNote }) {
     const extend = JSON.parse(note.extend as string) as Partial<Lingq>;
-    const fragment = extend.fragment!!;
+    const fragment = extend.fragment!;
     const tags = extend.tags;
     const words = extend.words;
     const transliteration = extend.transliteration
@@ -46,7 +46,7 @@ export function MergeTransliteration(transliteration: LingqTransliteration) {
         }
         if (Array.isArray(text)) {
             let merge = ""
-            for (let t of text) {
+            for (const t of text) {
                 merge += mergeText(t)
             }
             return merge

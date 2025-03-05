@@ -7,11 +7,12 @@ import {
   useState,
 } from "react";
 import { Grade, RecordLog, State } from "ts-fsrs";
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+
 import { useCardBoxes } from "@/hooks/useCardBoxes";
+import { useFinished } from "@/hooks/useFinished";
 import { useRollback } from "@/hooks/useRollback";
 import { DSR, useSchedule } from "@/hooks/useSchdule";
-import { useFinished } from "@/hooks/useFinished";
+import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 
 export type changeResponse = {
   code: number;

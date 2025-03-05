@@ -1,6 +1,6 @@
-import DateItem from "@/lib/formatDate";
 import { Revlog } from "@prisma/client";
 import React from "react";
+
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import DateItem from "@/lib/formatDate";
 
 type Props = {
   logs: Revlog[];
@@ -85,7 +86,7 @@ function durationFormat(duration: number) {
     return '/';
   }
   const split_duration = [];
-  for (let c of division) {
+  for (const c of division) {
     split_duration.push(duration % c);
     duration = Math.floor(duration / c);
     if (duration === 0) {

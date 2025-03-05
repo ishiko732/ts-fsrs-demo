@@ -1,6 +1,6 @@
 'use client';
 import React, { useRef, useState } from 'react';
-import MenuItem from '.';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -14,14 +14,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import MenuItem from '.';
+
 function AddNoteDialog({ tip }: { tip: string }) {
   const questionRef = useRef<HTMLInputElement>(null);
   const answerRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
 
   const saveAddNote = () => {
-    let question = questionRef.current?.value;
-    let answer = answerRef.current?.value;
+    const question = questionRef.current?.value;
+    const answer = answerRef.current?.value;
     fetch(`/api/note`, {
       method: 'post',
       body: JSON.stringify({ question, answer }),

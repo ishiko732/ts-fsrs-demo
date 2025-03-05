@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import React from 'react';
+
 import packageInfo from '@/../package.json' with { type: 'json' };
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 export const dynamic = 'force-static';
 

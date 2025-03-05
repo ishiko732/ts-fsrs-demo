@@ -1,7 +1,9 @@
 'use client'
 import React from "react";
-import Video from "@/components/card/Video";
+
 import Audio from "@/components/card/Audio";
+import Video from "@/components/card/Video";
+
 import type { SourceNote } from ".";
 
 export function HitsuAnswer({ open, note }: { open: boolean, note: SourceNote }) {

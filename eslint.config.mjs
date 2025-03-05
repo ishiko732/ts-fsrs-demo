@@ -46,7 +46,7 @@ const eslintConfig = [
   },
   eslintConfigPrettier,
   {
-    ignores: ['dist/*', '.next/*', 'public/*'],
+    ignores: ['dist/*', '.next/*', 'public/*', 'tailwind.config.ts'],
   },
 ]
 

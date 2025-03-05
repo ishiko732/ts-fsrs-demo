@@ -1,7 +1,9 @@
 'use client';
 import React from 'react';
-import { useCardContext } from '@/context/CardContext';
 import { State } from 'ts-fsrs';
+
+import { useCardContext } from '@/context/CardContext';
+
 import { Badge } from '../ui/badge';
 
 export default function StatusBar() {

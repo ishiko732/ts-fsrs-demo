@@ -1,14 +1,13 @@
 'use client';
+import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { commitUserParams, getUserParams } from '@/actions/userParamsService';
-import { useEffect, useState } from 'react';
 import { signOut } from 'next-auth/react';
-import { ParametersType } from '@/lib/fsrs';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import LoadingSpinner from '../loadingSpinner';
-import { Switch } from '@/components/ui/switch';
+
+import { commitUserParams, getUserParams } from '@/actions/userParamsService';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -18,8 +17,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { ParametersType } from '@/lib/fsrs';
+
+import LoadingSpinner from '../loadingSpinner';
 import { Badge } from '../ui/badge';
 const formSchema = z.object({
   request_retention: z.coerce

@@ -1,7 +1,9 @@
 import React from 'react';
-import ForgetSubmit from '../LoadingSubmitButton';
+
 import { forgetAction as _forgetAction } from '@/actions/userCardService';
 import { cn } from '@/lib/utils';
+
+import ForgetSubmit from '../LoadingSubmitButton';
 
 type Props = {
   cid: number;

@@ -1,8 +1,9 @@
 import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
-import MenuItem from '.';
-import SyncSubmitButton from '../submit/SyncSubmit';
 import { getFSRSParamsByUid } from '@/lib/fsrs';
 import { getLingqLanguageCode, syncLingqs } from '@/vendor/lingq/sync';
+
+import SyncSubmitButton from '../submit/SyncSubmit';
+import MenuItem from '.';
 
 async function syncLingqAction() {
   'use server';

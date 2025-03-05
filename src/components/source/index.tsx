@@ -1,9 +1,11 @@
 'use client'
-import { useCardContext } from "@/context/CardContext";
-import { Question as DefaultQuestion, Answer as DefaultAnswer } from "./default";
 import { Card, Note } from "@prisma/client";
+
+import { useCardContext } from "@/context/CardContext";
+
+import { Answer as DefaultAnswer,Question as DefaultQuestion } from "./default";
 import { HitsuAnswer } from "./Hitsu";
-import { Question as LingqQuestion, Answer as LingqAnswer } from "./Lingq";
+import { Answer as LingqAnswer,Question as LingqQuestion } from "./Lingq";
 
 export function Question({ open, note }: { open: boolean, note: SourceNote }) {
     switch (note.source) {

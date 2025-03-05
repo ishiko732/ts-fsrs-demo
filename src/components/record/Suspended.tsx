@@ -1,9 +1,10 @@
-import SuspendedSubmit from "../LoadingSubmitButton";
 import { suspendCard } from "@/actions/userCardService";
 import { cn } from "@/lib/utils";
 
+import SuspendedSubmit from "../LoadingSubmitButton";
+
 type Props = {
-  cid: Number;
+  cid: number;
   suspend: boolean;
   className?: string;
 };

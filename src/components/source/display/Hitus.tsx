@@ -1,6 +1,7 @@
-import { SourceNote } from "..";
-import Video from "@/components/card/Video";
 import Audio from "@/components/card/Audio";
+import Video from "@/components/card/Video";
+
+import { SourceNote } from "..";
 
 export default async function HitsuDisplay({ note }: { note: SourceNote }) {
   const extend = JSON.parse(note.extend as string);

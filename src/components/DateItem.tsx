@@ -1,7 +1,8 @@
 "use client";
-import { useHydration } from "@/hooks/useHydration";
 import { Suspense } from "react";
 import { DateInput } from "ts-fsrs";
+
+import { useHydration } from "@/hooks/useHydration";
 
 export default function FormattedDate({lang,date}:{lang: string, date: DateInput}) {
   const hydrated = useHydration();

@@ -1,8 +1,10 @@
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
-import { Note, Card } from "@prisma/client";
-import { startTransition, useEffect } from "react";
-import { State, fixDate } from "ts-fsrs";
+import { Card,Note } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { startTransition, useEffect } from "react";
+import { fixDate,State } from "ts-fsrs";
+
+import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+
 import { CardBoxes } from "./useCardBoxes";
 
 const checkFinished = (

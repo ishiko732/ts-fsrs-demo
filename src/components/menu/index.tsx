@@ -1,9 +1,10 @@
-import React from 'react';
+import fs from 'fs';
 import dynamic from 'next/dynamic';
 import path from 'path';
-import fs from 'fs';
-import Configs from './menu.config';
+import React from 'react';
+
 import LoadingMenu from './loading-menu';
+import Configs from './menu.config';
 
 function comparator(a: string, b: string) {
   const sortA = Configs[a]?.sort ?? Infinity;

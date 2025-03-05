@@ -1,6 +1,7 @@
 'use client'
-import { useCardContext } from "@/context/CardContext"
 import { State } from "ts-fsrs";
+
+import { useCardContext } from "@/context/CardContext"
 
 export default function DSRDisplay() {
     const { DSR, open, currentType } = useCardContext();
