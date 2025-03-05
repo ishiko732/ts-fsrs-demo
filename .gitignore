@@ -48,3 +48,5 @@ yalc.lock
 
 # idea
 .idea
+# Sentry Config File
+.env.sentry-build-plugin
