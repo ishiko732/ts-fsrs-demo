@@ -99,17 +99,6 @@ npm run dev # or yarn dev/ pnpm dev/ bun dev
 ![FSRS Settings](images/settings.png)
 > You can customize the parameters of your FSRS params
 
-## Train
-use `fsrs-browser` to train.
-
-API Router:
-http://localhost:3000/api/fsrs/train
-![nodejs train](images/apiTrain.png)
-
-Client:
-http://localhost:3000/train
-![training](images/train.png)
-
 
 ## Build
 You can compile the demo for better performance by using `npm run build`, and then start the project using `npm run start`.
