@@ -47,7 +47,6 @@
     "next": "14.2.21",
     "next-auth": "^4.24.7",
     "next-themes": "^0.2.1",
-    "papaparse": "^5.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.51.5",
@@ -62,7 +61,6 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.14.2",
-    "@types/papaparse": "^5.3.14",
     "@types/react": "18.2.23",
     "@types/react-dom": "18.2.13",
     "autoprefixer": "^10.4.19",
