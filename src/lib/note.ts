@@ -1,8 +1,10 @@
-import { getSessionUserId } from "@/app/(auth)/api/auth/[...nextauth]/session";
-import prisma from "./prisma";
-import { ProgeigoNodeData, NodeData } from "@/types";
-import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
 import { Card, Note, Prisma, PrismaPromise } from "@prisma/client";
+
+import { getSessionUserId } from "@/app/(auth)/api/auth/[...nextauth]/session";
+import { NodeData,ProgeigoNodeData } from "@/types";
+import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
+
+import prisma from "./prisma";
 
 
 export async function addNote(data: Partial<NodeData> & { uid: number }) {
@@ -197,7 +199,7 @@ export async function deleteNoteByNid(nid: number) {
       }
     })
   ]);
-  return { cid: note?.card?.cid, nid: note?.nid! } as { cid?: number, nid: number };
+  return { cid: note?.card?.cid, nid: note?.nid } as { cid?: number, nid: number };
 }
 
 

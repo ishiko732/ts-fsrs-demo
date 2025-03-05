@@ -1,6 +1,7 @@
 'use client';
-import { Button } from '../ui/button';
 import { LogOutIcon } from 'lucide-react';
+import { signOut } from 'next-auth/react';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,7 +13,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { signOut } from 'next-auth/react';
+
+import { Button } from '../ui/button';
 
 export default function Logout() {
   return (

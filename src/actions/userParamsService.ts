@@ -1,33 +1,30 @@
-'use server';
+'use server'
 
-import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
-import {
-  ParametersType,
-  getFSRSParamsByUid,
-  updateParameters,
-} from '@/lib/fsrs';
-import { unstable_cache as cache, revalidateTag } from 'next/cache';
-import { fsrs } from 'ts-fsrs';
+import { revalidateTag, unstable_cache as cache } from 'next/cache'
+import { fsrs } from 'ts-fsrs'
+
+import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session'
+import { getFSRSParamsByUid, ParametersType, updateParameters } from '@/lib/fsrs'
 type IRespose = {
-  code: number;
-  msg: string;
-  data: null | ParametersType;
-};
+  code: number
+  msg: string
+  data: null | ParametersType
+}
 
 export async function getUserParams() {
-  const uid = await getSessionUserId();
+  const uid = await getSessionUserId()
   if (!uid) {
-    return { code: 401, msg: 'user not found.', data: null } as IRespose;
+    return { code: 401, msg: 'user not found.', data: null } as IRespose
   }
-  const userCacheParams = getUserParams_cache(uid);
+  const userCacheParams = getUserParams_cache(uid)
   try {
     return {
       code: 200,
       msg: 'success',
       data: await userCacheParams(),
-    } as IRespose;
-  } catch (e: any) {
-    return { code: 500, msg: (e as Error).message, data: null } as IRespose;
+    } as IRespose
+  } catch (e) {
+    return { code: 500, msg: (e as Error).message, data: null } as IRespose
   }
 }
 
@@ -37,48 +34,48 @@ export async function getUserParams() {
 const getUserParams_cache = (uid: number) =>
   cache(
     async () => {
-      return await getFSRSParamsByUid(uid);
+      return getFSRSParamsByUid(uid)
     },
     [`actions/user-params/${uid}`],
     {
       tags: [`actions/user-params/${uid}`],
-    }
-  );
+    },
+  )
 
 type ICommitUserParams = {
-  request_retention: number;
-  maximum_interval: number;
-  w: number[];
-  enable_fuzz: boolean;
-  enable_short_term: boolean;
-  card_limit: number;
-  lapses: number;
-  lingq_token: string | null;
-};
+  request_retention: number
+  maximum_interval: number
+  w: number[]
+  enable_fuzz: boolean
+  enable_short_term: boolean
+  card_limit: number
+  lapses: number
+  lingq_token: string | null
+}
 
 export async function commitUserParams(data: ICommitUserParams) {
-  const uid = await getSessionUserId();
+  const uid = await getSessionUserId()
   if (!uid) {
-    return { code: 401, msg: 'user not found.', data: null } as IRespose;
+    return { code: 401, msg: 'user not found.', data: null } as IRespose
   }
-  const params = await updateParameters({
+  await updateParameters({
     ...data,
     uid,
-  });
-  revalidateTag(`actions/user-params/${uid}`);
+  })
+  revalidateTag(`actions/user-params/${uid}`)
   return {
     code: 200,
     msg: 'success',
     data: null,
-  } as IRespose;
+  } as IRespose
 }
 
 export async function getUserFSRS() {
-  const uid = await getSessionUserId();
+  const uid = await getSessionUserId()
   if (!uid) {
-    throw new Error('user not found.');
+    throw new Error('user not found.')
   }
-  const userCacheParams = getUserParams_cache(uid);
-  const paramsData = await userCacheParams();
-  return fsrs(paramsData.params);
+  const userCacheParams = getUserParams_cache(uid)
+  const paramsData = await userCacheParams()
+  return fsrs(paramsData.params)
 }

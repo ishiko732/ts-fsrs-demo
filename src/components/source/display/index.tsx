@@ -1,7 +1,7 @@
 import { SourceNote } from "..";
+import DefaultDisplayMsg from "./default";
 import HitsuDisplay from "./Hitus";
 import LingqDisplay from "./Lingq";
-import DefaultDisplayMsg from "./default";
 
 
 export default async function Display({ note }: { note: SourceNote }) {

@@ -1,9 +1,11 @@
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 import { Card, Note } from "@prisma/client";
 import { startTransition, useRef, useState } from "react";
-import { State, fixState } from "ts-fsrs";
-import { CardBoxes } from "./useCardBoxes";
+import { fixState,State } from "ts-fsrs";
+
 import debounce from "@/lib/debounce";
+import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+
+import { CardBoxes } from "./useCardBoxes";
 
 type RollBackProps = CardBoxes & {
   open: boolean;

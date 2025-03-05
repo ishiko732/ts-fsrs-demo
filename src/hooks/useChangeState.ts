@@ -1,6 +1,7 @@
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 import { Card, Note } from "@prisma/client";
-import { State, fixDate } from "ts-fsrs";
+import { fixDate,State } from "ts-fsrs";
+
+import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 
 export type ChangeState = {
   updateStateBox: (

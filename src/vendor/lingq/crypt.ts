@@ -1,7 +1,7 @@
 const LingqKey = async () => {
     return crypto.subtle.importKey(
         "raw",
-        hex2buf(process.env.LINGQ_KEY!!),
+        hex2buf(process.env.LINGQ_KEY!),
         { name: "AES-CTR", length: 32 },
         true,
         ["encrypt", "decrypt"]

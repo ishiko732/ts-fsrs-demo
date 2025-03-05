@@ -1,8 +1,7 @@
-import { CardUpdatePayload, CardUpdateRequired } from "@/types";
 import {
-  State as PrismaState,
-  Rating as PrismaRating,
   Prisma,
+  Rating as PrismaRating,
+  State as PrismaState,
 } from "@prisma/client";
 import {
   Card,
@@ -14,6 +13,8 @@ import {
   ReviewLog,
   State,
 } from "ts-fsrs";
+
+import { CardUpdatePayload, CardUpdateRequired } from "@/types";
 
 export interface CardPrismaUnChecked
   extends Omit<Card, "cid" | "nid" | "last_review" | "state"> {

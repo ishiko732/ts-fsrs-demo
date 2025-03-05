@@ -1,13 +1,15 @@
-import { ReactNode } from 'react';
-import Logo from './logo';
-import { ThemesModeToggle } from '../themes/toggle';
-import Github from './Github';
-import { Button } from '../ui/button';
-import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import Link from 'next/link';
-import UserProfile from './user-profile';
-import Setting from './setting';
+import { ReactNode } from 'react';
+
+import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
+
+import { ThemesModeToggle } from '../themes/toggle';
+import { Button } from '../ui/button';
+import Github from './Github';
+import Logo from './logo';
 import Logout from './logout';
+import Setting from './setting';
+import UserProfile from './user-profile';
 
 const NavBar = async ({ children }: { children?: ReactNode }) => {
   const session = await getAuthSession();

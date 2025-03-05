@@ -1,5 +1,6 @@
-import { getLingqs } from "@/vendor/lingq/request";
 import { NextRequest, NextResponse } from "next/server";
+
+import { getLingqs } from "@/vendor/lingq/request";
 
 export async function GET(
   request: NextRequest,

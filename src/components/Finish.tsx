@@ -1,5 +1,6 @@
 
 import React from 'react'
+
 import GoHome from './GoHome'
 
 export default function Finish() {

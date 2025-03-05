@@ -1,7 +1,15 @@
 'use client';
-import { Button } from '../ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@radix-ui/react-dialog';
+import { useMediaQuery } from '@react-hookz/web';
 import { Settings2Icon } from 'lucide-react';
-import { useState, useRef, ReactNode, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import { ReactNode, Suspense,useEffect, useRef, useState } from 'react';
+
 import {
   Drawer,
   DrawerClose,
@@ -11,16 +19,10 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import { useMediaQuery } from '@react-hookz/web';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from '@radix-ui/react-dialog';
-import { DialogClose, DialogFooter, DialogHeader } from '../ui/dialog';
-import dynamic from 'next/dynamic';
+
 import LoadingSpinner from '../loadingSpinner';
+import { Button } from '../ui/button';
+import { DialogClose, DialogFooter, DialogHeader } from '../ui/dialog';
 
 const FSRSConfig = dynamic(() => import('./FSRSConfig'), {
   loading: LoadingSpinner,

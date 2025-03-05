@@ -1,12 +1,12 @@
-'use server';
+'use server'
 
-import { getSessionUserId } from "@/app/(auth)/api/auth/[...nextauth]/session";
-import { exportLogsByUid } from "@/lib/log";
+import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session'
+import { exportLogsByUid } from '@/lib/log'
 
 export async function exportLogs() {
-  const uid = await getSessionUserId();
+  const uid = await getSessionUserId()
   if (!uid) {
-    return [];
+    return []
   }
-  return await exportLogsByUid(uid);
+  return exportLogsByUid(uid)
 }

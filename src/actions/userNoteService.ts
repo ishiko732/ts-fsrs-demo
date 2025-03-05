@@ -1,47 +1,38 @@
-'use server';
+'use server'
 
-import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
-import {
-  deleteNoteByNid,
-  getNoteByNid,
-  getNoteCount,
-  getNotes,
-  restoreNoteByNid,
-} from '@/lib/note';
-import { Card, Note, Prisma } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
-import { notFound, redirect } from 'next/navigation';
-import { State, fixState } from 'ts-fsrs';
+import { Card, Note, Prisma } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
+import { notFound, redirect } from 'next/navigation'
+import { fixState, State } from 'ts-fsrs'
 
-export async function getNoteTotalCount({
-  query,
-}: {
-  query?: Prisma.NoteWhereInput;
-}) {
-  const uid = await getSessionUserId();
+import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session'
+import { deleteNoteByNid, getNoteByNid, getNoteCount, getNotes, restoreNoteByNid } from '@/lib/note'
+
+export async function getNoteTotalCount({ query }: { query?: Prisma.NoteWhereInput }) {
+  const uid = await getSessionUserId()
   if (!uid) {
-    throw new Error('user not found.');
+    throw new Error('user not found.')
   }
-  return await getNoteCount({ uid, query });
+  return getNoteCount({ uid, query })
 }
 
-export type NoteList = NoteSimpleInfo[];
+export type NoteList = NoteSimpleInfo[]
 
 export type NoteSimpleInfo = {
-  nid: number;
-  cid: number;
-  question: string;
-  answer: string;
-  source: string;
-  sourceId: string;
-  D: number;
-  S: number;
-  due: number;
-  last_review?: number;
-  state: State;
-  reps: number;
-  deleted: boolean;
-};
+  nid: number
+  cid: number
+  question: string
+  answer: string
+  source: string
+  sourceId: string
+  D: number
+  S: number
+  due: number
+  last_review?: number
+  state: State
+  reps: number
+  deleted: boolean
+}
 
 export async function getNotesBySessionUserId({
   take,
@@ -49,16 +40,14 @@ export async function getNotesBySessionUserId({
   order,
   skip,
 }: {
-  take?: number;
-  skip?: number;
-  query?: Prisma.NoteWhereInput;
-  order?:
-    | Prisma.NoteOrderByWithRelationInput
-    | Prisma.NoteOrderByWithRelationInput[];
+  take?: number
+  skip?: number
+  query?: Prisma.NoteWhereInput
+  order?: Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]
 }): Promise<NoteList> {
-  const uid = await getSessionUserId();
+  const uid = await getSessionUserId()
   if (!uid) {
-    throw new Error('user not found.');
+    throw new Error('user not found.')
   }
 
   const notes = await getNotes({
@@ -67,7 +56,7 @@ export async function getNotesBySessionUserId({
     query,
     order,
     skip,
-  });
+  })
 
   return notes.map((note) => {
     return {
@@ -84,27 +73,27 @@ export async function getNotesBySessionUserId({
       state: fixState(note.card.state),
       reps: note.card.reps,
       deleted: note.deleted,
-    };
-  });
+    }
+  })
 }
 
 export async function toggleHiddenNote(nid: number, hidden: boolean) {
-  const res = hidden ? await deleteNoteByNid(nid) : await restoreNoteByNid(nid);
-  revalidatePath(`/note/${nid}`);
-  return res;
+  const res = hidden ? await deleteNoteByNid(nid) : await restoreNoteByNid(nid)
+  revalidatePath(`/note/${nid}`)
+  return res
 }
 
 export async function getUserNote(nid: number, deleted: boolean) {
-  const uid = await getSessionUserId();
+  const uid = await getSessionUserId()
   if (!uid) {
-    throw new Error('user not found.');
+    throw new Error('user not found.')
   }
-  const note = await getNoteByNid(Number(nid), deleted);
+  const note = await getNoteByNid(Number(nid), deleted)
   if (!note) {
-    notFound();
+    notFound()
   }
   if (note?.uid !== uid) {
-    redirect('/denied');
+    redirect('/denied')
   }
-  return note as Note & { card: Card };
+  return note as Note & { card: Card }
 }

@@ -1,8 +1,9 @@
 "use client";
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 import { Card, Note } from "@prisma/client";
 import { useMemo, useState } from "react";
 import { State } from "ts-fsrs";
+
+import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 
 export type CardBoxes = {
   currentType: StateBox;

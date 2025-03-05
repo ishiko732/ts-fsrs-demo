@@ -1,22 +1,18 @@
-import { headers } from "next/headers";
-import DateItem from "@/components/DateItem";
-import { DateInput } from "ts-fsrs";
+import { headers } from 'next/headers'
+import { DateInput } from 'ts-fsrs'
+
+import DateItem from '@/components/DateItem'
 
 function getLang() {
-  return (
-    headers().get("accept-language")?.split(",")[0].toUpperCase()! || "en-us"
-  );
+  const langHeader = headers()?.get('accept-language')
+  return langHeader ? langHeader.split(',')[0].toUpperCase() : 'en-us'
 }
 
-export default function FormattedDate({
-  date,
-}: {
-  date: DateInput;
-}): React.ReactNode {
+export default function FormattedDate({ date }: { date: DateInput }): React.ReactNode {
   if (date) {
-    const lang = getLang();
-    return <DateItem lang={lang} date={date}/>;
+    const lang = getLang()
+    return <DateItem lang={lang} date={date} />
   } else {
-    return null;
+    return null
   }
 }

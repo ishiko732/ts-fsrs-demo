@@ -1,12 +1,14 @@
-import { Note, Card } from '@prisma/client';
+import { Card,Note } from '@prisma/client';
 import React from 'react';
+
 import { QACard } from '@/components/source';
 import { CardProvider } from '@/context/CardContext';
+
+import { Separator } from '../ui/separator';
+import DSRDisplay from './DSR';
+import RollbackButton from './rollbackButton';
 import ShowAnswerButton from './ShowAnswerButton';
 import StatusBar from './StatusBar';
-import RollbackButton from './rollbackButton';
-import DSRDisplay from './DSR';
-import { Separator } from '../ui/separator';
 
 export default function CardClient({
   noteBox,

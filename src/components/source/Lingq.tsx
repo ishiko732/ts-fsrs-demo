@@ -1,15 +1,17 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import type { SourceNote } from ".";
-import { HighlightedWord, MergeTransliteration } from "./display/Lingq";
-import { getLingqToken } from "./call/Lingq";
+
 import Audio from "@/components/card/Audio";
+
+import type { SourceNote } from ".";
+import { getLingqToken } from "./call/Lingq";
+import { HighlightedWord, MergeTransliteration } from "./display/Lingq";
 export function Question({ open, note }: { open: boolean; note: SourceNote }) {
   const extend = JSON.parse(note.extend as string) as Partial<Lingq> & {
     lang: string;
   };
   const lang = extend.lang;
-  const fragment = extend.fragment!!;
+  const fragment = extend.fragment!;
   const transliteration = extend.transliteration;
   const tags = extend.tags;
   const words = extend.words;
