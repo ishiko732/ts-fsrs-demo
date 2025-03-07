@@ -12,6 +12,7 @@
     "db:push": "npx prisma db push",
     "db:generate": "npx prisma generate",
     "db:init": "npx prisma migrate dev --name init",
+    "docker":"docker compose up",
     "postinstall": "prisma generate"
   },
   "dependencies": {
