@@ -1,9 +1,18 @@
-import type { Env as HonoEnv } from 'hono'
+import { DefaultSession } from 'next-auth'
 export type Bindings = object
 
-export type Variables = object
+export type Variables = {
+  authSession?: UserSession
+}
 
-export type Env = HonoEnv & {
-  bindings: Bindings
-  variables: Variables
+export interface UserSession {
+  user: {
+    id: string
+    role: string
+  } & DefaultSession
+}
+
+export interface Env {
+  Bindings: Bindings
+  Variables: Variables
 }

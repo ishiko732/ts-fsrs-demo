@@ -1,13 +1,32 @@
-import GitHub from '@auth/core/providers/github'
-import { initAuthConfig } from '@hono/auth-js'
-export const InitAuth = initAuthConfig((c) => {
-  return {
-    secret: c.env?.AUTH_SECRET || process.env.AUTH_SECRET,
-    providers: [
-      GitHub({
-        clientId: c.env?.GITHUB_ID || process.env.GITHUB_ID,
-        clientSecret: c.env?.GITHUB_SECRET || process.env.GITHUB_SECRET,
-      }),
-    ],
-  }
-})
+import { AuthHandler } from '@services/auth'
+import { createMiddleware } from 'hono/factory'
+
+export function AuthSession() {
+  return createMiddleware(async (c, next) => {
+    const auth = await AuthHandler()
+    console.log(auth)
+    const user = auth?.user
+    const [role, id] = auth?.user.userKey ?? ''.split(' ')
+    c.set('authSession', auth)
+    c.set('authUser', auth?.user)
+    c.set('authUserId', id)
+    c.set('authUserRole', role)
+    await next()
+  })
+}
+
+export interface IAuthRequireOptions {
+  unauthorizedJson?: Record<string, unknown>
+}
+
+export function RequireAuth(options?: IAuthRequireOptions) {
+  return createMiddleware(async (c, next) => {
+    console.log(c.get('authUserId'))
+    if (c.get('authUserId')) {
+      await next()
+      return
+    }
+    const json = options?.unauthorizedJson || { message: 'Unauthorized' }
+    return c.json(json, { status: 403 })
+  })
+}
