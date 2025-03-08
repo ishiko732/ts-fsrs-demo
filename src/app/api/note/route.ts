@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { getAuthSession } from '@/auth/api/auth/[...nextauth]/session'
+import { getAuthSession } from '@services/auth/session'
 import { addNote } from '@/lib/note'
 import { NodeData } from '@/types'
 

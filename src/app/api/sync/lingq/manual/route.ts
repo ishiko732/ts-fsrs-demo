@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session'
+import { getAuthSession } from '@services/auth/session'
 import { getFSRSParamsByUid } from '@/lib/fsrs'
 import prisma from '@/lib/prisma'
 import { createEmptyCardByPrisma } from '@/vendor/fsrsToPrisma'

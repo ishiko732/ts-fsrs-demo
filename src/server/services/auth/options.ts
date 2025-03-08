@@ -1,3 +1,4 @@
+import { initUser } from '@services/users/init'
 import * as bcrypt from 'bcrypt'
 import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
@@ -6,8 +7,6 @@ import { GithubProfile } from 'next-auth/providers/github'
 import { Provider } from 'next-auth/providers/index'
 
 import { UserCreatedRequired } from '@/types'
-
-import { initUser } from './init'
 
 function getProviders(): Provider[] {
   const providers: Provider[] = []

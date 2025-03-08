@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session'
+import { getAuthSession } from '@services/auth/session'
 import { changeLingqHints, changeLingqStatus, getLingq } from '@/vendor/lingq/request'
 import { updateNoteByLingq } from '@/vendor/lingq/sync'
 

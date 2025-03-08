@@ -1,11 +1,11 @@
 'use server'
 
 import { Card, Note, Prisma } from '@prisma/client'
+import { getSessionUserId } from '@services/auth/session'
 import { revalidatePath } from 'next/cache'
 import { notFound, redirect } from 'next/navigation'
 import { fixState, State } from 'ts-fsrs'
 
-import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session'
 import { deleteNoteByNid, getNoteByNid, getNoteCount, getNotes, restoreNoteByNid } from '@/lib/note'
 
 export async function getNoteTotalCount({ query }: { query?: Prisma.NoteWhereInput }) {

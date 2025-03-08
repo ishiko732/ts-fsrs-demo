@@ -1,9 +1,9 @@
 'use server'
 
+import { getSessionUserId } from '@server/services/auth/session'
 import { revalidateTag, unstable_cache as cache } from 'next/cache'
 import { fsrs } from 'ts-fsrs'
 
-import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session'
 import { getFSRSParamsByUid, ParametersType, updateParameters } from '@/lib/fsrs'
 type IRespose = {
   code: number

@@ -1,7 +1,7 @@
 import type { User } from 'next-auth'
 import { getServerSession } from 'next-auth/next'
 
-import { options } from '@/auth/api/auth/[...nextauth]/options'
+import { options } from './options'
 
 type SessionProps = {
   expires: string

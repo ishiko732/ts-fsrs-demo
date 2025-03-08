@@ -1,6 +1,6 @@
 import { Card, Note, Prisma, PrismaPromise } from "@prisma/client";
+import { getSessionUserId } from '@server/services/auth/session'
 
-import { getSessionUserId } from "@/app/(auth)/api/auth/[...nextauth]/session";
 import { NodeData,ProgeigoNodeData } from "@/types";
 import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
 
