@@ -4,9 +4,7 @@ import { createMiddleware } from 'hono/factory'
 export function AuthSession() {
   return createMiddleware(async (c, next) => {
     const auth = await AuthHandler()
-    console.log(auth)
-    const user = auth?.user
-    const [role, id] = auth?.user.userKey ?? ''.split(' ')
+    const [role, id] = (auth?.user.userKey ?? '').split(' ')
     c.set('authSession', auth)
     c.set('authUser', auth?.user)
     c.set('authUserId', id)
@@ -21,7 +19,6 @@ export interface IAuthRequireOptions {
 
 export function RequireAuth(options?: IAuthRequireOptions) {
   return createMiddleware(async (c, next) => {
-    console.log(c.get('authUserId'))
     if (c.get('authUserId')) {
       await next()
       return
