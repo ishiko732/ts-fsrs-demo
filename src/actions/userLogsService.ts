@@ -1,6 +1,6 @@
 'use server'
 
-import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session'
+import { getSessionUserId } from '@services/auth/session'
 import { exportLogsByUid } from '@/lib/log'
 
 export async function exportLogs() {

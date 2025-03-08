@@ -1,28 +1,27 @@
-import Link from 'next/link';
-import { ReactNode } from 'react';
+import { getAuthSession } from '@server/services/auth/session'
+import Link from 'next/link'
+import { ReactNode } from 'react'
 
-import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
-
-import { ThemesModeToggle } from '../themes/toggle';
-import { Button } from '../ui/button';
-import Github from './Github';
-import Logo from './logo';
-import Logout from './logout';
-import Setting from './setting';
-import UserProfile from './user-profile';
+import { ThemesModeToggle } from '../themes/toggle'
+import { Button } from '../ui/button'
+import Github from './Github'
+import Logo from './logo'
+import Logout from './logout'
+import Setting from './setting'
+import UserProfile from './user-profile'
 
 const NavBar = async ({ children }: { children?: ReactNode }) => {
-  const session = await getAuthSession();
-  const user = session?.user;
-  const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV;
+  const session = await getAuthSession()
+  const user = session?.user
+  const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV
   return (
-    <nav className='pt-2 container flex flex-1  max-w-screen-2xl items-center'>
+    <nav className="pt-2 container flex flex-1  max-w-screen-2xl items-center">
       {/* Left */}
       <Logo env={env} />
       {/* Right */}
-      <div className='flex flex-1 items-center justify-end space-x-2'>
+      <div className="flex flex-1 items-center justify-end space-x-2">
         {user && <UserProfile user={user} />}
-        <Github name='ishiko732/ts-fsrs-demo' />
+        <Github name="ishiko732/ts-fsrs-demo" />
         <ThemesModeToggle />
         {!user ? (
           <Button>
@@ -36,6 +35,6 @@ const NavBar = async ({ children }: { children?: ReactNode }) => {
         )}
       </div>
     </nav>
-  );
-};
-export default NavBar;
+  )
+}
+export default NavBar

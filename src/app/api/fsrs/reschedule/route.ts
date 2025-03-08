@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session'
+import { getSessionUserId } from '@services/auth/session'
 import { getFSRSParamsByUid } from '@/lib/fsrs'
 import { _findCardsByUid, _reschedule } from '@/lib/reschedule'
 

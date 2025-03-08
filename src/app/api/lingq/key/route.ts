@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session'
+import { getAuthSession } from '@services/auth/session'
 import { getFSRSParamsByUid } from '@/lib/fsrs'
 
 export async function GET() {

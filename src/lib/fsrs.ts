@@ -1,4 +1,5 @@
 import { Parameters } from '@prisma/client';
+import { getSessionUserId } from '@server/services/auth/session'
 import {
   default_w,
   FSRS,
@@ -7,7 +8,6 @@ import {
   generatorParameters,
 } from 'ts-fsrs';
 
-import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import { FSRSPutParams } from '@/types';
 import { decryptLingqKey, encryptLingqKey } from '@/vendor/lingq/crypt';
 

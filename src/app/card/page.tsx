@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { cache } from 'react'
 import { date_scheduler } from 'ts-fsrs'
 
-import { getAuthSession } from '@/auth/api/auth/[...nextauth]/session'
+import { getAuthSession } from '@services/auth/session'
 import Finish from '@/components/Finish'
 import CardClient from '@/components/schedule/CardsClient'
 import { getTodayLearnedNewCardCount } from '@/lib/log'

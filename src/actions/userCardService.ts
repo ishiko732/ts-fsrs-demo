@@ -1,11 +1,11 @@
 'use server';
 
 import { Prisma } from '@prisma/client';
+import { getSessionUserId } from '@services/auth/session';
 import { revalidatePath } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
 import { CardInput, fixState } from 'ts-fsrs';
 
-import { getSessionUserId } from '@/app/(auth)/api/auth/[...nextauth]/session';
 import prisma from '@/lib/prisma';
 import { forgetAfterHandler } from '@/vendor/fsrsToPrisma/handler';
 
