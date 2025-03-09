@@ -5,6 +5,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "verbatimModuleSyntax": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -20,12 +21,12 @@
       }
     ],
     "paths": {
-      "@/auth/*": ["./src/app/(auth)/*"],
-
       "@server/*": ["./src/server/*"],
       "@controllers/*": ["./src/server/controllers/*"],
       "@services/*": ["./src/server/services/*"],
       "@middlewares/*": ["./src/server/middlewares/*"],
+      "@models/*": ["./src/server/models/*"],
+      "@libs/*": ["./src/server/libs/*"],
       "@/*": ["./src/*"]
     },
     "types": ["react-dom/experimental"]

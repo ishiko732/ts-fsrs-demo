@@ -1,11 +1,11 @@
 import CredentialsProvider from '@auth/core/providers/credentials'
-import GitHub, { GitHubProfile } from '@auth/core/providers/github'
+import GitHub, { type GitHubProfile } from '@auth/core/providers/github'
 import { initUser } from '@services/users/init'
 import * as bcrypt from 'bcrypt'
-import { NextAuthConfig } from 'next-auth'
-import { Provider } from 'next-auth/providers'
+import type { NextAuthConfig } from 'next-auth'
+import type { Provider } from 'next-auth/providers'
 
-import { UserCreatedRequired } from '@/types'
+import type { UserCreatedRequired } from '@/types'
 
 export function getProviders(): Provider[] {
   const providers: Provider[] = []
