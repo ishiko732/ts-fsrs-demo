@@ -14,7 +14,7 @@ export interface DeckTable {
     enable_fuzz: boolean
     enable_short_term: boolean
   }>
-  limit: JSONColumnType<{
+  card_limit: JSONColumnType<{
     new: number
     review: number
     learning: number

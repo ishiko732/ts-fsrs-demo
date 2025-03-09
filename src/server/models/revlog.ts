@@ -7,7 +7,7 @@ export interface RevlogTable {
   uid: number
   did: ColumnType<number, number, never>
   cid: ColumnType<number, number, never>
-  
+
   grade: ColumnType<Rating, Rating, never>
   state: ColumnType<State, State, never>
   due: ColumnType<number, number, never>
@@ -18,7 +18,6 @@ export interface RevlogTable {
   scheduled_days: ColumnType<number, number, never>
   review: ColumnType<number, number, never>
   duration: ColumnType<number, number, never>
-  tz: ColumnType<string, string, never>
   deleted: ColumnType<boolean, boolean, never>
 }
 
