@@ -1,5 +1,6 @@
-import { Env } from '@server/bindings'
+import type { Env } from '@server/bindings'
 import UserApp from '@server/controllers/users'
+import env from '@server/env'
 import { InitGlobalMiddlewares } from '@server/middlewares/global'
 import { Hono } from 'hono'
 import { showRoutes } from 'hono/dev'
@@ -17,7 +18,7 @@ const routes = app
 
 const handler = handle(app)
 
-if (process.env.NODE_ENV === 'development') {
+if (env.NODE_ENV === 'development') {
   showRoutes(app)
 }
 export { handler as DELETE, handler as GET, handler as POST, handler as PUT }
