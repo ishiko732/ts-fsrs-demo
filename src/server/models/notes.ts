@@ -5,6 +5,7 @@ export interface NoteTable {
   id: Generated<number>
   uid: ColumnType<number, number, never>
   did: number
+  
   question: string
   answer: string
   sourceId?: string
