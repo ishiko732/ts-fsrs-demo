@@ -10,8 +10,8 @@ export interface ExtraTable {
   description: string
   extra: JSONColumnType<object>
   deleted: ColumnType<never, boolean, boolean>
-  created: ColumnType<number, number, never>
-  updated: number
+  created: ColumnType<number, number | undefined, never>
+  updated: ColumnType<number, number | undefined, number | undefined>
 }
 
 class ParametersModel extends BaseModel<'extras', 'id'> {

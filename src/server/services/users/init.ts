@@ -1,11 +1,11 @@
-import { Parameters, User } from '@prisma/client'
+import type { Parameters, User } from '@prisma/client'
 import { default_enable_fuzz, default_maximum_interval, default_request_retention, default_w } from 'ts-fsrs'
 
 import progeigo from '@/../public/プログラミング必須英単語600+.json' assert { type: 'json' }
 import { initProgeigoNotes } from '@/lib/note'
 import prisma from '@/lib/prisma'
 import { getUserByEmail, getUserByOauthId } from '@/lib/user'
-import { ProgeigoNodeData, UserCreatedRequired } from '@/types'
+import type { ProgeigoNodeData, UserCreatedRequired } from '@/types'
 
 // init user and fsrs config
 export async function initUserAndFSRS(profile: UserCreatedRequired): Promise<Parameters & { user: User }> {
@@ -45,6 +45,7 @@ export async function initProgeigoDates(uid: number) {
 // find or init user
 export async function initUser(profile: UserCreatedRequired) {
   let user: User | null = null
+
   if (profile.oauthType) {
     user = await getUserByOauthId({
       oauthId: profile.oauthId,

@@ -1,11 +1,14 @@
 import CredentialsProvider from '@auth/core/providers/credentials'
 import GitHub, { type GitHubProfile } from '@auth/core/providers/github'
-import { initUser } from '@services/users/init'
+import { waitUntil } from '@vercel/functions'
 import * as bcrypt from 'bcrypt'
 import type { NextAuthConfig } from 'next-auth'
 import type { Provider } from 'next-auth/providers'
 
 import type { UserCreatedRequired } from '@/types'
+
+import { initData } from '../scheduler/init'
+import userService from '../users'
 
 export function getProviders(): Provider[] {
   const providers: Provider[] = []
@@ -19,18 +22,21 @@ export function getProviders(): Provider[] {
         oauthType: 'github',
         password: '',
       }
-      const user = await initUser(userCreatedRequired)
+      const { user, isNew } = await userService.createUser(userCreatedRequired)
+      if (isNew) {
+        waitUntil(initData(user.id))
+      }
       const role =
         profile.id === (Number(process.env.GITHUB_ADMIN_ID) ?? 62931549) // ishiko732 GitHub_Id=62931549
           ? 'admin'
           : 'user'
       Object.assign(profile, {
-        id: user.uid.toString(),
+        id: user.id.toString(),
         name: user.name,
         image: profile.avatar_url,
         role: role,
         email: user.email,
-        userKey: `${role} ${user.uid}`,
+        userKey: `${role} ${user.id}`,
       })
       return profile as Record<string, unknown>
     },
@@ -86,14 +92,19 @@ export function getProviders(): Provider[] {
             password: hashedPassword,
           }
 
-          const user = await initUser(userCreatedRequired)
+          // const user = await initUser(userCreatedRequired)
+          const { user, isNew } = await userService.createUser(userCreatedRequired)
+          if (isNew) {
+            waitUntil(initData(user.id))
+          }
           if (user && (await bcrypt.compare(password, user.password))) {
             return {
-              id: user.uid.toString(),
+              id: user.id.toString(),
               name: user.name,
               image: 'https://avatars.githubusercontent.com/u/96821265?v=4',
               role: 'admin',
               email: user.email,
+              userKey: `admin ${user.id}`,
             }
           }
           return null
