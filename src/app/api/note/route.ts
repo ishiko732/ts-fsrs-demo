@@ -1,8 +1,8 @@
+import { getAuthSession } from '@services/auth/session'
 import { NextRequest, NextResponse } from 'next/server'
 
-import { getAuthSession } from '@services/auth/session'
 import { addNote } from '@/lib/note'
-import { NodeData } from '@/types'
+import type { NodeData } from '@/types'
 
 export async function POST(request: NextRequest) {
   const json: Partial<NodeData> = await request.json()
