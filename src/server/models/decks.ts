@@ -4,7 +4,7 @@ import type { ColumnType, Generated, JSONColumnType } from 'kysely'
 export interface DeckTable {
   id: Generated<number>
   uid: ColumnType<number, number, never>
-  
+
   name: string
   description: string
   fsrs: JSONColumnType<{
@@ -20,9 +20,9 @@ export interface DeckTable {
     learning: number
     suspended: number
   }>
-  deleted: ColumnType<never, boolean, boolean>
-  created: ColumnType<number, number, never>
-  updated: number
+  deleted: ColumnType<never, never, boolean>
+  created: ColumnType<number, number | undefined, never>
+  updated: ColumnType<number, number | undefined, number | undefined>
 }
 
 class DeckModel extends BaseModel<'decks'> {

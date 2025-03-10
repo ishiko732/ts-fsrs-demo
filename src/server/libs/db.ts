@@ -10,8 +10,8 @@ const dialect = new PostgresDialect({
   } satisfies PoolConfig) as Pool,
 })
 
-types.setTypeParser(types.builtins.TIMESTAMP, (timeStr) => +timeStr)
-types.setTypeParser(types.builtins.DATE, (timeStr) => +timeStr)
+// types.setTypeParser(types.builtins.TIMESTAMP, (timeStr) => +timeStr)
+// types.setTypeParser(types.builtins.DATE, (timeStr) => +timeStr)
 
 // Database interface is passed to Kysely's constructor, and from now on, Kysely
 // knows your database structure.

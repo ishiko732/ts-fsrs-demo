@@ -12,15 +12,15 @@ export interface CardTable {
   stability: number
   difficulty: number
   elapsed_days: number
-  last_elapsed_days: number
   scheduled_days: number
   reps: number
+  lapses: number
   state: State
-  last_review: ColumnType<number | undefined, number | undefined, number>
-  suspended: ColumnType<never, boolean, boolean>
-  deleted: ColumnType<never, boolean, boolean>
-  created: ColumnType<number, number, never>
-  updated: number
+  last_review: ColumnType<number | undefined, never, number>
+  suspended: ColumnType<never, never, boolean>
+  deleted: ColumnType<never, never, boolean>
+  created: ColumnType<number, never, never>
+  updated: ColumnType<number, never, never>
 }
 
 class CardModel extends BaseModel<'cards'> {

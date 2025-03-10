@@ -2,6 +2,13 @@
 import { Kysely, sql } from 'kysely'
 
 export async function up(db: Kysely<any>): Promise<void> {
+  // await db.schema.dropTable('extras').execute()
+  // await db.schema.dropTable('revlog').execute()
+  // await db.schema.dropTable('cards').execute()
+  // await db.schema.dropTable('notes').execute()
+  // await db.schema.dropTable('decks').execute()
+  // await db.schema.dropTable('users').execute()
+
   // create UserTable
   await db.schema
     .createTable('users')
@@ -11,8 +18,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('password', 'varchar(255)', (col) => col.defaultTo(''))
     .addColumn('oauthId', 'varchar(255)', (col) => col.notNull())
     .addColumn('oauthType', 'varchar(255)', (col) => col.notNull())
-    .addColumn('created', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
-    .addColumn('updated', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
+    .addColumn('created', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
+    .addColumn('updated', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
     .execute()
 
   await db.schema.createIndex('users_email_index').on('users').columns(['email']).unique().execute()
@@ -29,8 +36,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('fsrs', 'jsonb', (col) => col.notNull())
     .addColumn('card_limit', 'jsonb', (col) => col.notNull())
     .addColumn('deleted', 'boolean', (col) => col.defaultTo(false).notNull())
-    .addColumn('created', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
-    .addColumn('updated', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
+    .addColumn('created', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
+    .addColumn('updated', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
     .execute()
 
   await db.schema.createIndex('decks_uid_index').on('decks').columns(['uid']).execute()
@@ -47,8 +54,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('sourceId', 'varchar(255)')
     .addColumn('extend', 'jsonb', (col) => col.notNull().defaultTo(sql`'{}'::jsonb`))
     .addColumn('deleted', 'boolean', (col) => col.defaultTo(false).notNull())
-    .addColumn('created', 'timestamp', (col) => col.defaultTo(sql`now()`).notNull())
-    .addColumn('updated', 'timestamp', (col) => col.defaultTo(sql`now()`).notNull())
+    .addColumn('created', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
+    .addColumn('updated', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
     .execute()
 
   await db.schema.createIndex('notes_uid_index').on('notes').columns(['uid']).execute()
@@ -61,19 +68,19 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('uid', 'integer', (col) => col.references('users.id').onDelete('cascade').notNull())
     .addColumn('did', 'integer', (col) => col.references('decks.id').onDelete('cascade').notNull())
     .addColumn('nid', 'integer', (col) => col.references('notes.id').onDelete('cascade').notNull())
-    .addColumn('due', 'integer', (col) => col.notNull())
+    .addColumn('due', 'bigint', (col) => col.notNull())
     .addColumn('stability', 'float8', (col) => col.notNull())
     .addColumn('difficulty', 'float8', (col) => col.notNull())
     .addColumn('elapsed_days', 'integer', (col) => col.notNull())
-    .addColumn('last_elapsed_days', 'integer', (col) => col.notNull())
     .addColumn('scheduled_days', 'integer', (col) => col.notNull())
     .addColumn('reps', 'integer', (col) => col.notNull())
+    .addColumn('lapses', 'integer', (col) => col.notNull())
     .addColumn('state', 'varchar(50)', (col) => col.notNull())
-    .addColumn('last_review', 'timestamptz')
+    .addColumn('last_review', 'bigint')
     .addColumn('suspended', 'boolean', (col) => col.defaultTo(false).notNull())
     .addColumn('deleted', 'boolean', (col) => col.defaultTo(false).notNull())
-    .addColumn('created', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
-    .addColumn('updated', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
+    .addColumn('created', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
+    .addColumn('updated', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
     .execute()
 
   await db.schema.createIndex('cards_uid_did_index').on('cards').columns(['uid', 'did']).execute()
@@ -87,13 +94,13 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('cid', 'integer', (col) => col.references('cards.id').onDelete('cascade').notNull())
     .addColumn('grade', 'varchar(50)', (col) => col.notNull())
     .addColumn('state', 'varchar(50)', (col) => col.notNull())
-    .addColumn('due', 'timestamptz', (col) => col.notNull())
+    .addColumn('due', 'bigint', (col) => col.notNull())
     .addColumn('stability', 'float8', (col) => col.notNull())
     .addColumn('difficulty', 'float8', (col) => col.notNull())
     .addColumn('elapsed_days', 'integer', (col) => col.notNull())
     .addColumn('last_elapsed_days', 'integer', (col) => col.notNull())
     .addColumn('scheduled_days', 'integer', (col) => col.notNull())
-    .addColumn('review', 'timestamptz', (col) => col.notNull())
+    .addColumn('review', 'bigint', (col) => col.notNull())
     .addColumn('duration', 'integer', (col) => col.notNull())
     .addColumn('deleted', 'boolean', (col) => col.defaultTo(false).notNull())
     .execute()
@@ -112,10 +119,19 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('description', 'text')
     .addColumn('extra', 'jsonb', (col) => col.notNull())
     .addColumn('deleted', 'boolean', (col) => col.defaultTo(false).notNull())
-    .addColumn('created', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
-    .addColumn('updated', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
+    .addColumn('created', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
+    .addColumn('updated', 'bigint', (col) => col.defaultTo(sql`extract(epoch from now()) * 1000`).notNull())
     .execute()
 
   await db.schema.createIndex('extra_uid_index').on('extras').columns(['uid']).execute()
   await db.schema.createIndex('extra_did_index').on('extras').columns(['uid', 'did']).execute()
+}
+
+export async function down(db: Kysely<any>): Promise<void> {
+  await db.schema.dropTable('extras').execute()
+  await db.schema.dropTable('revlog').execute()
+  await db.schema.dropTable('cards').execute()
+  await db.schema.dropTable('notes').execute()
+  await db.schema.dropTable('decks').execute()
+  await db.schema.dropTable('users').execute()
 }
