@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client'
-import { ColumnSort, SortingState } from '@tanstack/react-table'
+import type { ColumnSort, SortingState } from '@tanstack/react-table'
 import { redirect } from 'next/navigation'
 import React from 'react'
 import { generatorParameters } from 'ts-fsrs'
