@@ -69,18 +69,17 @@ function initDeck(uid: number, now: Date): Insertable<DeckTable> {
 }
 
 function initCard(uid: number, did: number, nid: number, card: Card): Insertable<CardTable> {
-  return Object.assign(card, { uid, did, nid, due: +card.due })
-  // {
-  //   uid,
-  //   did,
-  //   nid,
-  //   ...card,
-  //   // due: card.due,
-  //   // stability: card.stability,
-  //   // difficulty: card.difficulty,
-  //   // elapsed_days: card.elapsed_days,
-  //   // scheduled_days: card.scheduled_days,
-  //   // reps: card.reps,
-  //   // state: card.state,
-  // }
+  return {
+    uid,
+    did,
+    nid,
+    ...card,
+    due: +card.due,
+    // stability: card.stability,
+    // difficulty: card.difficulty,
+    // elapsed_days: card.elapsed_days,
+    // scheduled_days: card.scheduled_days,
+    // reps: card.reps,
+    // state: card.state,
+  }
 }
