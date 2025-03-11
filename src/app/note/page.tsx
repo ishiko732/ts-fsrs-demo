@@ -1,4 +1,4 @@
-import { getSessionUserId } from '@server/services/auth/session'
+import { getSessionUserIdThrow } from '@server/services/auth/session'
 import noteService from '@server/services/decks/notes'
 import type { ColumnSort, SortingState } from '@tanstack/react-table'
 import { redirect } from 'next/navigation'
@@ -50,7 +50,7 @@ type NotePageProps = {
   }
 }
 
-export default async function Page({ searchParams }: NotePageProps) {
+const buildQuery = async (searchParams: NotePageProps['searchParams']) => {
   const take = Number(searchParams['take'])
   const pageIndex = Number(searchParams['page'])
   if (!Number.isInteger(take) || !Number.isInteger(pageIndex) || pageIndex < 1 || take < 1) {
@@ -69,33 +69,39 @@ export default async function Page({ searchParams }: NotePageProps) {
       ? [{ id: sortField, desc: searchParams[`${sortField}Asc`] === '0' }]
       : null
   const deleted = searchParams.deleted === '1'
-
-  const uid = await getSessionUserId()
-  if (!uid) {
-    redirect('/')
-    return <></>
-  }
-
-  const { data, pagination } = await noteService.getList({
-    uid,
-    page: { page: pageIndex, pageSize: take },
-    question: keyword,
-    answer: keyword,
-    deleted: deleted,
-    order: computerOrder(sort ?? []),
+  const uid = await getSessionUserIdThrow().catch(() => {
+    const params = new URLSearchParams()
+    Object.entries(searchParams).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((val) => params.append(key, val))
+      } else {
+        params.append(key, value)
+      }
+    })
+    redirect(`/api/auth/signin?callbackUrl=/note?${params.toString()}`)
   })
+  return {
+    request: {
+      uid,
+      page: { page: pageIndex, pageSize: take },
+      question: keyword,
+      answer: keyword,
+      deleted: deleted,
+      order: computerOrder(sort ?? []),
+    },
+    keyword,
+    sort: sort ?? [],
+  }
+}
 
+export default async function Page({ searchParams }: NotePageProps) {
+  const { request, keyword, sort } = await buildQuery(searchParams)
+  const { data, pagination } = await noteService.getList(request)
   const params = await getUserParams()
   return (
     <div className=" container">
       <Menu />
-      <DataTable
-        data={data}
-        fsrsParams={generatorParameters(params.data?.params)}
-        page_info={pagination}
-        keyword={keyword}
-        sort={sort ?? []}
-      />
+      <DataTable data={data} fsrsParams={generatorParameters(params.data?.params)} page_info={pagination} keyword={keyword} sort={sort} />
     </div>
   )
 }

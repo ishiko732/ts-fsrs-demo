@@ -26,3 +26,11 @@ export async function getSessionUserId() {
   const [_, id] = (session?.user.userKey ?? '').split(' ')
   return id ? Number(session?.user?.id) : null
 }
+
+export async function getSessionUserIdThrow() {
+  const uid = await getSessionUserId()
+  if (!uid) {
+    throw new Error('user not found.')
+  }
+  return uid
+}
