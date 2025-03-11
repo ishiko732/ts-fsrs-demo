@@ -1,7 +1,12 @@
-export interface PageList<T> {
+interface PageList<T> {
   data: T[]
-  pagination: {
-    page: number
-    total: number
-  }
+  pagination: IPagination
 }
+
+interface IPagination {
+  page: number
+  pageSize: number
+  total: number
+}
+
+type ISortOrderBy = 'asc' | 'desc'

@@ -16,10 +16,13 @@ export async function isSelf(uid: number) {
 
 export async function isAdminOrSelf(uid: number) {
   const session = await AuthHandler()
-  return session?.user?.role === 'admin' || session?.user?.id === String(uid)
+  const [role, id] = (session?.user.userKey ?? '').split(' ')
+  return role === 'admin' || id === String(uid)
 }
 
 export async function getSessionUserId() {
   const session = await AuthHandler()
-  return session?.user?.id ? Number(session?.user?.id) : null
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, id] = (session?.user.userKey ?? '').split(' ')
+  return id ? Number(session?.user?.id) : null
 }

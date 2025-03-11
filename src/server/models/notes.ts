@@ -8,9 +8,10 @@ export interface NoteTable {
 
   question: string
   answer: string
+  source: string
   sourceId?: string
   extend: JSONColumnType<object>
-  deleted: ColumnType<never, never, boolean>
+  deleted: ColumnType<boolean, never, boolean>
   created: ColumnType<number, number | undefined, never>
   updated: ColumnType<number, number | undefined, number | undefined>
 }
@@ -21,5 +22,5 @@ class NoteModel extends BaseModel<'notes'> {
   }
 }
 
-export const nodeModel = new NoteModel()
-export default nodeModel
+export const noteModel = new NoteModel()
+export default noteModel

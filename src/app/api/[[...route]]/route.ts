@@ -1,4 +1,5 @@
 import type { Env } from '@server/bindings'
+import NoteApp from '@server/controllers/notes'
 import UserApp from '@server/controllers/users'
 import env from '@server/env'
 import { InitGlobalMiddlewares } from '@server/middlewares/global'
@@ -15,6 +16,7 @@ const routes = app
     return c.json({ error: 'Not found' }, 404)
   })
   .route('/users', UserApp)
+  .route('/notes', NoteApp)
 
 const handler = handle(app)
 

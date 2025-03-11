@@ -51,6 +51,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('did', 'integer', (col) => col.references('decks.id').onDelete('cascade').notNull())
     .addColumn('question', 'text', (col) => col.notNull())
     .addColumn('answer', 'text', (col) => col.notNull())
+    .addColumn('source', 'varchar(255)', (col) => col.notNull())
     .addColumn('sourceId', 'varchar(255)')
     .addColumn('extend', 'jsonb', (col) => col.notNull().defaultTo(sql`'{}'::jsonb`))
     .addColumn('deleted', 'boolean', (col) => col.defaultTo(false).notNull())
