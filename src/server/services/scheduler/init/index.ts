@@ -45,6 +45,8 @@ function initProgeigoNote(uid: number, did: number, data: ProgeigoNodeData, now:
     did,
     question,
     answer,
+    source: 'Progeigo',
+    sourceId: data['🔒Row ID'],
     extend: JSON.stringify(data),
     created: +now,
     updated: +now,
