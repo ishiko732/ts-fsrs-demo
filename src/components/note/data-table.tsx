@@ -257,7 +257,7 @@ export default function DataTable({
       })
       router.push(
         `${pathname}?${createQueryString({
-          page: pageIndex + 1,
+          page: pageIndex,
           take: pageSize,
           sort: sortParams,
           ...Object.assign({}, ...sortAsc),
@@ -388,7 +388,7 @@ export default function DataTable({
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
-          {`( total: ${page_info.total} page:${table.getState().pagination.pageIndex + 1}/${table.getPageCount()} )`}
+          {`( total: ${page_info.total} page:${table.getState().pagination.pageIndex}/${table.getPageCount()} )`}
         </div>
         <div className="space-x-2">
           <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
