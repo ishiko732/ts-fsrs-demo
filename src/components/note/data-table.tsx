@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-export const columns: (f: FSRS, now: number) => ColumnDef<INoteListData>[] = (f: FSRS, now: number) => {
+export const columns: () => ColumnDef<INoteListData>[] = () => {
   return [
     {
       id: 'select',
@@ -190,13 +190,11 @@ export const columns: (f: FSRS, now: number) => ColumnDef<INoteListData>[] = (f:
 
 export default function DataTable({
   data,
-  fsrsParams,
   page_info,
   keyword = null,
   sort = [],
 }: {
   data: INoteListData[]
-  fsrsParams: FSRSParameters
   page_info: IPagination
   keyword: string | null
   sort: SortingState
@@ -207,7 +205,6 @@ export default function DataTable({
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const timer = React.useRef<NodeJS.Timeout | null>(null)
-  const f = fsrs(fsrsParams)
   const now = new Date().getTime()
 
   // Ref:https://tocalai.medium.com/pagination-on-tanstack-table-under-next-js-787ed03198a3
@@ -296,7 +293,7 @@ export default function DataTable({
   // Ref: https://tanstack.com/table/latest/docs/api/features/pagination#lastpage
   const table = useReactTable<INoteListData>({
     data,
-    columns: columns(f, now),
+    columns: columns(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

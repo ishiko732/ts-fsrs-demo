@@ -3,9 +3,7 @@ import noteService from '@server/services/decks/notes'
 import type { ColumnSort, SortingState } from '@tanstack/react-table'
 import { redirect } from 'next/navigation'
 import React from 'react'
-import { generatorParameters } from 'ts-fsrs'
 
-import { getUserParams } from '@/actions/userParamsService'
 import Menu from '@/components/menu'
 import DataTable from '@/components/note/data-table'
 
@@ -97,11 +95,10 @@ const buildQuery = async (searchParams: NotePageProps['searchParams']) => {
 export default async function Page({ searchParams }: NotePageProps) {
   const { request, keyword, sort } = await buildQuery(searchParams)
   const { data, pagination } = await noteService.getList(request)
-  const params = await getUserParams()
   return (
     <div className=" container">
       <Menu />
-      <DataTable data={data} fsrsParams={generatorParameters(params.data?.params)} page_info={pagination} keyword={keyword} sort={sort} />
+      <DataTable data={data} page_info={pagination} keyword={keyword} sort={sort} />
     </div>
   )
 }
