@@ -1,4 +1,5 @@
-import { redirect } from 'next/navigation'
+import { getSessionUserIdThrow } from '@server/services/auth/session'
+import { notFound, redirect } from 'next/navigation'
 import { cache } from 'react'
 
 import { getUserNote } from '@/actions/userNoteService'
@@ -16,18 +17,29 @@ type Props = {
   }
   searchParams: {
     deleted: '1' | '0'
+    cid?: string
   }
 }
 
-const getData = cache(async (nid: string, deleted: boolean) => {
-  const note = (await getNoteByNid(Number(nid), deleted)) as SourceNote | null
-  return note
-})
+const buildQuery = async ({ params, searchParams }: Props) => {
+  const deleted = searchParams.deleted === '1'
+  const nid = Number(params.nid)
+  const cid = Number(searchParams?.cid ?? 0)
+  const uid = await getSessionUserIdThrow().catch(() => {
+    redirect(`/api/auth/signin?callbackUrl=/note/${nid}`)
+  })
+  return {
+    uid,
+    nid,
+    cid,
+    deleted,
+  }
+}
 
 export default async function Page({ params, searchParams }: Props) {
-  const deleted = searchParams.deleted === '1'
-  const note = await getUserNote(Number(params.nid), deleted).catch(() => {
-    redirect(`/api/auth/signin?callbackUrl=/note/${params.nid}`)
+  const { deleted, uid, cid, nid } = await buildQuery({ params, searchParams })
+  const note = await getUserNote(nid, deleted).catch(() => {
+    notFound()
   })
   const logs = await findLogsByCid(note.card.cid)
 
