@@ -1,50 +1,50 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
+'use client'
+import type { CardServiceType } from '@server/services/decks/cards'
+import { useEffect, useRef, useState } from 'react'
 
-import Audio from "@/components/card/Audio";
+import Audio from '@/components/card/Audio'
 
-import type { SourceNote } from ".";
-import { getLingqToken } from "./call/Lingq";
-import { HighlightedWord, MergeTransliteration } from "./display/Lingq";
-export function Question({ open, note }: { open: boolean; note: SourceNote }) {
-  const extend = JSON.parse(note.extend as string) as Partial<Lingq> & {
-    lang: string;
-  };
-  const lang = extend.lang;
-  const fragment = extend.fragment!;
-  const transliteration = extend.transliteration;
-  const tags = extend.tags;
-  const words = extend.words;
-  const [audio, setAudio] = useState<string>();
-  const audioRef = useRef<HTMLAudioElement>(null);
+import { getLingqToken } from './call/Lingq'
+import { HighlightedWord, MergeTransliteration } from './display/Lingq'
+export function Question({ open, note }: { open: boolean; note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+  const extend = note.extend as Partial<Lingq> & {
+    lang: string
+  }
+  const lang = extend.lang
+  const fragment = extend.fragment!
+  const transliteration = extend.transliteration
+  const tags = extend.tags
+  const words = extend.words
+  const [audio, setAudio] = useState<string>()
+  const audioRef = useRef<HTMLAudioElement>(null)
   useEffect(() => {
-    setAudio(undefined);
-    if ((note && lang === "ja") || lang === "en") {
-      (async () => {
+    setAudio(undefined)
+    if ((note && lang === 'ja') || lang === 'en') {
+      ;(async () => {
         const url =
-          "/api/lingq/v2/tts?" +
+          '/api/lingq/v2/tts?' +
           new URLSearchParams({
             language: lang,
             text: note.question,
-          }).toString();
-        const token = await getLingqToken();
-        console.log(token);
+          }).toString()
+        const token = await getLingqToken()
+        console.log(token)
         if (!token) {
-          return;
+          return
         }
         const tts: LingqTTS = await fetch(url, {
-          method: "GET",
+          method: 'GET',
           headers: {
             Authorization: token,
           },
-        }).then((res) => res.json());
+        }).then((res) => res.json())
         if (tts) {
-          setAudio(tts.audio);
+          setAudio(tts.audio)
         }
-      })();
+      })()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note]);
+  }, [note])
   return (
     <div className="item-center">
       <div className="w-full">
@@ -53,9 +53,7 @@ export function Question({ open, note }: { open: boolean; note: SourceNote }) {
           <span className="badge">{note.answer}</span>
         </span>
         <div className="flex justify-center flex-col items-center opacity-60 pt-4">
-          {open && transliteration && (
-            <div> {<MergeTransliteration {...transliteration} />}</div>
-          )}
+          {open && transliteration && <div> {<MergeTransliteration {...transliteration} />}</div>}
           <div className="text-sm">
             {tags?.map((tag) => (
               <span key={tag} className="badge">
@@ -80,31 +78,29 @@ export function Question({ open, note }: { open: boolean; note: SourceNote }) {
               url={audio}
               ref={audioRef}
               onCanPlay={(e) => {
-                audioRef.current?.play();
+                audioRef.current?.play()
               }}
             />
           )}
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export function Answer({ open, note }: { open: boolean, note: SourceNote }) {
-    const extend = JSON.parse(note.extend as string) as Partial<Lingq>;
-    const hints = extend.hints;
-    return open ? (
-        <div className="pt-4 mx-auto max-w-5xl px-4">
-            <ul>
-                {
-                    hints?.map((hint) =>
-                        <li key={hint.id}>
-                            <span className="badge">{hint.locale}</span>
-                            {hint.text}
-                        </li>
-                    )
-                }
-            </ul>
-        </div>
-    ) : null;
+export function Answer({ open, note }: { open: boolean; note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+  const extend = note.extend as Partial<Lingq>
+  const hints = extend.hints
+  return open ? (
+    <div className="pt-4 mx-auto max-w-5xl px-4">
+      <ul>
+        {hints?.map((hint) => (
+          <li key={hint.id}>
+            <span className="badge">{hint.locale}</span>
+            {hint.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : null
 }

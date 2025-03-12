@@ -1,20 +1,20 @@
 'use client'
-import React from "react";
+import type { CardServiceType } from '@server/services/decks/cards'
+import React from 'react'
 
-import Audio from "@/components/card/Audio";
-import Video from "@/components/card/Video";
+import Audio from '@/components/card/Audio'
+import Video from '@/components/card/Video'
 
-import type { SourceNote } from ".";
-
-export function HitsuAnswer({ open, note }: { open: boolean, note: SourceNote }) {
-  const extend = note ? JSON.parse(note.extend as string) : {};
-  const 分類 = extend.分類 as string | undefined;
-  const 品詞 = extend.品詞 as string | undefined;
-  const 例文 = extend.例文 as string | undefined;
-  const 例文訳 = extend.例文訳 as string | undefined;
-  const 解説 = extend.解説 as string | undefined;
-  const 発音 = extend.発音 as string | undefined;
-  const ビデオ = extend.ビデオ as string | undefined;
+export function HitsuAnswer({ open, note }: { open: boolean; note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const extend = note ? (note.extend as any) : {}
+  const 分類 = extend.分類 as string | undefined
+  const 品詞 = extend.品詞 as string | undefined
+  const 例文 = extend.例文 as string | undefined
+  const 例文訳 = extend.例文訳 as string | undefined
+  const 解説 = extend.解説 as string | undefined
+  const 発音 = extend.発音 as string | undefined
+  const ビデオ = extend.ビデオ as string | undefined
 
   return (
     open && (
@@ -34,6 +34,5 @@ export function HitsuAnswer({ open, note }: { open: boolean, note: SourceNote })
         </div>
       </>
     )
-  );
+  )
 }
-

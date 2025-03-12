@@ -1,18 +1,19 @@
 "use client";
-import { Card, Note } from "@prisma/client";
+import { type Card, type Note } from "@prisma/client";
+import type { CardServiceType } from "@server/services/decks/cards";
 import {
   createContext,
-  ReactNode,
+  type ReactNode,
   useContext,
   useState,
 } from "react";
-import { Grade, RecordLog, State } from "ts-fsrs";
+import { type Grade, type RecordLog, State } from "ts-fsrs";
 
 import { useCardBoxes } from "@/hooks/useCardBoxes";
 import { useFinished } from "@/hooks/useFinished";
 import { useRollback } from "@/hooks/useRollback";
-import { DSR, useSchedule } from "@/hooks/useSchdule";
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+import { type DSR, useSchedule } from "@/hooks/useSchdule";
+import { type StateBox } from "@/vendor/fsrsToPrisma/handler";
 
 export type changeResponse = {
   code: number;
@@ -28,10 +29,10 @@ type CardContextProps = {
   setCurrentType: React.Dispatch<React.SetStateAction<StateBox>>;
   schedule: RecordLog | undefined;
   setSchedule: React.Dispatch<React.SetStateAction<RecordLog | undefined>>;
-  noteBox: { [key in StateBox]: Array<Note & { card: Card }> };
+  noteBox: { [key in StateBox]: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card'] > };
   setNoteBox: {
     [key in StateBox]: React.Dispatch<
-      React.SetStateAction<Array<Note & { card: Card }>>
+      React.SetStateAction<Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card'] >>
     >;
   };
   handleSchdule: (grade: Grade) => Promise<boolean>;
@@ -56,7 +57,7 @@ export function CardProvider({
   noteBox0,
 }: {
   children: ReactNode;
-  noteBox0: Array<Array<Note & { card: Card }>>;
+  noteBox0: Array<Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card'] >>;
 }) {
   const [open, setOpen] = useState(false);
   const cardHooks = useCardBoxes(noteBox0);

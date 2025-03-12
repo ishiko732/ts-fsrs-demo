@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useCallback, useEffect, useRef } from 'react'
-import { Grade, Grades, Rating, show_diff_message } from 'ts-fsrs'
+import React, { useCallback, useEffect } from 'react'
+import { type Grade, Grades, Rating, show_diff_message } from 'ts-fsrs'
 
 import { useCardContext } from '@/context/CardContext'
 import { cn } from '@/lib/utils'
