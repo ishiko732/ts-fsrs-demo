@@ -81,6 +81,8 @@ class CardService {
       .selectFrom('cards')
       .innerJoin('notes', 'notes.id', 'cards.nid')
       .selectAll()
+      .select('cards.id as cid')
+      .select('notes.id as nid')
       .where('cards.uid', '=', uid)
       .where('cards.nid', '=', nid)
       .$if(!!cid, (q) => q.where('cards.id', '=', cid!))

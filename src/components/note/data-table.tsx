@@ -165,7 +165,11 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
               <DropdownMenuItem>
                 <Link
                   legacyBehavior
-                  href={noteSimpleInfo.deleted ? `/note/${noteSimpleInfo.nid}?deleted=1` : `/note/${noteSimpleInfo.nid}`}
+                  href={
+                    noteSimpleInfo.deleted
+                      ? `/note/${noteSimpleInfo.nid}?deleted=1&cid=${noteSimpleInfo.cid}`
+                      : `/note/${noteSimpleInfo.nid}?cid=${noteSimpleInfo.cid}`
+                  }
                   key={noteSimpleInfo.nid}
                 >
                   View Detail
