@@ -13,6 +13,7 @@ interface ISearchNoteProps {
 interface INoteSortingProps {
   question: ISortOrderBy
   cid: ISortOrderBy
+  nid: ISortOrderBy
   answer: ISortOrderBy
   source: ISortOrderBy
   due: ISortOrderBy
@@ -23,7 +24,7 @@ interface INoteSortingProps {
   retrievability: ISortOrderBy
 }
 
-interface INoteListData {
+interface ICardListData {
   question: string
   answer: string
   source: string
@@ -39,4 +40,15 @@ interface INoteListData {
   cid: number
   nid: number
   retrievability: number
+}
+
+interface INoteListData {
+  nid: number
+  question: string
+  answer: string
+  source: string
+  sourceId: string | undefined
+  deleted: boolean
+  created: number
+  updated: number
 }

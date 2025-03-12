@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-export const columns: () => ColumnDef<INoteListData>[] = () => {
+export const columns: () => ColumnDef<ICardListData>[] = () => {
   return [
     {
       id: 'select',
@@ -194,7 +194,7 @@ export default function DataTable({
   keyword = null,
   sort = [],
 }: {
-  data: INoteListData[]
+  data: ICardListData[]
   page_info: IPagination
   keyword: string | null
   sort: SortingState
@@ -291,7 +291,7 @@ export default function DataTable({
   }, [keywords])
 
   // Ref: https://tanstack.com/table/latest/docs/api/features/pagination#lastpage
-  const table = useReactTable<INoteListData>({
+  const table = useReactTable<ICardListData>({
     data,
     columns: columns(),
     onSortingChange: setSorting,
