@@ -1,7 +1,6 @@
 import type { Database } from '@server/models'
 import noteModel from '@server/models/notes'
-import { type SelectQueryBuilder, sql } from 'kysely'
-import { DECAY, FACTOR } from 'ts-fsrs'
+import { type SelectQueryBuilder } from 'kysely'
 
 class NoteService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,10 +25,8 @@ class NoteService {
 
     const orderBy = request.order ?? {}
     const data_query = noteModel.db
-      .selectFrom('cards')
-      .innerJoin('notes', 'notes.id', 'cards.nid')
+      .selectFrom('notes')
       .select([
-        'cards.id as cid',
         'notes.id as nid',
         'notes.question',
         'notes.answer',
@@ -37,33 +34,14 @@ class NoteService {
         'notes.sourceId',
         'notes.created',
         'notes.updated',
-        'cards.stability',
-        'cards.difficulty',
-        'cards.reps',
-        'cards.last_review',
-        'cards.suspended',
-        sql<number>`ROUND(
-            POWER(
-              1 + ((((EXTRACT(EPOCH FROM NOW()) * 1000)::bigint - cards.last_review) / 86400000.0) * ${FACTOR})
-              / NULLIF(cards.stability, 0),
-              ${DECAY}
-            )::numeric,
-            8
-          )`.as('retrievability'),
-        'cards.deleted',
+        'notes.deleted',
       ])
       .offset(page.pageSize * (page.page - 1))
       .limit(page.pageSize)
       .$if(!!orderBy.question, (q) => q.orderBy('notes.question', request.order?.question))
       .$if(!!orderBy.answer, (q) => q.orderBy('notes.answer', request.order?.answer))
       .$if(!!orderBy.source, (q) => q.orderBy('notes.source', request.order?.source))
-      .$if(!!orderBy.due, (q) => q.orderBy('cards.due', request.order?.due))
-      .$if(!!orderBy.state, (q) => q.orderBy('cards.state', request.order?.state))
-      .$if(!!orderBy.reps, (q) => q.orderBy('cards.reps', request.order?.reps))
-      .$if(!!orderBy.stability, (q) => q.orderBy('cards.stability', request.order?.stability))
-      .$if(!!orderBy.difficulty, (q) => q.orderBy('cards.difficulty', request.order?.difficulty))
-      .$if(!!orderBy.retrievability, (q) => q.orderBy('retrievability', request.order?.retrievability))
-      .orderBy('cards.id', request.order?.cid ?? 'desc')
+      .orderBy('notes.id', request.order?.nid ?? 'desc')
 
     this.buildQuery(request, data_query)
     const data = await data_query.execute()

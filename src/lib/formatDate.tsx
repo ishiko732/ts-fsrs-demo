@@ -1,5 +1,5 @@
 import { headers } from 'next/headers'
-import { DateInput } from 'ts-fsrs'
+import type { DateInput } from 'ts-fsrs'
 
 import DateItem from '@/components/DateItem'
 

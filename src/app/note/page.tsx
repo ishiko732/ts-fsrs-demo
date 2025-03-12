@@ -1,5 +1,5 @@
 import { getSessionUserIdThrow } from '@server/services/auth/session'
-import noteService from '@server/services/decks/notes'
+import cardService from '@server/services/decks/cards'
 import type { ColumnSort, SortingState } from '@tanstack/react-table'
 import { redirect } from 'next/navigation'
 import React from 'react'
@@ -94,7 +94,7 @@ const buildQuery = async (searchParams: NotePageProps['searchParams']) => {
 
 export default async function Page({ searchParams }: NotePageProps) {
   const { request, keyword, sort } = await buildQuery(searchParams)
-  const { data, pagination } = await noteService.getList(request)
+  const { data, pagination } = await cardService.getList(request)
   return (
     <div className=" container">
       <Menu />
