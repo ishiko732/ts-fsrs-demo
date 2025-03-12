@@ -14,9 +14,8 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
-import { type CardInput, FSRS, fsrs, type FSRSParameters } from 'ts-fsrs'
 
-import { type NoteList, type NoteSimpleInfo, toggleHiddenNote } from '@/actions/userNoteService'
+import { toggleHiddenNote } from '@/actions/userNoteService'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {

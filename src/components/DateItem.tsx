@@ -15,7 +15,7 @@ function dateTimeFormat(lang: string, date: DateInput): string {
       dateStyle: 'medium',
       timeStyle: 'medium',
     }).format(new Date(date))
-  } catch (ex: unknown) {
+  } catch {
     return new Intl.DateTimeFormat('en-us', {
       dateStyle: 'medium',
       timeStyle: 'medium',

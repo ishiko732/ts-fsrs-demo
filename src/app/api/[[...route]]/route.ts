@@ -11,6 +11,7 @@ export const runtime = 'nodejs'
 
 const app = InitGlobalMiddlewares(new Hono<Env>().basePath('/api'))
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const routes = app
   .notFound(async (c) => {
     return c.json({ error: 'Not found' }, 404)
