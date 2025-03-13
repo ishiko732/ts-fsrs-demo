@@ -104,6 +104,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('review', 'bigint', (col) => col.notNull())
     .addColumn('duration', 'integer', (col) => col.notNull())
     .addColumn('deleted', 'boolean', (col) => col.defaultTo(false).notNull())
+    .addColumn('offset', 'integer', (col) => col.notNull().defaultTo(0))
     .execute()
 
   await db.schema.createIndex('revlog_uid_index').on('revlog').columns(['uid']).execute()
