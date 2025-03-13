@@ -20,7 +20,7 @@ export interface CardTable {
   suspended: ColumnType<never, never, boolean>
   deleted: ColumnType<boolean, never, boolean>
   created: ColumnType<number, never, never>
-  updated: ColumnType<number, never, never>
+  updated: ColumnType<number, never, number>
 }
 
 class CardModel extends BaseModel<'cards'> {
