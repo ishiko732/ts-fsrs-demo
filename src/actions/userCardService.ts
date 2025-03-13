@@ -1,31 +1,28 @@
-'use server';
+'use server'
 
-import { Prisma } from '@prisma/client';
-import { getSessionUserId } from '@services/auth/session';
-import { revalidatePath } from 'next/cache';
-import { notFound, redirect } from 'next/navigation';
-import { CardInput, fixState } from 'ts-fsrs';
+import { Prisma } from '@prisma/client'
+import { getSessionUserId } from '@services/auth/session'
+import { revalidatePath } from 'next/cache'
+import { notFound, redirect } from 'next/navigation'
+import { type CardInput, fixState } from 'ts-fsrs'
 
-import prisma from '@/lib/prisma';
-import { forgetAfterHandler } from '@/vendor/fsrsToPrisma/handler';
+import prisma from '@/lib/prisma'
+import { forgetAfterHandler } from '@/vendor/fsrsToPrisma/handler'
 
-import { getUserFSRS } from './userParamsService';
+import { getUserFSRS } from './userParamsService'
 
 type CardSimpleInfo = {
-  cid: number;
+  cid: number
   note: {
-    nid: number;
-    uid: number;
-  };
-};
+    nid: number
+    uid: number
+  }
+}
 
-async function findAuthUserCardSimpleInfo<T extends boolean>(
-  cid: number,
-  includeParams?: T
-) {
-  const uid = await getSessionUserId();
+async function findAuthUserCardSimpleInfo<T extends boolean>(cid: number, includeParams?: T) {
+  const uid = await getSessionUserId()
   if (!uid) {
-    throw new Error('user not found.');
+    throw new Error('user not found.')
   }
   const fsrsParamField: Prisma.CardSelect = includeParams
     ? {
@@ -54,70 +51,45 @@ async function findAuthUserCardSimpleInfo<T extends boolean>(
             uid: true,
           },
         },
-      };
+      }
 
   const cardSimpleInfo = await prisma.card.findUnique({
     where: {
       cid,
     },
     select: fsrsParamField,
-  });
+  })
 
   if (!cardSimpleInfo) {
-    throw new Error('card not found');
+    throw new Error('card not found')
   }
   if (!cardSimpleInfo) {
-    notFound();
+    notFound()
   }
   if (cardSimpleInfo.note?.uid !== uid) {
-    redirect('/denied');
+    redirect('/denied')
   }
-  return cardSimpleInfo as unknown as T extends true
-    ? Promise<CardInput & CardSimpleInfo>
-    : Promise<CardSimpleInfo>;
+  return cardSimpleInfo as unknown as T extends true ? Promise<CardInput & CardSimpleInfo> : Promise<CardSimpleInfo>
 }
 
-export async function forgetAction(
-  cid: number,
-  timestamp: number,
-  reset_count: boolean = false
-) {
-  const cardSimpleInfo = await findAuthUserCardSimpleInfo(cid, true);
-  const now = new Date(timestamp);
-  const f = await getUserFSRS();
-  const recordItem = f.forget(
-    cardSimpleInfo,
-    now,
-    reset_count,
-    forgetAfterHandler
-  );
+export async function forgetAction(cid: number, timestamp: number, reset_count: boolean = false) {
+  const cardSimpleInfo = await findAuthUserCardSimpleInfo(cid, true)
+  const now = new Date(timestamp)
+  const f = await getUserFSRS()
+  const recordItem = f.forget(cardSimpleInfo, now, reset_count, forgetAfterHandler)
   const data = await prisma.card.update({
     where: { cid },
     data: recordItem,
     include: {
       logs: true,
     },
-  });
+  })
   if (data) {
-    revalidatePath(`/note/${data.nid}`);
+    revalidatePath(`/note/${data.nid}`)
   }
   return {
     nextState: fixState(recordItem.state),
     nextDue: recordItem.due,
     nid: cardSimpleInfo.note.nid as number,
-  };
-}
-
-export async function suspendCard(cid: number, suspended: boolean) {
-  const cardSimpleInfo = await findAuthUserCardSimpleInfo(cid);
-  const data = await prisma.card.update({
-    where: { cid: cardSimpleInfo.cid },
-    data: {
-      suspended,
-    },
-  });
-  if (data) {
-    revalidatePath(`/note/${data.nid}`);
   }
-  return data;
 }

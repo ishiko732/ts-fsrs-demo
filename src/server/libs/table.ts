@@ -25,6 +25,10 @@ export class BaseModel<T extends keyof Database, P extends keyof Database[T] = '
     return db
   }
 
+  get table(): T {
+    return this.tableName
+  }
+
   // insertOne 方法接受与表结构匹配的数据
   async insertOne(data: OperationDataType<T, 'insert'>) {
     return db.insertInto(this.tableName).values(data).returningAll().executeTakeFirstOrThrow()
