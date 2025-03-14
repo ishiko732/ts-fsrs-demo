@@ -1,4 +1,4 @@
-import { Card,Note } from '@prisma/client';
+import type { CardServiceType } from '@server/services/decks/cards';
 import React from 'react';
 
 import { QACard } from '@/components/source';
@@ -13,7 +13,7 @@ import StatusBar from './StatusBar';
 export default function CardClient({
   noteBox,
 }: {
-  noteBox: Array<Array<Note & { card: Card }>>;
+  noteBox: Array<Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card'] >>;
 }) {
   return (
     <CardProvider noteBox0={noteBox}>

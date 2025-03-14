@@ -1,8 +1,8 @@
-import { Card, Note } from '@prisma/client'
-import { fixState, Grade } from 'ts-fsrs'
+import { type Card, type Note } from '@prisma/client'
+import { fixState, type Grade } from 'ts-fsrs'
 
-import { CardUpdatePayload } from '@/types'
-import { RecordLogPrisma, repeatAfterHandler, RepeatRecordLog, rollbackAfterHandler } from '@/vendor/fsrsToPrisma/handler'
+import { type CardUpdatePayload } from '@/types'
+import { type RecordLogPrisma, repeatAfterHandler, type RepeatRecordLog, rollbackAfterHandler } from '@/vendor/fsrsToPrisma/handler'
 
 import { getFSRSBySessionUser } from './fsrs'
 import { findLastLogByCid } from './log'

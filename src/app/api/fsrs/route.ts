@@ -1,7 +1,7 @@
 import { isAdminOrSelf } from '@services/auth/session'
 import { revalidatePath } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
-import { Grade, Rating } from 'ts-fsrs'
+import { type Grade, Rating } from 'ts-fsrs'
 
 import { forgetAction } from '@/actions/userCardService'
 import { rollbackCard, schedulerCard, updateCard } from '@/lib/card'

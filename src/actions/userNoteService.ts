@@ -1,6 +1,6 @@
 'use server'
 
-import { Card, Note, Prisma } from '@prisma/client'
+import { type Card, type Note, Prisma } from '@prisma/client'
 import { getSessionUserId } from '@services/auth/session'
 import { revalidatePath } from 'next/cache'
 import { notFound, redirect } from 'next/navigation'

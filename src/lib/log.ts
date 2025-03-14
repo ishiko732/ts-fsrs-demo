@@ -1,7 +1,7 @@
 import { State as PrismaState } from "@prisma/client";
 import { date_scheduler, fixRating, fixState,Rating, State } from "ts-fsrs";
 
-import { RevlogPrismaUnChecked } from "@/vendor/fsrsToPrisma/handler";
+import { type RevlogPrismaUnChecked } from "@/vendor/fsrsToPrisma/handler";
 
 import prisma from "./prisma";
 

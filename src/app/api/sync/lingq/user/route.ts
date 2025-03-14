@@ -1,7 +1,7 @@
 import { kv } from '@vercel/kv'
 import { type NextRequest, NextResponse } from 'next/server'
 
-import { getLingqLanguageCode, syncUser, SyncWaitUser } from '@/vendor/lingq/sync'
+import { getLingqLanguageCode, syncUser, type SyncWaitUser } from '@/vendor/lingq/sync'
 
 const globalForLingq = global as unknown as { syncUser?: SyncWaitUser[] }
 

@@ -4,7 +4,7 @@ import { ArrowRightFromLine as ExportIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { ExportRevLog } from '@/lib/log';
+import { type ExportRevLog } from '@/lib/log';
 
 import LoadingMenu from '../loading-menu';
 

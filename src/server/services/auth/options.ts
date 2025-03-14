@@ -115,8 +115,11 @@ export function getProviders(): Provider[] {
   return providers
 }
 
+export const BASE_PATH = '/api/auth'
+
 export const options: NextAuthConfig = {
   // debug: process.env.NODE_ENV !== "production",
+  trustHost: true,
   providers: getProviders(),
   callbacks: {
     // Ref: https://authjs.dev/guides/basics/role-based-access-control#persisting-the-role
@@ -139,4 +142,7 @@ export const options: NextAuthConfig = {
       return session
     },
   },
+
+  basePath: BASE_PATH,
+  secret: process.env.NEXTAUTH_SECRET,
 }

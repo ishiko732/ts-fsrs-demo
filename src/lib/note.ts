@@ -1,7 +1,7 @@
-import { Card, Note, Prisma, PrismaPromise } from "@prisma/client";
+import { type Card, type Note, Prisma, type PrismaPromise } from "@prisma/client";
 import { getSessionUserId } from '@server/services/auth/session'
 
-import { NodeData,ProgeigoNodeData } from "@/types";
+import { type NodeData,type ProgeigoNodeData } from "@/types";
 import { createEmptyCardByPrisma } from "@/vendor/fsrsToPrisma";
 
 import prisma from "./prisma";

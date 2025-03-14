@@ -4,17 +4,17 @@ import {
   State as PrismaState,
 } from "@prisma/client";
 import {
-  Card,
-  Grade,
+  type Card,
+  type Grade,
   Grades,
   Rating,
-  RecordLog,
-  RecordLogItem,
-  ReviewLog,
+  type RecordLog,
+  type RecordLogItem,
+  type ReviewLog,
   State,
 } from "ts-fsrs";
 
-import { CardUpdatePayload, CardUpdateRequired } from "@/types";
+import { type CardUpdatePayload } from "@/types";
 
 export interface CardPrismaUnChecked
   extends Omit<Card, "cid" | "nid" | "last_review" | "state"> {

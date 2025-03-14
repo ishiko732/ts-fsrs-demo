@@ -1,16 +1,16 @@
 "use client";
 
-import { Card, Note } from "@prisma/client";
+import type { CardServiceType } from "@server/services/decks/cards";
 import { startTransition, useEffect, useState } from "react";
-import { fixDate, fsrs,Grade, RecordLog, State } from "ts-fsrs";
+import { fixDate, fsrs,type Grade, type RecordLog, State } from "ts-fsrs";
 
 import callHandler from "@/components/source/call";
-import { changeResponse } from "@/context/CardContext";
+import { type changeResponse } from "@/context/CardContext";
 import debounce from "@/lib/debounce";
 
-import { CardBoxes } from "./useCardBoxes";
-import { ChangeState, useChangeState } from "./useChangeState";
-import { Rollback } from "./useRollback";
+import { type CardBoxes } from "./useCardBoxes";
+import {  useChangeState } from "./useChangeState";
+import { type Rollback } from "./useRollback";
 
 type SchduleProps = CardBoxes &
   Rollback & {
@@ -31,7 +31,7 @@ export type Schedule = {
   setDSR: React.Dispatch<React.SetStateAction<DSR | undefined>>;
   schedule: RecordLog | undefined;
   setSchedule: React.Dispatch<React.SetStateAction<RecordLog | undefined>>;
-  handleChange: (res: changeResponse, note: Note & { card: Card }) => boolean;
+  handleChange: (res: changeResponse, note: Awaited<ReturnType<CardServiceType['getDetail']>>['card']) => boolean;
   handleSchdule: (grade: Grade) => Promise<boolean>;
 };
 
@@ -52,20 +52,20 @@ export function useSchedule({
 
   const handleChange = function (
     res: changeResponse,
-    note: Note & { card: Card }
+    note: Awaited<ReturnType<CardServiceType['getDetail']>>['card']
   ) {
     const { nextState, nextDue, suspended } = res;
     if (nextDue) {
-      note.card.due = nextDue;
+      note.due = +nextDue;
     }
     const change = updateStateBox(noteBox, currentType, nextDue);
     // update state and data
-    let updatedNoteBox: Array<Note & { card: Card }> = [
+    let updatedNoteBox: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']> = [
       ...noteBox[currentType],
     ];
     updatedNoteBox = updatedNoteBox.slice(1);
     updatedNoteBox = updatedNoteBox.toSorted(
-      (a, b) => fixDate(a.card.due).getTime() - fixDate(b.card.due).getTime()
+      (a, b) => fixDate(a.due).getTime() - fixDate(b.due).getTime()
     );
     startTransition(() => {
       // state update is marked as a transition, a slow re-render did not freeze the user interface.
@@ -84,7 +84,7 @@ export function useSchedule({
         setNoteBox[currentType](updatedNoteBox);
       }
       rollBackRef.current.push({
-        cid: note.card.cid,
+        cid: note.cid,
         nextStateBox:
           nextState === State.Relearning ? State.Learning : nextState,
       });
@@ -106,14 +106,14 @@ export function useSchedule({
     const duration = now.getTime() - showTime;
     const res = await fetch(
       `/api/fsrs?cid=${
-        note.card.cid
+        note.cid
       }&now=${now.getTime()}&offset=${now.getTimezoneOffset()}&grade=${grade}&duration=${duration}`,
       {
         method: "put",
       }
     ).then((res) => res.json());
     if (res.code === 0) {
-      console.log(`[cid:${note.card.cid}]duration:${duration}ms`);
+      console.log(`[cid:${note.cid}]duration:${duration}ms`);
       handleChange(res, note);
       setOpen(false);
     }
@@ -126,7 +126,7 @@ export function useSchedule({
     if (note) {
       fetch(
         `/api/fsrs?cid=${
-          note.card.cid
+          note.cid
         }&now=${now.getTime()}&offset=${now.getTimezoneOffset()}`,
         { method: "post" }
       )
@@ -135,16 +135,16 @@ export function useSchedule({
           setSchedule(res);
           setShowTime(new Date().getTime());
         });
-      if (note.card && note.card.state === "Review") {
+      if (note.state === State.Review) {
         const r = fsrs().get_retrievability(
-          note.card,
+          note,
           fixDate(new Date().toLocaleString("UTC", { timeZone: "UTC" })),
           true
         );
         if (r) {
           setDSR({
-            D: note.card.difficulty,
-            S: Math.round(note.card.stability),
+            D: note.difficulty,
+            S: Math.round(note.stability),
             R: r,
           });
         } else {

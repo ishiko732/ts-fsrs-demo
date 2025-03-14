@@ -1,6 +1,6 @@
-import { Card, Revlog, State } from '@prisma/client'
+import { type Card, type Revlog, State } from '@prisma/client'
 import { getSessionUserId } from '@services/auth/session'
-import { Card as FSRSCard, fsrs, FSRSHistory, FSRSParameters, TypeConvert } from 'ts-fsrs'
+import { type Card as FSRSCard, fsrs, type FSRSHistory, type FSRSParameters, TypeConvert } from 'ts-fsrs'
 
 import prisma from './prisma'
 

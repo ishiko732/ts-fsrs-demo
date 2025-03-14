@@ -1,11 +1,11 @@
-import { Card, Note } from "@prisma/client";
+import type { CardServiceType } from "@server/services/decks/cards";
 import { fixDate,State } from "ts-fsrs";
 
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
+import { type StateBox } from "@/vendor/fsrsToPrisma/handler";
 
 export type ChangeState = {
   updateStateBox: (
-    noteBox: { [key in StateBox]: Array<Note & { card: Card }> },
+    noteBox: { [key in StateBox]: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']> },
     currentType: StateBox,
     nextDue?: Date
   ) => StateBox;
@@ -13,7 +13,7 @@ export type ChangeState = {
 
 export function useChangeState() {
   function updateStateBox(
-    noteBox: { [key in StateBox]: Array<Note & { card: Card }> },
+    noteBox: { [key in StateBox]: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']> },
     currentType: StateBox,
     nextDue?: Date
   ) {
@@ -48,7 +48,7 @@ export function useChangeState() {
     change =
       change === State.Learning &&
       noteBox[State.Learning].length > 0 &&
-      fixDate(noteBox[State.Learning][0].card.due).getTime() -
+      fixDate(noteBox[State.Learning][0].due).getTime() -
         new Date().getTime() >
         0
         ? randomNewOrReviewState(noteBox)
@@ -57,7 +57,7 @@ export function useChangeState() {
   }
 
   function randomNewOrReviewState(noteBox: {
-    [key in StateBox]: Array<Note & { card: Card }>;
+    [key in StateBox]: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>;
   }) {
     if (noteBox[State.New].length === 0) {
       return State.Review;

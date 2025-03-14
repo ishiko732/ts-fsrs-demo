@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { ParametersType } from '@/lib/fsrs';
+import { type ParametersType } from '@/lib/fsrs';
 
 import LoadingSpinner from '../loadingSpinner';
 import { Badge } from '../ui/badge';

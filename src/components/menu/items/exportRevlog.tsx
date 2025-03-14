@@ -2,7 +2,7 @@ import { getAuthSession } from '@server/services/auth/session'
 
 import { exportLogsByUid } from '@/lib/log'
 
-import ExportSubmitButton, { ExportType } from '../submit/ExportSubmit'
+import ExportSubmitButton, { type ExportType } from '../submit/ExportSubmit'
 import MenuItem from '.'
 
 async function exportRevlogAction() {

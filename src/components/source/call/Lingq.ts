@@ -1,72 +1,68 @@
-import { date_diff, fixDate,State } from "ts-fsrs";
+import type { CardServiceType } from '@server/services/decks/cards'
+import { date_diff, fixDate, State } from 'ts-fsrs'
 
-import type { changeResponse } from "@/context/CardContext";
+import type { changeResponse } from '@/context/CardContext'
 
-import { SourceNote } from "..";
-
-export default async function LingqCallHandler(
-  note: SourceNote,
-  res: changeResponse
-) {
-  const sourceId = Number(note.sourceId);
-  const language = JSON.parse(note.extend as string)["lang"];
+export default async function LingqCallHandler(note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'], res: changeResponse) {
+  const sourceId = Number(note.sourceId)
+  const language = (note.extend as Record<string, string>)['lang']
 
   if (!sourceId || !language || !window) {
-    return;
+    return
   }
 
-  const { nextState, nextDue } = res;
-  let status = 0;
-  let extended_status = 0;
+  const { nextState, nextDue } = res
+  let status = 0
+  let extended_status = 0
   if (nextState != State.Review) {
-    status = 0; // LingqStatus.New;
-    extended_status = 0; //LingqExtendedStatus.Learning;
+    status = 0 // LingqStatus.New;
+    extended_status = 0 //LingqExtendedStatus.Learning;
   } else if (nextDue) {
-    const now = new Date();
-    const diff = date_diff(fixDate(nextDue), now, "days");
+    const now = new Date()
+    const diff = date_diff(fixDate(nextDue), now, 'days')
     //Ref https://github.com/thags/lingqAnkiSync/issues/34
     if (diff > 15) {
-      status = 3; // LingqStatus.Learned;
-      extended_status = 3; // LingqExtendedStatus.Known;
+      status = 3 // LingqStatus.Learned;
+      extended_status = 3 // LingqExtendedStatus.Known;
     } else if (diff > 7 && diff <= 15) {
-      status = 3; // LingqStatus.Learned;
-      extended_status = 0; //LingqExtendedStatus.Learning;
+      status = 3 // LingqStatus.Learned;
+      extended_status = 0 //LingqExtendedStatus.Learning;
     } else if (diff > 3 && diff <= 7) {
-      status = 2; // LingqStatus.Familiar;
-      extended_status = 0; // LingqExtendedStatus.Learning;
+      status = 2 // LingqStatus.Familiar;
+      extended_status = 0 // LingqExtendedStatus.Learning;
     } else {
-      status = 1; // LingqStatus.Recognized;
-      extended_status = 0; // LingqExtendedStatus.Learning;
+      status = 1 // LingqStatus.Recognized;
+      extended_status = 0 // LingqExtendedStatus.Learning;
     }
   }
 
-  const token = await getLingqToken();
+  const token = await getLingqToken()
   if (token) {
-    const formData = new FormData();
-    formData.append("status", status.toString());
-    formData.append("extended_status", extended_status.toString());
+    const formData = new FormData()
+    formData.append('status', status.toString())
+    formData.append('extended_status', extended_status.toString())
     await fetch(`/api/lingq/v3/${language}/cards/${sourceId}`, {
-      method: "PATCH",
+      method: 'PATCH',
       headers: {
         Authorization: token,
         noteId: note.nid.toString(),
       },
       body: formData,
-    });
+    })
   }
 }
 
 export async function getLingqToken() {
-  const globalForLingqToken = window as unknown as { lingqToken?: string };
-  const token = globalForLingqToken.lingqToken;
+  const globalForLingqToken = window as unknown as { lingqToken?: string }
+  const token = globalForLingqToken.lingqToken
   if (!token) {
-    const key = await fetch("/api/lingq/key", {
-      method: "POST",
-    }).then((res) => res.json());
+    const key = await fetch('/api/lingq/key', {
+      method: 'POST',
+    }).then((res) => res.json())
     if (key.lingqKey) {
-      globalForLingqToken.lingqToken = key.lingqKey;
+      globalForLingqToken.lingqToken = key.lingqKey
     }
-    return globalForLingqToken.lingqToken;
+    return globalForLingqToken.lingqToken
   }
-  return token;
+  return token
 }

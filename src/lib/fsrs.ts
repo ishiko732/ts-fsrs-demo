@@ -1,14 +1,14 @@
-import { Parameters } from '@prisma/client';
+import { type Parameters } from '@prisma/client';
 import { getSessionUserId } from '@server/services/auth/session'
 import {
   default_w,
   FSRS,
   fsrs,
-  FSRSParameters,
+  type FSRSParameters,
   generatorParameters,
 } from 'ts-fsrs';
 
-import { FSRSPutParams } from '@/types';
+import { type FSRSPutParams } from '@/types';
 import { decryptLingqKey, encryptLingqKey } from '@/vendor/lingq/crypt';
 
 import prisma from './prisma';
