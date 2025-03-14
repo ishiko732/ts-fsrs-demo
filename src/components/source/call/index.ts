@@ -1,19 +1,17 @@
-import type { changeResponse } from "@/context/CardContext";
+import type { CardServiceType } from '@server/services/decks/cards'
 
-import { SourceNote } from "..";
-import LingqCallHandler from "./Lingq";
+import type { changeResponse } from '@/context/CardContext'
 
-export default async function handler(
-  note: SourceNote,
-  res: changeResponse
-): Promise<void> {
-  const source = note?.source;
+import LingqCallHandler from './Lingq'
+
+export default async function handler(note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'], res: changeResponse): Promise<void> {
+  const source = note?.source
   if (!source) {
-    return;
+    return
   }
   switch (source) {
-    case "lingq":
-        return LingqCallHandler(note, res);
+    case 'lingq':
+      return LingqCallHandler(note, res)
     default:
   }
 }

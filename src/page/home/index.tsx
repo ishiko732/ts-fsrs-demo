@@ -43,7 +43,7 @@ async function HomePage() {
               Go to Notes
             </Button>
           </Link>
-          <Link href={'/card'} legacyBehavior>
+          <Link href={'/review'} legacyBehavior>
             <Button className='m-2 w-full sm:w-auto min-w-6'>
               Go to Review
             </Button>

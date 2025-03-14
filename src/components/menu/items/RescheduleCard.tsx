@@ -1,5 +1,5 @@
 import { getSessionUserId } from '@services/auth/session'
-import { FSRSParameters } from 'ts-fsrs'
+import { type FSRSParameters } from 'ts-fsrs'
 
 import { getFSRSParamsByUid } from '@/lib/fsrs'
 import { _findCardsByUid, _reschedule } from '@/lib/reschedule'

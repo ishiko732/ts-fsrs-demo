@@ -1,4 +1,4 @@
-import { Card, Note, State } from '@prisma/client'
+import { type Card, type Note, State } from '@prisma/client'
 import { getAuthSession } from '@services/auth/session'
 import { redirect } from 'next/navigation'
 import { cache } from 'react'
@@ -58,8 +58,10 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
 
 export default async function Page({ searchParams }: { searchParams: { source?: string } }) {
   const { noteBox0 } = await getData(searchParams.source)
-  const noteBox = noteBox0.map((noteBox) => noteBox.sort(() => Math.random() - Math.random()))
-  const isFinish = noteBox.every((notes) => notes.length === 0)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const noteBox = noteBox0.map((noteBox) => noteBox.sort(() => Math.random() - Math.random())) as any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const isFinish = noteBox.every((notes: string | any[]) => notes.length === 0)
   return isFinish ? (
     <Finish />
   ) : (

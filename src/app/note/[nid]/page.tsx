@@ -34,8 +34,6 @@ const buildQuery = async ({ params, searchParams }: Props) => {
   }
 }
 
-export const cache = 'no-cache'
-
 export default async function Page({ params, searchParams }: Props) {
   const { deleted, uid, cid, nid } = await buildQuery({ params, searchParams })
   const { card, logs } = await cardService.getDetail(uid, nid, cid, deleted).catch(() => {

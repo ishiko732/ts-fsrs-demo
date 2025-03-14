@@ -8,7 +8,7 @@ import {
 import { useMediaQuery } from '@react-hookz/web';
 import { Settings2Icon } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { ReactNode, Suspense,useEffect, useRef, useState } from 'react';
+import { type ReactNode, Suspense,useEffect, useRef, useState } from 'react';
 
 import {
   Drawer,

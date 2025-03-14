@@ -1,6 +1,6 @@
 import { getAuthSession } from '@server/services/auth/session'
 import Link from 'next/link'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import { ThemesModeToggle } from '../themes/toggle'
 import { Button } from '../ui/button'
@@ -12,6 +12,7 @@ import UserProfile from './user-profile'
 
 const NavBar = async ({ children }: { children?: ReactNode }) => {
   const session = await getAuthSession()
+  console.log(session)
   const user = session?.user
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV
   return (
