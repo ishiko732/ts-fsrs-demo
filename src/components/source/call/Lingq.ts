@@ -1,9 +1,8 @@
 import type { TCardDetail } from '@server/services/decks/cards'
+import type { ReviewServiceType } from '@server/services/scheduler/review'
 import { date_diff, fixDate, State } from 'ts-fsrs'
 
-import type { changeResponse } from '@/context/CardContext'
-
-export default async function LingqCallHandler(note: TCardDetail, res: changeResponse) {
+export default async function LingqCallHandler(note: TCardDetail, res: Awaited<ReturnType<ReviewServiceType['next']>>) {
   const sourceId = Number(note.sourceId)
   const language = (note.extend as Record<string, string>)['lang']
 
@@ -11,15 +10,15 @@ export default async function LingqCallHandler(note: TCardDetail, res: changeRes
     return
   }
 
-  const { nextState, nextDue } = res
+  const { next_state, next_due } = res
   let status = 0
   let extended_status = 0
-  if (nextState != State.Review) {
+  if (next_state != State.Review) {
     status = 0 // LingqStatus.New;
     extended_status = 0 //LingqExtendedStatus.Learning;
-  } else if (nextDue) {
+  } else if (next_due) {
     const now = new Date()
-    const diff = date_diff(fixDate(nextDue), now, 'days')
+    const diff = date_diff(fixDate(next_due), now, 'days')
     //Ref https://github.com/thags/lingqAnkiSync/issues/34
     if (diff > 15) {
       status = 3 // LingqStatus.Learned;

@@ -5,7 +5,6 @@ import type { Database } from '@server/models'
 import cardModel, { type CardTable } from '@server/models/cards'
 import deckModel from '@server/models/decks'
 import { revlogModel, type RevlogTable } from '@server/models/revlog'
-import type { TCardDetail } from '@server/services/decks/cards'
 import type { ExpressionBuilder, Insertable, Updateable } from 'kysely'
 import { sql } from 'kysely'
 import { type Card, fsrs, type Grade, Rating, type RecordLogItem, State } from 'ts-fsrs'
@@ -153,8 +152,8 @@ class ReviewService {
   /**
    * Distribute cardDetail based on state.
    */
-  distributeCardDetails(cardDetails: Array<TCardDetail>) {
-    const result = new Map<State, Array<TCardDetail>>([
+  distributeCardDetails(cardDetails: Array<TReviewCardDetail>) {
+    const result = new Map<State, Array<TReviewCardDetail>>([
       [State.New, []],
       [State.Learning, []],
       [State.Relearning, []],
