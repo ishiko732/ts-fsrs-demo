@@ -1,10 +1,10 @@
-import type { CardServiceType } from '@services/decks/cards'
+import type { TCardDetail } from '@services/decks/cards'
 
 import DefaultDisplayMsg from './default'
 import HitsuDisplay from './Hitus'
 import LingqDisplay from './Lingq'
 
-export default async function Display({ cardIncludeNote }: { cardIncludeNote: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+export default async function Display({ cardIncludeNote }: { cardIncludeNote: TCardDetail }) {
   const source = cardIncludeNote.source
   if (!source) {
     return <DefaultDisplayMsg note={cardIncludeNote} />

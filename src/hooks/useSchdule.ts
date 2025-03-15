@@ -1,6 +1,6 @@
 "use client";
 
-import type { CardServiceType } from "@server/services/decks/cards";
+import type { TCardDetail } from "@server/services/decks/cards";
 import { startTransition, useEffect, useState } from "react";
 import { fixDate, fsrs,type Grade, type RecordLog, State } from "ts-fsrs";
 
@@ -31,7 +31,7 @@ export type Schedule = {
   setDSR: React.Dispatch<React.SetStateAction<DSR | undefined>>;
   schedule: RecordLog | undefined;
   setSchedule: React.Dispatch<React.SetStateAction<RecordLog | undefined>>;
-  handleChange: (res: changeResponse, note: Awaited<ReturnType<CardServiceType['getDetail']>>['card']) => boolean;
+  handleChange: (res: changeResponse, note: TCardDetail) => boolean;
   handleSchdule: (grade: Grade) => Promise<boolean>;
 };
 
@@ -52,7 +52,7 @@ export function useSchedule({
 
   const handleChange = function (
     res: changeResponse,
-    note: Awaited<ReturnType<CardServiceType['getDetail']>>['card']
+    note: TCardDetail
   ) {
     const { nextState, nextDue, suspended } = res;
     if (nextDue) {
@@ -60,7 +60,7 @@ export function useSchedule({
     }
     const change = updateStateBox(noteBox, currentType, nextDue);
     // update state and data
-    let updatedNoteBox: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']> = [
+    let updatedNoteBox: Array<TCardDetail> = [
       ...noteBox[currentType],
     ];
     updatedNoteBox = updatedNoteBox.slice(1);

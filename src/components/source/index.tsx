@@ -1,6 +1,6 @@
 'use client'
 
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 
 import { useCardContext } from '@/context/CardContext'
 
@@ -8,7 +8,7 @@ import { Answer as DefaultAnswer, Question as DefaultQuestion } from './default'
 import { HitsuAnswer } from './Hitsu'
 import { Answer as LingqAnswer, Question as LingqQuestion } from './Lingq'
 
-export function Question({ open, note }: { open: boolean; note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
   switch (note.source) {
     case 'lingq':
       return <LingqQuestion open={open} note={note} />
@@ -17,7 +17,7 @@ export function Question({ open, note }: { open: boolean; note: Awaited<ReturnTy
   }
 }
 
-export function Answer({ open, note }: { open: boolean; note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+export function Answer({ open, note }: { open: boolean; note: TCardDetail }) {
   switch (note.source) {
     case 'プログラミング必須英単語600+':
       return <HitsuAnswer open={open} note={note} />

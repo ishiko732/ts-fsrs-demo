@@ -1,12 +1,12 @@
 'use client'
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 import { useEffect, useRef, useState } from 'react'
 
 import Audio from '@/components/card/Audio'
 
 import { getLingqToken } from './call/Lingq'
 import { HighlightedWord, MergeTransliteration } from './display/Lingq'
-export function Question({ open, note }: { open: boolean; note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
   const extend = note.extend as Partial<Lingq> & {
     lang: string
   }
@@ -88,7 +88,7 @@ export function Question({ open, note }: { open: boolean; note: Awaited<ReturnTy
   )
 }
 
-export function Answer({ open, note }: { open: boolean; note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+export function Answer({ open, note }: { open: boolean; note: TCardDetail }) {
   const extend = note.extend as Partial<Lingq>
   const hints = extend.hints
   return open ? (

@@ -1,9 +1,9 @@
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 import { date_diff, fixDate, State } from 'ts-fsrs'
 
 import type { changeResponse } from '@/context/CardContext'
 
-export default async function LingqCallHandler(note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'], res: changeResponse) {
+export default async function LingqCallHandler(note: TCardDetail, res: changeResponse) {
   const sourceId = Number(note.sourceId)
   const language = (note.extend as Record<string, string>)['lang']
 

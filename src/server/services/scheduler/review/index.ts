@@ -5,7 +5,7 @@ import type { Database } from '@server/models'
 import cardModel, { type CardTable } from '@server/models/cards'
 import deckModel from '@server/models/decks'
 import { revlogModel, type RevlogTable } from '@server/models/revlog'
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 import type { ExpressionBuilder, Insertable, Updateable } from 'kysely'
 import { sql } from 'kysely'
 import { fsrs, type RecordLogItem, State } from 'ts-fsrs'
@@ -42,6 +42,7 @@ class ReviewService {
 
           cid: cardInfo.id,
           did: cardInfo.did,
+          nid: cardInfo.nid,
           uid: cardInfo.uid,
           deleted: false,
           duration: 0,
@@ -96,7 +97,18 @@ class ReviewService {
       nid: cardInfo.nid,
     }
   }
-  async getReviewCardDetails(uid: number, end_timestamp: number, dids: number[] = []) {
+  async getReviewCardDetails(
+    uid: number,
+    end_timestamp: number,
+    options?: Partial<{
+      dids: number[]
+      source: string[]
+    }>,
+  ) {
+    // default options
+    const dids = options?.dids ?? []
+    const source = options?.source ?? []
+
     const sub_query = (eb: ExpressionBuilder<Database, never>) =>
       eb
         .selectFrom('cards as c')
@@ -131,14 +143,15 @@ class ReviewService {
       .selectAll()
       .select('sub.id as cid')
       .whereRef('sub.rn', '<=', 'sub.state_limit')
+      .$if(Array.isArray(source) && source.length > 0, (q) => q.where('n.source', 'in', source))
 
     return query.execute()
   }
   /**
    * Distribute cardDetail based on state.
    */
-  distributeCardDetails(cardDetails: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>) {
-    const result = new Map<State, Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>>([
+  distributeCardDetails(cardDetails: Array<TCardDetail>) {
+    const result = new Map<State, Array<TCardDetail>>([
       [State.New, []],
       [State.Learning, []],
       [State.Relearning, []],

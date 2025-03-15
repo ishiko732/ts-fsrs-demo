@@ -1,4 +1,4 @@
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 import React from 'react'
 import { fsrs, S_MIN } from 'ts-fsrs'
 
@@ -7,7 +7,7 @@ import DateItem from '@/lib/formatDate'
 import Forget from './Forget'
 import Suspended from './Suspended'
 type Props = {
-  card: Awaited<ReturnType<CardServiceType['getDetail']>>['card']
+  card: TCardDetail
 }
 
 export default async function FSRSMsg({ card }: Props) {
