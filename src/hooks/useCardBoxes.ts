@@ -17,8 +17,8 @@ export type CardBoxes = {
   };
 };
 
-export function useCardBoxes(noteBox0: Array<Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card'] >>) {
-  const [NewCard, LearningCard, RelearningCard, ReviewCard] = noteBox0;
+export function useCardBoxes(noteBox0: Map<State, Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>>) {
+  const [NewCard, LearningCard, RelearningCard, ReviewCard] = noteBox0.values();
   const [NewCardBox, setNewCardBox] = useState(NewCard);
   const [LearningCardBox, setLearningCardBox] = useState(() => {
     const l = [];

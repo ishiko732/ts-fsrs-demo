@@ -1,10 +1,14 @@
 import 'server-only'
 
+import { db } from '@server/libs/db'
+import type { Database } from '@server/models'
 import cardModel, { type CardTable } from '@server/models/cards'
 import deckModel from '@server/models/decks'
 import { revlogModel, type RevlogTable } from '@server/models/revlog'
-import type { Insertable, Updateable } from 'kysely'
-import { fsrs, type RecordLogItem } from 'ts-fsrs'
+import type { CardServiceType } from '@server/services/decks/cards'
+import type { ExpressionBuilder, Insertable, Updateable } from 'kysely'
+import { sql } from 'kysely'
+import { fsrs, type RecordLogItem, State } from 'ts-fsrs'
 
 class ReviewService {
   async forget(uid: number, cid: number, timestamp: number, offset: number, reset_count: boolean = false) {
@@ -91,6 +95,61 @@ class ReviewService {
       did: cardInfo.did,
       nid: cardInfo.nid,
     }
+  }
+  async getReviewCardDetails(uid: number, end_timestamp: number, dids: number[] = []) {
+    const sub_query = (eb: ExpressionBuilder<Database, never>) =>
+      eb
+        .selectFrom('cards as c')
+        .innerJoin('decks as d', 'd.id', 'c.did')
+        .selectAll('c')
+        .select([
+          sql<number>`ROW_NUMBER() OVER (
+            PARTITION BY c.did, c.state
+            ORDER BY c.id)`.as('rn'),
+          sql<number>`CASE c.state
+            WHEN ${State.New} THEN (d.card_limit->>'new')::INT
+            WHEN ${State.Review} THEN (d.card_limit->>'review')::INT
+            WHEN ${State.Learning} THEN (d.card_limit->>'learning')::INT
+            WHEN ${State.Relearning} THEN (d.card_limit->>'learning')::INT
+          END`.as('state_limit'),
+        ])
+        .where((eb) =>
+          eb.or([
+            eb.and([eb('c.state', 'in', [State.Review]), eb('c.due', '<', end_timestamp)]),
+            eb.and([eb('c.state', 'not in', [State.Review])]),
+          ]),
+        )
+        .where('c.uid', '=', uid)
+        .where('c.deleted', '=', false)
+        .where('c.suspended', '=', false)
+        .where('d.deleted', '=', false)
+        .$if(Array.isArray(dids) && dids.length > 0, (q) => q.where('c.did', 'in', dids))
+
+    const query = db
+      .selectFrom((eb) => sub_query(eb).as('sub'))
+      .innerJoin('notes as n', 'n.id', 'sub.nid')
+      .selectAll()
+      .select('sub.id as cid')
+      .whereRef('sub.rn', '<=', 'sub.state_limit')
+
+    return query.execute()
+  }
+  /**
+   * Distribute cardDetail based on state.
+   */
+  distributeCardDetails(cardDetails: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>) {
+    const result = new Map<State, Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>>([
+      [State.New, []],
+      [State.Learning, []],
+      [State.Relearning, []],
+      [State.Review, []],
+    ])
+
+    for (const card of cardDetails) {
+      result.get(card.state)?.push(card)
+    }
+
+    return result
   }
 }
 

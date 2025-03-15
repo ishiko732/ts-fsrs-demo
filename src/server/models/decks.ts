@@ -20,7 +20,7 @@ export interface DeckTable {
     learning: number
     suspended: number
   }>
-  deleted: ColumnType<never, never, boolean>
+  deleted: ColumnType<boolean, never, boolean>
   created: ColumnType<number, number | undefined, never>
   updated: ColumnType<number, number | undefined, number | undefined>
 }
