@@ -61,8 +61,8 @@ function initDeck(uid: number, now: Date): Insertable<DeckTable> {
     fsrs: JSON.stringify(generatorParameters()),
     card_limit: JSON.stringify({
       new: 50,
-      review: -1,
-      learning: -1,
+      review: Number.MAX_SAFE_INTEGER,
+      learning: Number.MAX_SAFE_INTEGER,
       suspended: 8,
     }),
     created: +now,

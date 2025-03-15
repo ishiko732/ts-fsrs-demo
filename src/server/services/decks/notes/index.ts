@@ -1,8 +1,8 @@
 import type { Database } from '@server/models'
-import cardModel, { type CardTable } from '@server/models/cards'
-import noteModel, { type NoteTable } from '@server/models/notes'
+import cardModel from '@server/models/cards'
+import noteModel from '@server/models/notes'
 import revlogModel from '@server/models/revlog'
-import { type Nullable, type SelectQueryBuilder } from 'kysely'
+import { type SelectQueryBuilder } from 'kysely'
 
 class NoteService {
   private buildQuery<S>(request: ISearchNoteProps, query: SelectQueryBuilder<Database, 'notes', S>) {

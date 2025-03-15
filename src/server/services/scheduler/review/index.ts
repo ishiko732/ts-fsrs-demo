@@ -8,7 +8,7 @@ import { revlogModel, type RevlogTable } from '@server/models/revlog'
 import type { TCardDetail } from '@server/services/decks/cards'
 import type { ExpressionBuilder, Insertable, Updateable } from 'kysely'
 import { sql } from 'kysely'
-import { fsrs, type RecordLogItem, State } from 'ts-fsrs'
+import { type Card, fsrs, type Grade, Rating, type RecordLogItem, State } from 'ts-fsrs'
 
 class ReviewService {
   async forget(uid: number, cid: number, timestamp: number, offset: number, reset_count: boolean = false) {
@@ -67,6 +67,7 @@ class ReviewService {
       uid: cardInfo.uid,
       did: cardInfo.did,
       nid: cardInfo.nid,
+      cid: cardInfo.id,
     }
   }
 
@@ -95,6 +96,7 @@ class ReviewService {
       uid: cardInfo.uid,
       did: cardInfo.did,
       nid: cardInfo.nid,
+      cid: cardInfo.id,
     }
   }
   async getReviewCardDetails(
@@ -124,6 +126,7 @@ class ReviewService {
             WHEN ${State.Learning} THEN (d.card_limit->>'learning')::INT
             WHEN ${State.Relearning} THEN (d.card_limit->>'learning')::INT
           END`.as('state_limit'),
+          'd.fsrs',
         ])
         .where((eb) =>
           eb.or([
@@ -164,7 +167,161 @@ class ReviewService {
 
     return result
   }
+
+  async getReviewCardDetail(uid: number, cid: number): Promise<TReviewCardDetail> {
+    return cardModel.db
+      .selectFrom('cards as c')
+      .innerJoin('decks as d', 'd.id', 'c.did')
+      .innerJoin('notes as n', 'n.id', 'c.nid')
+      .selectAll(['c', 'n'])
+      .select([
+        sql<number>`ROW_NUMBER() OVER (
+          PARTITION BY c.did, c.state
+          ORDER BY c.id)`.as('rn'),
+        sql<number>`CASE c.state
+          WHEN ${State.New} THEN (d.card_limit->>'new')::INT
+          WHEN ${State.Review} THEN (d.card_limit->>'review')::INT
+          WHEN ${State.Learning} THEN (d.card_limit->>'learning')::INT
+          WHEN ${State.Relearning} THEN (d.card_limit->>'learning')::INT
+        END`.as('state_limit'),
+        'd.fsrs',
+        'c.id as cid',
+      ])
+      .where('c.id', '=', cid)
+      .where('c.uid', '=', uid)
+      .where('c.deleted', '=', false)
+      .where('c.suspended', '=', false)
+      .where('d.deleted', '=', false)
+      .executeTakeFirstOrThrow()
+  }
+
+  async next(uid: number, cid: number, timestamp: number, grade: Grade, offset: number, duration: number = 0) {
+    const cardInfo = await cardModel.db
+      .selectFrom(cardModel.table)
+      .innerJoin('decks', 'decks.id', 'cards.did')
+      .selectAll('cards')
+      .select(['decks.fsrs', 'decks.card_limit'])
+      .where('cards.id', '=', cid)
+      .where('cards.uid', '=', uid)
+      .executeTakeFirstOrThrow()
+
+    const f = fsrs(cardInfo.fsrs)
+    const card_limit = cardInfo.card_limit ?? {}
+    const lapses = card_limit.suspended ?? 8
+
+    const { card, log } = f.next(cardInfo, timestamp, grade, (recordItem: RecordLogItem) => {
+      const suspended = grade === Rating.Again && recordItem.card.lapses > 0 && recordItem.card.lapses % lapses == 0
+      const data = {
+        card: {
+          due: +recordItem.card.due,
+          stability: recordItem.card.stability,
+          difficulty: recordItem.card.difficulty,
+          elapsed_days: recordItem.card.elapsed_days,
+          scheduled_days: recordItem.card.scheduled_days,
+          reps: recordItem.card.reps,
+          lapses: recordItem.card.lapses,
+          state: recordItem.card.state,
+          last_review: recordItem.card.last_review?.getTime() || undefined,
+          suspended: suspended,
+          updated: Date.now(),
+        } satisfies Updateable<CardTable>,
+        log: {
+          ...recordItem.log,
+          grade: recordItem.log.rating,
+          due: +recordItem.log.due,
+          review: +recordItem.log.review,
+
+          cid: cardInfo.id,
+          did: cardInfo.did,
+          nid: cardInfo.nid,
+          uid: cardInfo.uid,
+          duration: duration,
+          offset: offset,
+        } satisfies Insertable<RevlogTable>,
+      }
+      Reflect.deleteProperty(data.log, 'rating') // rating -> grade
+      return data
+    })
+
+    const log_id = await cardModel.db.transaction().execute(async (trx) => {
+      await trx.updateTable(cardModel.table).set(card).where('id', '=', cardInfo.id).execute()
+
+      const result = await trx.insertInto(revlogModel.table).values(log).returning('revlog.id').executeTakeFirstOrThrow()
+      return result.id
+    })
+
+    return {
+      next_state: card.state,
+      next_due: card.due,
+      suspended: card.suspended,
+
+      uid: cardInfo.uid,
+      did: cardInfo.did,
+      nid: cardInfo.nid,
+      cid: cardInfo.id,
+      lid: log_id,
+    }
+  }
+
+  async undo(uid: number, cid: number, lid: number) {
+    const cardInfo = await cardModel.db
+      .selectFrom(cardModel.table)
+      .innerJoin('decks', 'decks.id', 'cards.did')
+      .selectAll('cards')
+      .select(['decks.fsrs', 'decks.card_limit'])
+      .where('cards.id', '=', cid)
+      .where('cards.uid', '=', uid)
+      .executeTakeFirstOrThrow()
+
+    const logInfo = await revlogModel.db
+      .selectFrom(revlogModel.table)
+      .selectAll()
+      .where('revlog.cid', '=', cid)
+      .where('revlog.id', '=', lid)
+      .executeTakeFirstOrThrow()
+    // inject rating
+    const logInfoWithRating = { ...logInfo, rating: logInfo.grade }
+    const f = fsrs(cardInfo.fsrs)
+    const card_limit = cardInfo.card_limit ?? {}
+    const lapses = card_limit.suspended ?? 8
+
+    const now = Date.now()
+    const prev_card = f.rollback(cardInfo, logInfoWithRating, (card: Card) => {
+      const suspended = logInfo.grade === Rating.Again && card.lapses > 0 && card.lapses % lapses == 0
+      return {
+        due: +card.due,
+        stability: card.stability,
+        difficulty: card.difficulty,
+        elapsed_days: card.elapsed_days,
+        scheduled_days: card.scheduled_days,
+        reps: card.reps,
+        lapses: card.lapses,
+        state: card.state,
+        last_review: card.last_review?.getTime() || undefined,
+        suspended,
+        updated: now,
+      } satisfies Updateable<CardTable>
+    })
+
+    await cardModel.db.transaction().execute(async (trx) => {
+      const card_promise = trx.updateTable(cardModel.table).set(prev_card).where('id', '=', cid).where('uid', '=', uid).execute()
+      const log_promise = trx.updateTable(revlogModel.table).set({ deleted: true }).where('id', '=', lid).where('uid', '=', uid).execute()
+      await Promise.all([card_promise, log_promise])
+    })
+
+    return {
+      next_state: prev_card.state,
+      next_due: prev_card.due,
+
+      uid: cardInfo.uid,
+      did: cardInfo.did,
+      nid: cardInfo.nid,
+      cid: cardInfo.id,
+    }
+  }
 }
 
 export const reviewService = new ReviewService()
+export type ReviewServiceType = typeof reviewService
+export type TReviewCardDetail = Awaited<ReturnType<ReviewServiceType['getReviewCardDetails']>>[number]
 export default reviewService
