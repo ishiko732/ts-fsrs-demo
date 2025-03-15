@@ -50,7 +50,7 @@ export function CardProvider({
   noteBox0,
 }: {
   children: ReactNode
-  noteBox0: Array<Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>>
+  noteBox0: Map<State, Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>>
 }) {
   const [open, setOpen] = useState(false)
   const cardHooks = useCardBoxes(noteBox0)

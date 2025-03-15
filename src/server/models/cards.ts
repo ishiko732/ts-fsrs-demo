@@ -17,7 +17,7 @@ export interface CardTable {
   lapses: number
   state: State
   last_review: ColumnType<number | undefined, never, number>
-  suspended: ColumnType<never, never, boolean>
+  suspended: ColumnType<boolean, never, boolean>
   deleted: ColumnType<boolean, never, boolean>
   created: ColumnType<number, never, never>
   updated: ColumnType<number, never, number>
