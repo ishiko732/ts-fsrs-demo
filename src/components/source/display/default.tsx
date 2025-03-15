@@ -1,6 +1,6 @@
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 
-export default async function DisplayMsg({ note }: { note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+export default async function DisplayMsg({ note }: { note: TCardDetail }) {
   return (
     <div className="item-center sm:w-3/4">
       <div className="w-full">

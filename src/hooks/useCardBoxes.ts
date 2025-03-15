@@ -1,6 +1,6 @@
 "use client";
 
-import type { CardServiceType } from "@server/services/decks/cards";
+import type { TCardDetail } from "@server/services/decks/cards";
 import { useMemo, useState } from "react";
 import { State } from "ts-fsrs";
 
@@ -9,15 +9,15 @@ import { type StateBox } from "@/vendor/fsrsToPrisma/handler";
 export type CardBoxes = {
   currentType: StateBox;
   setCurrentType: React.Dispatch<React.SetStateAction<StateBox>>;
-  noteBox: { [key in StateBox]: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card'] > };
+  noteBox: { [key in StateBox]: Array<TCardDetail > };
   setNoteBox: {
     [key in StateBox]: React.Dispatch<
-      React.SetStateAction<Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card'] >>
+      React.SetStateAction<Array<TCardDetail >>
     >;
   };
 };
 
-export function useCardBoxes(noteBox0: Map<State, Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>>) {
+export function useCardBoxes(noteBox0: Map<State, Array<TCardDetail>>) {
   const [NewCard, LearningCard, RelearningCard, ReviewCard] = noteBox0.values();
   const [NewCardBox, setNewCardBox] = useState(NewCard);
   const [LearningCardBox, setLearningCardBox] = useState(() => {

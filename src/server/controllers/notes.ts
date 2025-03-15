@@ -29,12 +29,28 @@ const NoteListSchema = z.object({
     .optional(),
 })
 
-const NoteApp = new Hono<Env>().use(RequireAuth()).post('/', zValidator('json', NoteListSchema), async (c) => {
-  const userId = Number(c.get('authUserId'))
-  const query = c.req.valid('json')
-  const data = await noteService.getList({ uid: userId, ...query })
-  return c.json(data)
+const NoteSwitchDeleteSchema = z.object({
+  deleted: z
+    .string()
+    .or(z.array(z.string()))
+    .transform((v) => (Array.isArray(v) ? v[0] === '1' : v === '1')),
 })
+
+const NoteApp = new Hono<Env>()
+  .use(RequireAuth())
+  .post('/', zValidator('json', NoteListSchema), async (c) => {
+    const userId = Number(c.get('authUserId'))
+    const query = c.req.valid('json')
+    const data = await noteService.getList({ uid: userId, ...query })
+    return c.json(data)
+  })
+  .delete('/:nid', zValidator('query', NoteSwitchDeleteSchema), async (c) => {
+    const userId = Number(c.get('authUserId'))
+    const nid = Number(c.req.param('nid') ?? 0)
+    const { deleted } = c.req.valid('query')
+    await noteService.switch_delete(userId, [nid], deleted)
+    return c.json({ success: true })
+  })
 
 export default NoteApp
 export type NoteAppType = typeof NoteApp

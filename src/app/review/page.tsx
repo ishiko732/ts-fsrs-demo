@@ -1,4 +1,4 @@
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 import reviewService from '@server/services/scheduler/review'
 import statisticsService from '@server/services/scheduler/statistics'
 import { getSessionUserIdThrow } from '@services/auth/session'
@@ -16,7 +16,7 @@ type DataResponse = {
   now: Date
   range: readonly [number, number]
   todayCount: Map<State, number>
-  noteBox: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']>
+  noteBox: Array<TCardDetail>
 }
 
 const getData = cache(async (source?: string): Promise<DataResponse> => {
@@ -30,7 +30,7 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0)
   const range = [+startOfDay, +now] as const
   const todayCount_promise = statisticsService.getRangeRevlogCount(uid, [+startOfDay, +now], [State.New])
-  const cardDetails_promise = reviewService.getReviewCardDetails(uid, +now)
+  const cardDetails_promise = reviewService.getReviewCardDetails(uid, +now, { source: source ? [source] : [] })
   const [todayCount, cardDetails] = await Promise.all([todayCount_promise, cardDetails_promise])
   return {
     uid,

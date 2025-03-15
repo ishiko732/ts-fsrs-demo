@@ -1,5 +1,7 @@
 'use client'
 
+import refetchForServer from '@server/libs/revalidate'
+import client from '@server/libs/rpc'
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -15,7 +17,6 @@ import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
 
-import { toggleHiddenNote } from '@/actions/userNoteService'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -177,8 +178,17 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className=" bg-red-500"
-                onClick={() => {
-                  toggleHiddenNote(noteSimpleInfo.nid, true)
+                onClick={async () => {
+                  await client.notes[':nid']
+                    .$delete({
+                      param: { nid: String(noteSimpleInfo.nid) },
+                      query: { deleted: '1' },
+                    })
+                    .then(async (res) => {
+                      if (res.ok) {
+                        return refetchForServer(`/note/${noteSimpleInfo.nid}`)
+                      }
+                    })
                 }}
               >
                 Delete Note
@@ -214,7 +224,6 @@ export default function DataTable({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-
   // create query string
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null | string[] | number[] | undefined>) => {

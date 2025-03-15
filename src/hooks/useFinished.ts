@@ -1,4 +1,4 @@
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 import { useRouter } from 'next/navigation'
 import { startTransition, useEffect } from 'react'
 import { State, TypeConvert } from 'ts-fsrs'
@@ -8,7 +8,7 @@ import { type StateBox } from '@/vendor/fsrsToPrisma/handler'
 import { type CardBoxes } from './useCardBoxes'
 
 const checkFinished = (
-  noteBox: { [key in StateBox]: Array<Awaited<ReturnType<CardServiceType['getDetail']>>['card']> },
+  noteBox: { [key in StateBox]: Array<TCardDetail> },
   currentType: StateBox,
 ) => {
   let current: StateBox = currentType

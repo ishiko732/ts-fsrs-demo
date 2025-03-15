@@ -6,6 +6,7 @@ export interface RevlogTable {
   id: Generated<number>
   uid: ColumnType<number, number, never>
   did: ColumnType<number, number, never>
+  nid: ColumnType<number, number, never>
   cid: ColumnType<number, number, never>
 
   grade: ColumnType<Rating, Rating, never>
@@ -19,7 +20,7 @@ export interface RevlogTable {
   review: ColumnType<number, number, never>
   duration: ColumnType<number, number, never>
   offset: ColumnType<number, number, never>
-  deleted: ColumnType<boolean, boolean, never>
+  deleted: boolean
 }
 
 class RevlogModel extends BaseModel<'revlog', 'id'> {

@@ -1,11 +1,11 @@
 'use client'
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 import React from 'react'
 
 import Audio from '@/components/card/Audio'
 import Video from '@/components/card/Video'
 
-export function HitsuAnswer({ open, note }: { open: boolean; note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+export function HitsuAnswer({ open, note }: { open: boolean; note: TCardDetail }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const extend = note ? (note.extend as any) : {}
   const 分類 = extend.分類 as string | undefined

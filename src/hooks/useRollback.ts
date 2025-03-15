@@ -1,4 +1,4 @@
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 import { startTransition, useRef, useState } from 'react'
 import { fixState, State } from 'ts-fsrs'
 
@@ -16,7 +16,7 @@ export type Rollback = {
   rollBackRef: React.MutableRefObject<{ cid: number; nextStateBox: StateBox }[]>
   rollbackAble: boolean
   setRollbackAble: React.Dispatch<React.SetStateAction<boolean>>
-  handleRollBack: () => Promise<Awaited<ReturnType<CardServiceType['getDetail']>>['card'] | undefined>
+  handleRollBack: () => Promise<TCardDetail | undefined>
 }
 
 export function useRollback({ currentType, setCurrentType, noteBox, setNoteBox, open, setOpen }: RollBackProps) {
@@ -32,7 +32,7 @@ export function useRollback({ currentType, setCurrentType, noteBox, setNoteBox, 
       method: 'PUT',
     })
       .then((res) => res.json())
-      .then((res) => res.next)) as Awaited<ReturnType<CardServiceType['getDetail']>>['card']
+      .then((res) => res.next)) as TCardDetail
     startTransition(() => {
       let state = fixState(rollbackNote.state) // prisma State -> FSRS State
       if (state === State.Relearning) {

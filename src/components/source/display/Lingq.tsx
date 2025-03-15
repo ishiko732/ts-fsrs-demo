@@ -1,6 +1,6 @@
-import type { CardServiceType } from '@server/services/decks/cards'
+import type { TCardDetail } from '@server/services/decks/cards'
 
-export default async function DisplayMsg({ note }: { note: Awaited<ReturnType<CardServiceType['getDetail']>>['card'] }) {
+export default async function DisplayMsg({ note }: { note: TCardDetail }) {
   const extend = note.extend as Partial<Lingq>
   const fragment = extend.fragment!
   const tags = extend.tags

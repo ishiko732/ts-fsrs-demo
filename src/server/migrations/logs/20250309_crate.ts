@@ -92,6 +92,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('uid', 'integer', (col) => col.references('users.id').onDelete('cascade').notNull())
     .addColumn('did', 'integer', (col) => col.references('decks.id').onDelete('cascade').notNull())
+    .addColumn('nid', 'integer', (col) => col.references('notes.id').onDelete('cascade').notNull())
     .addColumn('cid', 'integer', (col) => col.references('cards.id').onDelete('cascade').notNull())
     .addColumn('grade', 'int2', (col) => col.notNull())
     .addColumn('state', 'int2', (col) => col.notNull())
