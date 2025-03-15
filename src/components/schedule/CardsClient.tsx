@@ -1,4 +1,4 @@
-import type { TCardDetail } from '@server/services/decks/cards'
+import type { TReviewCardDetail } from '@server/services/scheduler/review'
 import React from 'react'
 import type { State } from 'ts-fsrs'
 
@@ -11,7 +11,7 @@ import RollbackButton from './rollbackButton'
 import ShowAnswerButton from './ShowAnswerButton'
 import StatusBar from './StatusBar'
 
-export default function CardClient({ noteBox }: { noteBox: Map<State, Array<TCardDetail>> }) {
+export default function CardClient({ noteBox }: { noteBox: Map<State, Array<TReviewCardDetail>> }) {
   return (
     <CardProvider noteBox0={noteBox}>
       <QACard />

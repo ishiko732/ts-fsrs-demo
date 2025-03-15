@@ -1,10 +1,8 @@
-import type { TCardDetail } from '@server/services/decks/cards'
-
-import type { changeResponse } from '@/context/CardContext'
+import type { ReviewServiceType, TReviewCardDetail } from '@server/services/scheduler/review'
 
 import LingqCallHandler from './Lingq'
 
-export default async function handler(note: TCardDetail, res: changeResponse): Promise<void> {
+export default async function handler(note: TReviewCardDetail, res: Awaited<ReturnType<ReviewServiceType['next']>>): Promise<void> {
   const source = note?.source
   if (!source) {
     return

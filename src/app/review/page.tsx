@@ -1,5 +1,4 @@
-import type { TCardDetail } from '@server/services/decks/cards'
-import reviewService from '@server/services/scheduler/review'
+import reviewService, { type TReviewCardDetail } from '@server/services/scheduler/review'
 import statisticsService from '@server/services/scheduler/statistics'
 import { getSessionUserIdThrow } from '@services/auth/session'
 import { redirect } from 'next/navigation'
@@ -16,7 +15,7 @@ type DataResponse = {
   now: Date
   range: readonly [number, number]
   todayCount: Map<State, number>
-  noteBox: Array<TCardDetail>
+  noteBox: Array<TReviewCardDetail>
 }
 
 const getData = cache(async (source?: string): Promise<DataResponse> => {
