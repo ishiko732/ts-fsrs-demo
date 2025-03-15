@@ -20,7 +20,7 @@ export interface RevlogTable {
   review: ColumnType<number, number, never>
   duration: ColumnType<number, number, never>
   offset: ColumnType<number, number, never>
-  deleted: boolean
+  deleted: ColumnType<boolean, boolean | undefined, boolean>
 }
 
 class RevlogModel extends BaseModel<'revlog', 'id'> {

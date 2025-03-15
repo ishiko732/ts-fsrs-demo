@@ -1,6 +1,6 @@
 'use client'
-import { type Card, type Note } from '@prisma/client'
 import type { TCardDetail } from '@server/services/decks/cards'
+import type { TReviewCardDetail } from '@server/services/scheduler/review'
 import { createContext, type ReactNode, useContext, useState } from 'react'
 import { type Grade, type RecordLog, State } from 'ts-fsrs'
 
@@ -10,13 +10,6 @@ import { useRollback } from '@/hooks/useRollback'
 import { type DSR, useSchedule } from '@/hooks/useSchdule'
 import { type StateBox } from '@/vendor/fsrsToPrisma/handler'
 
-export type changeResponse = {
-  code: number
-  nextState: State
-  nextDue?: Date
-  suspended: boolean
-}
-
 type CardContextProps = {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -24,12 +17,12 @@ type CardContextProps = {
   setCurrentType: React.Dispatch<React.SetStateAction<StateBox>>
   schedule: RecordLog | undefined
   setSchedule: React.Dispatch<React.SetStateAction<RecordLog | undefined>>
-  noteBox: { [key in StateBox]: Array<TCardDetail> }
+  noteBox: { [key in StateBox]: Array<TReviewCardDetail> }
   setNoteBox: {
-    [key in StateBox]: React.Dispatch<React.SetStateAction<Array<TCardDetail>>>
+    [key in StateBox]: React.Dispatch<React.SetStateAction<Array<TReviewCardDetail>>>
   }
   handleSchdule: (grade: Grade) => Promise<boolean>
-  handleRollBack: () => Promise<TCardDetail | undefined>
+  handleRollBack: () => Promise<TReviewCardDetail | undefined>
   rollbackAble: boolean
   DSR: DSR | undefined
   setDSR: React.Dispatch<React.SetStateAction<DSR | undefined>>
@@ -45,13 +38,7 @@ export function useCardContext() {
   return context
 }
 
-export function CardProvider({
-  children,
-  noteBox0,
-}: {
-  children: ReactNode
-  noteBox0: Map<State, Array<TCardDetail>>
-}) {
+export function CardProvider({ children, noteBox0 }: { children: ReactNode; noteBox0: Map<State, Array<TReviewCardDetail>> }) {
   const [open, setOpen] = useState(false)
   const cardHooks = useCardBoxes(noteBox0)
   const rollbackHooks = useRollback({

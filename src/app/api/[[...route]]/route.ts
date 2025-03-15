@@ -1,5 +1,6 @@
 import type { Env } from '@server/bindings'
 import NoteApp from '@server/controllers/notes'
+import ReviewApp from '@server/controllers/reviews'
 import UserApp from '@server/controllers/users'
 import env from '@server/env'
 import { InitGlobalMiddlewares } from '@server/middlewares/global'
@@ -18,6 +19,7 @@ const routes = app
   })
   .route('/users', UserApp)
   .route('/notes', NoteApp)
+  .route('/scheduler', ReviewApp)
 
 const handler = handle(app)
 
