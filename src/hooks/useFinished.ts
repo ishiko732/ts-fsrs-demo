@@ -1,9 +1,8 @@
 import type { TCardDetail } from '@server/services/decks/cards'
+import type { StateBox } from '@server/services/scheduler/review/types'
 import { useRouter } from 'next/navigation'
 import { startTransition, useEffect } from 'react'
 import { State, TypeConvert } from 'ts-fsrs'
-
-import { type StateBox } from '@/vendor/fsrsToPrisma/handler'
 
 import { type CardBoxes } from './useCardBoxes'
 

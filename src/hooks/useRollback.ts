@@ -1,10 +1,10 @@
 import client from '@server/libs/rpc'
 import type { TReviewCardDetail } from '@server/services/scheduler/review'
+import type { StateBox } from '@server/services/scheduler/review/types'
 import { startTransition, useRef, useState } from 'react'
 import { State } from 'ts-fsrs'
 
 import debounce from '@/lib/debounce'
-import { type StateBox } from '@/vendor/fsrsToPrisma/handler'
 
 import { type CardBoxes } from './useCardBoxes'
 

@@ -1,10 +1,9 @@
 "use client";
 
 import type { TReviewCardDetail } from "@server/services/scheduler/review";
+import type { StateBox } from '@server/services/scheduler/review/types'
 import { useMemo, useState } from "react";
 import { State } from "ts-fsrs";
-
-import { type StateBox } from "@/vendor/fsrsToPrisma/handler";
 
 export type CardBoxes = {
   currentType: StateBox;

@@ -1,6 +1,6 @@
 'use client'
-import type { TCardDetail } from '@server/services/decks/cards'
 import type { TReviewCardDetail } from '@server/services/scheduler/review'
+import type { StateBox } from '@server/services/scheduler/review/types'
 import { createContext, type ReactNode, useContext, useState } from 'react'
 import { type Grade, type RecordLog, State } from 'ts-fsrs'
 
@@ -8,7 +8,6 @@ import { useCardBoxes } from '@/hooks/useCardBoxes'
 import { useFinished } from '@/hooks/useFinished'
 import { useRollback } from '@/hooks/useRollback'
 import { type DSR, useSchedule } from '@/hooks/useSchdule'
-import { type StateBox } from '@/vendor/fsrsToPrisma/handler'
 
 type CardContextProps = {
   open: boolean

@@ -1,7 +1,6 @@
 import type { TReviewCardDetail } from '@server/services/scheduler/review'
+import type { StateBox } from '@server/services/scheduler/review/types'
 import { fixDate, State } from 'ts-fsrs'
-
-import { type StateBox } from '@/vendor/fsrsToPrisma/handler'
 
 export type ChangeState = {
   updateStateBox: (noteBox: { [key in StateBox]: Array<TReviewCardDetail> }, currentType: StateBox, nextDue?: Date) => StateBox
