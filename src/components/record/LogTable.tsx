@@ -55,8 +55,8 @@ async function LogTable({ logs }: Props) {
 export default LogTable
 
 function durationFormat(duration: number) {
-  const division = [60, 60, 24]
-  const char = ['s', 'm', 'h', 'd']
+  const division = [1000, 60, 60, 24]
+  const char = ['ms', 's', 'm', 'h', 'd']
   if (duration <= 0) {
     return '/'
   }

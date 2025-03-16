@@ -69,14 +69,14 @@ class CardService {
             'cards.reps',
             'cards.last_review',
             'cards.suspended',
-            sql<number>`ROUND(
+            sql<number | string>`COALESCE(ROUND(
             POWER(
               1 + ((((EXTRACT(EPOCH FROM NOW()) * 1000)::bigint - cards.last_review) / 86400000.0) * ${FACTOR})
               / NULLIF(cards.stability, 0),
               ${DECAY}
             )::numeric,
             8
-          )`.as('retrievability'),
+          ),0)`.as('retrievability'),
             'cards.deleted',
           ])
           .offset(page.pageSize * (page.page - 1))
@@ -88,7 +88,10 @@ class CardService {
 
     return {
       pagination: { page: page.page, pageSize: page.pageSize, total: Number(count) },
-      data: data,
+      data: data.map((d) => {
+        d.retrievability = Number(d.retrievability)
+        return d as ICardListData
+      }),
     }
   }
 
