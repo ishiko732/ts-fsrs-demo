@@ -23,10 +23,10 @@ export const ModifyDeckSchema = z.object({
   fsrs: FSRSParameterSchema.optional(),
   card_limit: z
     .object({
-      new: z.number().min(0).optional(),
-      review: z.number().min(0).optional(),
-      learning: z.number().min(0).optional(),
-      suspended: z.number().min(1).optional(),
+      new: z.number().min(0),
+      review: z.number().min(0),
+      learning: z.number().min(0),
+      suspended: z.number().min(1),
     })
     .optional(),
 })
