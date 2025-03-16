@@ -5,8 +5,6 @@ import * as bcrypt from 'bcrypt'
 import type { NextAuthConfig } from 'next-auth'
 import type { Provider } from 'next-auth/providers'
 
-import type { UserCreatedRequired } from '@/types'
-
 import { initData } from '../scheduler/init'
 import userService from '../users'
 
@@ -15,7 +13,7 @@ export function getProviders(): Provider[] {
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV
   const github = GitHub({
     async profile(profile: GitHubProfile) {
-      const userCreatedRequired: UserCreatedRequired = {
+      const userCreatedRequired = {
         name: !profile.name ? profile.login : profile.name,
         email: profile.email ?? '',
         oauthId: profile.id.toString(),
@@ -84,7 +82,7 @@ export function getProviders(): Provider[] {
           // Docs: https://next-auth.js.org/configuration/providers/credentials
           const hashedPassword = await bcrypt.hash(password, 10)
 
-          const userCreatedRequired: UserCreatedRequired = {
+          const userCreatedRequired = {
             name: username,
             email: email,
             oauthId: '',

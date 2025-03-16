@@ -1,7 +1,7 @@
+import deckService from '@server/services/decks'
+import lingqService from '@server/services/extras/lingq'
 import { getAuthSession } from '@services/auth/session'
 import { NextResponse } from 'next/server'
-
-import { getFSRSParamsByUid } from '@/lib/fsrs'
 
 export async function GET() {
   function buf2hex(buffer: ArrayBuffer) {
@@ -27,7 +27,9 @@ export async function POST() {
   if (!session?.user) {
     return NextResponse.json({ error: 'permission denied' }, { status: 403 })
   }
-  const uid = session.user.id
-  const params = await getFSRSParamsByUid(Number(uid))
-  return NextResponse.json({ lingqKey: params.lingq_token })
+  const uid = Number(session.user.id)
+  const deckId = await deckService.getDefaultDeck(uid)
+  const params = await lingqService.getLingqInfoByDeckId(uid, deckId)
+
+  return NextResponse.json({ lingqKey: params?.token ?? '' })
 }

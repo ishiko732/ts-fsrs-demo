@@ -5,20 +5,20 @@ export interface ExtraTable {
   id: Generated<number>
   uid: number
   did: number
-  
+
   name: string
   description: string
-  extra: JSONColumnType<object>
+  extra: JSONColumnType<Record<string, unknown>>
   deleted: ColumnType<never, boolean, boolean>
   created: ColumnType<number, number | undefined, never>
   updated: ColumnType<number, number | undefined, number | undefined>
 }
 
-class ParametersModel extends BaseModel<'extras', 'id'> {
+class ExtraModel extends BaseModel<'extras', 'id'> {
   constructor() {
     super('extras', 'id')
   }
 }
 
-export const parametersModel = new ParametersModel()
-export default parametersModel
+export const extraModel = new ExtraModel()
+export default extraModel

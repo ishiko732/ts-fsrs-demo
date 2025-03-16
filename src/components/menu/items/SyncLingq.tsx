@@ -1,7 +1,6 @@
 import { getAuthSession } from '@server/services/auth/session'
-
-import { getFSRSParamsByUid } from '@/lib/fsrs'
-import { getLingqLanguageCode } from '@/vendor/lingq/sync'
+import deckService from '@server/services/decks'
+import lingqService from '@server/services/extras/lingq'
 
 import SyncSubmitButton from '../submit/SyncSubmit'
 import MenuItem from '.'
@@ -9,14 +8,10 @@ import MenuItem from '.'
 async function syncLingqAction() {
   'use server'
   const params = await getParamsRequireLingqToken()
-  if (params === null || params.lingq_token == null) {
+  if (!params?.token) {
     throw new Error('No lingq Token')
   }
-  const syncUser = {
-    token: params.lingq_token,
-    uid: params.uid,
-  }
-  const langs = await getLingqLanguageCode(syncUser)
+  const langs = await lingqService.getLingqLanguageCode(params.token)
   return langs
 }
 
@@ -37,9 +32,11 @@ async function getParamsRequireLingqToken() {
   if (!session?.user) {
     throw new Error('No user')
   }
-  const uid = session.user.id
-  const params = await getFSRSParamsByUid(Number(uid))
-  if (!params.lingq_token) {
+  const uid = Number(session.user.id)
+  const deckId = await deckService.getDefaultDeck(uid)
+
+  const params = await lingqService.getLingqInfoByDeckId(uid, deckId)
+  if (!params.token) {
     return null
   }
   return params

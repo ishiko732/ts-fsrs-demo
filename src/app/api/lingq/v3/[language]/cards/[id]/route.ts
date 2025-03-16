@@ -1,8 +1,7 @@
-import { getAuthSession } from '@services/auth/session'
+import noteService from '@server/services/decks/notes'
+import { changeLingqHints, changeLingqStatus, getLingq } from '@server/services/extras/lingq/request'
+import { getSessionUserIdThrow } from '@services/auth/session'
 import { NextRequest, NextResponse } from 'next/server'
-
-import { changeLingqHints, changeLingqStatus, getLingq } from '@/vendor/lingq/request'
-import { updateNoteByLingq } from '@/vendor/lingq/sync'
 
 export async function GET(request: NextRequest, { params }: { params: { language: string; id: string } }) {
   const token = request.headers.get('Authorization')
@@ -30,16 +29,16 @@ export async function PATCH(request: NextRequest, { params }: { params: { langua
     console.debug('not production env')
     return NextResponse.json({ error: 'must production env' }, { status: 400 })
   }
-  let data
+  let lingq
   if (hints) {
-    data = await changeLingqHints({
+    lingq = await changeLingqHints({
       language: params.language as languageCode,
       cardId: Number(params.id),
       token,
       hints: JSON.parse(hints as string),
     })
   } else {
-    data = await changeLingqStatus({
+    lingq = await changeLingqStatus({
       language: params.language as languageCode,
       id: Number(params.id),
       token,
@@ -48,16 +47,24 @@ export async function PATCH(request: NextRequest, { params }: { params: { langua
     })
     const nid = request.headers.get('noteId')
     if (nid && !isNaN(Number(nid))) {
-      await updateNote(Number(nid), data)
+      const userId = await getSessionUserIdThrow()
+      const question = lingq.term.replace(/\s+/g, '')
+      const answer = lingq.hints?.[0].text ?? undefined
+      await noteService.modifyNote(userId, Number(nid), {
+        answer: answer,
+        extend: JSON.stringify({
+          pk: lingq.pk,
+          term: question,
+          fragment: lingq.fragment,
+          notes: lingq.notes,
+          words: lingq.words,
+          hints: lingq.hints,
+          tags: lingq.tags,
+          transliteration: lingq.transliteration,
+          lang: params.language,
+        }),
+      })
     }
   }
-  return NextResponse.json(data)
-}
-
-async function updateNote(nid: number, data: Lingq) {
-  const session = await getAuthSession()
-  if (!session || !session.user) {
-    return
-  }
-  return updateNoteByLingq(Number(session.user.id), nid, data)
+  return NextResponse.json(lingq)
 }

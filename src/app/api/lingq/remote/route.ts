@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { request as LingqRequest } from '@/vendor/lingq/request'
+import { request as LingqRequest } from '@server/services/extras/lingq/request'
 
 export async function POST(request: NextRequest) {
   const url = new URL(request.url)
