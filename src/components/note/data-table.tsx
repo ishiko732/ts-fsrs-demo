@@ -124,7 +124,7 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
         )
       },
       cell: ({ row }) => {
-        return row.original.retrievability
+        return row.original.retrievability ? `${(+row.original.retrievability * 100).toFixed(2)}%` : '/'
       },
     },
     {
@@ -400,10 +400,20 @@ export default function DataTable({
           {`( total: ${page_info.total} page:${table.getState().pagination.pageIndex}/${table.getPageCount()} )`}
         </div>
         <div className="space-x-2">
-          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage() || table.getState().pagination.pageIndex === 1 || table.getPageCount() === 0}
+          >
             Previous
           </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage() || table.getPageCount() === 0}
+          >
             Next
           </Button>
         </div>
