@@ -47,15 +47,14 @@ export class BaseModel<T extends keyof Database, P extends keyof Database[T] = '
 
   // updateOne 方法接受与表结构匹配的数据
   async updateOne(id: keyof P, data: OperationDataType<T, 'update'>) {
-    const [{ numUpdatedRows, numChangedRows }] = await db
+    const { numUpdatedRows } = await db
       .updateTable(this.tableName)
       // @ts-expect-error 无法推断出类型
       .set(data)
       // @ts-expect-error 基类无法推断出返回值类型
       .where(this.primaryKey, '=', id)
-      .execute()
-    const updated = numUpdatedRows === BigInt(1) && numChangedRows === BigInt(1)
-    return updated
+      .executeTakeFirst()
+    return numUpdatedRows === BigInt(1)
   }
 
   // use static getter to get the table name
