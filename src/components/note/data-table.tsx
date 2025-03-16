@@ -110,7 +110,7 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
         )
       },
       cell: ({ row }) => {
-        return ~~Number(row.original.stability).toFixed(0)
+        return Number(row.original.stability).toFixed(2)
       },
     },
     {
@@ -218,7 +218,6 @@ export default function DataTable({
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const timer = React.useRef<NodeJS.Timeout | null>(null)
-  const now = new Date().getTime()
 
   // Ref:https://tocalai.medium.com/pagination-on-tanstack-table-under-next-js-787ed03198a3
   const router = useRouter()
