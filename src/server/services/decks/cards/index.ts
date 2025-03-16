@@ -132,6 +132,43 @@ class CardService {
       }
     }
   }
+
+  async getAllCardIds(
+    uid: number,
+    page: Omit<IPagination, 'total'>,
+    include?: Partial<{
+      deleted?: boolean
+      suspended?: boolean
+    }>,
+  ): Promise<PageList<number>> {
+    let count_promise = cardModel.db
+      .selectFrom('cards')
+      .select((b) => b.fn.count('cards.id').as('count'))
+      .where('uid', '=', uid)
+
+    let query_promise = cardModel.db
+      .selectFrom('cards')
+      .select('id')
+      .where('uid', '=', uid)
+      .offset(page.pageSize * (page.page - 1))
+      .limit(page.pageSize)
+      .orderBy('created', 'asc')
+
+    if (!include?.deleted) {
+      count_promise = count_promise.where('deleted', '=', false)
+      query_promise = query_promise.where('deleted', '=', false)
+    }
+    if (include?.suspended) {
+      count_promise = count_promise.where('suspended', '=', false)
+      query_promise = query_promise.where('suspended', '=', false)
+    }
+
+    const [count, data] = await Promise.all([count_promise.executeTakeFirstOrThrow(), query_promise.execute()])
+    return {
+      pagination: { page: page.page, pageSize: page.pageSize, total: Number(count.count) },
+      data: data.map((d) => d.id),
+    }
+  }
 }
 
 export const cardService = new CardService()
