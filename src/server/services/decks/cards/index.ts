@@ -12,8 +12,9 @@ class CardService {
       .$if(typeof request.deleted === 'boolean', (q) => {
         return q.where('notes.deleted', '=', request.deleted!)
       })
-      .$if(!!request.question, (q) => q.where('notes.question', 'ilike', `%${request.question}%`))
-      .$if(!!request.answer, (q) => q.where('notes.answer', 'ilike', `%${request.answer}%`))
+      .$if(!!request.keyword, (q) =>
+        q.where((eb) => eb('notes.question', 'ilike', `%${request.keyword}%`).or('notes.answer', 'ilike', `%${request.keyword}%`)),
+      )
   }
 
   private buildOrder<S>(request: ISearchNoteProps, query: SelectQueryBuilder<Database, 'notes' | 'cards', S>) {

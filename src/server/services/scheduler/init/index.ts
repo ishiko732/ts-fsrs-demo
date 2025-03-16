@@ -53,11 +53,16 @@ function initProgeigoNote(uid: number, did: number, data: ProgeigoNodeData, now:
   }
 }
 
-function initDeck(uid: number, now: Date): Insertable<DeckTable> {
+export function initDeck(
+  uid: number,
+  now: Date,
+  name: string = 'プログラミング必須英単語600+',
+  description: string = 'プログラミング必須英単語600+',
+): Insertable<DeckTable> {
   return {
     uid,
-    name: 'プログラミング必須英単語600+',
-    description: 'プログラミング必須英単語600+',
+    name,
+    description,
     fsrs: JSON.stringify(generatorParameters()),
     card_limit: JSON.stringify({
       new: 50,
@@ -70,13 +75,15 @@ function initDeck(uid: number, now: Date): Insertable<DeckTable> {
   }
 }
 
-function initCard(uid: number, did: number, nid: number, card: Card): Insertable<CardTable> {
+export function initCard(uid: number, did: number, nid: number, card: Card, now?: number): Insertable<CardTable> {
   return {
     uid,
     did,
     nid,
     ...card,
     due: +card.due,
+    created: now ? +new Date() : undefined,
+    updated: now ? +new Date() : undefined,
     // stability: card.stability,
     // difficulty: card.difficulty,
     // elapsed_days: card.elapsed_days,
