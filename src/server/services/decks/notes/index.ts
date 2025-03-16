@@ -1,16 +1,19 @@
 import type { Database } from '@server/models'
 import cardModel from '@server/models/cards'
-import noteModel from '@server/models/notes'
+import noteModel, { type NoteTable } from '@server/models/notes'
 import revlogModel from '@server/models/revlog'
-import { type SelectQueryBuilder } from 'kysely'
+import { initCard } from '@server/services/scheduler/init'
+import { type Insertable, type Selectable, type SelectQueryBuilder, type Updateable } from 'kysely'
+import { createEmptyCard } from 'ts-fsrs'
 
 class NoteService {
   private buildQuery<S>(request: ISearchNoteProps, query: SelectQueryBuilder<Database, 'notes', S>) {
     return query
       .where('uid', '=', request.uid)
       .$if(typeof request.deleted === 'boolean', (q) => q.where('notes.deleted', '=', request.deleted!))
-      .$if(!!request.question, (q) => q.where('notes.question', 'ilike', `%${request.question}%`))
-      .$if(!!request.answer, (q) => q.where('notes.answer', 'ilike', `%${request.answer}%`))
+      .$if(!!request.keyword, (q) =>
+        q.where((eb) => eb('notes.question', 'ilike', `%${request.keyword}%`).or('notes.answer', 'ilike', `%${request.keyword}%`)),
+      )
   }
   async getList(request: ISearchNoteProps): Promise<PageList<INoteListData>> {
     const count_query = this.buildQuery(
@@ -70,6 +73,58 @@ class NoteService {
       const exec_revlogs = trx.updateTable(revlogModel.table).set({ deleted }).where('nid', 'in', nids).execute()
       await Promise.all([exec_cards, exec_revlogs])
     })
+  }
+
+  async getNote(
+    uid: number,
+    options?: Partial<{
+      nid: number
+      did: number
+      question: string
+      answer: string
+      source: string
+      sourceId: string
+    }>,
+  ): Promise<Selectable<NoteTable> | undefined> {
+    return noteModel.db
+      .selectFrom('notes')
+      .selectAll()
+      .where('uid', '=', uid)
+      .$if(!!options?.nid, (q) => q.where('id', '=', options!.nid!))
+      .$if(!!options?.did, (q) => q.where('did', '=', options!.did!))
+      .$if(!!options?.question, (q) => q.where('question', '=', options!.question!))
+      .$if(!!options?.answer, (q) => q.where('answer', '=', options!.answer!))
+      .$if(!!options?.source, (q) => q.where('source', '=', options!.source!))
+      .$if(!!options?.sourceId, (q) => q.where('sourceId', '=', options!.sourceId))
+      .executeTakeFirst()
+  }
+
+  async addNote(uid: number, did: number, note: Omit<Insertable<NoteTable>, 'uid' | 'did' | 'id'>): Promise<number> {
+    const note_from_db = await this.getNote(uid, { did, question: note.question, answer: note.answer })
+    if (note_from_db) {
+      throw new Error('Note already exists')
+    }
+    const now = Date.now()
+    return noteModel.db.transaction().execute(async (trx) => {
+      const { id: nid } = await trx
+        .insertInto('notes')
+        .values({ ...note, uid, did, created: now, updated: now })
+        .returning('id')
+        .executeTakeFirstOrThrow()
+      const card_for_fsrs = createEmptyCard(now)
+      const card = initCard(uid, did, nid, card_for_fsrs, now)
+      await trx.insertInto(cardModel.table).values(card).execute()
+      return nid
+    })
+  }
+
+  async modifyNote(uid: number, nid: number, note: Partial<Updateable<NoteTable>>): Promise<boolean> {
+    const note_from_db = await this.getNote(uid, { nid, question: note.question, answer: note.answer, did: note.did })
+    if (!note_from_db) {
+      throw new Error('Note not found')
+    }
+    const now = Date.now()
+    return noteModel.updateOne(nid, { ...note, updated: now })
   }
 }
 

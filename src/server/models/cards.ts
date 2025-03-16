@@ -19,8 +19,8 @@ export interface CardTable {
   last_review: ColumnType<number | undefined, never, number>
   suspended: ColumnType<boolean, never, boolean>
   deleted: ColumnType<boolean, never, boolean>
-  created: ColumnType<number, never, never>
-  updated: ColumnType<number, never, number>
+  created: ColumnType<number, number | undefined, never>
+  updated: ColumnType<number, number | undefined, number>
 }
 
 class CardModel extends BaseModel<'cards'> {

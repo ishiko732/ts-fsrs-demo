@@ -3,8 +3,8 @@ interface ISearchNoteProps {
   // TODO
   did?: number
 
-  question?: string
-  answer?: string
+
+  keyword?: string
   deleted?: boolean
   page: Omit<IPagination, 'total'>
   order?: Partial<INoteSortingProps>

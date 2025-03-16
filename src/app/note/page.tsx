@@ -82,8 +82,7 @@ const buildQuery = async (searchParams: NotePageProps['searchParams']) => {
     request: {
       uid,
       page: { page: pageIndex, pageSize: take },
-      question: keyword,
-      answer: keyword,
+      keyword,
       deleted: deleted,
       order: computerOrder(sort ?? []),
     },
@@ -95,6 +94,7 @@ const buildQuery = async (searchParams: NotePageProps['searchParams']) => {
 export default async function Page({ searchParams }: NotePageProps) {
   const { request, keyword, sort } = await buildQuery(searchParams)
   const { data, pagination } = await cardService.getList(request)
+  console.log(data)
   return (
     <div className=" container">
       <Menu />

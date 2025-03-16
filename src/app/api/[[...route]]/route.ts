@@ -1,4 +1,5 @@
 import type { Env } from '@server/bindings'
+import DeckApp from '@server/controllers/decks'
 import NoteApp from '@server/controllers/notes'
 import ReviewApp from '@server/controllers/reviews'
 import UserApp from '@server/controllers/users'
@@ -18,6 +19,7 @@ const routes = app
     return c.json({ error: 'Not found' }, 404)
   })
   .route('/users', UserApp)
+  .route('/decks', DeckApp)
   .route('/notes', NoteApp)
   .route('/scheduler', ReviewApp)
 
