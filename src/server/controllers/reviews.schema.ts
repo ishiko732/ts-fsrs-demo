@@ -26,15 +26,25 @@ export const UndoReviewSchema = z.object({
   lid: z.number(),
 })
 
+export const FSRSParameterSchema = z.object({
+  request_retention: z
+    .number()
+    .min(0.7, { message: 'Value must be at least 0.7' })
+    .max(0.99, { message: 'Value must be no more than 0.99' })
+    .refine((val) => (val * 100) % 1 === 0, {
+      message: 'Value must be a multiple of 0.01',
+    })
+    .refine(Number.isFinite, { message: 'Value must be a finite number' }),
+  maximum_interval: z.number().min(7).max(36500),
+  w: z
+    .array(z.number())
+    .length(19)
+    .transform((v) => (typeof v === 'string' ? (v as string).replace(/[\[\]]/g, '').split(',').map(Number) : v)),
+  enable_fuzz: z.boolean(),
+  enable_short_term: z.boolean(),
+})
+
 export const RescheduleSchema = z.object({
   cids: z.array(z.number()),
-  parameters: z
-    .object({
-      request_retention: z.number(),
-      maximum_interval: z.number(),
-      w: z.array(z.number()).length(19),
-      enable_fuzz: z.boolean(),
-      enable_short_term: z.boolean(),
-    })
-    .optional(),
+  parameters: FSRSParameterSchema.optional(),
 })

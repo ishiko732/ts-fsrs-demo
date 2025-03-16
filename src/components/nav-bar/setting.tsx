@@ -42,7 +42,7 @@ export default function Setting() {
   }, []);
 
   const handleSubmit = () => {
-    document.getElementById('fsrsSetting')?.click();
+    window.document.getElementById('fsrsSetting')?.click();
   };
   if (!isDesktop) {
     DrawerToggle = (
