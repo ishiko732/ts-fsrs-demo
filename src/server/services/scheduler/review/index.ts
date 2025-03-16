@@ -5,9 +5,19 @@ import type { Database } from '@server/models'
 import cardModel, { type CardTable } from '@server/models/cards'
 import deckModel from '@server/models/decks'
 import { revlogModel, type RevlogTable } from '@server/models/revlog'
-import type { ExpressionBuilder, Insertable, Updateable } from 'kysely'
+import type { ExpressionBuilder, Insertable, Selectable, Updateable } from 'kysely'
 import { sql } from 'kysely'
-import { type Card, fsrs, type Grade, Rating, type RecordLogItem, State } from 'ts-fsrs'
+import {
+  type Card,
+  fsrs,
+  type FSRSHistory,
+  type FSRSParameters,
+  generatorParameters,
+  type Grade,
+  Rating,
+  type RecordLogItem,
+  State,
+} from 'ts-fsrs'
 
 class ReviewService {
   async forget(uid: number, cid: number, timestamp: number, offset: number, reset_count: boolean = false) {
@@ -317,6 +327,75 @@ class ReviewService {
       nid: cardInfo.nid,
       cid: cardInfo.id,
     }
+  }
+
+  async reschedule(uid: number, cids: number[], useParams?: FSRSParameters) {
+    const cards_promise = cardModel.db
+      .selectFrom(cardModel.table)
+      .selectAll()
+      .where('uid', '=', uid)
+      .where('deleted', '=', false)
+      .where('id', 'in', cids)
+      .execute()
+    const logs_promise = revlogModel.db
+      .selectFrom(revlogModel.table)
+      .selectAll()
+      .where('uid', '=', uid)
+      .where('deleted', '=', false)
+      .where('cid', 'in', cids)
+      .execute()
+    const [cards, logs] = await Promise.all([cards_promise, logs_promise])
+    const logsMap = new Map<number, FSRSHistory[]>()
+    for (const log of logs) {
+      if (!logsMap.has(log.cid)) {
+        logsMap.set(log.cid, [])
+      }
+      logsMap.get(log.cid)!.push({
+        rating: log.grade,
+        review: log.review,
+        due: new Date(log.due),
+        state: log.state,
+      })
+    }
+
+    const f = fsrs()
+    const deckIds = new Set<number>(cards.map((card) => card.did))
+    const deckMap = new Map<number, FSRSParameters>()
+    if (!useParams) {
+      const decks = await deckModel.db
+        .selectFrom(deckModel.table)
+        .select(['fsrs', 'id'])
+        .where('id', 'in', Array.from(deckIds))
+        .where('deleted', '=', false)
+        .execute()
+      for (const deck of decks) {
+        deckMap.set(deck.id, deck.fsrs)
+      }
+    } else {
+      for (const deckId of deckIds) {
+        deckMap.set(deckId, useParams)
+      }
+    }
+    const updatedCardIds: number[] = []
+    for (const card of cards) {
+      f.parameters = deckMap.get(card.did) ?? generatorParameters()
+      const logs = logsMap.get(card.id) ?? []
+      const record = f.reschedule(card, logs)
+      if (record.reschedule_item) {
+        updatedCardIds.push(card.id)
+        await cardModel.db
+          .updateTable(cardModel.table)
+          .set({
+            stability: record.reschedule_item.card.stability,
+            difficulty: record.reschedule_item.card.difficulty,
+            due: +record.reschedule_item.card.due,
+            updated: Date.now(),
+          })
+          .where('id', '=', card.id)
+          .execute()
+      }
+    }
+    return updatedCardIds
   }
 }
 

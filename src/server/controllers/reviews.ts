@@ -4,7 +4,7 @@ import { RequireAuth } from '@server/middlewares/auth'
 import reviewService from '@server/services/scheduler/review'
 import { Hono } from 'hono'
 
-import { ForgetSchema, NextReviewSchema, SuspendSchema, UndoReviewSchema } from './reviews.schema'
+import { ForgetSchema, NextReviewSchema, RescheduleSchema, SuspendSchema, UndoReviewSchema } from './reviews.schema'
 
 const ReviewApp = new Hono<Env>()
   .use(RequireAuth())
@@ -42,6 +42,14 @@ const ReviewApp = new Hono<Env>()
 
     const data = await reviewService.getReviewCardDetail(userId, cid)
     return c.json(data)
+  })
+  /** reschedule */
+  .put('/review', zValidator('json', RescheduleSchema), async (c) => {
+    const userId = Number(c.get('authUserId'))
+    const { cids, parameters } = c.req.valid('json')
+
+    const data = await reviewService.reschedule(userId, cids, parameters)
+    return c.json({ reschedule: data })
   })
 
 export default ReviewApp

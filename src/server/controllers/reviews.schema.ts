@@ -25,3 +25,16 @@ export const UndoReviewSchema = z.object({
   cid: z.number(),
   lid: z.number(),
 })
+
+export const RescheduleSchema = z.object({
+  cids: z.array(z.number()),
+  parameters: z
+    .object({
+      request_retention: z.number(),
+      maximum_interval: z.number(),
+      w: z.array(z.number()).length(19),
+      enable_fuzz: z.boolean(),
+      enable_short_term: z.boolean(),
+    })
+    .optional(),
+})

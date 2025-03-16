@@ -1,4 +1,5 @@
 import type { Env } from '@server/bindings'
+import CardApp from '@server/controllers/cards'
 import DeckApp from '@server/controllers/decks'
 import NoteApp from '@server/controllers/notes'
 import ReviewApp from '@server/controllers/reviews'
@@ -21,6 +22,7 @@ const routes = app
   .route('/users', UserApp)
   .route('/decks', DeckApp)
   .route('/notes', NoteApp)
+  .route('/cards', CardApp)
   .route('/scheduler', ReviewApp)
 
 const handler = handle(app)
