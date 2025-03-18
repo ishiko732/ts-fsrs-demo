@@ -5,6 +5,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "verbatimModuleSyntax": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -12,6 +13,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "downlevelIteration": true,
     "incremental": true,
     "plugins": [
       {
@@ -19,13 +21,16 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@/auth/*": ["./src/app/(auth)/*"],
-      "@public/*":["./public/*"],
-      "@node_modules/*":["./node_modules/*"],
+      "@server/*": ["./src/server/*"],
+      "@controllers/*": ["./src/server/controllers/*"],
+      "@services/*": ["./src/server/services/*"],
+      "@middlewares/*": ["./src/server/middlewares/*"],
+      "@models/*": ["./src/server/models/*"],
+      "@libs/*": ["./src/server/libs/*"],
+      "@/*": ["./src/*"]
     },
     "types": ["react-dom/experimental"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

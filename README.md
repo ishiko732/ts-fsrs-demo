@@ -8,17 +8,17 @@ Open Source Code: https://github.com/ishiko732/analyzer-and-train
 
 ## introduction
 
-Interval Repeat Flashcard Demo with Basic Simple Features Designed based on Next.js App Router, ts-fsrs, and Prisma.
+Interval Repeat Flashcard Demo with Basic Simple Features Designed based on Next.js App Router, ts-fsrs, Hono.js and kysely.
 
 use packages:
 
 ````
-- prisma (global) npm install -g prisma
 - next.js (>= 14.2.0)
 - ts-fsrs (>= 3.5.3)
+- hono.js
+- kysely
 - tailwindcss (>= 3)
 - shadcn 
-- fsrs-browser (>= 0.6.1)
 ````
 
 ## Environment Variables
@@ -46,13 +46,6 @@ GITHUB_SECRET=***
 LINGQ_KEY=**** # copy from http://localhost:3000/api/lingq/key
 ```
 
-update schema: src/prisma/schema.prisma
-```prisma
-datasource db {
-  provider     = "postgresql" // or mysql
-  url          = env("DATABASE_URL")
-}
-```
 
 ## How to run?
 - run docker make sure the database is running on your machine: `docker-compose up`

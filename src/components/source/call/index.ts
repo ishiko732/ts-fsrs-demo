@@ -1,19 +1,15 @@
-import type { changeResponse } from "@/context/CardContext";
+import type { ReviewServiceType, TReviewCardDetail } from '@server/services/scheduler/review'
 
-import { SourceNote } from "..";
-import LingqCallHandler from "./Lingq";
+import LingqCallHandler from './Lingq'
 
-export default async function handler(
-  note: SourceNote,
-  res: changeResponse
-): Promise<void> {
-  const source = note?.source;
+export default async function handler(note: TReviewCardDetail, res: Awaited<ReturnType<ReviewServiceType['next']>>): Promise<void> {
+  const source = note?.source
   if (!source) {
-    return;
+    return
   }
   switch (source) {
-    case "lingq":
-        return LingqCallHandler(note, res);
+    case 'lingq':
+      return LingqCallHandler(note, res)
     default:
   }
 }

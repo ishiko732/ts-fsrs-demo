@@ -1,23 +1,23 @@
 "use client";
-import { Card, Note } from "@prisma/client";
+
+import type { TReviewCardDetail } from "@server/services/scheduler/review";
+import type { StateBox } from '@server/services/scheduler/review/types'
 import { useMemo, useState } from "react";
 import { State } from "ts-fsrs";
-
-import { StateBox } from "@/vendor/fsrsToPrisma/handler";
 
 export type CardBoxes = {
   currentType: StateBox;
   setCurrentType: React.Dispatch<React.SetStateAction<StateBox>>;
-  noteBox: { [key in StateBox]: Array<Note & { card: Card }> };
+  noteBox: { [key in StateBox]: Array<TReviewCardDetail > };
   setNoteBox: {
     [key in StateBox]: React.Dispatch<
-      React.SetStateAction<Array<Note & { card: Card }>>
+      React.SetStateAction<Array<TReviewCardDetail >>
     >;
   };
 };
 
-export function useCardBoxes(noteBox0: Array<Array<Note & { card: Card }>>) {
-  const [NewCard, LearningCard, RelearningCard, ReviewCard] = noteBox0;
+export function useCardBoxes(noteBox0: Map<State, Array<TReviewCardDetail>>) {
+  const [NewCard, LearningCard, RelearningCard, ReviewCard] = noteBox0.values();
   const [NewCardBox, setNewCardBox] = useState(NewCard);
   const [LearningCardBox, setLearningCardBox] = useState(() => {
     const l = [];

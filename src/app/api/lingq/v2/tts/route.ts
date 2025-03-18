@@ -1,6 +1,5 @@
+import { getLingqTTS } from '@server/services/extras/lingq/request'
 import { NextRequest, NextResponse } from 'next/server'
-
-import { getLingqTTS } from '@/vendor/lingq/request'
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url)

@@ -1,30 +1,24 @@
-import { getAuthSession } from '@/app/(auth)/api/auth/[...nextauth]/session';
-import { exportLogsByUid } from '@/lib/log';
+import { getSessionUserIdThrow } from '@server/services/auth/session'
+import statisticsService from '@server/services/scheduler/statistics'
 
-import ExportSubmitButton, { ExportType } from '../submit/ExportSubmit';
-import MenuItem from '.';
+import ExportSubmitButton, { type ExportType } from '../submit/ExportSubmit'
+import MenuItem from '.'
 
 async function exportRevlogAction() {
-  'use server';
-  const session = await getAuthSession();
-  if (!session?.user) {
-    throw new Error('No user');
-  }
-  const uid = Number(session.user.id);
-  const logs = await exportLogsByUid(uid);
+  'use server'
+  const uid = await getSessionUserIdThrow()
+  const logs = await statisticsService.exportLogs(uid)
 
   return {
-    timezone: new Intl.DateTimeFormat().resolvedOptions().timeZone,
-    offset: new Date().getTimezoneOffset(),
     revlogs: logs,
-  } as ExportType;
+  } as ExportType
 }
 
 export default async function ExportRevlog() {
-  const tip = 'Export Revlog to CSV';
+  const tip = 'Export Revlog to CSV'
   return (
     <MenuItem tip={tip}>
       <ExportSubmitButton action={exportRevlogAction} tip={tip} />
     </MenuItem>
-  );
+  )
 }
