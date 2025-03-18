@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
 export const metadata: Metadata = {
   title: 'ts-fsrs demo',
   description:
-    'Interval Repeat Flashcard Demo with Basic Simple Features Designed based on Next.js App Router, ts-fsrs, fsrs-browser and Prisma.',
+    'Interval Repeat Flashcard Demo with Basic Simple Features Designed based on Next.js App Router, ts-fsrs, fsrs-browser and Hono.js and kysely.',
 }
 
 // See https://ui.shadcn.com/docs/installation/next
