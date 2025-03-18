@@ -32,7 +32,7 @@ const formSchema = z.object({
   enable_short_term: z.coerce.boolean(),
   card_limit: z.coerce.number().min(0).step(1).int(),
   lapses: z.coerce.number().min(3).step(1).int(),
-  lingq_token: z.string().optional(),
+  // lingq_token: z.string().optional(), // disabled
 })
 
 export default function FSRSConfigForm({
@@ -245,7 +245,7 @@ export default function FSRSConfigForm({
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="lingq_token"
           render={({ field }) => (
@@ -265,7 +265,7 @@ export default function FSRSConfigForm({
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <Button type="submit" className="hidden" id="fsrsSetting">
           Submit
         </Button>
