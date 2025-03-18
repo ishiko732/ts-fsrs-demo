@@ -13,11 +13,11 @@ class LingqService {
       .where('uid', '=', uid)
       .where('did', '=', did)
       .where('name', '=', 'lingq')
-      .executeTakeFirstOrThrow()
-    const extraData = extra.extra
+      .executeTakeFirst()
+    const extraData = extra?.extra
     return {
-      token: extraData.token as string | undefined,
-      lang: extraData.lang as string | undefined,
+      token: extraData?.token as string | undefined,
+      lang: extraData?.lang as string | undefined,
     }
   }
 
