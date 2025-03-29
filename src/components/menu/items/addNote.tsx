@@ -1,6 +1,7 @@
 'use client'
 import client from '@server/libs/rpc'
 import React, { useRef, useState } from 'react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -17,22 +18,30 @@ function AddNoteDialog({ tip }: { tip: string }) {
   const saveAddNote = () => {
     const question = questionRef.current?.value ?? ''
     const answer = answerRef.current?.value ?? ''
-    new Promise<void>(async (resolve, reject) => {
+    setOpen(false)
+    new Promise<void>(async (resolve) => {
       const { deckId } = await client.decks.default.$get().then((res) => res.json())
-      const resp = await client.notes.$post({
-        json: {
-          did: deckId,
-          question,
-          answer,
-          source: 'Manual',
+      toast.promise(
+        client.notes.$post({
+          json: {
+            did: deckId,
+            question,
+            answer,
+            source: 'Manual',
+          },
+        }),
+        {
+          loading: 'Adding...',
+          success: async () => 'Note added',
+          error: (error) => {
+            return error
+          },
+          finally: () => {
+            resolve()
+          },
         },
-      })
-      if (resp.status === 200) {
-        resolve()
-      } else {
-        reject()
-      }
-    }).then(() => setOpen(false))
+      )
+    })
   }
 
   return (

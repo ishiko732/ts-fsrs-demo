@@ -53,6 +53,7 @@
     "react-hook-form": "^7.52.0",
     "react-resizable-panels": "^2.0.19",
     "sharp": "^0.33.4",
+    "sonner": "^2.0.2",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "ts-fsrs": "^4.7.0",
