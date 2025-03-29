@@ -51,6 +51,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     .select(['uid', 'lingq_token', 'lingq_counter'])
     .where('lingq_token', 'is not', null)
     .execute()
+    .catch((e) => {
+      console.log(e)
+      return []
+    })
 
   if (params.length === 0) {
     return

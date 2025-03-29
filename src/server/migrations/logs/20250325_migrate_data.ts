@@ -30,6 +30,13 @@ export async function up(db: Kysely<any>): Promise<void> {
     .expression(db.selectFrom('User').select(['uid as id', 'name', 'email', 'password', 'oauthId', 'oauthType']))
     .returning('id')
     .execute()
+    .catch((e) => {
+      console.log(e)
+      return []
+    })
+  if (user_info.length === 0) {
+    return
+  }
 
   const decks_info = await db
     .insertInto('decks')
