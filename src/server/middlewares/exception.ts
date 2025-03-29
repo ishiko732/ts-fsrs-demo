@@ -6,6 +6,6 @@ export function SystemException() {
   return (err: Error | HTTPResponseError, c: Context) => {
     Sentry.captureException(err)
     console.error(err)
-    return c.json({ message: 'Internal Server Error', ok: false })
+    return c.json({ message: 'Internal Server Error', error: err }, 500)
   }
 }
