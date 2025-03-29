@@ -52,6 +52,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .where('lingq_token', 'is not', null)
     .execute()
 
+  if (params.length === 0) {
+    return
+  }
   const deck_info = await db
     .insertInto('decks')
     .values(params.map((it) => lingq_deck(it.uid, now)))
@@ -85,8 +88,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     })
   }
 
+  if (extra_info.length === 0) {
+    return
+  }
   await db.insertInto('extras').values(extra_info).execute()
-
   /**
    * Revlogs
    * don't need to migrate
