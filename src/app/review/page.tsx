@@ -28,9 +28,8 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
   }
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0)
   const range = [+startOfDay, +now] as const
-  const todayCount_promise = statisticsService.getRangeRevlogCount(uid, [+startOfDay, +now], [State.New])
-  const cardDetails_promise = reviewService.getReviewCardDetails(uid, +now, { source: source ? [source] : [] })
-  const [todayCount, cardDetails] = await Promise.all([todayCount_promise, cardDetails_promise])
+  const todayCount = await statisticsService.getRangeRevlogCount(uid, [+startOfDay, +now], [State.New])
+  const cardDetails = await reviewService.getReviewCardDetails(uid, +now, todayCount, { source: source ? [source] : [] })
   return {
     uid,
     now,

@@ -111,6 +111,7 @@ class ReviewService {
   async getReviewCardDetails(
     uid: number,
     end_timestamp: number,
+    today_count: Map<State, number>,
     options?: Partial<{
       dids: number[]
       source: string[]
@@ -130,10 +131,10 @@ class ReviewService {
             PARTITION BY c.did, c.state
             ORDER BY c.id)`.as('rn'),
           sql<number>`CASE c.state
-            WHEN ${State.New} THEN (d.card_limit->>'new')::INT
-            WHEN ${State.Review} THEN (d.card_limit->>'review')::INT
-            WHEN ${State.Learning} THEN (d.card_limit->>'learning')::INT
-            WHEN ${State.Relearning} THEN (d.card_limit->>'learning')::INT
+            WHEN ${State.New} THEN GREATEST(0::bigint, (d.card_limit->>'new')::BIGINT - ${today_count.get(State.New) ?? 0})
+            WHEN ${State.Review} THEN GREATEST(0::bigint,(d.card_limit->>'review')::bigint- ${today_count.get(State.Review) ?? 0})
+            WHEN ${State.Learning} THEN GREATEST(0::bigint,(d.card_limit->>'learning')::bigint - ${today_count.get(State.Learning) ?? 0})
+            WHEN ${State.Relearning} THEN GREATEST(0::bigint,(d.card_limit->>'learning')::bigint - ${today_count.get(State.Relearning) ?? 0})
           END`.as('state_limit'),
           'd.fsrs',
         ])
@@ -188,10 +189,10 @@ class ReviewService {
           PARTITION BY c.did, c.state
           ORDER BY c.id)`.as('rn'),
         sql<number>`CASE c.state
-          WHEN ${State.New} THEN (d.card_limit->>'new')::INT
-          WHEN ${State.Review} THEN (d.card_limit->>'review')::INT
-          WHEN ${State.Learning} THEN (d.card_limit->>'learning')::INT
-          WHEN ${State.Relearning} THEN (d.card_limit->>'learning')::INT
+          WHEN ${State.New} THEN (d.card_limit->>'new')::bigint
+          WHEN ${State.Review} THEN (d.card_limit->>'review')::bigint
+          WHEN ${State.Learning} THEN (d.card_limit->>'learning')::bigint
+          WHEN ${State.Relearning} THEN (d.card_limit->>'learning')::bigint
         END`.as('state_limit'),
         'd.fsrs',
         'c.id as cid',
