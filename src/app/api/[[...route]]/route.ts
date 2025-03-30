@@ -32,5 +32,5 @@ const handler = handle(app)
 if (env.NODE_ENV === 'development') {
   showRoutes(app)
 }
-export { handler as DELETE, handler as GET, handler as POST, handler as PUT }
+export { handler as DELETE, handler as GET, handler as PATCH, handler as POST, handler as PUT }
 export type AppType = typeof routes

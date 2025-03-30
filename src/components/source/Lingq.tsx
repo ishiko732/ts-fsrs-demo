@@ -1,5 +1,6 @@
 'use client'
 import type { TCardDetail } from '@server/services/decks/cards'
+import { getLingqTTS, handlerProxy } from '@server/services/extras/lingq/request'
 import { useEffect, useRef, useState } from 'react'
 
 import Audio from '@/components/card/Audio'
@@ -21,23 +22,17 @@ export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
     setAudio(undefined)
     if ((note && lang === 'ja') || lang === 'en') {
       ;(async () => {
-        const url =
-          '/api/lingq/v2/tts?' +
-          new URLSearchParams({
-            language: lang,
-            text: note.question,
-          }).toString()
         const token = await getLingqToken()
         console.log(token)
         if (!token) {
           return
         }
-        const tts: LingqTTS = await fetch(url, {
-          method: 'GET',
-          headers: {
-            Authorization: token,
-          },
-        }).then((res) => res.json())
+        handlerProxy()
+        const tts = await getLingqTTS({
+          language: lang as languageCode,
+          text: note.question,
+          token,
+        })
         if (tts) {
           setAudio(tts.audio)
         }

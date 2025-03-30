@@ -1,4 +1,18 @@
-const BaseUrl = 'https://www.lingq.com/api/'
+let proxy = ''
+
+const BaseUrl = () => {
+  const BaseUrl = 'https://www.lingq.com/api/'
+  if (proxy) {
+    return `${proxy}/api/extras/lingq/proxy/`
+  }
+  return BaseUrl
+}
+
+export const handlerProxy = () => {
+  const url = new URL(window.location.href)
+  proxy = url.origin
+  return true
+}
 
 async function streamToString(stream: ReadableStream) {
   const reader = stream.getReader()
@@ -12,7 +26,7 @@ async function streamToString(stream: ReadableStream) {
 }
 
 export async function request<T>(path: string, token: string, options: RequestInit = {}): Promise<T> {
-  const url = new URL(path, BaseUrl)
+  const url = new URL(path, BaseUrl())
   if (options.body != null && options.body instanceof ReadableStream) {
     options.body = await streamToString(options.body)
   }
@@ -152,6 +166,7 @@ export async function changeLingqHints({
   language,
   cardId,
   token,
+  /** hints: JSON.parse(hints as string) */
   hints,
 }: {
   language: languageCode
@@ -159,7 +174,7 @@ export async function changeLingqHints({
   token: string
   hints: addLingqHint
 }): Promise<Lingqs> {
-  return request<Lingqs>(`v3/${language}/cards/${cardId}/`, token, {
+  return request<Lingqs>(`v3/${language}/cards/${cardId}`, token, {
     body: JSON.stringify({ hints }),
     method: 'PATCH',
   })

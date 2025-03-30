@@ -1,9 +1,13 @@
+import client from '@server/libs/rpc'
 import type { TCardDetail } from '@server/services/decks/cards'
+import { changeLingqStatus, handlerProxy } from '@server/services/extras/lingq/request'
 import type { ReviewServiceType } from '@server/services/scheduler/review'
+import { toast } from 'sonner'
 import { date_diff, fixDate, State } from 'ts-fsrs'
 
 export default async function LingqCallHandler(note: TCardDetail, res: Awaited<ReturnType<ReviewServiceType['next']>>) {
   const sourceId = Number(note.sourceId)
+  const nid = Number(note.id)
   const language = (note.extend as Record<string, string>)['lang']
 
   if (!sourceId || !language || !window) {
@@ -40,14 +44,49 @@ export default async function LingqCallHandler(note: TCardDetail, res: Awaited<R
     const formData = new FormData()
     formData.append('status', status.toString())
     formData.append('extended_status', extended_status.toString())
-    await fetch(`/api/lingq/v3/${language}/cards/${sourceId}`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: token,
-        noteId: note.nid.toString(),
+    handlerProxy()
+    toast.promise(
+      changeLingqStatus({
+        language: language as languageCode,
+        id: sourceId,
+        token,
+        status,
+        extended_status,
+      }),
+      {
+        success: (lingq) => {
+          if (nid && !isNaN(Number(nid))) {
+            const question = lingq.term.replace(/\s+/g, '')
+            const answer = lingq.hints?.[0].text ?? ''
+            client.notes[':nid'].$put({
+              param: { nid: `${nid}` },
+              json: {
+                did: note.did,
+                question: question,
+                source: note.source,
+                answer: answer,
+                sourceId: String(lingq.pk),
+                extend: {
+                  pk: lingq.pk,
+                  term: question,
+                  fragment: lingq.fragment,
+                  notes: lingq.notes,
+                  words: lingq.words,
+                  hints: lingq.hints,
+                  tags: lingq.tags,
+                  transliteration: lingq.transliteration,
+                  lang: language,
+                },
+              },
+            })
+          }
+          return 'Sync to LingQ successfully'
+        },
+        error: (err) => {
+          return `Sync to LingQ failed: ${err}`
+        },
       },
-      body: formData,
-    })
+    )
   }
 }
 
@@ -55,11 +94,16 @@ export async function getLingqToken() {
   const globalForLingqToken = window as unknown as { lingqToken?: string }
   const token = globalForLingqToken.lingqToken
   if (!token) {
-    const key = await fetch('/api/lingq/key', {
-      method: 'POST',
-    }).then((res) => res.json())
-    if (key.lingqKey) {
-      globalForLingqToken.lingqToken = key.lingqKey
+    const request = await client.extras.lingq.session.$get({
+      query: {
+        /** TODO did */
+      },
+    })
+    if (request.ok) {
+      const data = await request.json()
+      globalForLingqToken.lingqToken = data.lingqKey
+    } else {
+      globalForLingqToken.lingqToken = ''
     }
     return globalForLingqToken.lingqToken
   }
