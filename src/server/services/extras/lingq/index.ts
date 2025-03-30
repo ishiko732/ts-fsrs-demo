@@ -23,7 +23,7 @@ class LingqService {
 
   async sync(uid: number, did: number, lang: string, lingqs: Lingq[]) {
     if (!lingqs?.length || !did) {
-      return
+      return false
     }
 
     const dates = lingqs.map((lingq) => {
@@ -56,24 +56,45 @@ class LingqService {
     return noteService.createNotes(uid, did, 'lingq', sourceIds, dates)
   }
 
-  async syncLingqs(uid: number, did: number, lingqInfo: { token: string; lang: string }, next?: number) {
-    const data = await getLingqs({
-      language: lingqInfo.lang as languageCode,
-      token: lingqInfo.token,
-      page: next,
-      page_size: 50,
-      search_criteria: 'startsWith',
-      sort: 'date',
-      status: ['0', '1', '2', '3'],
-    })
-    const promise: Promise<unknown>[] = []
+  async syncLingqs(
+    uid: number,
+    did: number,
+    lingqInfo: { token: string; lang: string },
+    next?: Partial<{
+      page: number
+      page_size: number
+      loop: boolean
+    }>,
+  ) {
+    let data: Lingqs
+    const promise: Promise<boolean>[] = []
+    let page = next?.page ?? 1
+    const page_size = next?.page_size ?? 50
+    let next_page = null
+    do {
+      data = await getLingqs({
+        language: lingqInfo.lang as languageCode,
+        token: lingqInfo.token,
+        page: page,
+        page_size: page_size,
+        search_criteria: 'startsWith',
+        sort: 'date',
+        status: ['0', '1', '2', '3'],
+      })
+      promise.push(this.sync(uid, did, lingqInfo.lang, data.results))
+      if (data.next != null) {
+        page = Number(new URL(data.next).searchParams.get('page'))
+        next_page = page
+      } else {
+        next_page = null
+      }
+    } while (next?.loop && data.next != null)
+    const synced = await Promise.all(promise)
 
-    if (data.next != null) {
-      const page = new URL(data.next).searchParams.get('page')
-      promise.push(this.syncLingqs(uid, did, lingqInfo, Number(page)))
+    return {
+      synced: synced.every(Boolean),
+      next_page,
     }
-    promise.push(this.sync(uid, did, lingqInfo.lang, data.results))
-    await Promise.all(promise)
   }
 
   async getLingqLanguageCode(token: string) {

@@ -1,35 +1,46 @@
 'use client'
+import client from '@server/libs/rpc'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 
 import LoadingMenu from '../loading-menu'
 
-export default function SyncSubmitButton({ action, tip }: { action: () => Promise<string[]>; tip: string }) {
+type SyncButtonProps = {
+  tip: string
+  did: number
+}
+
+export default function SyncSubmitButton({ tip, did }: SyncButtonProps) {
   const [loading, setLoading] = useState(false)
 
   const handleSyncHandler = async () => {
+    let page = 0
+    let data = null
     setLoading(true)
-    const ret = await action()
-    if (ret.length > 0) {
-      // /api/sync/lingq/manual?lang=ja&page=1&pageSize=25
-      for (const lang of ret) {
-        let page = 0
-        let data = null
-        do {
-          page++
-          data = await fetch(`/api/sync/lingq/manual?lang=${lang}&page=${page}&pageSize=25`).then((res) => res.json())
-          if (data.nonExistCount === 0) {
-            break
-          }
-        } while (data.next)
+    do {
+      page++
+      const result = await client.extras.lingq.sync.$post({
+        json: {
+          did: did,
+          page: page,
+          page_size: 25,
+        },
+      })
+
+      if (!result.ok) {
+        toast.error('Sync LingQ failed')
+        setLoading(false)
+        break
       }
-    }
+      data = await result.json()
+      toast.success(`Sync LingQ Page:${page} success`)
+    } while (data?.next_page)
     setLoading(false)
-    if (ret) {
-      window.location.reload()
-    }
+    window.location.reload()
   }
+
   return (
     <Button disabled={loading} type="submit" className="w-full" variant={'outline'} onClick={handleSyncHandler} aria-label={tip}>
       {loading ? <LoadingMenu /> : <SyncIcon />}

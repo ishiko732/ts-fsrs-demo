@@ -42,8 +42,12 @@ NEXTAUTH_SECRET=**** # openssl rand -base64 32
 GITHUB_ID=***
 GITHUB_SECRET=***
 
-# if need lingq server
-LINGQ_KEY=**** # copy from http://localhost:3000/api/lingq/key
+# if need extra server
+# RSA
+# openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
+RSA_PRIVATE_KEY=""
+# openssl rsa -in private.pem -pubout -out public.pem
+RSA_PUBLIC_KEY=""
 ```
 
 
