@@ -45,7 +45,7 @@ export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
       <div className="w-full">
         <span className="flex justify-center items-center text-2xl">
           {note.question}
-          <span className="badge">{note.answer}</span>
+          {/* <span className="badge">{note.answer}</span> */}
         </span>
         <div className="flex justify-center flex-col items-center opacity-60 pt-4">
           {open && transliteration && <div> {<MergeTransliteration {...transliteration} />}</div>}

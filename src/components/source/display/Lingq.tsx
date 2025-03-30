@@ -12,7 +12,7 @@ export default async function DisplayMsg({ note }: { note: TCardDetail }) {
       <div className="w-full">
         <span className="flex justify-center items-center text-2xl">
           {note.question}
-          <span className="badge">{note.answer}</span>
+          {/* <span className="badge">{note.answer}</span> */}
         </span>
         <div className="flex justify-center flex-col items-center text-sm opacity-60">
           <div> {transliteration && <MergeTransliteration {...transliteration} />}</div>
