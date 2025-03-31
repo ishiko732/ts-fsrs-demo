@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import envSchema from '@server/env'
-import type { Kysely } from 'kysely'
+import { type Kysely,sql } from 'kysely'
 import { generatorParameters } from 'ts-fsrs'
 
 function hex2buf(hex: string) {
@@ -43,6 +43,12 @@ const lingq_deck = (uid: number, now: number) => {
 }
 
 export async function up(db: Kysely<any>): Promise<void> {
+  const tableExists = await db.executeQuery<{ exists: number }>(sql`SELECT to_regclass('"Parameters"') as exists`.compile(db))
+  if (!tableExists || tableExists.rows.length === 0 || !tableExists.rows[0]?.exists) {
+    console.log('Parameters table does not exist, skipping migration.')
+    return
+  }
+
   // migrate Parameters -> extras
 
   const now = Date.now()
@@ -51,10 +57,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .select(['uid', 'lingq_token', 'lingq_counter'])
     .where('lingq_token', 'is not', null)
     .execute()
-    .catch((e) => {
-      console.log(e)
-      return []
-    })
 
   if (params.length === 0) {
     return

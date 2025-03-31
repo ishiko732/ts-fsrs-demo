@@ -20,6 +20,11 @@ const default_deck = (uid: number, now: number) => {
 }
 
 export async function up(db: Kysely<any>): Promise<void> {
+  const tableExists = await db.executeQuery<{ exists: number }>(sql`SELECT to_regclass('"Users"') as exists`.compile(db))
+  if (!tableExists || tableExists.rows.length === 0 || !tableExists.rows[0]?.exists) {
+    console.log('User table does not exist, skipping migration.')
+    return
+  }
   // migrate User -> users
   // add default deck
   const now = Date.now()
@@ -30,10 +35,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .expression(db.selectFrom('User').select(['uid as id', 'name', 'email', 'password', 'oauthId', 'oauthType']))
     .returning('id')
     .execute()
-    .catch((e) => {
-      console.log(e)
-      return []
-    })
   if (user_info.length === 0) {
     return
   }
