@@ -37,18 +37,20 @@ function computerOrder(orders: SortingState) {
 
 type NoteSortField = 'question' | 'answer' | 'source' | 'D' | 'S' | 'R' | 'Reps'
 
-type NotePageProps = {
-  searchParams: {
-    page: string
-    take: string
-    keyword: string
-    sort: NoteSortField
-    [key: string]: string | string[]
-    deleted: '1' | '0'
-  }
+type Params = {
+  page: string
+  take: string
+  keyword: string
+  sort: NoteSortField
+  [key: string]: string | string[]
+  deleted: '1' | '0'
 }
 
-const buildQuery = async (searchParams: NotePageProps['searchParams']) => {
+type NotePageProps = {
+  searchParams: Promise<Params>
+}
+
+const buildQuery = async (searchParams: Params) => {
   const take = Number(searchParams['take'])
   const pageIndex = Number(searchParams['page'])
   if (!Number.isInteger(take) || !Number.isInteger(pageIndex) || pageIndex < 1 || take < 1) {
@@ -91,10 +93,9 @@ const buildQuery = async (searchParams: NotePageProps['searchParams']) => {
   }
 }
 
-export default async function Page({ searchParams }: NotePageProps) {
-  const { request, keyword, sort } = await buildQuery(searchParams)
+export default async function Page(props: NotePageProps) {
+  const { request, keyword, sort } = await buildQuery(await props.searchParams)
   const { data, pagination } = await cardService.getList(request)
-  console.log(data)
   return (
     <div className=" container">
       <Menu />

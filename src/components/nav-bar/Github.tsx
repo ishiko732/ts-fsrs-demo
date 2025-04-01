@@ -10,7 +10,6 @@ export default function Github({
   return (
     <Button variant='outline' size='icon' aria-label={name} title='GitHub'>
       <Link
-        legacyBehavior
         href={`https://github.com/${name}`}
         target={'_blank'}
         className='flex justify-center items-center h-[1.2rem] w-[1.2rem]'

@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -44,12 +44,12 @@
     "hono": "^4.7.4",
     "kysely": "^0.27.6",
     "lucide-react": "^0.395.0",
-    "next": "14.2.25",
+    "next": "15.2.4",
     "next-auth": "5.0.0-beta.25",
     "next-themes": "^0.2.1",
     "pg": "^8.13.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-hook-form": "^7.52.0",
     "react-resizable-panels": "^2.0.19",
     "sharp": "^0.33.4",
@@ -62,15 +62,15 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
-    "@next/eslint-plugin-next": "^15.2.1",
+    "@next/eslint-plugin-next": "15.2.4",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.14.8",
     "@types/pg": "^8.11.11",
-    "@types/react": "18.2.23",
-    "@types/react-dom": "18.2.13",
+    "@types/react": "19.0.12",
+    "@types/react-dom": "19.0.4",
     "autoprefixer": "^10.4.19",
     "eslint": "9.21.0",
-    "eslint-config-next": "15.2.1",
+    "eslint-config-next": "15.2.4",
     "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
@@ -84,6 +84,10 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "bcrypt"
-    ]
+    ],
+    "overrides": {
+      "@types/react": "19.0.12",
+      "@types/react-dom": "19.0.4"
+    }
   }
 }

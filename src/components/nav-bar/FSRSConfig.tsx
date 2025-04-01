@@ -178,7 +178,6 @@ export default function FSRSConfigForm({
                 <FormControl>
                   <Switch
                     id="enable_fuzz"
-                    placeholder="enable_fuzz"
                     {...field}
                     value={undefined}
                     onCheckedChange={field.onChange}
@@ -204,7 +203,6 @@ export default function FSRSConfigForm({
                 <FormControl>
                   <Switch
                     id="enable_short-term"
-                    placeholder="enable_short-term"
                     {...field}
                     value={undefined}
                     onCheckedChange={field.onChange}

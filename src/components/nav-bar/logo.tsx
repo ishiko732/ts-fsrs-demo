@@ -1,94 +1,61 @@
-'use client';
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@radix-ui/react-hover-card';
-import { Building2 } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
-import { FSRSVersion } from 'ts-fsrs';
+'use client'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
+import { Building2 } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import React from 'react'
+import { FSRSVersion } from 'ts-fsrs'
 
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Badge } from '../ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 const Logo = ({ env }: { env: string }) => {
-  const matchVersion = FSRSVersion.match(/\bv?(\d+\.\d+\.\d+)\b/);
+  const matchVersion = FSRSVersion.match(/\bv?(\d+\.\d+\.\d+)\b/)
   return (
-    <div className='mr-4 hidden sm:flex'>
-      <div className='btn btn-ghost text-xl hidden sm:flex'>
-        <Image src='/osr.png' alt='TS-FSRS-DEMO' width={32} height={32} />
+    <div className="mr-4 hidden sm:flex">
+      <div className="btn btn-ghost text-xl hidden sm:flex">
+        <Image src="/osr.png" alt="TS-FSRS-DEMO" width={32} height={32} />
         <HoverCard>
-          <HoverCardTrigger
-            className='hidden font-bold sm:inline-block mt-1 line-clamp-3 cursor-pointer '
-            asChild
-          >
+          <HoverCardTrigger className="hidden font-bold sm:inline-block mt-1 line-clamp-3 cursor-pointer " asChild>
             <div>
-              <Link href={'/'} aria-label='home'>TS-FSRS-DEMO</Link>
+              <Link href={'/'} aria-label="home">
+                TS-FSRS-DEMO
+              </Link>
             </div>
           </HoverCardTrigger>
-          <HoverCardContent className='pt-4 pl-6 w-[24rem]  border   border-b-stone-900 dark:border-white z-[999] bg-white dark:bg-black'>
-            <div className='flex justify-between space-x-4'>
-              <Link
-                href='https://github.com/ishiko732'
-                target='_blank'
-                legacyBehavior
-              >
+          <HoverCardContent className="pt-4 pl-6 w-[24rem]  border   border-b-stone-900 dark:border-white z-[999] bg-white dark:bg-black">
+            <div className="flex justify-between space-x-4">
+              <Link href="https://github.com/ishiko732" target="_blank">
                 <Avatar>
-                  <AvatarImage src='https://avatars.githubusercontent.com/u/62931549?v=4' />
+                  <AvatarImage src="https://avatars.githubusercontent.com/u/62931549?v=4" />
                   <AvatarFallback>ishiko</AvatarFallback>
                 </Avatar>
               </Link>
-              <div className='space-y-1'>
-                <h4 className='text-sm font-semibold underline underline-offset-1'>
-                  <Link
-                    href='https://github.com/ishiko732'
-                    target='_blank'
-                    legacyBehavior
-                  >
+              <div className="space-y-1">
+                <h4 className="text-sm font-semibold underline underline-offset-1">
+                  <Link href="https://github.com/ishiko732" target="_blank">
                     @ishiko732
                   </Link>
                 </h4>
-                <p className='text-sm'>
-                  {`I'm ishiko, a Node.js Engineer from ShenZheng.`}
-                </p>
+                <p className="text-sm">{`I'm ishiko, a Node.js Engineer from ShenZheng.`}</p>
                 <br />
-                <p className='text-sm'>
-                  The current ts-fsrs-demo is using
-                  <Badge variant='outline' className='cursor-pointer'>
-                    <Link
-                      href={'https://github.com/open-spaced-repetition/ts-fsrs'}
-                      target='_blank'
-                      legacyBehavior
-                    >
+                <p className="text-sm">
+                  {'The current ts-fsrs-demo is using '}
+                  <span className="underline underline-offset-1">
+                    <Link href={'https://github.com/open-spaced-repetition/ts-fsrs'} target="_blank">
                       ts-fsrs
                     </Link>
-                  </Badge>{' '}
-                  version :{' '}
-                  <span className='underline underline-offset-1'>
-                    <Link
-                      href={`https://www.npmjs.com/package/ts-fsrs/v/${
-                        matchVersion?.[1] ?? 'latest'
-                      }`}
-                      target='_blank'
-                      legacyBehavior
-                    >
+                  </span>
+                  version :
+                  <span className="underline underline-offset-1">
+                    <Link href={`https://www.npmjs.com/package/ts-fsrs/v/${matchVersion?.[1] ?? 'latest'}`} target="_blank">
                       {FSRSVersion}
                     </Link>
                   </span>
-                  , and the build environment :{' '}
-                  <span className='font-bold'> {env}</span>
+                  , and the build environment : <span className="font-bold"> {env}</span>
                 </p>
-                <div className='flex items-center py-4'>
-                  <Building2 className='mr-2 mt-1 h-4 w-4 ' />{' '}
-                  <Link
-                    href='https://github.com/open-spaced-repetition'
-                    target={'_blank'}
-                    legacyBehavior
-                  >
-                    <span className='text-xs text-muted-foreground underline underline-offset-1'>
-                      open-spaced-repetition
-                    </span>
+                <div className="flex items-center py-4">
+                  <Building2 className="mr-2 mt-1 h-4 w-4 " />
+                  <Link href="https://github.com/open-spaced-repetition" target={'_blank'}>
+                    <span className="text-xs text-muted-foreground underline underline-offset-1">open-spaced-repetition</span>
                   </Link>
                 </div>
               </div>
@@ -97,7 +64,7 @@ const Logo = ({ env }: { env: string }) => {
         </HoverCard>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Logo;
+export default Logo
