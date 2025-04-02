@@ -37,7 +37,7 @@ const eslintConfig = [
 
     rules: {
       // 'require-await': 'error',
-      'no-console': 'warn',
+      'no-console': 'off',
 
       'no-return-await': 'error',
       '@typescript-eslint/no-unused-vars': 'warn',

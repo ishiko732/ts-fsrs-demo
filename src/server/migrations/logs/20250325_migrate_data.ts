@@ -39,7 +39,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     return
   }
 
-  const decks_info = await db
+  await db
     .insertInto('decks')
     .values(user_info.map((it) => default_deck(it.id, now)))
     .returning(['id as did', 'uid'])
@@ -187,4 +187,5 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function down(db: Kysely<any>): Promise<void> {}

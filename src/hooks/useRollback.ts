@@ -20,7 +20,7 @@ export type Rollback = {
   handleRollBack: () => Promise<TReviewCardDetail | undefined>
 }
 
-export function useRollback({ currentType, setCurrentType, noteBox, setNoteBox, open, setOpen }: RollBackProps) {
+export function useRollback({ setCurrentType, noteBox, setNoteBox, open, setOpen }: RollBackProps) {
   const rollBackRef = useRef<{ cid: number; nextStateBox: StateBox; lid: number }[]>([])
   const [rollbackAble, setRollbackAble] = useState(false)
 

@@ -5,7 +5,7 @@ import type { Database } from '@server/models'
 import cardModel, { type CardTable } from '@server/models/cards'
 import deckModel from '@server/models/decks'
 import { revlogModel, type RevlogTable } from '@server/models/revlog'
-import type { ExpressionBuilder, Insertable, Selectable, Updateable } from 'kysely'
+import type { ExpressionBuilder, Insertable, Updateable } from 'kysely'
 import { sql } from 'kysely'
 import {
   type Card,

@@ -21,7 +21,7 @@ export default function ExportSubmitButton({ action, tip }: { action: () => Prom
       type="submit"
       variant={'outline'}
       className="w-full"
-      onClick={async (e) => {
+      onClick={async () => {
         setLoading(true)
         const data = await action()
         const logs = data.revlogs
