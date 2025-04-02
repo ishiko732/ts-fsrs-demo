@@ -29,8 +29,15 @@ const routes = app
 
 const handler = handle(app)
 
-if (env.NODE_ENV === 'development') {
-  showRoutes(app)
+let loaded = false
+const showRouteHandler = () => {
+  if (loaded) return
+  loaded = true
+  if (env.NODE_ENV === 'development') {
+    showRoutes(app)
+  }
 }
+
+showRouteHandler()
 export { handler as DELETE, handler as GET, handler as PATCH, handler as POST, handler as PUT }
 export type AppType = typeof routes
