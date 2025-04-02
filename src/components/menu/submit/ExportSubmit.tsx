@@ -4,12 +4,11 @@ import { ArrowRightFromLine as ExportIcon } from 'lucide-react'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { get_custom_timezone } from '@/lib/date'
 
 import LoadingMenu from '../loading-menu'
 
 export type ExportType = {
-  timezone: string
-  offset: number
   revlogs: ExportRevLog[]
 }
 
@@ -30,14 +29,16 @@ export default function ExportSubmitButton({ action, tip }: { action: () => Prom
           setLoading(false)
           return
         }
-        const GMT = -data.offset / 60
+        const date = new Date()
+        const timezone = get_custom_timezone()
+        const GMT = -date.getTimezoneOffset() / 60
         const head = Object.keys(logs[0]).join(',') + '\n'
         const body = logs.map((log) => Object.values(log).join(',')).join('\n')
 
         const url = getDownloadUrl(head + body)
         const a = document.createElement('a')
         a.href = url
-        a.download = `revlog_${data.timezone}_GMT${GMT}.csv`
+        a.download = `revlog_${timezone}_GMT${GMT}.csv`
         setLoading(false)
         a.click()
       }}
