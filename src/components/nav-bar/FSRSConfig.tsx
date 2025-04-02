@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import client from '@server/libs/rpc'
 import type { DeckTable } from '@server/models/decks'
 import type { Selectable } from 'kysely'
-import Link from 'next/link'
+// import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 
 import LoadingSpinner from '../loadingSpinner'
-import { Badge } from '../ui/badge'
+// import { Badge } from '../ui/badge'
 
 const formSchema = z.object({
   request_retention: z.coerce
@@ -178,7 +178,6 @@ export default function FSRSConfigForm({
                 <FormControl>
                   <Switch
                     id="enable_fuzz"
-                    placeholder="enable_fuzz"
                     {...field}
                     value={undefined}
                     onCheckedChange={field.onChange}
@@ -204,7 +203,6 @@ export default function FSRSConfigForm({
                 <FormControl>
                   <Switch
                     id="enable_short-term"
-                    placeholder="enable_short-term"
                     {...field}
                     value={undefined}
                     onCheckedChange={field.onChange}

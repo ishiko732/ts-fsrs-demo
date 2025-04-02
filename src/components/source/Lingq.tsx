@@ -72,7 +72,7 @@ export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
             <Audio
               url={audio}
               ref={audioRef}
-              onCanPlay={(e) => {
+              onCanPlay={() => {
                 audioRef.current?.play()
               }}
             />

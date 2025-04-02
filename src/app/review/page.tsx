@@ -39,7 +39,10 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
   }
 })
 
-export default async function Page({ searchParams }: { searchParams: { source?: string } }) {
+type Params = Promise<{ source?: string }>
+
+export default async function Page(props: { searchParams: Params }) {
+  const searchParams = await props.searchParams
   const data = await getData(searchParams.source)
   const cardDetailMap = reviewService.distributeCardDetails(data.noteBox)
   let isFinish = true

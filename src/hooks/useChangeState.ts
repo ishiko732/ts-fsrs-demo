@@ -7,7 +7,7 @@ export type ChangeState = {
 }
 
 export function useChangeState() {
-  function updateStateBox(noteBox: { [key in StateBox]: Array<TReviewCardDetail> }, currentType: StateBox, nextDue?: number) {
+  function updateStateBox(noteBox: { [key in StateBox]: Array<TReviewCardDetail> }, currentType: StateBox /**nextDue?: number*/) {
     let change: StateBox = State.New // default State.New
     switch (currentType) {
       case State.New:

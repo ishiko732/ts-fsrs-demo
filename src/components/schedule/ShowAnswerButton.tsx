@@ -70,7 +70,7 @@ function ShowAnswerButton() {
             <Button
               key={Rating[(index + 1) as Grade]}
               className={cn('btn mx-2 btn-sm md:btn-md tooltip tooltip-bottom bg-orange-500', color[index], hoverColor[index])}
-              onClick={async (e) => handleSchdule((index + 1) as Grade)}
+              onClick={async () => handleSchdule((index + 1) as Grade)}
               title={time}
             >
               <span>{Rating[(index + 1) as Grade]}</span>

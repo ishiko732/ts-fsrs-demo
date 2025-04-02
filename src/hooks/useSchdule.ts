@@ -57,7 +57,7 @@ export function useSchedule({
     if (next_due) {
       note.due = +next_due
     }
-    const change = updateStateBox(noteBox, currentType, next_due)
+    const change = updateStateBox(noteBox, currentType /**next_due**/)
     // update state and data
     let updatedNoteBox: Array<TReviewCardDetail> = [...noteBox[currentType]]
     updatedNoteBox = updatedNoteBox.slice(1)

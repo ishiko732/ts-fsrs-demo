@@ -7,17 +7,22 @@ import GoNotes from '@/components/record/GoBack'
 import LogTable from '@/components/record/LogTable'
 import DisplayMsg from '@/components/source/display'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
-type Props = {
-  params: {
-    nid: string
-  }
-  searchParams: {
-    deleted: '1' | '0'
-    cid?: string
-  }
+
+type Params = {
+  deleted: '1' | '0'
+  cid?: string
 }
 
-const buildQuery = async ({ params, searchParams }: Props) => {
+type Props = {
+  params: Promise<{
+    nid: string
+  }>
+  searchParams: Promise<Params>
+}
+
+const buildQuery = async (props: Props) => {
+  const searchParams = await props.searchParams
+  const params = await props.params
   const deleted = searchParams.deleted === '1'
   const nid = Number(params.nid)
   const cid = Number(searchParams?.cid ?? 0)
@@ -34,8 +39,8 @@ const buildQuery = async ({ params, searchParams }: Props) => {
   }
 }
 
-export default async function Page({ params, searchParams }: Props) {
-  const { deleted, uid, cid, nid } = await buildQuery({ params, searchParams })
+export default async function Page(props: Props) {
+  const { deleted, uid, cid, nid } = await buildQuery(props)
   const { card, logs } = await cardService.getDetail(uid, nid, cid, deleted).catch(() => {
     notFound()
   })
