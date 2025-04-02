@@ -19,20 +19,20 @@ export default async function FSRSMsg({ card }: Props) {
   return (
     <>
       <div className="flex justify-start flex-col text-sm text-left">
-        <p className="leading-7 [&:not(:first-child)]:mt-1">Current State : {card.state}</p>
-        <p className="leading-7 [&:not(:first-child)]:mt-1">
+        <p className="leading-7 not-first:mt-1">Current State : {card.state}</p>
+        <p className="leading-7 not-first:mt-1">
           Next Review :<DateItem date={card.due}></DateItem>
         </p>
         {card.last_review && (
-          <p className="leading-7 [&:not(:first-child)]:mt-1">
+          <p className="leading-7 not-first:mt-1">
             Last Review :<DateItem date={card.last_review}></DateItem>
           </p>
         )}
-        <p className="leading-7 [&:not(:first-child)]:mt-1">elapsed : {card.elapsed_days}days</p>
-        <p className="leading-7 [&:not(:first-child)]:mt-1">scheduled : {card.scheduled_days}days</p>
-        <p className="leading-7 [&:not(:first-child)]:mt-1">reps : {card.reps}</p>
-        <p className="leading-7 [&:not(:first-child)]:mt-1">lapses : {card.lapses}</p>
-        <p className="leading-7 [&:not(:first-child)]:mt-1">{`Suspended : ${String(card.suspended)}`}</p>
+        <p className="leading-7 not-first:mt-1">elapsed : {card.elapsed_days}days</p>
+        <p className="leading-7 not-first:mt-1">scheduled : {card.scheduled_days}days</p>
+        <p className="leading-7 not-first:mt-1">reps : {card.reps}</p>
+        <p className="leading-7 not-first:mt-1">lapses : {card.lapses}</p>
+        <p className="leading-7 not-first:mt-1">{`Suspended : ${String(card.suspended)}`}</p>
         {retrievability && (
           <div>
             <div>D:{card.difficulty.toFixed(2)}</div>

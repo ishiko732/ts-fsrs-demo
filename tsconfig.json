@@ -27,7 +27,11 @@
       "@middlewares/*": ["./src/server/middlewares/*"],
       "@models/*": ["./src/server/models/*"],
       "@libs/*": ["./src/server/libs/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "~components": ["./src/components/*"],
+      "~utils": ["./src/utils/*"],
+      "~hooks": ["./src/hooks/*"],
+      "~context": ["./src/context/*"]
     },
     "types": ["react-dom/experimental"]
   },

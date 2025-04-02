@@ -21,7 +21,7 @@ const Logo = ({ env }: { env: string }) => {
               </Link>
             </div>
           </HoverCardTrigger>
-          <HoverCardContent className="pt-4 pl-6 w-[24rem]  border   border-b-stone-900 dark:border-white z-[999] bg-white dark:bg-black">
+          <HoverCardContent className="pt-4 pl-6 w-[24rem]  border   border-b-stone-900 dark:border-white z-999 bg-white dark:bg-black">
             <div className="flex justify-between space-x-4">
               <Link href="https://github.com/ishiko732" target="_blank">
                 <Avatar>

@@ -14,7 +14,7 @@ const NavBar = async () => {
   const user = session?.user
   const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV
   return (
-    <nav className="pt-2 container flex flex-1  max-w-screen-2xl items-center">
+    <nav className="pt-2 container flex flex-1  max-w-(--breakpoint-2xl) items-center">
       {/* Left */}
       <Logo env={env} />
       {/* Right */}

@@ -14,7 +14,7 @@ async function HomePage() {
     <>
       <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] ">
         <div>
-          <p className="leading-7 [&:not(:first-child)]:mt-6">ts-fsrs-demo core dependencies:</p>
+          <p className="leading-7 not-first:mt-6">ts-fsrs-demo core dependencies:</p>
           <ul className="my-6 ml-6 list-disc [&>li]:mt-2">
             {coreDeps.map((deps) => {
               return (

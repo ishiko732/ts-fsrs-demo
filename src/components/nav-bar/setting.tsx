@@ -38,7 +38,7 @@ export default function Setting() {
   }
   if (!isDesktop) {
     DrawerToggle = (
-      <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[800px] z-[999] dark:bg-black bg-white">
+      <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[800px] z-999 dark:bg-black bg-white">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="sm:max-w-[625px] border  border-b-stone-900 dark:border-white p-4 max-h-[800px] overflow-y-auto">
             <DialogHeader>
