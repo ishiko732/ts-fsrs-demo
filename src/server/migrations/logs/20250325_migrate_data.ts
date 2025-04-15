@@ -20,7 +20,7 @@ const default_deck = (uid: number, now: number) => {
 }
 
 export async function up(db: Kysely<any>): Promise<void> {
-  const tableExists = await db.executeQuery<{ exists: number }>(sql`SELECT to_regclass('"Users"') as exists`.compile(db))
+  const tableExists = await db.executeQuery<{ exists: number }>(sql`SELECT to_regclass('"User"') as exists`.compile(db))
   if (!tableExists || tableExists.rows.length === 0 || !tableExists.rows[0]?.exists) {
     console.log('User table does not exist, skipping migration.')
     return
@@ -39,11 +39,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     return
   }
 
-  await db
-    .insertInto('decks')
-    .values(user_info.map((it) => default_deck(it.id, now)))
-    .returning(['id as did', 'uid'])
-    .execute()
+  const stacks = user_info.map((it) => default_deck(it.id, now))
+  while (stacks.length) {
+    const stack = stacks.splice(0, 10)
+    await db.insertInto('decks').values(stack).returning(['id as did', 'uid']).execute()
+  }
 
   // migrate Note -> notes
   /**
@@ -72,7 +72,7 @@ export async function up(db: Kysely<any>): Promise<void> {
           'source',
           'sourceId',
           /** https://stackoverflow.com/questions/60824247/convert-json-string-to-jsonb */
-          sql<object>`(extend #>> '{}')::jsonb`.as('extend'),
+          sql<object>`COALESCE(NULLIF(extend #>> '{}', ''), '{}')::jsonb`.as('extend'),
           'Note.deleted as deleted',
         ])
         .leftJoin('decks', 'decks.uid', 'Note.uid'),

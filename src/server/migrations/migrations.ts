@@ -18,6 +18,7 @@ const migrator = new Migrator({
 const type = process.argv[2] as ('up' | 'down') | undefined
 
 async function migrate() {
+  const start = Date.now()
   const { error, results } =
     type === 'up' ? await migrator.migrateUp() : type === 'down' ? await migrator.migrateDown() : await migrator.migrateToLatest()
 
@@ -28,7 +29,8 @@ async function migrate() {
       console.error(`failed to execute migration "${it.migrationName}"`)
     }
   })
-
+  const end = Date.now()
+  console.log(`migrated in ${((end - start) / 1000).toFixed(2)}s`)
   if (error) {
     console.error('failed to migrate')
     console.error(error)
