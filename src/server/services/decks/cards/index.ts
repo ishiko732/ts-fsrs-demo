@@ -21,9 +21,6 @@ class CardService {
     const orderBy = request.order ?? {}
     return (
       query
-        // @ts-expect-error - `retrievability` is not a column in the database
-        .orderBy('retrievability', request.order?.retrievability ?? 'desc')
-        .orderBy('cards.id', request.order?.cid ?? 'desc')
         .$if(!!orderBy.question, (q) => q.orderBy('notes.question', request.order?.question))
         .$if(!!orderBy.answer, (q) => q.orderBy('notes.answer', request.order?.answer))
         .$if(!!orderBy.source, (q) => q.orderBy('notes.source', request.order?.source))
@@ -32,6 +29,9 @@ class CardService {
         .$if(!!orderBy.reps, (q) => q.orderBy('cards.reps', request.order?.reps))
         .$if(!!orderBy.stability, (q) => q.orderBy('cards.stability', request.order?.stability))
         .$if(!!orderBy.difficulty, (q) => q.orderBy('cards.difficulty', request.order?.difficulty))
+        // @ts-expect-error - `retrievability` is not a column in the database
+        .orderBy('retrievability', request.order?.retrievability ?? 'desc')
+        .orderBy('cards.id', request.order?.cid ?? 'desc')
     )
   }
   async getList(request: ISearchNoteProps): Promise<PageList<ICardListData>> {
