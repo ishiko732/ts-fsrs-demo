@@ -3,7 +3,7 @@ import cardModel from '@server/models/cards'
 import noteModel from '@server/models/notes'
 import revlogModel from '@server/models/revlog'
 import { type SelectQueryBuilder, sql } from 'kysely'
-import { DECAY, FACTOR } from 'ts-fsrs'
+import { computeDecayFactor,FSRS6_DEFAULT_DECAY } from 'ts-fsrs'
 
 class CardService {
   private buildQuery<S>(request: ISearchNoteProps, query: SelectQueryBuilder<Database, 'notes' | 'cards', S>) {
@@ -48,6 +48,7 @@ class CardService {
     if (Number(count) === 0) {
       return { pagination: { page: page.page, pageSize: page.pageSize, total: 0 }, data: [] }
     }
+    const { decay, factor } = computeDecayFactor(FSRS6_DEFAULT_DECAY)
 
     const data_query = this.buildOrder(
       request,
@@ -72,9 +73,9 @@ class CardService {
             'cards.suspended',
             sql<number | string>`COALESCE(ROUND(
             POWER(
-              1 + ((((EXTRACT(EPOCH FROM NOW()) * 1000)::bigint - cards.last_review) / 86400000.0) * ${FACTOR})
+              1 + ((((EXTRACT(EPOCH FROM NOW()) * 1000)::bigint - cards.last_review) / 86400000.0) * ${factor})
               / NULLIF(cards.stability, 0),
-              ${DECAY}
+              ${decay}
             )::numeric,
             8
           ),0)`.as('retrievability'),
