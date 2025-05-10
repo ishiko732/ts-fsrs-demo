@@ -17,6 +17,7 @@ export interface RevlogTable {
   elapsed_days: ColumnType<number, number, never>
   last_elapsed_days: ColumnType<number, number, never>
   scheduled_days: ColumnType<number, number, never>
+  learning_steps: ColumnType<number, number, never>
   review: ColumnType<number, number, never>
   duration: ColumnType<number, number, never>
   offset: ColumnType<number, number, never>

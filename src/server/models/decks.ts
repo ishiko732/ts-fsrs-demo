@@ -1,5 +1,6 @@
 import { BaseModel } from '@libs/table'
 import type { ColumnType, Generated, JSONColumnType } from 'kysely'
+import type { FSRSParameters } from 'ts-fsrs'
 
 export interface DeckTable {
   id: Generated<number>
@@ -7,13 +8,7 @@ export interface DeckTable {
 
   name: string
   description: string
-  fsrs: JSONColumnType<{
-    request_retention: number
-    maximum_interval: number
-    w: number[]
-    enable_fuzz: boolean
-    enable_short_term: boolean
-  }>
+  fsrs: JSONColumnType<FSRSParameters>
   card_limit: JSONColumnType<{
     new: number
     review: number
