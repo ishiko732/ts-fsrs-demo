@@ -1,4 +1,4 @@
-import { Rating } from 'ts-fsrs'
+import { type FSRSParameters,Rating } from 'ts-fsrs'
 import { z } from 'zod'
 
 export const SuspendSchema = z.object({
@@ -39,9 +39,24 @@ export const FSRSParameterSchema = z.object({
   w: z
     .array(z.number())
     .length(19)
-    .transform((v) => (typeof v === 'string' ? (v as string).replace(/[\[\]]/g, '').split(',').map(Number) : v)),
+    .transform((v) =>
+      typeof v === 'string'
+        ? (v as string)
+            .replace(/[\[\]]/g, '')
+            .split(',')
+            .map(Number)
+        : v,
+    ),
   enable_fuzz: z.boolean(),
   enable_short_term: z.boolean(),
+  learning_steps: z
+    .array(z.string().regex(/^\d+[mhd]$/))
+    .transform((steps) => steps as FSRSParameters['learning_steps'])
+    .default([]),
+  relearning_steps: z
+    .array(z.string().regex(/^\d+[mhd]$/))
+    .transform((steps) => steps as FSRSParameters['relearning_steps'])
+    .default([]),
 })
 
 export const RescheduleSchema = z.object({

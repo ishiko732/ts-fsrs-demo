@@ -13,7 +13,15 @@ export const CardLimitSchema = z.object({
 export const CreateDeckSchema = z.object({
   name: z.string(),
   description: z.string(),
-  fsrs: FSRSParameterSchema.optional().default(generatorParameters()),
+  fsrs: FSRSParameterSchema.optional().default(() => {
+    const params = generatorParameters()
+    return {
+      ...params,
+      w: [...params.w],
+      learning_steps: [...params.learning_steps],
+      relearning_steps: [...params.relearning_steps],
+    }
+  }),
   card_limit: CardLimitSchema,
 })
 
