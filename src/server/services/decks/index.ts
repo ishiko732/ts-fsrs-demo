@@ -1,5 +1,6 @@
 import deckModel, { type DeckTable } from '@server/models/decks'
 import type { Insertable, Selectable, Updateable } from 'kysely'
+import { generatorParameters } from 'ts-fsrs'
 
 import { initDeck } from '../scheduler/init'
 
@@ -40,6 +41,8 @@ class DeckService {
       .where('decks.deleted', '=', false)
       .orderBy('id')
       .executeTakeFirstOrThrow()
+    // migrate fsrs parameters to FSRS-6
+    deck.fsrs = generatorParameters(deck.fsrs)
     return deck
   }
 

@@ -15,6 +15,7 @@ export interface CardTable {
   scheduled_days: number
   reps: number
   lapses: number
+  learning_steps: number
   state: State
   last_review: ColumnType<number | undefined, never, number>
   suspended: ColumnType<boolean, never, boolean>
