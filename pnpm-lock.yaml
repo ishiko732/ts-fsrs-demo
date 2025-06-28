@@ -157,8 +157,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.1.3)
       ts-fsrs:
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: ^5.2.0
+        version: 5.2.0
       vaul:
         specifier: ^0.9.1
         version: 0.9.1(@types/react-dom@19.1.1(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3320,8 +3320,8 @@ packages:
     peerDependencies:
       typescript: '>=4.8.4'
 
-  ts-fsrs@5.0.0:
-    resolution: {integrity: sha512-I2jsVdyM0m6EU4w64nRj7NWueiVPiFmexEF2xBVQ03yA4WQBWi+siJZj0eu6EhoxuS5MCw75ZJnfU8q2wm1LDQ==}
+  ts-fsrs@5.2.0:
+    resolution: {integrity: sha512-r8U9AU+7/EuFmI33rr01ZyP+yNWmuOzMuT2CZk1IbW9SICFLCLicLuXBTBYJ26SVhoqudJ6D2nkdlsw9sCoYEw==}
     engines: {node: '>=18.0.0'}
 
   tsconfig-paths@3.15.0:
@@ -6623,7 +6623,7 @@ snapshots:
     dependencies:
       typescript: 5.8.3
 
-  ts-fsrs@5.0.0: {}
+  ts-fsrs@5.2.0: {}
 
   tsconfig-paths@3.15.0:
     dependencies:
