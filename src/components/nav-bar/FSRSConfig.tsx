@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
+import { useToast } from '@/hooks/use-toast'
 
 import LoadingSpinner from '../loadingSpinner'
 // import { Badge } from '../ui/badge'
@@ -32,6 +33,8 @@ const formSchema = z.object({
   enable_short_term: z.coerce.boolean(),
   card_limit: z.coerce.number().min(0).step(1).int(),
   lapses: z.coerce.number().min(3).step(1).int(),
+  learning_steps: z.string().regex(/^\d+[mhd]$/),
+  relearning_steps: z.string().regex(/^\d+[mhd]$/),
   // lingq_token: z.string().optional(), // disabled
 })
 
@@ -46,6 +49,7 @@ export default function FSRSConfigForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   })
+  const { toast } = useToast()
 
   useEffect(() => {
     new Promise<void>(async (resolve, reject) => {
@@ -63,6 +67,8 @@ export default function FSRSConfigForm({
       form.setValue('enable_short_term', deck.fsrs.enable_short_term)
       form.setValue('card_limit', deck.card_limit.new)
       form.setValue('lapses', deck.card_limit.suspended)
+      form.setValue('learning_steps', deck.fsrs.learning_steps.length > 0 ? deck.fsrs.learning_steps.join(',') : '')
+      form.setValue('relearning_steps', deck.fsrs.relearning_steps.length > 0 ? deck.fsrs.relearning_steps.join(',') : '')
       // form.setValue('lingq_token', param.lingq_token ?? undefined)
 
       setParams(deck)
@@ -82,8 +88,8 @@ export default function FSRSConfigForm({
       .replace(/[\[\]]/g, '')
       .split(',')
       .map((v) => parseFloat(v))
-    if (w.length !== 19) {
-      form.setError('w', { message: 'w must have 19 values' })
+    if (w.length !== 21) {
+      form.setError('w', { message: 'w must have 21 values' })
       return
     }
     if (loading) {
@@ -100,6 +106,8 @@ export default function FSRSConfigForm({
           w: w,
           enable_fuzz: values.enable_fuzz,
           enable_short_term: values.enable_short_term,
+          learning_steps: values.learning_steps ? values.learning_steps.split(',').map((step) => step.trim()) : [],
+          relearning_steps: values.relearning_steps ? values.relearning_steps.split(',').map((step) => step.trim()) : [],
         },
         card_limit: {
           new: values.card_limit,
@@ -109,10 +117,19 @@ export default function FSRSConfigForm({
         },
       },
     })
+    if (!resp.ok) {
+      const text = await resp.text()
+      toast({
+        title: 'Error',
+        description: text,
+        variant: 'destructive',
+      })
+    } else {
+      console.log(await resp.json())
+      window.location.reload()
+    }
 
     setLoading(false)
-    console.log(await resp.json())
-    window.location.reload()
   }
 
   return (
@@ -176,13 +193,7 @@ export default function FSRSConfigForm({
               <div className="flex items-center">
                 <FormLabel className="space-y-0.5 pr-4">enable_fuzz</FormLabel>
                 <FormControl>
-                  <Switch
-                    id="enable_fuzz"
-                    {...field}
-                    value={undefined}
-                    onCheckedChange={field.onChange}
-                    checked={field.value}
-                  />
+                  <Switch id="enable_fuzz" {...field} value={undefined} onCheckedChange={field.onChange} checked={field.value} />
                 </FormControl>
               </div>
               <FormDescription>
@@ -201,13 +212,7 @@ export default function FSRSConfigForm({
               <div className="flex items-center">
                 <FormLabel className="space-y-0.5 pr-4">enable_short-term</FormLabel>
                 <FormControl>
-                  <Switch
-                    id="enable_short-term"
-                    {...field}
-                    value={undefined}
-                    onCheckedChange={field.onChange}
-                    checked={field.value}
-                  />
+                  <Switch id="enable_short-term" {...field} value={undefined} onCheckedChange={field.onChange} checked={field.value} />
                 </FormControl>
               </div>
               <FormDescription>When disabled, this allow user to skip the short-term schedule.</FormDescription>
@@ -215,6 +220,42 @@ export default function FSRSConfigForm({
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="learning_steps"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>learning_steps</FormLabel>
+              <FormControl>
+                <Input placeholder="learning_steps" {...field} className="text-sm" onChange={(e) => field.onChange(e.target.value)} />
+              </FormControl>
+              <FormDescription>
+                {`The learning steps for new cards. The format is a comma-separated list of time units, e.g., '10m,1d'. The time unit can be
+                'm' for minutes, or 'd' for days. If you want to use the default learning steps, leave this field empty.`}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="relearning_steps"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>relearning_steps</FormLabel>
+              <FormControl>
+                <Input placeholder="relearning_steps" {...field} className="text-sm" onChange={(e) => field.onChange(e.target.value)} />
+              </FormControl>
+              <FormDescription>
+                {`The relearning steps for cards that have been forgotten. The format is a comma-separated list of time units, e.g.,
+                '10m,1d'. The time unit can be 'm' for minutes, or 'd' for days. If you want to use the default relearning steps,
+                leave this field empty.`}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="card_limit"
