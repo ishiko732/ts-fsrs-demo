@@ -54,11 +54,13 @@ export default function FSRSConfigForm({
     resolver: zodResolver(formSchema),
   })
   const { toast } = useToast()
+  const [deckId, setDeckId] = useState<number | null>(null)
 
   useEffect(() => {
     new Promise<void>(async (resolve, reject) => {
       const { deckId } = await client.decks.default.$get().then((res) => res.json())
       const resp = await client.decks[':did'].$get({ param: { did: String(deckId) } })
+      setDeckId(deckId)
 
       if (!resp.ok) {
         reject(signOut())
@@ -102,7 +104,7 @@ export default function FSRSConfigForm({
     setLoading(true)
 
     const resp = await client.decks[':did'].$put({
-      param: { did: '1' },
+      param: { did: String(deckId ?? 0) },
       json: {
         fsrs: {
           request_retention: values.request_retention,
