@@ -33,8 +33,12 @@ const formSchema = z.object({
   enable_short_term: z.coerce.boolean(),
   card_limit: z.coerce.number().min(0).step(1).int(),
   lapses: z.coerce.number().min(3).step(1).int(),
-  learning_steps: z.string().regex(/^\d+[mhd]$/),
-  relearning_steps: z.string().regex(/^\d+[mhd]$/),
+  learning_steps: z.string().regex(/^(\d+[mhd])(,\d+[mhd])*$/, {
+    message: "Format must be like '10m,2h,1h'",
+  }),
+  relearning_steps: z.string().regex(/^(\d+[mhd])(,\d+[mhd])*$/, {
+    message: "Format must be like '10m,2h,1h'",
+  }),
   // lingq_token: z.string().optional(), // disabled
 })
 
