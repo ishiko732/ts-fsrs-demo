@@ -17,7 +17,7 @@ importers:
         version: 0.38.0
       '@hono/zod-validator':
         specifier: ^0.4.3
-        version: 0.4.3(hono@4.10.3)(zod@3.23.8)
+        version: 0.4.3(hono@4.11.4)(zod@3.23.8)
       '@hookform/resolvers':
         specifier: ^3.6.0
         version: 3.6.0(react-hook-form@7.52.0(react@19.1.0))
@@ -112,8 +112,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0(@types/react-dom@19.1.1(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       hono:
-        specifier: ^4.10.3
-        version: 4.10.3
+        specifier: ^4.11.4
+        version: 4.11.4
       kysely:
         specifier: ^0.27.6
         version: 0.27.6
@@ -2414,8 +2414,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono@4.10.3:
-    resolution: {integrity: sha512-2LOYWUbnhdxdL8MNbNg9XZig6k+cZXm5IjHn2Aviv7honhBMOHb+jxrKIeJRZJRmn+htUCKhaicxwXuUDlchRA==}
+  hono@4.11.4:
+    resolution: {integrity: sha512-U7tt8JsyrxSRKspfhtLET79pU8K+tInj5QZXs1jSugO1Vq5dFj3kmZsRldo29mTBfcjDRVRXrEZ6LS63Cog9ZA==}
     engines: {node: '>=16.9.0'}
 
   https-proxy-agent@5.0.1:
@@ -2783,6 +2783,7 @@ packages:
   next@15.4.9:
     resolution: {integrity: sha512-/NedNmbiH4Umt/7SohT9VKxEdBt02Lj33xHrukE7d8Li6juT+75sEq4a4U06jggrvdbklKgr78OZEyWZ8XRrtw==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -3661,9 +3662,9 @@ snapshots:
 
   '@floating-ui/utils@0.2.2': {}
 
-  '@hono/zod-validator@0.4.3(hono@4.10.3)(zod@3.23.8)':
+  '@hono/zod-validator@0.4.3(hono@4.11.4)(zod@3.23.8)':
     dependencies:
-      hono: 4.10.3
+      hono: 4.11.4
       zod: 3.23.8
 
   '@hookform/resolvers@3.6.0(react-hook-form@7.52.0(react@19.1.0))':
@@ -5726,7 +5727,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.10.3: {}
+  hono@4.11.4: {}
 
   https-proxy-agent@5.0.1:
     dependencies:
