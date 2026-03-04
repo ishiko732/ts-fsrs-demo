@@ -17,7 +17,7 @@ importers:
         version: 0.38.0
       '@hono/zod-validator':
         specifier: ^0.4.3
-        version: 0.4.3(hono@4.11.10)(zod@3.23.8)
+        version: 0.4.3(hono@4.12.4)(zod@3.23.8)
       '@hookform/resolvers':
         specifier: ^3.6.0
         version: 3.6.0(react-hook-form@7.52.0(react@19.1.0))
@@ -112,8 +112,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0(@types/react-dom@19.1.1(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       hono:
-        specifier: ^4.11.10
-        version: 4.11.10
+        specifier: ^4.12.4
+        version: 4.12.4
       kysely:
         specifier: ^0.27.6
         version: 0.27.6
@@ -2415,8 +2415,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono@4.11.10:
-    resolution: {integrity: sha512-kyWP5PAiMooEvGrA9jcD3IXF7ATu8+o7B3KCbPXid5se52NPqnOpM/r9qeW2heMnOekF4kqR1fXJqCYeCLKrZg==}
+  hono@4.12.4:
+    resolution: {integrity: sha512-ooiZW1Xy8rQ4oELQ++otI2T9DsKpV0M6c6cO6JGx4RTfav9poFFLlet9UMXHZnoM1yG0HWGlQLswBGX3RZmHtg==}
     engines: {node: '>=16.9.0'}
 
   https-proxy-agent@5.0.1:
@@ -3664,9 +3664,9 @@ snapshots:
 
   '@floating-ui/utils@0.2.2': {}
 
-  '@hono/zod-validator@0.4.3(hono@4.11.10)(zod@3.23.8)':
+  '@hono/zod-validator@0.4.3(hono@4.12.4)(zod@3.23.8)':
     dependencies:
-      hono: 4.11.10
+      hono: 4.12.4
       zod: 3.23.8
 
   '@hookform/resolvers@3.6.0(react-hook-form@7.52.0(react@19.1.0))':
@@ -5729,7 +5729,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.11.10: {}
+  hono@4.12.4: {}
 
   https-proxy-agent@5.0.1:
     dependencies:
