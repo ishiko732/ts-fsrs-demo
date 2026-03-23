@@ -41,11 +41,8 @@ export const FSRSParameterSchema = z.object({
     .length(21)
     .transform((v) =>
       typeof v === 'string'
-        ? (v as string)
-            .replace(/[\[\]]/g, '')
-            .split(',')
-            .map(Number)
-        : v,
+        ? (v as string).replace(/[[\]]/g, '').split(',').map(Number)
+        : v
     ),
   enable_fuzz: z.boolean(),
   enable_short_term: z.boolean(),

@@ -1,22 +1,22 @@
-'use client';
+'use client'
 
-import { useCardContext } from '@/context/CardContext';
+import { useCardContext } from '@/context/CardContext'
 
-import { Button } from '../ui/button';
+import { Button } from '../ui/button'
 
 export default function RollbackButton() {
-  const { rollbackAble, handleRollBack } = useCardContext();
+  const { rollbackAble, handleRollBack } = useCardContext()
 
   return rollbackAble ? (
     <Button
-      className='sm:hidden w-full md:w-[80%] mt-4'
+      className="sm:hidden w-full md:w-[80%] mt-4"
       variant={'outline'}
       onClick={async () => {
-        await handleRollBack();
+        await handleRollBack()
       }}
-      title='Press Ctrl+Z(⌘+Z) to rollback'
+      title="Press Ctrl+Z(⌘+Z) to rollback"
     >
       Rollback
     </Button>
-  ) : null;
+  ) : null
 }

@@ -1,29 +1,22 @@
-"use client";
-import { useFormStatus } from "react-dom";
+'use client'
+import { useFormStatus } from 'react-dom'
 
-import LoadingSpinner from "./loadingSpinner";
-import { Button } from "./ui/button";
-
+import LoadingSpinner from './loadingSpinner'
+import { Button } from './ui/button'
 
 export default function LoadingSubmitButton({
   ...props
-}: React.ComponentPropsWithoutRef<"button">) {
-  const { pending } = useFormStatus();
+}: React.ComponentPropsWithoutRef<'button'>) {
+  const { pending } = useFormStatus()
 
   return (
     <Button
       className={props.className}
-      type='submit'
+      type="submit"
       disabled={pending}
       {...props}
     >
-      {pending ? (
-        <>
-          <LoadingSpinner/>
-        </>
-      ) : (
-        props.children
-      )}
+      {pending ? <LoadingSpinner /> : props.children}
     </Button>
-  );
+  )
 }

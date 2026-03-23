@@ -4,7 +4,13 @@ import { RequireAuth } from '@server/middlewares/auth'
 import reviewService from '@server/services/scheduler/review'
 import { Hono } from 'hono'
 
-import { ForgetSchema, NextReviewSchema, RescheduleSchema, SuspendSchema, UndoReviewSchema } from './reviews.schema'
+import {
+  ForgetSchema,
+  NextReviewSchema,
+  RescheduleSchema,
+  SuspendSchema,
+  UndoReviewSchema,
+} from './reviews.schema'
 
 const ReviewApp = new Hono<Env>()
   .use(RequireAuth())
@@ -12,21 +18,39 @@ const ReviewApp = new Hono<Env>()
     const userId = Number(c.get('authUserId'))
     const { cid, suspended } = c.req.valid('json')
 
-    const data = await reviewService.switch_suspend(userId, cid, Date.now(), suspended)
+    const data = await reviewService.switch_suspend(
+      userId,
+      cid,
+      Date.now(),
+      suspended
+    )
     return c.json(data)
   })
   .post('/forget', zValidator('json', ForgetSchema), async (c) => {
     const userId = Number(c.get('authUserId'))
     const { cid, offset, reset_count } = c.req.valid('json')
 
-    const data = await reviewService.forget(userId, cid, Date.now(), offset, reset_count)
+    const data = await reviewService.forget(
+      userId,
+      cid,
+      Date.now(),
+      offset,
+      reset_count
+    )
     return c.json(data)
   })
   .post('/review', zValidator('json', NextReviewSchema), async (c) => {
     const userId = Number(c.get('authUserId'))
     const { cid, rating, timestamp, offset, duration } = c.req.valid('json')
 
-    const data = await reviewService.next(userId, cid, timestamp, rating, offset, duration)
+    const data = await reviewService.next(
+      userId,
+      cid,
+      timestamp,
+      rating,
+      offset,
+      duration
+    )
     return c.json(data)
   })
   .delete('/review', zValidator('json', UndoReviewSchema), async (c) => {

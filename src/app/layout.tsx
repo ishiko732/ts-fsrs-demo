@@ -23,12 +23,29 @@ const inter = FontSans({
   variable: '--font-sans',
 })
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <meta name="google-site-verification" content="O3iry-K9HB2g3JEHQ5AJ3sd9GBSi9KzUM8nzYiBqyGM" />
-      <body className={cn('min-h-screen grid-rows-[min-content_1fr] bg-background font-sans antialiased', inter.variable)}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <meta
+        name="google-site-verification"
+        content="O3iry-K9HB2g3JEHQ5AJ3sd9GBSi9KzUM8nzYiBqyGM"
+      />
+      <body
+        className={cn(
+          'min-h-screen grid-rows-[min-content_1fr] bg-background font-sans antialiased',
+          inter.variable
+        )}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <AuthProvider>
             <NavBar />
             {children}

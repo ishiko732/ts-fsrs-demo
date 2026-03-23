@@ -3,11 +3,18 @@ import type { StateBox } from '@server/services/scheduler/review/types'
 import { fixDate, State } from 'ts-fsrs'
 
 export type ChangeState = {
-  updateStateBox: (noteBox: { [key in StateBox]: Array<TReviewCardDetail> }, currentType: StateBox, nextDue?: Date) => StateBox
+  updateStateBox: (
+    noteBox: { [key in StateBox]: Array<TReviewCardDetail> },
+    currentType: StateBox,
+    nextDue?: Date
+  ) => StateBox
 }
 
 export function useChangeState() {
-  function updateStateBox(noteBox: { [key in StateBox]: Array<TReviewCardDetail> }, currentType: StateBox /**nextDue?: number*/) {
+  function updateStateBox(
+    noteBox: { [key in StateBox]: Array<TReviewCardDetail> },
+    currentType: StateBox /**nextDue?: number*/
+  ) {
     let change: StateBox = State.New // default State.New
     switch (currentType) {
       case State.New:
@@ -39,15 +46,17 @@ export function useChangeState() {
     change =
       change === State.Learning &&
       noteBox[State.Learning].length > 0 &&
-      fixDate(noteBox[State.Learning][0].due).getTime() - new Date().getTime() > 0
+      fixDate(noteBox[State.Learning][0].due).getTime() - Date.now() > 0
         ? randomNewOrReviewState(noteBox)
         : change
     return change
   }
 
-  function randomNewOrReviewState(noteBox: {
-    [key in StateBox]: Array<TReviewCardDetail>
-  }) {
+  function randomNewOrReviewState(
+    noteBox: {
+      [key in StateBox]: Array<TReviewCardDetail>
+    }
+  ) {
     if (noteBox[State.New].length === 0) {
       return State.Review
     } else if (noteBox[State.Review].length === 0) {

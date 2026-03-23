@@ -45,7 +45,7 @@ const LingqApp = new Hono<Env>()
         token: params.token,
         lang: params.lang,
       },
-      { page, page_size, loop: false },
+      { page, page_size, loop: false }
     )
     if (!result) {
       return c.json({ error: 'Sync failed' }, 500)
@@ -56,7 +56,7 @@ const LingqApp = new Hono<Env>()
     let path = c.req.path.replace('/api/extras/lingq/proxy/', '')
     const searchParams = new URL(c.req.url).searchParams
     if (searchParams.size > 0) {
-      path += '?' + searchParams.toString()
+      path += `?${searchParams.toString()}`
     }
     const proxy_path = `https://www.lingq.com/api/${path}`
     console.log('proxy', proxy_path)
@@ -69,8 +69,15 @@ const LingqApp = new Hono<Env>()
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       })
-      const headers = result.headers as unknown as Record<string, string | string[]>
-      return c.text(await result.text(), result.status as ContentfulStatusCode, headers)
+      const headers = result.headers as unknown as Record<
+        string,
+        string | string[]
+      >
+      return c.text(
+        await result.text(),
+        result.status as ContentfulStatusCode,
+        headers
+      )
     }
     const result = proxy(proxy_path, {
       ...c.req,

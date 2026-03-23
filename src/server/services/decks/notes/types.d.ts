@@ -3,7 +3,6 @@ interface ISearchNoteProps {
   // TODO
   did?: number
 
-
   keyword?: string
   deleted?: boolean
   page: Omit<IPagination, 'total'>

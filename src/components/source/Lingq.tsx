@@ -1,6 +1,9 @@
 'use client'
 import type { TCardDetail } from '@server/services/decks/cards'
-import { getLingqTTS, handlerProxy } from '@server/services/extras/lingq/request'
+import {
+  getLingqTTS,
+  handlerProxy,
+} from '@server/services/extras/lingq/request'
 import { useEffect, useRef, useState } from 'react'
 
 import Audio from '@/components/card/Audio'
@@ -39,7 +42,7 @@ export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
       })()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note])
+  }, [note, lang])
   return (
     <div className="item-center">
       <div className="w-full">
@@ -48,7 +51,9 @@ export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
           {/* <span className="badge">{note.answer}</span> */}
         </span>
         <div className="flex justify-center flex-col items-center opacity-60 pt-4">
-          {open && transliteration && <div> {<MergeTransliteration {...transliteration} />}</div>}
+          {open && transliteration && (
+            <div> {<MergeTransliteration {...transliteration} />}</div>
+          )}
           <div className="text-sm">
             {tags?.map((tag) => (
               <span key={tag} className="badge">

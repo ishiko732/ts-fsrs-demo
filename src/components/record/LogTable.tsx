@@ -1,8 +1,16 @@
 import type { RevlogTable } from '@server/models/revlog'
 import type { Selectable } from 'kysely'
-import React from 'react'
 
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import DateItem from '@/lib/formatDate'
 
 type Props = {
@@ -20,9 +28,15 @@ async function LogTable({ logs }: Props) {
           <TableHead>Date</TableHead>
           <TableHead>State</TableHead>
           <TableHead>Gard</TableHead>
-          <TableHead className="text-right hidden sm:table-cell">elapsed</TableHead>
-          <TableHead className="text-right hidden sm:table-cell">scheduled</TableHead>
-          <TableHead className="text-right hidden sm:table-cell">duration</TableHead>
+          <TableHead className="text-right hidden sm:table-cell">
+            elapsed
+          </TableHead>
+          <TableHead className="text-right hidden sm:table-cell">
+            scheduled
+          </TableHead>
+          <TableHead className="text-right hidden sm:table-cell">
+            duration
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -34,9 +48,15 @@ async function LogTable({ logs }: Props) {
             </TableCell>
             <TableCell>{log.state}</TableCell>
             <TableCell>{log.grade}</TableCell>
-            <TableCell className="text-right hidden sm:table-cell">{log.elapsed_days}</TableCell>
-            <TableCell className="text-right hidden sm:table-cell">{log.scheduled_days}</TableCell>
-            <TableCell className="text-right hidden sm:table-cell">{log.duration > 0 ? durationFormat(log.duration) : '/'}</TableCell>
+            <TableCell className="text-right hidden sm:table-cell">
+              {log.elapsed_days}
+            </TableCell>
+            <TableCell className="text-right hidden sm:table-cell">
+              {log.scheduled_days}
+            </TableCell>
+            <TableCell className="text-right hidden sm:table-cell">
+              {log.duration > 0 ? durationFormat(log.duration) : '/'}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -44,7 +64,9 @@ async function LogTable({ logs }: Props) {
         <TableFooter>
           <TableRow>
             <TableCell colSpan={6}>Total </TableCell>
-            <TableCell className="text-right">{durationFormat(total_duration)}</TableCell>
+            <TableCell className="text-right">
+              {durationFormat(total_duration)}
+            </TableCell>
           </TableRow>
         </TableFooter>
       )}

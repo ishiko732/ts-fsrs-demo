@@ -3,32 +3,58 @@ import cardModel from '@server/models/cards'
 import noteModel from '@server/models/notes'
 import revlogModel from '@server/models/revlog'
 import { type SelectQueryBuilder, sql } from 'kysely'
-import { computeDecayFactor,FSRS6_DEFAULT_DECAY } from 'ts-fsrs'
+import { computeDecayFactor, FSRS6_DEFAULT_DECAY } from 'ts-fsrs'
 
 class CardService {
-  private buildQuery<S>(request: ISearchNoteProps, query: SelectQueryBuilder<Database, 'notes' | 'cards', S>) {
+  private buildQuery<S>(
+    request: ISearchNoteProps,
+    query: SelectQueryBuilder<Database, 'notes' | 'cards', S>
+  ) {
     return query
       .where('cards.uid', '=', request.uid)
       .$if(typeof request.deleted === 'boolean', (q) => {
         return q.where('notes.deleted', '=', request.deleted!)
       })
       .$if(!!request.keyword, (q) =>
-        q.where((eb) => eb('notes.question', 'ilike', `%${request.keyword}%`).or('notes.answer', 'ilike', `%${request.keyword}%`)),
+        q.where((eb) =>
+          eb('notes.question', 'ilike', `%${request.keyword}%`).or(
+            'notes.answer',
+            'ilike',
+            `%${request.keyword}%`
+          )
+        )
       )
   }
 
-  private buildOrder<S>(request: ISearchNoteProps, query: SelectQueryBuilder<Database, 'notes' | 'cards', S>) {
+  private buildOrder<S>(
+    request: ISearchNoteProps,
+    query: SelectQueryBuilder<Database, 'notes' | 'cards', S>
+  ) {
     const orderBy = request.order ?? {}
     return (
       query
-        .$if(!!orderBy.question, (q) => q.orderBy('notes.question', request.order?.question))
-        .$if(!!orderBy.answer, (q) => q.orderBy('notes.answer', request.order?.answer))
-        .$if(!!orderBy.source, (q) => q.orderBy('notes.source', request.order?.source))
+        .$if(!!orderBy.question, (q) =>
+          q.orderBy('notes.question', request.order?.question)
+        )
+        .$if(!!orderBy.answer, (q) =>
+          q.orderBy('notes.answer', request.order?.answer)
+        )
+        .$if(!!orderBy.source, (q) =>
+          q.orderBy('notes.source', request.order?.source)
+        )
         .$if(!!orderBy.due, (q) => q.orderBy('cards.due', request.order?.due))
-        .$if(!!orderBy.state, (q) => q.orderBy('cards.state', request.order?.state))
-        .$if(!!orderBy.reps, (q) => q.orderBy('cards.reps', request.order?.reps))
-        .$if(!!orderBy.stability, (q) => q.orderBy('cards.stability', request.order?.stability))
-        .$if(!!orderBy.difficulty, (q) => q.orderBy('cards.difficulty', request.order?.difficulty))
+        .$if(!!orderBy.state, (q) =>
+          q.orderBy('cards.state', request.order?.state)
+        )
+        .$if(!!orderBy.reps, (q) =>
+          q.orderBy('cards.reps', request.order?.reps)
+        )
+        .$if(!!orderBy.stability, (q) =>
+          q.orderBy('cards.stability', request.order?.stability)
+        )
+        .$if(!!orderBy.difficulty, (q) =>
+          q.orderBy('cards.difficulty', request.order?.difficulty)
+        )
         // @ts-expect-error - `retrievability` is not a column in the database
         .orderBy('retrievability', request.order?.retrievability ?? 'desc')
         .orderBy('cards.id', request.order?.cid ?? 'desc')
@@ -40,13 +66,16 @@ class CardService {
       noteModel.db
         .selectFrom('cards')
         .innerJoin('notes', 'notes.id', 'cards.nid')
-        .select((b) => b.fn.count('notes.id').as('count')),
+        .select((b) => b.fn.count('notes.id').as('count'))
     )
 
     const { count } = await count_query.executeTakeFirstOrThrow()
     const page = request.page
     if (Number(count) === 0) {
-      return { pagination: { page: page.page, pageSize: page.pageSize, total: 0 }, data: [] }
+      return {
+        pagination: { page: page.page, pageSize: page.pageSize, total: 0 },
+        data: [],
+      }
     }
     const { decay, factor } = computeDecayFactor(FSRS6_DEFAULT_DECAY)
 
@@ -82,14 +111,18 @@ class CardService {
             'cards.deleted',
           ])
           .offset(page.pageSize * (page.page - 1))
-          .limit(page.pageSize),
-      ),
+          .limit(page.pageSize)
+      )
     )
 
     const data = await data_query.execute()
 
     return {
-      pagination: { page: page.page, pageSize: page.pageSize, total: Number(count) },
+      pagination: {
+        page: page.page,
+        pageSize: page.pageSize,
+        total: Number(count),
+      },
       data: data.map((d) => {
         d.retrievability = Number(d.retrievability)
         return d as ICardListData
@@ -97,7 +130,12 @@ class CardService {
     }
   }
 
-  async getDetail(uid: number, nid: number, cid?: number, deleted: boolean = false) {
+  async getDetail(
+    uid: number,
+    nid: number,
+    cid?: number,
+    deleted: boolean = false
+  ) {
     const data_promise = cardModel.db
       .selectFrom('cards')
       .innerJoin('notes', 'notes.id', 'cards.nid')
@@ -140,7 +178,7 @@ class CardService {
     include?: Partial<{
       deleted?: boolean
       suspended?: boolean
-    }>,
+    }>
   ): Promise<PageList<number>> {
     let count_promise = cardModel.db
       .selectFrom('cards')
@@ -164,9 +202,16 @@ class CardService {
       query_promise = query_promise.where('suspended', '=', false)
     }
 
-    const [count, data] = await Promise.all([count_promise.executeTakeFirstOrThrow(), query_promise.execute()])
+    const [count, data] = await Promise.all([
+      count_promise.executeTakeFirstOrThrow(),
+      query_promise.execute(),
+    ])
     return {
-      pagination: { page: page.page, pageSize: page.pageSize, total: Number(count.count) },
+      pagination: {
+        page: page.page,
+        pageSize: page.pageSize,
+        total: Number(count.count),
+      },
       data: data.map((d) => d.id),
     }
   }
@@ -174,6 +219,8 @@ class CardService {
 
 export const cardService = new CardService()
 export type CardServiceType = typeof cardService
-export type TCardDetail = Awaited<ReturnType<CardServiceType['getDetail']>>['card']
+export type TCardDetail = Awaited<
+  ReturnType<CardServiceType['getDetail']>
+>['card']
 
 export default cardService

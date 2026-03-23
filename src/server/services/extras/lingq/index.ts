@@ -64,7 +64,7 @@ class LingqService {
       page: number
       page_size: number
       loop: boolean
-    }>,
+    }>
   ) {
     let data: Lingqs
     const promise: Promise<boolean>[] = []
@@ -99,7 +99,9 @@ class LingqService {
 
   async getLingqLanguageCode(token: string) {
     const contexts = await getLingqContext({ token: token })
-    return contexts.results.map((context) => context.language.code as languageCode)
+    return contexts.results.map(
+      (context) => context.language.code as languageCode
+    )
   }
 }
 

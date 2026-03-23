@@ -91,7 +91,8 @@ export function getProviders(): Provider[] {
           }
 
           // const user = await initUser(userCreatedRequired)
-          const { user, isNew } = await userService.createUser(userCreatedRequired)
+          const { user, isNew } =
+            await userService.createUser(userCreatedRequired)
           if (isNew) {
             waitUntil(initData(user.id))
           }
@@ -107,7 +108,7 @@ export function getProviders(): Provider[] {
           }
           return null
         },
-      }) as Provider,
+      }) as Provider
     )
   }
   return providers

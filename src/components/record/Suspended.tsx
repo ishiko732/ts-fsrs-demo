@@ -13,17 +13,24 @@ type Props = {
 }
 
 export default function Suspended({ cid, suspend, className }: Props) {
-  const suspendAction = async function (cid: number, suspend: boolean) {
+  const suspendAction = (async (cid: number, suspend: boolean) => {
     'use server'
     const uid = await getSessionUserIdThrow()
-    const data = await reviewService.switch_suspend(uid, cid, Date.now(), suspend)
+    const data = await reviewService.switch_suspend(
+      uid,
+      cid,
+      Date.now(),
+      suspend
+    )
 
     revalidatePath(`/note/${data.nid}`)
-  }.bind(null, cid, !suspend)
+  }).bind(null, cid, !suspend)
 
   return (
     <form action={suspendAction} className="flex justify-center">
-      <SuspendedSubmit className={cn(className)}>Toggle Suspended</SuspendedSubmit>
+      <SuspendedSubmit className={cn(className)}>
+        Toggle Suspended
+      </SuspendedSubmit>
     </form>
   )
 }

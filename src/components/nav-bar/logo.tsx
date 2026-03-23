@@ -1,12 +1,16 @@
 'use client'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@radix-ui/react-hover-card'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@radix-ui/react-hover-card'
 import { Building2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
 import { FSRSVersion } from 'ts-fsrs'
 
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+
 const Logo = ({ env }: { env: string }) => {
   const matchVersion = FSRSVersion.match(/\bv?(\d+\.\d+\.\d+)\b/)
   return (
@@ -14,7 +18,10 @@ const Logo = ({ env }: { env: string }) => {
       <div className="btn btn-ghost text-xl hidden sm:flex">
         <Image src="/osr.png" alt="TS-FSRS-DEMO" width={32} height={32} />
         <HoverCard>
-          <HoverCardTrigger className="hidden font-bold sm:inline-block mt-1 line-clamp-3 cursor-pointer " asChild>
+          <HoverCardTrigger
+            className="hidden font-bold sm:inline-block mt-1 line-clamp-3 cursor-pointer "
+            asChild
+          >
             <div>
               <Link href={'/'} aria-label="home">
                 TS-FSRS-DEMO
@@ -40,22 +47,34 @@ const Logo = ({ env }: { env: string }) => {
                 <p className="text-sm">
                   {'The current ts-fsrs-demo is using '}
                   <span className="underline underline-offset-1">
-                    <Link href={'https://github.com/open-spaced-repetition/ts-fsrs'} target="_blank">
+                    <Link
+                      href={'https://github.com/open-spaced-repetition/ts-fsrs'}
+                      target="_blank"
+                    >
                       ts-fsrs
                     </Link>
                   </span>
                   version :
                   <span className="underline underline-offset-1">
-                    <Link href={`https://www.npmjs.com/package/ts-fsrs/v/${matchVersion?.[1] ?? 'latest'}`} target="_blank">
+                    <Link
+                      href={`https://www.npmjs.com/package/ts-fsrs/v/${matchVersion?.[1] ?? 'latest'}`}
+                      target="_blank"
+                    >
                       {FSRSVersion}
                     </Link>
                   </span>
-                  , and the build environment : <span className="font-bold"> {env}</span>
+                  , and the build environment :{' '}
+                  <span className="font-bold"> {env}</span>
                 </p>
                 <div className="flex items-center py-4">
                   <Building2 className="mr-2 mt-1 h-4 w-4 " />
-                  <Link href="https://github.com/open-spaced-repetition" target={'_blank'}>
-                    <span className="text-xs text-muted-foreground underline underline-offset-1">open-spaced-repetition</span>
+                  <Link
+                    href="https://github.com/open-spaced-repetition"
+                    target={'_blank'}
+                  >
+                    <span className="text-xs text-muted-foreground underline underline-offset-1">
+                      open-spaced-repetition
+                    </span>
                   </Link>
                 </div>
               </div>

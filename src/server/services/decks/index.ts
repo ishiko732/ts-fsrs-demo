@@ -20,7 +20,10 @@ class DeckService {
     return this.addDeck(uid, init_deck_data)
   }
 
-  async addDeck(uid: number, deck: Omit<Insertable<DeckTable>, 'uid'>): Promise<number> {
+  async addDeck(
+    uid: number,
+    deck: Omit<Insertable<DeckTable>, 'uid'>
+  ): Promise<number> {
     const now = Date.now()
     const deck_data = {
       ...deck,
@@ -28,7 +31,11 @@ class DeckService {
       created: now,
       updated: now,
     }
-    const { id } = await deckModel.db.insertInto('decks').values(deck_data).returning('id').executeTakeFirstOrThrow()
+    const { id } = await deckModel.db
+      .insertInto('decks')
+      .values(deck_data)
+      .returning('id')
+      .executeTakeFirstOrThrow()
     return id
   }
 
@@ -46,7 +53,11 @@ class DeckService {
     return deck
   }
 
-  async modifyDeck(uid: number, deck: Partial<Updateable<DeckTable>>, did?: number): Promise<number> {
+  async modifyDeck(
+    uid: number,
+    deck: Partial<Updateable<DeckTable>>,
+    did?: number
+  ): Promise<number> {
     const now = Date.now()
     const updated = await deckModel.db
       .updateTable(deckModel.table)

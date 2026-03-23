@@ -15,7 +15,10 @@ export default async function DisplayMsg({ note }: { note: TCardDetail }) {
           {/* <span className="badge">{note.answer}</span> */}
         </span>
         <div className="flex justify-center flex-col items-center text-sm opacity-60">
-          <div> {transliteration && <MergeTransliteration {...transliteration} />}</div>
+          <div>
+            {' '}
+            {transliteration && <MergeTransliteration {...transliteration} />}
+          </div>
           <div>
             {tags?.map((tag) => (
               <span key={tag} className="badge">
@@ -48,7 +51,13 @@ export default async function DisplayMsg({ note }: { note: TCardDetail }) {
 }
 
 export function MergeTransliteration(transliteration: LingqTransliteration) {
-  function mergeText(text: string | string[] | { [key: string]: string }[] | { [key: string]: string }) {
+  function mergeText(
+    text:
+      | string
+      | string[]
+      | { [key: string]: string }[]
+      | { [key: string]: string }
+  ) {
     if (text === undefined) {
       return ''
     }
@@ -73,8 +82,25 @@ export function MergeTransliteration(transliteration: LingqTransliteration) {
   ))
 }
 
-export function HighlightedWord({ text, word }: { text: string; word: string }) {
+export function HighlightedWord({
+  text,
+  word,
+}: {
+  text: string
+  word: string
+}) {
   const parts = text.split(new RegExp(`(${word})`, 'gi'))
 
-  return <span>{parts.map((part, index) => (part.toLowerCase() === word.toLowerCase() ? <strong key={index}>{part}</strong> : part))}</span>
+  return (
+    <span>
+      {parts.map((part, index) =>
+        part.toLowerCase() === word.toLowerCase() ? (
+          // biome-ignore lint/suspicious/noArrayIndexKey: text parts from split have no stable key
+          <strong key={index}>{part}</strong>
+        ) : (
+          part
+        )
+      )}
+    </span>
+  )
 }

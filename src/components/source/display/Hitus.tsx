@@ -16,7 +16,9 @@ export default async function HitsuDisplay({ note }: { note: TCardDetail }) {
   return (
     <div className="item-center w-full">
       <div className="w-full">
-        <span className="flex justify-center items-center text-2xl">{note.question}</span>
+        <span className="flex justify-center items-center text-2xl">
+          {note.question}
+        </span>
         <div className="flex justify-center items-center text-sm opacity-60">
           {分類 && <span>{`${分類}`}</span>}
           {分類 && 品詞 && <span>|</span>}

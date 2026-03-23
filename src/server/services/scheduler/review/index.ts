@@ -4,23 +4,29 @@ import { db } from '@server/libs/db'
 import type { Database } from '@server/models'
 import cardModel, { type CardTable } from '@server/models/cards'
 import deckModel from '@server/models/decks'
-import { revlogModel, type RevlogTable } from '@server/models/revlog'
+import { type RevlogTable, revlogModel } from '@server/models/revlog'
 import type { ExpressionBuilder, Insertable, Updateable } from 'kysely'
 import { sql } from 'kysely'
 import {
   type Card,
-  fsrs,
   type FSRSHistory,
   type FSRSParameters,
-  generatorParameters,
+  fsrs,
   type Grade,
+  generatorParameters,
   Rating,
   type RecordLogItem,
   State,
 } from 'ts-fsrs'
 
 class ReviewService {
-  async forget(uid: number, cid: number, timestamp: number, offset: number, reset_count: boolean = false) {
+  async forget(
+    uid: number,
+    cid: number,
+    timestamp: number,
+    offset: number,
+    reset_count: boolean = false
+  ) {
     const cardInfo = await cardModel.db
       .selectFrom(cardModel.table)
       .selectAll()
@@ -35,36 +41,45 @@ class ReviewService {
 
     const f = fsrs(deckInfo.fsrs)
 
-    const { card, log } = f.forget(cardInfo, timestamp, reset_count, (recordItem: RecordLogItem) => {
-      const data = {
-        card: {
-          ...recordItem.card,
-          due: +recordItem.card.due,
-          last_review: recordItem.card.last_review?.getTime() || undefined,
-          updated: +timestamp,
-        } satisfies Updateable<CardTable>,
-        log: {
-          ...recordItem.log,
-          grade: recordItem.log.rating,
-          due: +recordItem.log.due,
-          review: +recordItem.log.review,
+    const { card, log } = f.forget(
+      cardInfo,
+      timestamp,
+      reset_count,
+      (recordItem: RecordLogItem) => {
+        const data = {
+          card: {
+            ...recordItem.card,
+            due: +recordItem.card.due,
+            last_review: recordItem.card.last_review?.getTime() || undefined,
+            updated: +timestamp,
+          } satisfies Updateable<CardTable>,
+          log: {
+            ...recordItem.log,
+            grade: recordItem.log.rating,
+            due: +recordItem.log.due,
+            review: +recordItem.log.review,
 
-          cid: cardInfo.id,
-          did: cardInfo.did,
-          nid: cardInfo.nid,
-          uid: cardInfo.uid,
-          deleted: false,
-          duration: 0,
-          offset: offset,
-        } satisfies Insertable<RevlogTable>,
+            cid: cardInfo.id,
+            did: cardInfo.did,
+            nid: cardInfo.nid,
+            uid: cardInfo.uid,
+            deleted: false,
+            duration: 0,
+            offset: offset,
+          } satisfies Insertable<RevlogTable>,
+        }
+
+        Reflect.deleteProperty(data.log, 'rating') // rating -> grade
+        return data
       }
-
-      Reflect.deleteProperty(data.log, 'rating') // rating -> grade
-      return data
-    })
+    )
 
     await cardModel.db.transaction().execute(async (trx) => {
-      await trx.updateTable(cardModel.table).set(card).where('id', '=', cid).execute()
+      await trx
+        .updateTable(cardModel.table)
+        .set(card)
+        .where('id', '=', cid)
+        .execute()
 
       await trx.insertInto(revlogModel.table).values(log).execute()
     })
@@ -80,7 +95,12 @@ class ReviewService {
     }
   }
 
-  async switch_suspend(uid: number, cid: number, timestamp: number, suspended: boolean) {
+  async switch_suspend(
+    uid: number,
+    cid: number,
+    timestamp: number,
+    suspended: boolean
+  ) {
     const cardInfo = await cardModel.db
       .selectFrom(cardModel.table)
       .selectAll()
@@ -115,7 +135,7 @@ class ReviewService {
     options?: Partial<{
       dids: number[]
       source: string[]
-    }>,
+    }>
   ) {
     // default options
     const dids = options?.dids ?? []
@@ -140,15 +160,20 @@ class ReviewService {
         ])
         .where((eb) =>
           eb.or([
-            eb.and([eb('c.state', 'in', [State.Review]), eb('c.due', '<', end_timestamp)]),
+            eb.and([
+              eb('c.state', 'in', [State.Review]),
+              eb('c.due', '<', end_timestamp),
+            ]),
             eb.and([eb('c.state', 'not in', [State.Review])]),
-          ]),
+          ])
         )
         .where('c.uid', '=', uid)
         .where('c.deleted', '=', false)
         .where('c.suspended', '=', false)
         .where('d.deleted', '=', false)
-        .$if(Array.isArray(dids) && dids.length > 0, (q) => q.where('c.did', 'in', dids))
+        .$if(Array.isArray(dids) && dids.length > 0, (q) =>
+          q.where('c.did', 'in', dids)
+        )
 
     const query = db
       .selectFrom((eb) => sub_query(eb).as('sub'))
@@ -156,7 +181,9 @@ class ReviewService {
       .selectAll()
       .select('sub.id as cid')
       .whereRef('sub.rn', '<=', 'sub.state_limit')
-      .$if(Array.isArray(source) && source.length > 0, (q) => q.where('n.source', 'in', source))
+      .$if(Array.isArray(source) && source.length > 0, (q) =>
+        q.where('n.source', 'in', source)
+      )
 
     return query.execute()
   }
@@ -178,7 +205,10 @@ class ReviewService {
     return result
   }
 
-  async getReviewCardDetail(uid: number, cid: number): Promise<TReviewCardDetail> {
+  async getReviewCardDetail(
+    uid: number,
+    cid: number
+  ): Promise<TReviewCardDetail> {
     return cardModel.db
       .selectFrom('cards as c')
       .innerJoin('decks as d', 'd.id', 'c.did')
@@ -205,7 +235,14 @@ class ReviewService {
       .executeTakeFirstOrThrow()
   }
 
-  async next(uid: number, cid: number, timestamp: number, grade: Grade, offset: number, duration: number = 0) {
+  async next(
+    uid: number,
+    cid: number,
+    timestamp: number,
+    grade: Grade,
+    offset: number,
+    duration: number = 0
+  ) {
     const cardInfo = await cardModel.db
       .selectFrom(cardModel.table)
       .innerJoin('decks', 'decks.id', 'cards.did')
@@ -219,44 +256,60 @@ class ReviewService {
     const card_limit = cardInfo.card_limit ?? {}
     const lapses = card_limit.suspended ?? 8
 
-    const { card, log } = f.next(cardInfo, timestamp, grade, (recordItem: RecordLogItem) => {
-      const suspended = grade === Rating.Again && recordItem.card.lapses > 0 && recordItem.card.lapses % lapses == 0
-      const data = {
-        card: {
-          due: +recordItem.card.due,
-          stability: recordItem.card.stability,
-          difficulty: recordItem.card.difficulty,
-          elapsed_days: recordItem.card.elapsed_days,
-          scheduled_days: recordItem.card.scheduled_days,
-          reps: recordItem.card.reps,
-          lapses: recordItem.card.lapses,
-          state: recordItem.card.state,
-          last_review: recordItem.card.last_review?.getTime() || undefined,
-          suspended: suspended,
-          updated: Date.now(),
-        } satisfies Updateable<CardTable>,
-        log: {
-          ...recordItem.log,
-          grade: recordItem.log.rating,
-          due: +recordItem.log.due,
-          review: +recordItem.log.review,
+    const { card, log } = f.next(
+      cardInfo,
+      timestamp,
+      grade,
+      (recordItem: RecordLogItem) => {
+        const suspended =
+          grade === Rating.Again &&
+          recordItem.card.lapses > 0 &&
+          recordItem.card.lapses % lapses === 0
+        const data = {
+          card: {
+            due: +recordItem.card.due,
+            stability: recordItem.card.stability,
+            difficulty: recordItem.card.difficulty,
+            elapsed_days: recordItem.card.elapsed_days,
+            scheduled_days: recordItem.card.scheduled_days,
+            reps: recordItem.card.reps,
+            lapses: recordItem.card.lapses,
+            state: recordItem.card.state,
+            last_review: recordItem.card.last_review?.getTime() || undefined,
+            suspended: suspended,
+            updated: Date.now(),
+          } satisfies Updateable<CardTable>,
+          log: {
+            ...recordItem.log,
+            grade: recordItem.log.rating,
+            due: +recordItem.log.due,
+            review: +recordItem.log.review,
 
-          cid: cardInfo.id,
-          did: cardInfo.did,
-          nid: cardInfo.nid,
-          uid: cardInfo.uid,
-          duration: duration,
-          offset: offset,
-        } satisfies Insertable<RevlogTable>,
+            cid: cardInfo.id,
+            did: cardInfo.did,
+            nid: cardInfo.nid,
+            uid: cardInfo.uid,
+            duration: duration,
+            offset: offset,
+          } satisfies Insertable<RevlogTable>,
+        }
+        Reflect.deleteProperty(data.log, 'rating') // rating -> grade
+        return data
       }
-      Reflect.deleteProperty(data.log, 'rating') // rating -> grade
-      return data
-    })
+    )
 
     const log_id = await cardModel.db.transaction().execute(async (trx) => {
-      await trx.updateTable(cardModel.table).set(card).where('id', '=', cardInfo.id).execute()
+      await trx
+        .updateTable(cardModel.table)
+        .set(card)
+        .where('id', '=', cardInfo.id)
+        .execute()
 
-      const result = await trx.insertInto(revlogModel.table).values(log).returning('revlog.id').executeTakeFirstOrThrow()
+      const result = await trx
+        .insertInto(revlogModel.table)
+        .values(log)
+        .returning('revlog.id')
+        .executeTakeFirstOrThrow()
       return result.id
     })
 
@@ -297,7 +350,10 @@ class ReviewService {
 
     const now = Date.now()
     const prev_card = f.rollback(cardInfo, logInfoWithRating, (card: Card) => {
-      const suspended = logInfo.grade === Rating.Again && card.lapses > 0 && card.lapses % lapses == 0
+      const suspended =
+        logInfo.grade === Rating.Again &&
+        card.lapses > 0 &&
+        card.lapses % lapses === 0
       return {
         due: +card.due,
         stability: card.stability,
@@ -314,8 +370,18 @@ class ReviewService {
     })
 
     await cardModel.db.transaction().execute(async (trx) => {
-      const card_promise = trx.updateTable(cardModel.table).set(prev_card).where('id', '=', cid).where('uid', '=', uid).execute()
-      const log_promise = trx.updateTable(revlogModel.table).set({ deleted: true }).where('id', '=', lid).where('uid', '=', uid).execute()
+      const card_promise = trx
+        .updateTable(cardModel.table)
+        .set(prev_card)
+        .where('id', '=', cid)
+        .where('uid', '=', uid)
+        .execute()
+      const log_promise = trx
+        .updateTable(revlogModel.table)
+        .set({ deleted: true })
+        .where('id', '=', lid)
+        .where('uid', '=', uid)
+        .execute()
       await Promise.all([card_promise, log_promise])
     })
 
@@ -402,5 +468,7 @@ class ReviewService {
 
 export const reviewService = new ReviewService()
 export type ReviewServiceType = typeof reviewService
-export type TReviewCardDetail = Awaited<ReturnType<ReviewServiceType['getReviewCardDetails']>>[number]
+export type TReviewCardDetail = Awaited<
+  ReturnType<ReviewServiceType['getReviewCardDetails']>
+>[number]
 export default reviewService

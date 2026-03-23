@@ -1,8 +1,10 @@
 'use client'
 
 import client from '@server/libs/rpc'
-import type { TReviewCardDetail } from '@server/services/scheduler/review'
-import type { ReviewServiceType } from '@server/services/scheduler/review'
+import type {
+  ReviewServiceType,
+  TReviewCardDetail,
+} from '@server/services/scheduler/review'
 import { createReviewSnapshot } from '@server/services/scheduler/review/preview'
 import { startTransition, useEffect, useState } from 'react'
 import { fixDate, type Grade, type RecordLog, State } from 'ts-fsrs'
@@ -10,9 +12,9 @@ import { fixDate, type Grade, type RecordLog, State } from 'ts-fsrs'
 import callHandler from '@/components/source/call'
 import debounce from '@/lib/debounce'
 
-import { type CardBoxes } from './useCardBoxes'
+import type { CardBoxes } from './useCardBoxes'
 import { useChangeState } from './useChangeState'
-import { type Rollback } from './useRollback'
+import type { Rollback } from './useRollback'
 
 type SchduleProps = CardBoxes &
   Rollback & {
@@ -33,7 +35,10 @@ export type Schedule = {
   setDSR: React.Dispatch<React.SetStateAction<DSR | undefined>>
   schedule: RecordLog | undefined
   setSchedule: React.Dispatch<React.SetStateAction<RecordLog | undefined>>
-  handleChange: (res: Awaited<ReturnType<ReviewServiceType['next']>>, note: TReviewCardDetail) => boolean
+  handleChange: (
+    res: Awaited<ReturnType<ReviewServiceType['next']>>,
+    note: TReviewCardDetail
+  ) => boolean
   handleSchdule: (grade: Grade) => Promise<boolean>
 }
 
@@ -48,11 +53,14 @@ export function useSchedule({
   setOpen,
 }: SchduleProps) {
   const { updateStateBox } = useChangeState()
-  const [showTime, setShowTime] = useState(new Date().getTime())
+  const [showTime, setShowTime] = useState(Date.now())
   const [DSR, setDSR] = useState<DSR>()
   const [schedule, setSchedule] = useState<RecordLog | undefined>(undefined)
 
-  const handleChange = function (res: Awaited<ReturnType<ReviewServiceType['next']>>, note: TReviewCardDetail) {
+  const handleChange = (
+    res: Awaited<ReturnType<ReviewServiceType['next']>>,
+    note: TReviewCardDetail
+  ) => {
     const { next_state, next_due, suspended, lid, cid } = res
     if (next_due) {
       note.due = +next_due
@@ -61,7 +69,9 @@ export function useSchedule({
     // update state and data
     let updatedNoteBox: Array<TReviewCardDetail> = [...noteBox[currentType]]
     updatedNoteBox = updatedNoteBox.slice(1)
-    updatedNoteBox = updatedNoteBox.toSorted((a, b) => fixDate(a.due).getTime() - fixDate(b.due).getTime())
+    updatedNoteBox = updatedNoteBox.toSorted(
+      (a, b) => fixDate(a.due).getTime() - fixDate(b.due).getTime()
+    )
     startTransition(() => {
       // state update is marked as a transition, a slow re-render did not freeze the user interface.
       // if suspended, the card will not be added to the learning box
@@ -80,14 +90,15 @@ export function useSchedule({
       }
       rollBackRef.current.push({
         cid: cid,
-        nextStateBox: next_state === State.Relearning ? State.Learning : next_state,
+        nextStateBox:
+          next_state === State.Relearning ? State.Learning : next_state,
         lid: lid,
       })
       if (rollBackRef.current.length > 0 && rollbackAble === false) {
         setRollbackAble(true)
       }
       console.log(
-        `Change ${State[currentType]} to ${State[change]}, Card next State: ${State[next_state]},current rollback length ${rollBackRef.current.length}`,
+        `Change ${State[currentType]} to ${State[change]}, Card next State: ${State[next_state]},current rollback length ${rollBackRef.current.length}`
       )
       setCurrentType(change)
       callHandler({ ...note }, res)
@@ -129,7 +140,7 @@ export function useSchedule({
       setShowTime(+now)
       setDSR(DSR)
     }
-  }, [currentType, noteBox, setSchedule])
+  }, [currentType, noteBox])
 
   const value: Schedule = {
     showTime,

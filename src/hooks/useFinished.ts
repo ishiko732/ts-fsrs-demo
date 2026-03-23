@@ -4,11 +4,11 @@ import { useRouter } from 'next/navigation'
 import { startTransition, useEffect } from 'react'
 import { State, TypeConvert } from 'ts-fsrs'
 
-import { type CardBoxes } from './useCardBoxes'
+import type { CardBoxes } from './useCardBoxes'
 
 const checkFinished = (
   noteBox: { [key in StateBox]: Array<TCardDetail> },
-  currentType: StateBox,
+  currentType: StateBox
 ) => {
   let current: StateBox = currentType
   let i = 0
@@ -16,7 +16,7 @@ const checkFinished = (
     if (noteBox[current].length > 0) {
       if (current === State.Learning) {
         const due = TypeConvert.time(noteBox[current][0].due)
-        if (due.getTime() - new Date().getTime() > 0) {
+        if (due.getTime() - Date.now() > 0) {
           break
         }
       }
@@ -30,7 +30,11 @@ const checkFinished = (
   }
 }
 
-export function useFinished({ noteBox, currentType, setCurrentType }: CardBoxes) {
+export function useFinished({
+  noteBox,
+  currentType,
+  setCurrentType,
+}: CardBoxes) {
   const router = useRouter()
   useEffect(() => {
     const { finished, transferState } = checkFinished(noteBox, currentType)
@@ -45,5 +49,5 @@ export function useFinished({ noteBox, currentType, setCurrentType }: CardBoxes)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [noteBox, currentType])
+  }, [noteBox, currentType, router.refresh, setCurrentType])
 }

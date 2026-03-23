@@ -10,9 +10,15 @@ type TablesOperationMap<T extends keyof Database = keyof Database> = {
   }
 }
 
-type OperationDataType<T extends keyof Database, Op extends 'select' | 'update' | 'insert'> = TablesOperationMap[T][Op]
+type OperationDataType<
+  T extends keyof Database,
+  Op extends 'select' | 'update' | 'insert',
+> = TablesOperationMap[T][Op]
 
-export class BaseModel<T extends keyof Database, P extends keyof Database[T] = 'id'> {
+export class BaseModel<
+  T extends keyof Database,
+  P extends keyof Database[T] = 'id',
+> {
   protected readonly tableName: T
   protected readonly primaryKey: P
 
@@ -31,7 +37,11 @@ export class BaseModel<T extends keyof Database, P extends keyof Database[T] = '
 
   // insertOne 方法接受与表结构匹配的数据
   async insertOne(data: OperationDataType<T, 'insert'>) {
-    return db.insertInto(this.tableName).values(data).returningAll().executeTakeFirstOrThrow()
+    return db
+      .insertInto(this.tableName)
+      .values(data)
+      .returningAll()
+      .executeTakeFirstOrThrow()
   }
 
   async findById(id: keyof P) {
@@ -59,6 +69,6 @@ export class BaseModel<T extends keyof Database, P extends keyof Database[T] = '
 
   // use static getter to get the table name
   static get tableName(): keyof Database {
-    return this.tableName
+    return BaseModel.tableName
   }
 }

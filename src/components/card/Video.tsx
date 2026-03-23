@@ -1,9 +1,9 @@
 type Props = {
-  url: string;
-};
+  url: string
+}
 
 export default function Video({ url }: Props) {
-    const id =url.replace("https://www.youtube.com/watch?v=","")
+  const id = url.replace('https://www.youtube.com/watch?v=', '')
   return (
     <div className="aspect-w-16 aspect-h-9 flex justify-center" data-url={url}>
       <iframe
@@ -14,5 +14,5 @@ export default function Video({ url }: Props) {
         allowFullScreen
       ></iframe>
     </div>
-  );
+  )
 }

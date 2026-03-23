@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Kysely, sql } from 'kysely'
+import { type Kysely, sql } from 'kysely'
 import { generatorParameters } from 'ts-fsrs'
 
 const default_deck = (uid: number, now: number) => {
@@ -20,8 +20,14 @@ const default_deck = (uid: number, now: number) => {
 }
 
 export async function up(db: Kysely<any>): Promise<void> {
-  const tableExists = await db.executeQuery<{ exists: number }>(sql`SELECT to_regclass('"User"') as exists`.compile(db))
-  if (!tableExists || tableExists.rows.length === 0 || !tableExists.rows[0]?.exists) {
+  const tableExists = await db.executeQuery<{ exists: number }>(
+    sql`SELECT to_regclass('"User"') as exists`.compile(db)
+  )
+  if (
+    !tableExists ||
+    tableExists.rows.length === 0 ||
+    !tableExists.rows[0]?.exists
+  ) {
     console.log('User table does not exist, skipping migration.')
     return
   }
@@ -32,7 +38,18 @@ export async function up(db: Kysely<any>): Promise<void> {
   const user_info = await db
     .insertInto('users')
     .columns(['id', 'name', 'email', 'password', 'oauthId', 'oauthType'])
-    .expression(db.selectFrom('User').select(['uid as id', 'name', 'email', 'password', 'oauthId', 'oauthType']))
+    .expression(
+      db
+        .selectFrom('User')
+        .select([
+          'uid as id',
+          'name',
+          'email',
+          'password',
+          'oauthId',
+          'oauthType',
+        ])
+    )
     .returning('id')
     .execute()
   if (user_info.length === 0) {
@@ -42,7 +59,11 @@ export async function up(db: Kysely<any>): Promise<void> {
   const stacks = user_info.map((it) => default_deck(it.id, now))
   while (stacks.length) {
     const stack = stacks.splice(0, 10)
-    await db.insertInto('decks').values(stack).returning(['id as did', 'uid']).execute()
+    await db
+      .insertInto('decks')
+      .values(stack)
+      .returning(['id as did', 'uid'])
+      .execute()
   }
 
   // migrate Note -> notes
@@ -59,7 +80,17 @@ export async function up(db: Kysely<any>): Promise<void> {
    */
   const migrate_note = db
     .insertInto('notes')
-    .columns(['id', 'uid', 'did', 'question', 'answer', 'source', 'sourceId', 'extend', 'deleted'])
+    .columns([
+      'id',
+      'uid',
+      'did',
+      'question',
+      'answer',
+      'source',
+      'sourceId',
+      'extend',
+      'deleted',
+    ])
     .expression(
       db
         .selectFrom('Note')
@@ -72,10 +103,12 @@ export async function up(db: Kysely<any>): Promise<void> {
           'source',
           'sourceId',
           /** https://stackoverflow.com/questions/60824247/convert-json-string-to-jsonb */
-          sql<object>`COALESCE(NULLIF(extend #>> '{}', ''), '{}')::jsonb`.as('extend'),
+          sql<object>`COALESCE(NULLIF(extend #>> '{}', ''), '{}')::jsonb`.as(
+            'extend'
+          ),
           'Note.deleted as deleted',
         ])
-        .leftJoin('decks', 'decks.uid', 'Note.uid'),
+        .leftJoin('decks', 'decks.uid', 'Note.uid')
     )
 
   await migrate_note.execute()
@@ -121,11 +154,13 @@ export async function up(db: Kysely<any>): Promise<void> {
           WHEN '2'::"State" THEN 2
           WHEN '3'::"State" THEN 3
         END`.as('state'),
-          sql`(extract(epoch FROM last_review)::bigint * 1000)::bigint`.as('last_review'),
+          sql`(extract(epoch FROM last_review)::bigint * 1000)::bigint`.as(
+            'last_review'
+          ),
           'suspended',
           'Card.deleted as deleted',
         ])
-        .leftJoin('notes', 'notes.id', 'Card.nid'),
+        .leftJoin('notes', 'notes.id', 'Card.nid')
     )
   await migrate_card.execute()
 
@@ -171,21 +206,25 @@ export async function up(db: Kysely<any>): Promise<void> {
           WHEN '2'::"State" THEN 2
           WHEN '3'::"State" THEN 3
         END`.as('state'),
-          sql`(extract(epoch FROM "Revlog".due)::bigint * 1000)::bigint`.as('due'),
+          sql`(extract(epoch FROM "Revlog".due)::bigint * 1000)::bigint`.as(
+            'due'
+          ),
           'Revlog.stability as stability',
           'Revlog.difficulty as difficulty',
           'Revlog.elapsed_days as elapsed_days',
           'Revlog.last_elapsed_days as last_elapsed_days',
           'Revlog.scheduled_days as scheduled_days',
-          sql`(extract(epoch FROM "Revlog".review)::bigint * 1000)::bigint`.as('review'),
+          sql`(extract(epoch FROM "Revlog".review)::bigint * 1000)::bigint`.as(
+            'review'
+          ),
           'duration',
           'Revlog.deleted as deleted',
           sql`0`.as('offset'),
         ])
-        .leftJoin('cards', 'cards.id', 'Revlog.cid'),
+        .leftJoin('cards', 'cards.id', 'Revlog.cid')
     )
     .execute()
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function down(db: Kysely<any>): Promise<void> {}
+export async function down(_db: Kysely<any>): Promise<void> {}

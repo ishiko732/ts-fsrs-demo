@@ -1,14 +1,20 @@
 import client from '@server/libs/rpc'
 import type { TCardDetail } from '@server/services/decks/cards'
-import { changeLingqStatus, handlerProxy } from '@server/services/extras/lingq/request'
+import {
+  changeLingqStatus,
+  handlerProxy,
+} from '@server/services/extras/lingq/request'
 import type { ReviewServiceType } from '@server/services/scheduler/review'
 import { toast } from 'sonner'
 import { date_diff, fixDate, State } from 'ts-fsrs'
 
-export default async function LingqCallHandler(note: TCardDetail, res: Awaited<ReturnType<ReviewServiceType['next']>>) {
+export default async function LingqCallHandler(
+  note: TCardDetail,
+  res: Awaited<ReturnType<ReviewServiceType['next']>>
+) {
   const sourceId = Number(note.sourceId)
   const nid = Number(note.id)
-  const language = (note.extend as Record<string, string>)['lang']
+  const language = (note.extend as Record<string, string>).lang
 
   if (!sourceId || !language || !window) {
     return
@@ -17,7 +23,7 @@ export default async function LingqCallHandler(note: TCardDetail, res: Awaited<R
   const { next_state, next_due } = res
   let status = 0
   let extended_status = 0
-  if (next_state != State.Review) {
+  if (next_state !== State.Review) {
     status = 0 // LingqStatus.New;
     extended_status = 0 //LingqExtendedStatus.Learning;
   } else if (next_due) {
@@ -55,7 +61,7 @@ export default async function LingqCallHandler(note: TCardDetail, res: Awaited<R
       }),
       {
         success: (lingq) => {
-          if (nid && !isNaN(Number(nid))) {
+          if (nid && !Number.isNaN(Number(nid))) {
             const question = lingq.term.replace(/\s+/g, '')
             const answer = lingq.hints?.[0].text ?? ''
             client.notes[':nid'].$put({
@@ -85,7 +91,7 @@ export default async function LingqCallHandler(note: TCardDetail, res: Awaited<R
         error: (err) => {
           return `Sync to LingQ failed: ${err}`
         },
-      },
+      }
     )
   }
 }

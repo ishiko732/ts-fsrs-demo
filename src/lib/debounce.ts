@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export default function debounce<T extends (...args: any[]) => any>(func: T, delay: number = 200): T {
+export default function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  delay: number = 200
+): T {
   let timeoutId: NodeJS.Timeout | null
 
-  return function debounced(this: any, ...args: Parameters<T>): ReturnType<T> | Promise<ReturnType<T>> {
-    const context = this
-
+  return function debounced(
+    this: any,
+    ...args: Parameters<T>
+  ): ReturnType<T> | Promise<ReturnType<T>> {
     const execute = () => {
       timeoutId = null
 
-      const result = func.apply(context, args)
+      const result = func.apply(this, args)
 
       if (result instanceof Promise) {
         return result

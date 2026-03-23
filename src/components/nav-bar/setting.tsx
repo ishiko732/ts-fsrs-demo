@@ -1,11 +1,24 @@
 'use client'
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@radix-ui/react-dialog'
 import { useMediaQuery } from '@react-hookz/web'
 import { Settings2Icon } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { type ReactNode, Suspense, useEffect, useRef, useState } from 'react'
 
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 
 import LoadingSpinner from '../loadingSpinner'
 import { Button } from '../ui/button'
@@ -42,8 +55,12 @@ export default function Setting() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="sm:max-w-[625px] border  border-b-stone-900 dark:border-white p-4 max-h-[800px] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="flex justify-center items-center text-md">Edit profile</DialogTitle>
-              <DialogDescription className="flex justify-center items-center text-sm">Set your parameters.</DialogDescription>
+              <DialogTitle className="flex justify-center items-center text-md">
+                Edit profile
+              </DialogTitle>
+              <DialogDescription className="flex justify-center items-center text-sm">
+                Set your parameters.
+              </DialogDescription>
             </DialogHeader>
             <Suspense>
               <FSRSConfig loading={loading} setLoading={setLoading} />
@@ -63,10 +80,17 @@ export default function Setting() {
   } else {
     DrawerToggle = (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent ref={drawerRef} className="max-h-[80%] dark:bg-black bg-white">
+        <DrawerContent
+          ref={drawerRef}
+          className="max-h-[80%] dark:bg-black bg-white"
+        >
           <DrawerHeader>
-            <DrawerTitle className="flex justify-center items-center text-md">Edit profile</DrawerTitle>
-            <DrawerDescription className="flex justify-center items-center text-sm">Set your parameters.</DrawerDescription>
+            <DrawerTitle className="flex justify-center items-center text-md">
+              Edit profile
+            </DrawerTitle>
+            <DrawerDescription className="flex justify-center items-center text-sm">
+              Set your parameters.
+            </DrawerDescription>
           </DrawerHeader>
           <Suspense>
             <FSRSConfig loading={loading} setLoading={setLoading} />
@@ -87,7 +111,12 @@ export default function Setting() {
   }
   return (
     <>
-      <Button variant="outline" size="icon" onClick={() => setOpen((pre) => !pre)} title="Setting">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => setOpen((pre) => !pre)}
+        title="Setting"
+      >
         <Settings2Icon aria-label="setting"></Settings2Icon>
       </Button>
       {isClient && DrawerToggle}

@@ -2,7 +2,7 @@
 import type { TReviewCardDetail } from '@server/services/scheduler/review'
 import type { StateBox } from '@server/services/scheduler/review/types'
 import { createContext, type ReactNode, useContext, useState } from 'react'
-import { type Grade, type RecordLog, State } from 'ts-fsrs'
+import type { Grade, RecordLog, State } from 'ts-fsrs'
 
 import { useCardBoxes } from '@/hooks/useCardBoxes'
 import { useFinished } from '@/hooks/useFinished'
@@ -18,7 +18,9 @@ type CardContextProps = {
   setSchedule: React.Dispatch<React.SetStateAction<RecordLog | undefined>>
   noteBox: { [key in StateBox]: Array<TReviewCardDetail> }
   setNoteBox: {
-    [key in StateBox]: React.Dispatch<React.SetStateAction<Array<TReviewCardDetail>>>
+    [key in StateBox]: React.Dispatch<
+      React.SetStateAction<Array<TReviewCardDetail>>
+    >
   }
   handleSchdule: (grade: Grade) => Promise<boolean>
   handleRollBack: () => Promise<TReviewCardDetail | undefined>
@@ -37,7 +39,13 @@ export function useCardContext() {
   return context
 }
 
-export function CardProvider({ children, noteBox0 }: { children: ReactNode; noteBox0: Map<State, Array<TReviewCardDetail>> }) {
+export function CardProvider({
+  children,
+  noteBox0,
+}: {
+  children: ReactNode
+  noteBox0: Map<State, Array<TReviewCardDetail>>
+}) {
   const [open, setOpen] = useState(false)
   const cardHooks = useCardBoxes(noteBox0)
   const rollbackHooks = useRollback({

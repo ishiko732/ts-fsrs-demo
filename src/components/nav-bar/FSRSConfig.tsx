@@ -10,12 +10,21 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { useToast } from '@/hooks/use-toast'
 
 import LoadingSpinner from '../loadingSpinner'
+
 // import { Badge } from '../ui/badge'
 
 const formSchema = z.object({
@@ -57,13 +66,18 @@ export default function FSRSConfigForm({
   const [deckId, setDeckId] = useState<number | null>(null)
 
   useEffect(() => {
-    new Promise<void>(async (resolve, reject) => {
-      const { deckId } = await client.decks.default.$get().then((res) => res.json())
-      const resp = await client.decks[':did'].$get({ param: { did: String(deckId) } })
+    const loadDeck = async () => {
+      const { deckId } = await client.decks.default
+        .$get()
+        .then((res) => res.json())
+      const resp = await client.decks[':did'].$get({
+        param: { did: String(deckId) },
+      })
       setDeckId(deckId)
 
       if (!resp.ok) {
-        reject(signOut())
+        signOut()
+        return
       }
       const deck = await resp.json()
       form.setValue('request_retention', deck.fsrs.request_retention)
@@ -73,13 +87,23 @@ export default function FSRSConfigForm({
       form.setValue('enable_short_term', deck.fsrs.enable_short_term)
       form.setValue('card_limit', deck.card_limit.new)
       form.setValue('lapses', deck.card_limit.suspended)
-      form.setValue('learning_steps', deck.fsrs.learning_steps.length > 0 ? deck.fsrs.learning_steps.join(',') : '')
-      form.setValue('relearning_steps', deck.fsrs.relearning_steps.length > 0 ? deck.fsrs.relearning_steps.join(',') : '')
+      form.setValue(
+        'learning_steps',
+        deck.fsrs.learning_steps.length > 0
+          ? deck.fsrs.learning_steps.join(',')
+          : ''
+      )
+      form.setValue(
+        'relearning_steps',
+        deck.fsrs.relearning_steps.length > 0
+          ? deck.fsrs.relearning_steps.join(',')
+          : ''
+      )
       // form.setValue('lingq_token', param.lingq_token ?? undefined)
 
       setParams(deck)
-      resolve()
-    }).catch((e) => {
+    }
+    loadDeck().catch((e) => {
       console.error(e)
       signOut()
     })
@@ -91,7 +115,7 @@ export default function FSRSConfigForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // process w
     const w = values.w
-      .replace(/[\[\]]/g, '')
+      .replace(/[[\]]/g, '')
       .split(',')
       .map((v) => parseFloat(v))
     if (w.length !== 21) {
@@ -112,8 +136,12 @@ export default function FSRSConfigForm({
           w: w,
           enable_fuzz: values.enable_fuzz,
           enable_short_term: values.enable_short_term,
-          learning_steps: values.learning_steps ? values.learning_steps.split(',').map((step) => step.trim()) : [],
-          relearning_steps: values.relearning_steps ? values.relearning_steps.split(',').map((step) => step.trim()) : [],
+          learning_steps: values.learning_steps
+            ? values.learning_steps.split(',').map((step) => step.trim())
+            : [],
+          relearning_steps: values.relearning_steps
+            ? values.relearning_steps.split(',').map((step) => step.trim())
+            : [],
         },
         card_limit: {
           new: values.card_limit,
@@ -140,7 +168,11 @@ export default function FSRSConfigForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} method="post" className="space-y-4 max-h-[80%] overflow-y-auto pb-4 px-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        method="post"
+        className="space-y-4 max-h-[80%] overflow-y-auto pb-4 px-8"
+      >
         <FormField
           control={form.control}
           name="request_retention"
@@ -148,11 +180,17 @@ export default function FSRSConfigForm({
             <FormItem>
               <FormLabel>request_retention</FormLabel>
               <FormControl>
-                <Input placeholder="request_retention" {...field} type="number" />
+                <Input
+                  placeholder="request_retention"
+                  {...field}
+                  type="number"
+                />
               </FormControl>
               <FormDescription>
-                Represents the probability of the target memory you want. Note that there is a trade-off between higher retention rates and
-                higher repetition rates. It is recommended that you set this value between 0.8 and 0.9.
+                Represents the probability of the target memory you want. Note
+                that there is a trade-off between higher retention rates and
+                higher repetition rates. It is recommended that you set this
+                value between 0.8 and 0.9.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -168,8 +206,10 @@ export default function FSRSConfigForm({
                 <Input placeholder="maximum_interval" {...field} />
               </FormControl>
               <FormDescription>
-                The maximum number of days between reviews of a card. When the review interval of a card reaches this number of days, the{' '}
-                {`'hard', 'good', and 'easy'`} intervals will be consistent. The shorter the interval, the more workload.
+                The maximum number of days between reviews of a card. When the
+                review interval of a card reaches this number of days, the{' '}
+                {`'hard', 'good', and 'easy'`} intervals will be consistent. The
+                shorter the interval, the more workload.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -185,7 +225,8 @@ export default function FSRSConfigForm({
                 <Input placeholder="fsrs.w" {...field} />
               </FormControl>
               <FormDescription>
-                Weights created by running the FSRS optimizer. By default, these are calculated from a sample dataset.
+                Weights created by running the FSRS optimizer. By default, these
+                are calculated from a sample dataset.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -199,12 +240,19 @@ export default function FSRSConfigForm({
               <div className="flex items-center">
                 <FormLabel className="space-y-0.5 pr-4">enable_fuzz</FormLabel>
                 <FormControl>
-                  <Switch id="enable_fuzz" {...field} value={undefined} onCheckedChange={field.onChange} checked={field.value} />
+                  <Switch
+                    id="enable_fuzz"
+                    {...field}
+                    value={undefined}
+                    onCheckedChange={field.onChange}
+                    checked={field.value}
+                  />
                 </FormControl>
               </div>
               <FormDescription>
-                When enabled, this adds a small random delay to the new interval time to prevent cards from sticking together and always
-                being reviewed on the same day.
+                When enabled, this adds a small random delay to the new interval
+                time to prevent cards from sticking together and always being
+                reviewed on the same day.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -216,12 +264,22 @@ export default function FSRSConfigForm({
           render={({ field }) => (
             <FormItem>
               <div className="flex items-center">
-                <FormLabel className="space-y-0.5 pr-4">enable_short-term</FormLabel>
+                <FormLabel className="space-y-0.5 pr-4">
+                  enable_short-term
+                </FormLabel>
                 <FormControl>
-                  <Switch id="enable_short-term" {...field} value={undefined} onCheckedChange={field.onChange} checked={field.value} />
+                  <Switch
+                    id="enable_short-term"
+                    {...field}
+                    value={undefined}
+                    onCheckedChange={field.onChange}
+                    checked={field.value}
+                  />
                 </FormControl>
               </div>
-              <FormDescription>When disabled, this allow user to skip the short-term schedule.</FormDescription>
+              <FormDescription>
+                When disabled, this allow user to skip the short-term schedule.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -233,7 +291,12 @@ export default function FSRSConfigForm({
             <FormItem>
               <FormLabel>learning_steps</FormLabel>
               <FormControl>
-                <Input placeholder="learning_steps" {...field} className="text-sm" onChange={(e) => field.onChange(e.target.value)} />
+                <Input
+                  placeholder="learning_steps"
+                  {...field}
+                  className="text-sm"
+                  onChange={(e) => field.onChange(e.target.value)}
+                />
               </FormControl>
               <FormDescription>
                 {`The learning steps for new cards. The format is a comma-separated list of time units, e.g., '10m,1d'. The time unit can be
@@ -250,7 +313,12 @@ export default function FSRSConfigForm({
             <FormItem>
               <FormLabel>relearning_steps</FormLabel>
               <FormControl>
-                <Input placeholder="relearning_steps" {...field} className="text-sm" onChange={(e) => field.onChange(e.target.value)} />
+                <Input
+                  placeholder="relearning_steps"
+                  {...field}
+                  className="text-sm"
+                  onChange={(e) => field.onChange(e.target.value)}
+                />
               </FormControl>
               <FormDescription>
                 {`The relearning steps for cards that have been forgotten. The format is a comma-separated list of time units, e.g.,
@@ -269,9 +337,16 @@ export default function FSRSConfigForm({
             <FormItem>
               <FormLabel>card_limit</FormLabel>
               <FormControl>
-                <Input placeholder="card_limit" {...field} className="text-sm" />
+                <Input
+                  placeholder="card_limit"
+                  {...field}
+                  className="text-sm"
+                />
               </FormControl>
-              <FormDescription>Represents the maximum limit of new cards that can be learned today.</FormDescription>
+              <FormDescription>
+                Represents the maximum limit of new cards that can be learned
+                today.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -285,7 +360,10 @@ export default function FSRSConfigForm({
               <FormControl>
                 <Input placeholder="lapses" {...field} />
               </FormControl>
-              <FormDescription>The card will automatically pause after reaching that number of lapses.</FormDescription>
+              <FormDescription>
+                The card will automatically pause after reaching that number of
+                lapses.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
