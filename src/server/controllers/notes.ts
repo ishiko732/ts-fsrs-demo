@@ -4,7 +4,13 @@ import { RequireAuth } from '@server/middlewares/auth'
 import noteService from '@server/services/decks/notes'
 import { Hono } from 'hono'
 
-import { NoteAddSchema, NoteGetSchema, NoteListSchema, NoteModifySchema, NoteSwitchDeleteSchema } from './notes.schema'
+import {
+  NoteAddSchema,
+  NoteGetSchema,
+  NoteListSchema,
+  NoteModifySchema,
+  NoteSwitchDeleteSchema,
+} from './notes.schema'
 
 const NoteApp = new Hono<Env>()
   .use(RequireAuth())
@@ -38,7 +44,10 @@ const NoteApp = new Hono<Env>()
     const userId = Number(c.get('authUserId'))
     const nid = Number(c.req.param('nid') ?? 0)
     const json = c.req.valid('json')
-    const modifyData = { ...json, extend: json.extend ? JSON.stringify(json.extend) : undefined }
+    const modifyData = {
+      ...json,
+      extend: json.extend ? JSON.stringify(json.extend) : undefined,
+    }
 
     const data = await noteService.modifyNote(userId, nid, modifyData)
     return c.json({ success: data })

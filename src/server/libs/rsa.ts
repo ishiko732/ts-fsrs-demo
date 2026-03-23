@@ -1,4 +1,4 @@
-import { constants, privateDecrypt, publicEncrypt } from 'crypto'
+import { constants, privateDecrypt, publicEncrypt } from 'node:crypto'
 
 function decrypt(privateKey: string, encrypted: string): string {
   try {
@@ -8,7 +8,7 @@ function decrypt(privateKey: string, encrypted: string): string {
         padding: constants.RSA_PKCS1_OAEP_PADDING,
         oaepHash: 'sha256',
       },
-      new Uint8Array(Buffer.from(encrypted, 'base64')),
+      new Uint8Array(Buffer.from(encrypted, 'base64'))
     )
     return decrypted.toString('utf-8')
   } catch (e) {
@@ -26,7 +26,7 @@ function encrypt(publicKey: string, data: string): string {
         padding: constants.RSA_PKCS1_OAEP_PADDING,
         oaepHash: 'sha256',
       },
-      new Uint8Array(Buffer.from(data, 'utf-8')),
+      new Uint8Array(Buffer.from(data, 'utf-8'))
     )
 
     return encrypted.toString('base64')

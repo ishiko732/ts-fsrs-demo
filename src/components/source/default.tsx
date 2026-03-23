@@ -6,7 +6,9 @@ export function Question({ note }: { note: TCardDetail }) {
   return (
     <div className="item-center">
       <div className="w-full">
-        <span className="flex justify-center items-center text-2xl">{note.question}</span>
+        <span className="flex justify-center items-center text-2xl">
+          {note.question}
+        </span>
       </div>
     </div>
   )

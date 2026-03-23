@@ -2,7 +2,6 @@ import { getSessionUserIdThrow } from '@server/services/auth/session'
 import cardService from '@server/services/decks/cards'
 import type { ColumnSort, SortingState } from '@tanstack/react-table'
 import { redirect } from 'next/navigation'
-import React from 'react'
 
 import Menu from '@/components/menu'
 import DataTable from '@/components/note/data-table'
@@ -21,7 +20,19 @@ function computerOrder(orders: SortingState) {
 
   const _order = {} as { [key in keyof INoteSortingProps]: ISortOrderBy }
   for (const sort of Array.from(orders)) {
-    if (['question', 'answer', 'source', 'due', 'state', 'reps', 'S', 'D', 'R'].includes(sort.id)) {
+    if (
+      [
+        'question',
+        'answer',
+        'source',
+        'due',
+        'state',
+        'reps',
+        'S',
+        'D',
+        'R',
+      ].includes(sort.id)
+    ) {
       if (sort.id === 'S') {
         sort.id = 'stability'
       } else if (sort.id === 'D') {
@@ -51,9 +62,14 @@ type NotePageProps = {
 }
 
 const buildQuery = async (searchParams: Params) => {
-  const take = Number(searchParams['take'])
-  const pageIndex = Number(searchParams['page'])
-  if (!Number.isInteger(take) || !Number.isInteger(pageIndex) || pageIndex < 1 || take < 1) {
+  const take = Number(searchParams.take)
+  const pageIndex = Number(searchParams.page)
+  if (
+    !Number.isInteger(take) ||
+    !Number.isInteger(pageIndex) ||
+    pageIndex < 1 ||
+    take < 1
+  ) {
     redirect('/note?page=1&take=15')
   }
   const keyword = searchParams.keyword ?? undefined
@@ -73,7 +89,9 @@ const buildQuery = async (searchParams: Params) => {
     const params = new URLSearchParams()
     Object.entries(searchParams).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        value.forEach((val) => params.append(key, val))
+        for (const val of value) {
+          params.append(key, val)
+        }
       } else {
         params.append(key, value)
       }
@@ -99,7 +117,12 @@ export default async function Page(props: NotePageProps) {
   return (
     <div className=" container">
       <Menu />
-      <DataTable data={data} page_info={pagination} keyword={keyword} sort={sort} />
+      <DataTable
+        data={data}
+        page_info={pagination}
+        keyword={keyword}
+        sort={sort}
+      />
     </div>
   )
 }

@@ -6,7 +6,7 @@ import { State } from 'ts-fsrs'
 
 import debounce from '@/lib/debounce'
 
-import { type CardBoxes } from './useCardBoxes'
+import type { CardBoxes } from './useCardBoxes'
 
 type RollBackProps = CardBoxes & {
   open: boolean
@@ -14,17 +14,27 @@ type RollBackProps = CardBoxes & {
 }
 
 export type Rollback = {
-  rollBackRef: React.MutableRefObject<{ cid: number; nextStateBox: StateBox; lid: number }[]>
+  rollBackRef: React.MutableRefObject<
+    { cid: number; nextStateBox: StateBox; lid: number }[]
+  >
   rollbackAble: boolean
   setRollbackAble: React.Dispatch<React.SetStateAction<boolean>>
   handleRollBack: () => Promise<TReviewCardDetail | undefined>
 }
 
-export function useRollback({ setCurrentType, noteBox, setNoteBox, open, setOpen }: RollBackProps) {
-  const rollBackRef = useRef<{ cid: number; nextStateBox: StateBox; lid: number }[]>([])
+export function useRollback({
+  setCurrentType,
+  noteBox,
+  setNoteBox,
+  open,
+  setOpen,
+}: RollBackProps) {
+  const rollBackRef = useRef<
+    { cid: number; nextStateBox: StateBox; lid: number }[]
+  >([])
   const [rollbackAble, setRollbackAble] = useState(false)
 
-  const _handleRollBack = async function () {
+  const _handleRollBack = async () => {
     if (rollBackRef.current.length === 0) {
       return undefined
     }
@@ -40,7 +50,11 @@ export function useRollback({ setCurrentType, noteBox, setNoteBox, open, setOpen
       // @todo
     }
     const data = await res.json()
-    const cardDetail = await (await client.scheduler.review[':cid'].$get({ param: { cid: String(cid) } })).json()
+    const cardDetail = await (
+      await client.scheduler.review[':cid'].$get({
+        param: { cid: String(cid) },
+      })
+    ).json()
 
     startTransition(() => {
       let { next_state: state } = data
@@ -49,7 +63,9 @@ export function useRollback({ setCurrentType, noteBox, setNoteBox, open, setOpen
       }
       // state = rollback state
       if (nextStateBox !== State.Review) {
-        const updatNoteBox = noteBox[nextStateBox].filter((note) => note.cid !== cid) // filter out the rollback note
+        const updatNoteBox = noteBox[nextStateBox].filter(
+          (note) => note.cid !== cid
+        ) // filter out the rollback note
         console.log(`Rollback Box:${State[nextStateBox]} to ${State[state]}`)
         if (nextStateBox === state) {
           // learning === learning or relearning === relearning

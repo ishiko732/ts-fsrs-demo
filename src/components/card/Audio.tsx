@@ -1,19 +1,20 @@
-import React, { forwardRef } from 'react';
+import type React from 'react'
+import { forwardRef } from 'react'
 
 interface AudioProps extends React.ComponentProps<'audio'> {
-  url: string;
+  url: string
 }
 
 const Audio = forwardRef<HTMLAudioElement, AudioProps>((props, ref) => {
-  const { url, ...restProps } = props;
+  const { url, ...restProps } = props
 
   return (
     <div className="flex justify-center py-2">
       <audio src={url} controls ref={ref} {...restProps}></audio>
     </div>
-  );
-});
+  )
+})
 
-Audio.displayName = 'Audio';
+Audio.displayName = 'Audio'
 
-export default Audio;
+export default Audio

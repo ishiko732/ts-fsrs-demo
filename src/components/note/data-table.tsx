@@ -29,20 +29,34 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 export const columns: () => ColumnDef<ICardListData>[] = () => {
   return [
     {
       id: 'select',
       header: ({ table }) => (
         <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
-        <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
       ),
       enableSorting: false,
       enableHiding: false,
@@ -50,30 +64,43 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
     {
       accessorKey: 'question',
       header: ({ column }) => (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
           Question
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div className="capitalize">{row.getValue('question')}</div>,
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('question')}</div>
+      ),
     },
     {
       accessorKey: 'answer',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Answer
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
       },
-      cell: ({ row }) => <div className="lowercase">{row.getValue('answer')}</div>,
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue('answer')}</div>
+      ),
     },
     {
       accessorKey: 'source',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Source
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
@@ -89,7 +116,10 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
       accessorKey: 'D',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             D
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
@@ -103,7 +133,10 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
       accessorKey: 'S',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             S
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
@@ -117,27 +150,37 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
       id: 'R',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             R
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
       },
       cell: ({ row }) => {
-        return row.original.retrievability ? `${(+row.original.retrievability * 100).toFixed(2)}%` : '/'
+        return row.original.retrievability
+          ? `${(+row.original.retrievability * 100).toFixed(2)}%`
+          : '/'
       },
     },
     {
       accessorKey: 'reps',
       header: ({ column }) => {
         return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             Reps
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
       },
-      cell: ({ row }) => <div className="lowercase">{row.getValue('reps')}</div>,
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue('reps')}</div>
+      ),
     },
     {
       id: 'actions',
@@ -155,10 +198,26 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(noteSimpleInfo.nid + '')}>Copy note ID</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(noteSimpleInfo.cid + '')}>Copy Card ID</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  navigator.clipboard.writeText(`${noteSimpleInfo.nid}`)
+                }
+              >
+                Copy note ID
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  navigator.clipboard.writeText(`${noteSimpleInfo.cid}`)
+                }
+              >
+                Copy Card ID
+              </DropdownMenuItem>
               {noteSimpleInfo.sourceId && (
-                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(noteSimpleInfo.sourceId + '')}>
+                <DropdownMenuItem
+                  onClick={() =>
+                    navigator.clipboard.writeText(`${noteSimpleInfo.sourceId}`)
+                  }
+                >
                   Copy Source ID
                 </DropdownMenuItem>
               )}
@@ -214,8 +273,11 @@ export default function DataTable({
 }) {
   const [keywords, setKeywords] = React.useState<string | null>(keyword)
   const [sorting, setSorting] = React.useState<SortingState>(sort)
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const timer = React.useRef<NodeJS.Timeout | null>(null)
 
@@ -225,7 +287,12 @@ export default function DataTable({
   const searchParams = useSearchParams()
   // create query string
   const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null | string[] | number[] | undefined>) => {
+    (
+      params: Record<
+        string,
+        string | number | null | string[] | number[] | undefined
+      >
+    ) => {
       const newSearchParams = new URLSearchParams(searchParams?.toString())
 
       for (const [key, value] of Object.entries(params)) {
@@ -233,7 +300,7 @@ export default function DataTable({
           newSearchParams.delete(key)
         } else if (Array.isArray(value)) {
           newSearchParams.delete(key)
-          value.map((v) => newSearchParams.append(key, '' + v))
+          value.map((v) => newSearchParams.append(key, `${v}`))
         } else {
           newSearchParams.set(key, String(value))
         }
@@ -241,24 +308,30 @@ export default function DataTable({
 
       return newSearchParams.toString()
     },
-    [searchParams],
+    [searchParams]
   )
   // handle server-side pagination
-  const [{ pageIndex, pageSize }, setPagination] = React.useState<PaginationState>({
-    pageIndex: page_info.page,
-    pageSize: page_info.pageSize,
-  })
+  const [{ pageIndex, pageSize }, setPagination] =
+    React.useState<PaginationState>({
+      pageIndex: page_info.page,
+      pageSize: page_info.pageSize,
+    })
 
   const pagination = React.useMemo(
     () => ({
       pageIndex,
       pageSize,
     }),
-    [pageIndex, pageSize],
+    [pageIndex, pageSize]
   )
 
   const changeRouter = React.useCallback(
-    (pageIndex: number, pageSize: number, sorting: SortingState, keywords: string | null) => {
+    (
+      pageIndex: number,
+      pageSize: number,
+      sorting: SortingState,
+      keywords: string | null
+    ) => {
       const sortParams = sorting.map((s) => s.id)
       const sortAsc = sorting.map((s) => {
         return { [`${s.id}Asc`]: s.desc ? 0 : 1 }
@@ -270,11 +343,11 @@ export default function DataTable({
           sort: sortParams,
           ...Object.assign({}, ...sortAsc),
           keyword: keywords ?? null,
-        })}`,
+        })}`
       )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [createQueryString, pathname, router.push]
   )
 
   React.useEffect(() => {
@@ -288,7 +361,7 @@ export default function DataTable({
   React.useEffect(() => {
     changeRouter(pageIndex, pageSize, sorting, keywords)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, pageSize, sorting])
+  }, [pageIndex, pageSize, sorting, changeRouter, keywords])
 
   React.useEffect(() => {
     // 200ms
@@ -299,7 +372,7 @@ export default function DataTable({
       changeRouter(pageIndex, pageSize, sorting, keywords)
     }, 200)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keywords])
+  }, [keywords, changeRouter, pageIndex, pageSize, sorting])
 
   // Ref: https://tanstack.com/table/latest/docs/api/features/pagination#lastpage
   const table = useReactTable<ICardListData>({
@@ -350,7 +423,9 @@ export default function DataTable({
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
@@ -367,7 +442,12 @@ export default function DataTable({
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   )
                 })}
@@ -377,15 +457,26 @@ export default function DataTable({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
@@ -395,7 +486,8 @@ export default function DataTable({
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} of{' '}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
           {`( total: ${page_info.total} page:${table.getState().pagination.pageIndex}/${table.getPageCount()} )`}
         </div>
         <div className="space-x-2">
@@ -403,7 +495,11 @@ export default function DataTable({
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage() || table.getState().pagination.pageIndex === 1 || table.getPageCount() === 0}
+            disabled={
+              !table.getCanPreviousPage() ||
+              table.getState().pagination.pageIndex === 1 ||
+              table.getPageCount() === 0
+            }
           >
             Previous
           </Button>

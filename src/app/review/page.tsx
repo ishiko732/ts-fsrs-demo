@@ -1,4 +1,6 @@
-import reviewService, { type TReviewCardDetail } from '@server/services/scheduler/review'
+import reviewService, {
+  type TReviewCardDetail,
+} from '@server/services/scheduler/review'
 import statisticsService from '@server/services/scheduler/statistics'
 import { getSessionUserIdThrow } from '@services/auth/session'
 import { redirect } from 'next/navigation'
@@ -26,10 +28,27 @@ const getData = cache(async (source?: string): Promise<DataResponse> => {
   if (now.getHours() < 4) {
     now = date_scheduler(now, -1, true)
   }
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0)
+  const startOfDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    4,
+    0,
+    0,
+    0
+  )
   const range = [+startOfDay, +now] as const
-  const todayCount = await statisticsService.getRangeRevlogCount(uid, [+startOfDay, +now], [State.New])
-  const cardDetails = await reviewService.getReviewCardDetails(uid, +now, todayCount, { source: source ? [source] : [] })
+  const todayCount = await statisticsService.getRangeRevlogCount(
+    uid,
+    [+startOfDay, +now],
+    [State.New]
+  )
+  const cardDetails = await reviewService.getReviewCardDetails(
+    uid,
+    +now,
+    todayCount,
+    { source: source ? [source] : [] }
+  )
   return {
     uid,
     now,

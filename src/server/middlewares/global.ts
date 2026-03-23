@@ -10,9 +10,11 @@ import { AuthSession } from './auth'
 import { SystemException } from './exception'
 import { ResponseTime } from './time'
 
-export function InitGlobalMiddlewares<E extends BlankEnv, S extends Schema = BlankSchema, BasePath extends string = '/'>(
-  app: Hono<E, S, BasePath>,
-) {
+export function InitGlobalMiddlewares<
+  E extends BlankEnv,
+  S extends Schema = BlankSchema,
+  BasePath extends string = '/',
+>(app: Hono<E, S, BasePath>) {
   app.use(cors())
   app.use(logger())
   app.use(ResponseTime())

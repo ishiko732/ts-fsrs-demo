@@ -13,7 +13,11 @@ class UserService {
         .where('oauthId', '=', oauthId)
         .executeTakeFirst()
     } else if (email) {
-      user_from_db = await userModel.db.selectFrom('users').selectAll().where('email', '=', email).executeTakeFirst()
+      user_from_db = await userModel.db
+        .selectFrom('users')
+        .selectAll()
+        .where('email', '=', email)
+        .executeTakeFirst()
     } else if (id) {
       user_from_db = await userModel.findById(id)
     } else {

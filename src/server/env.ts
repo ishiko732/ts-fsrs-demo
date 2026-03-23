@@ -24,9 +24,15 @@ const envSchema = z.object({
 
   /** RSA */
   // openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
-  RSA_PRIVATE_KEY: z.string().default('').transform((val) => val.replace(/\\n/g, '\n')),
+  RSA_PRIVATE_KEY: z
+    .string()
+    .default('')
+    .transform((val) => val.replace(/\\n/g, '\n')),
   // openssl rsa -in private.pem -pubout -out public.pem
-  RSA_PUBLIC_KEY: z.string().default('').transform((val) => val.replace(/\\n/g, '\n')),
+  RSA_PUBLIC_KEY: z
+    .string()
+    .default('')
+    .transform((val) => val.replace(/\\n/g, '\n')),
 })
 
 export default envSchema.parse(process.env)

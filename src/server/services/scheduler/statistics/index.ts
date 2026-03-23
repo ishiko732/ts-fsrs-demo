@@ -10,7 +10,7 @@ class StatisticsService {
     uid: number,
     range: [number, number],
     state: State[] = [State.New],
-    dids: number[] = [],
+    dids: number[] = []
   ): Promise<Map<State, number>> {
     const query = await revlogModel.db
       .selectFrom('revlog as r')
@@ -19,12 +19,20 @@ class StatisticsService {
       .innerJoin(cardModel.table, (q) => {
         return q
           .onRef('cards.id', '=', 'r.cid')
-          .on((eb) => eb.and([eb('cards.uid', '=', uid), eb('cards.deleted', '=', false), eb('cards.suspended', '=', false)]))
+          .on((eb) =>
+            eb.and([
+              eb('cards.uid', '=', uid),
+              eb('cards.deleted', '=', false),
+              eb('cards.suspended', '=', false),
+            ])
+          )
       })
       .where('r.uid', '=', uid)
       .where('r.deleted', '=', false)
       .where('r.state', 'in', state)
-      .$if(Array.isArray(dids) && dids.length > 0, (q) => q.where('r.did', 'in', dids))
+      .$if(Array.isArray(dids) && dids.length > 0, (q) =>
+        q.where('r.did', 'in', dids)
+      )
       .where('r.review', '>=', range[0])
       .where('r.review', '<', range[1])
       .groupBy('r.state')
@@ -39,13 +47,22 @@ class StatisticsService {
     return map
   }
 
-  async exportLogs(uid: number, timeRange?: [number, number]): Promise<ExportRevLogs> {
+  async exportLogs(
+    uid: number,
+    timeRange?: [number, number]
+  ): Promise<ExportRevLogs> {
     const query = revlogModel.db
       .selectFrom('revlog as r')
       .innerJoin('cards as c', (q) => {
         return q
           .onRef('c.id', '=', 'r.cid')
-          .on((eb) => eb.and([eb('c.uid', '=', uid), eb('c.deleted', '=', false), eb('c.suspended', '=', false)]))
+          .on((eb) =>
+            eb.and([
+              eb('c.uid', '=', uid),
+              eb('c.deleted', '=', false),
+              eb('c.suspended', '=', false),
+            ])
+          )
       })
       .select((eb) => [
         eb.ref('r.cid').as('card_id'),
@@ -55,7 +72,11 @@ class StatisticsService {
         eb.ref('r.duration').as('review_duration'),
       ])
       .where('r.deleted', '=', false)
-      .$if(!!timeRange && timeRange.length === 2, (q) => q.where('r.review', '>=', timeRange![0]).where('r.review', '<', timeRange![1]))
+      .$if(!!timeRange && timeRange.length === 2, (q) =>
+        q
+          .where('r.review', '>=', timeRange![0])
+          .where('r.review', '<', timeRange![1])
+      )
 
     return query.execute()
   }

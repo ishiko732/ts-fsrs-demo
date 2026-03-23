@@ -20,7 +20,11 @@ const type = process.argv[2] as ('up' | 'down') | undefined
 async function migrate() {
   const start = Date.now()
   const { error, results } =
-    type === 'up' ? await migrator.migrateUp() : type === 'down' ? await migrator.migrateDown() : await migrator.migrateToLatest()
+    type === 'up'
+      ? await migrator.migrateUp()
+      : type === 'down'
+        ? await migrator.migrateDown()
+        : await migrator.migrateToLatest()
 
   results?.forEach((it) => {
     if (it.status === 'Success') {

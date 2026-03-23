@@ -12,7 +12,13 @@ export type ExportType = {
   revlogs: ExportRevLog[]
 }
 
-export default function ExportSubmitButton({ action, tip }: { action: () => Promise<ExportType>; tip: string }) {
+export default function ExportSubmitButton({
+  action,
+  tip,
+}: {
+  action: () => Promise<ExportType>
+  tip: string
+}) {
   const [loading, setLoading] = useState(false)
   return (
     <Button
@@ -32,7 +38,7 @@ export default function ExportSubmitButton({ action, tip }: { action: () => Prom
         const date = new Date()
         const timezone = get_custom_timezone()
         const GMT = -date.getTimezoneOffset() / 60
-        const head = Object.keys(logs[0]).join(',') + '\n'
+        const head = `${Object.keys(logs[0]).join(',')}\n`
         const body = logs.map((log) => Object.values(log).join(',')).join('\n')
 
         const url = getDownloadUrl(head + body)

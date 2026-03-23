@@ -1,8 +1,14 @@
-import type { ReviewServiceType, TReviewCardDetail } from '@server/services/scheduler/review'
+import type {
+  ReviewServiceType,
+  TReviewCardDetail,
+} from '@server/services/scheduler/review'
 
 import LingqCallHandler from './Lingq'
 
-export default async function handler(note: TReviewCardDetail, res: Awaited<ReturnType<ReviewServiceType['next']>>): Promise<void> {
+export default async function handler(
+  note: TReviewCardDetail,
+  res: Awaited<ReturnType<ReviewServiceType['next']>>
+): Promise<void> {
   const source = note?.source
   if (!source) {
     return

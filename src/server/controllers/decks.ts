@@ -41,9 +41,11 @@ const DeckApp = new Hono<Env>()
       {
         ...modify_data,
         fsrs: modify_data.fsrs ? JSON.stringify(modify_data.fsrs) : undefined,
-        card_limit: modify_data.card_limit ? JSON.stringify(modify_data.card_limit) : undefined,
+        card_limit: modify_data.card_limit
+          ? JSON.stringify(modify_data.card_limit)
+          : undefined,
       },
-      did,
+      did
     )
     return c.json(deck)
   })
