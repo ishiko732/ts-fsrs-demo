@@ -5,11 +5,34 @@ import { useCardContext } from '@/context/CardContext'
 
 export default function DSRDisplay() {
   const { DSR, open, currentType } = useCardContext()
-  return DSR && !open && currentType === State.Review ? (
-    <div className="flex justify-center opacity-15 flex-col text-left mx-auto">
-      <div>{`D : ${DSR.D.toFixed(2)}`}</div>
-      <div>{`S : ${DSR.S}`}</div>
-      <div>{`R : ${DSR.R}`}</div>
-    </div>
-  ) : null
+  if (!DSR || open || currentType !== State.Review) return null
+
+  const items: Array<[string, string]> = [
+    ['D', DSR.D.toFixed(2)],
+    ['S', String(DSR.S)],
+    ['R', DSR.R],
+  ]
+
+  return (
+    <dl
+      aria-label="Card memory state"
+      className="flex items-center gap-3 text-xs tabular-nums text-muted-foreground"
+    >
+      {items.map(([key, value], i) => (
+        <div key={key} className="flex items-center gap-3">
+          {i > 0 && (
+            <span aria-hidden className="text-border">
+              ·
+            </span>
+          )}
+          <div className="flex items-center gap-1.5">
+            <dt className="font-medium uppercase tracking-wide text-muted-foreground/80">
+              {key}
+            </dt>
+            <dd className="font-semibold text-foreground/80">{value}</dd>
+          </div>
+        </div>
+      ))}
+    </dl>
+  )
 }

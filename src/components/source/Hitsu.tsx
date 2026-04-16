@@ -21,23 +21,63 @@ export function HitsuAnswer({
   const 発音 = extend.発音 as string | undefined
   const ビデオ = extend.ビデオ as string | undefined
 
+  if (!open) return null
+
   return (
-    open && (
-      <>
-        <div className="flex justify-center items-center text-sm opacity-60">
-          {分類 && <span>{`${分類}`}</span>}
-          {分類 && 品詞 && <span>|</span>}
-          {品詞 && <span>{`${品詞}`}</span>}
+    <div className="mt-8 border-t border-border/60 pt-8">
+      {(分類 || 品詞) && (
+        <div className="mb-4 flex justify-center gap-1.5">
+          {分類 && (
+            <span className="inline-flex items-center rounded-full border border-border/70 bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+              {分類}
+            </span>
+          )}
+          {品詞 && (
+            <span className="inline-flex items-center rounded-full border border-border/70 bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+              {品詞}
+            </span>
+          )}
         </div>
-        <div className="pt-4 mx-auto max-w-5xl px-4">
-          <div>意味:{note?.answer}</div>
-          {例文 && <div>例文:{例文}</div>}
-          {例文訳 && <div>例文訳:{例文訳}</div>}
-          {解説 && <div>解説:{解説}</div>}
+      )}
+      <dl className="mx-auto max-w-2xl space-y-3 text-base leading-relaxed text-foreground/80">
+        <Row label="意味" value={note?.answer} emphasize />
+        {例文 && <Row label="例文" value={例文} />}
+        {例文訳 && <Row label="例文訳" value={例文訳} />}
+        {解説 && <Row label="解説" value={解説} />}
+      </dl>
+      {(発音 || ビデオ) && (
+        <div className="mt-6 flex flex-col items-center gap-3">
           {発音 && <Audio url={発音} />}
           {ビデオ && <Video url={ビデオ} />}
         </div>
-      </>
-    )
+      )}
+    </div>
+  )
+}
+
+function Row({
+  label,
+  value,
+  emphasize = false,
+}: {
+  label: string
+  value?: string | null
+  emphasize?: boolean
+}) {
+  return (
+    <div className="grid grid-cols-[4rem_1fr] items-baseline gap-3">
+      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </dt>
+      <dd
+        className={
+          emphasize
+            ? 'whitespace-pre-wrap break-words text-foreground'
+            : 'whitespace-pre-wrap break-words text-muted-foreground'
+        }
+      >
+        {value}
+      </dd>
+    </div>
   )
 }
