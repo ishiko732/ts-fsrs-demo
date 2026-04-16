@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:17
     container_name: demo_postgres_container
     ports:
       - "5432:5432"
