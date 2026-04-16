@@ -4,8 +4,8 @@ import { Button } from '../ui/button'
 
 export default function GoBack() {
   return (
-    <Link href={'/note'} legacyBehavior>
-      <Button variant={'outline'}>Go Notes</Button>
-    </Link>
+    <Button asChild variant={'outline'}>
+      <Link href={'/note'}>Go Notes</Link>
+    </Button>
   )
 }

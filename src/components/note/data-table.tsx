@@ -222,9 +222,8 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
-                  legacyBehavior
                   href={
                     noteSimpleInfo.deleted
                       ? `/note/${noteSimpleInfo.nid}?deleted=1&cid=${noteSimpleInfo.cid}`
@@ -285,6 +284,11 @@ export default function DataTable({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  // Keep latest searchParams in a ref so downstream callbacks have stable
+  // identity across renders (useSearchParams returns a fresh instance every
+  // render and would otherwise trigger an infinite router.push loop).
+  const searchParamsRef = React.useRef(searchParams)
+  searchParamsRef.current = searchParams
   // create query string
   const createQueryString = React.useCallback(
     (
@@ -293,7 +297,9 @@ export default function DataTable({
         string | number | null | string[] | number[] | undefined
       >
     ) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString())
+      const newSearchParams = new URLSearchParams(
+        searchParamsRef.current?.toString()
+      )
 
       for (const [key, value] of Object.entries(params)) {
         if (value === null || value === undefined) {
@@ -308,7 +314,7 @@ export default function DataTable({
 
       return newSearchParams.toString()
     },
-    [searchParams]
+    []
   )
   // handle server-side pagination
   const [{ pageIndex, pageSize }, setPagination] =
