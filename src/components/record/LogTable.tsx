@@ -4,7 +4,6 @@ import type { Selectable } from 'kysely'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -21,13 +20,12 @@ async function LogTable({ logs }: Props) {
   const total_duration = logs.reduce((acc, log) => acc + log.duration, 0)
   return (
     <Table>
-      <TableCaption>{'Logs'}</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Index(Desc)</TableHead>
+          <TableHead className="w-[60px]">#</TableHead>
           <TableHead>Date</TableHead>
           <TableHead>State</TableHead>
-          <TableHead>Gard</TableHead>
+          <TableHead>Grade</TableHead>
           <TableHead className="text-right hidden sm:table-cell">
             elapsed
           </TableHead>

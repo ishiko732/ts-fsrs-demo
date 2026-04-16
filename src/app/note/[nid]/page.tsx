@@ -6,11 +6,6 @@ import FSRSDetail from '@/components/record/FSRSMsg'
 import GoNotes from '@/components/record/GoBack'
 import LogTable from '@/components/record/LogTable'
 import DisplayMsg from '@/components/source/display'
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@/components/ui/resizable'
 
 type Params = {
   deleted: '1' | '0'
@@ -53,60 +48,28 @@ export default async function Page(props: Props) {
       notFound()
     })
   return (
-    <div className="container pt-4 h-[calc(100vh_-_88px)]">
-      <ResizablePanelGroup
-        orientation="horizontal"
-        className="rounded-lg border"
-      >
-        <ResizablePanel defaultSize={60} id="controlledPanel1">
-          <div className="flex h-full  items-center justify-center p-6">
-            <DisplayMsg cardIncludeNote={card} />
-          </div>
-        </ResizablePanel>
-        <ResizableHandle
-          withHandle
-          aria-label="resize size"
-          aria-controls="controlledPanel"
-          aria-valuemax={100}
-          aria-valuemin={0}
-        />
-        <ResizablePanel defaultSize={40}>
-          <ResizablePanelGroup orientation="vertical">
-            <ResizablePanel defaultSize={50} id="controlledPanel2">
-              <div className="flex h-full items-start  justify-center px-6 overflow-auto">
-                <LogTable logs={logs} />
-              </div>
-            </ResizablePanel>
-            <ResizableHandle
-              withHandle
-              aria-label="resize log and card"
-              aria-controls="controlledPanel2"
-              aria-valuemax={100}
-              aria-valuemin={0}
-            />
-            <ResizablePanel defaultSize={40} id="controlledPanel3">
-              <div className="justify-center items-center mt-4 hidden md:flex">
-                <span className="font-semibold">Card[FSRS]</span>
-              </div>
-              <div className="flex h-full items-center justify-center p-6">
-                <FSRSDetail card={card} />
-              </div>
-            </ResizablePanel>
-            <ResizableHandle
-              withHandle
-              aria-label="resize card and action"
-              aria-controls="controlledPanel3"
-              aria-valuemax={100}
-              aria-valuemin={0}
-            />
-            <ResizablePanel defaultSize={10}>
-              <div className="flex h-full items-center justify-center p-6">
-                <GoNotes />
-              </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+    <div className="container py-8 space-y-10">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <GoNotes />
+        <FSRSDetail.Actions card={card} />
+      </div>
+
+      <section className="mx-auto max-w-2xl py-8">
+        <DisplayMsg cardIncludeNote={card} />
+      </section>
+
+      <section>
+        <FSRSDetail card={card} />
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold tracking-tight">
+          Review history
+        </h2>
+        <div className="rounded-lg border overflow-x-auto">
+          <LogTable logs={logs} />
+        </div>
+      </section>
     </div>
   )
 }
