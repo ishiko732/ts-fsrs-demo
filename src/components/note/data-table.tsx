@@ -428,7 +428,7 @@ export default function DataTable({
         <Input
           placeholder="Filter question/answer..."
           value={keywords ?? ''}
-          onChange={(event) => setKeywords(event.target.value)}
+          onChange={(event) => setKeywords(event.target.value || null)}
           className="max-w-1/2 mr-4"
         />
         <DropdownMenu>
