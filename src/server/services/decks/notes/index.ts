@@ -260,6 +260,9 @@ class NoteService {
             .where('nid', 'in', update_nids)
             .execute()
         )
+        // Intentional: do NOT revive revlog. Old review history belongs to
+        // the previous lifecycle; reviving would contaminate FSRS state of
+        // the re-added (fresh) cards.
       }
       const insert_notes = notes
         .map((n) => ({ ...n, uid, did, source, created: now, updated: now }))
