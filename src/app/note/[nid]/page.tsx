@@ -54,7 +54,10 @@ export default async function Page(props: Props) {
     })
   return (
     <div className="container pt-4 h-[calc(100vh_-_88px)]">
-      <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
+      <ResizablePanelGroup
+        orientation="horizontal"
+        className="rounded-lg border"
+      >
         <ResizablePanel defaultSize={60} id="controlledPanel1">
           <div className="flex h-full  items-center justify-center p-6">
             <DisplayMsg cardIncludeNote={card} />
@@ -68,7 +71,7 @@ export default async function Page(props: Props) {
           aria-valuemin={0}
         />
         <ResizablePanel defaultSize={40}>
-          <ResizablePanelGroup direction="vertical">
+          <ResizablePanelGroup orientation="vertical">
             <ResizablePanel defaultSize={50} id="controlledPanel2">
               <div className="flex h-full items-start  justify-center px-6 overflow-auto">
                 <LogTable logs={logs} />

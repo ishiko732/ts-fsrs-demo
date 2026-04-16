@@ -172,9 +172,11 @@ class NoteService {
     } else {
       // update
       return noteModel.db.transaction().execute(async (trx) => {
+        // `created` is never-updatable per the Kysely ColumnType; strip it.
+        const { created: _created, ...noteUpdate } = note
         const { id: nid } = await trx
           .updateTable('notes')
-          .set({ ...note, updated: now })
+          .set({ ...noteUpdate, updated: now })
           .where('uid', '=', uid)
           .where('did', '=', did)
           .where('id', '=', note_from_db.id)
@@ -182,9 +184,10 @@ class NoteService {
           .executeTakeFirstOrThrow()
         const card_for_fsrs = createEmptyCard(now)
         const card = initCard(uid, did, nid, card_for_fsrs, now)
+        const { created: _cardCreated, ...cardUpdate } = card
         await trx
           .updateTable(cardModel.table)
-          .set(card)
+          .set(cardUpdate)
           .where('nid', '=', nid)
           .execute()
         return nid
@@ -222,10 +225,12 @@ class NoteService {
       const promises: Promise<unknown>[] = []
       if (update_nids.length > 0) {
         for (const note of notes) {
+          // `created` is never-updatable per the Kysely ColumnType; strip it.
+          const { created: _created, ...noteUpdate } = note
           promises.push(
             trx
               .updateTable('notes')
-              .set({ ...note, updated: now })
+              .set({ ...noteUpdate, updated: now })
               .executeTakeFirstOrThrow()
           )
         }

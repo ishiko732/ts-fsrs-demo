@@ -47,7 +47,7 @@ export const NoteAddSchema = z.object({
   answer: z.string(),
   source: z.string(),
   sourceId: z.string().optional(),
-  extend: z.record(z.unknown()).optional(),
+  extend: z.record(z.string(), z.unknown()).optional(),
 })
 
 export const NoteModifySchema = NoteAddSchema.extend({
