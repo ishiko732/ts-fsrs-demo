@@ -1,6 +1,7 @@
 'use client'
+import { authClient } from '@server/services/auth/client'
 import { LogOutIcon } from 'lucide-react'
-import { signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 import {
   AlertDialog,
@@ -17,6 +18,12 @@ import {
 import { Button } from '../ui/button'
 
 export default function Logout() {
+  const router = useRouter()
+  const handleSignOut = async () => {
+    await authClient.signOut()
+    router.refresh()
+    router.push('/')
+  }
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -33,9 +40,7 @@ export default function Logout() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={() => signOut()}>
-            Confrim
-          </AlertDialogAction>
+          <AlertDialogAction onClick={handleSignOut}>Confrim</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

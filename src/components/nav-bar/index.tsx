@@ -23,7 +23,7 @@ const NavBar = async () => {
         <ThemesModeToggle />
         {!user ? (
           <Button>
-            <Link href={'/api/auth/signin'}>Sign In</Link>
+            <Link href={'/signin'}>Sign In</Link>
           </Button>
         ) : (
           <>

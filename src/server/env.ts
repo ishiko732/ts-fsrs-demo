@@ -3,13 +3,13 @@ import { z } from 'zod'
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production']).default('development'),
 
-  /** NextAuth */
-  NEXTAUTH_URL: z.string().default('http://localhost:3000'),
-  NEXTAUTH_SECRET: z.string().default(''),
-
-  /** GitHub */
-  GITHUB_ID: z.string().default(''),
+  /** Better Auth */
+  BETTER_AUTH_URL: z.string().default('http://localhost:3000'),
   /** openssl rand -base64 32 */
+  BETTER_AUTH_SECRET: z.string().default(''),
+
+  /** GitHub OAuth (production sign-in / register) */
+  GITHUB_ID: z.string().default(''),
   GITHUB_SECRET: z.string().default(''),
   GITHUB_ADMIN_ID: z
     .string()

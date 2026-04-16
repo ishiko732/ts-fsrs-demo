@@ -1,14 +1,21 @@
-import { AuthHandler } from '@services/auth'
+import { getAuthSessionFromHeaders } from '@services/auth'
 import { createMiddleware } from 'hono/factory'
 
 export function AuthSession() {
   return createMiddleware(async (c, next) => {
-    const auth = await AuthHandler()
-    const [role, id] = (auth?.user.userKey ?? '').split(' ')
-    c.set('authSession', auth)
-    c.set('authUser', auth?.user)
-    c.set('authUserId', id)
-    c.set('authUserRole', role)
+    // Use the request's raw headers (rather than next/headers()) so this
+    // middleware also works when Hono is mounted outside the Next.js
+    // request scope.
+    const session = await getAuthSessionFromHeaders(c.req.raw.headers)
+    c.set('authSession', session ?? undefined)
+    c.set('authUser', session?.user)
+    c.set(
+      'authUserId',
+      session?.user?.appUserId != null
+        ? String(session.user.appUserId)
+        : undefined
+    )
+    c.set('authUserRole', session?.user?.role)
     await next()
   })
 }

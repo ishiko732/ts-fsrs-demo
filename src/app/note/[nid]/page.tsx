@@ -28,9 +28,7 @@ const buildQuery = async (props: Props) => {
   const uid = await getSessionUserIdThrow().catch(() => {
     const searchPath = new URLSearchParams()
     if (cid) searchPath.set('cid', String(cid))
-    redirect(
-      `/api/auth/signin?callbackUrl=/note/${nid}?${searchPath.toString()}`
-    )
+    redirect(`/signin?callbackUrl=/note/${nid}?${searchPath.toString()}`)
   })
   return {
     uid,
@@ -63,9 +61,7 @@ export default async function Page(props: Props) {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold tracking-tight">
-          Review history
-        </h2>
+        <h2 className="text-lg font-semibold tracking-tight">Review history</h2>
         <div className="rounded-lg border overflow-x-auto">
           <LogTable logs={logs} />
         </div>

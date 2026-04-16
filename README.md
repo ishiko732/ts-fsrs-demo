@@ -31,13 +31,19 @@ Create a `.env` file in the project root. The variables below are required; see 
 DATABASE_URL="postgres://username:password@host:port/database?sslmode=require"
 DATABASE_URL_WITH_SCHEMA="${DATABASE_URL}&schema=fsrsDemo"
 
-# NextAuth
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=         # openssl rand -base64 32
+# Better Auth
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=      # openssl rand -base64 32
 
-# GitHub OAuth — https://github.com/settings/developers
+# GitHub OAuth — https://github.com/settings/developers (used for production sign-in)
 GITHUB_ID=
 GITHUB_SECRET=
+# Optional: GitHub user id treated as admin (default 62931549)
+GITHUB_ADMIN_ID=62931549
+
+# In non-production environments (NODE_ENV=development or vercel preview/dev),
+# Better Auth's email/password provider is enabled with auto-signup; visit
+# /signin and click "Sign in as Dev (preview)" to log in as the default user.
 
 # Optional: RSA keys for an external service
 # openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048

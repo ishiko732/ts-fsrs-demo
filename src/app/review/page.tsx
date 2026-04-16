@@ -22,7 +22,7 @@ type DataResponse = {
 
 const getData = cache(async (source?: string): Promise<DataResponse> => {
   const uid = await getSessionUserIdThrow().catch(() => {
-    redirect('/api/auth/signin?callbackUrl=/review')
+    redirect('/signin?callbackUrl=/review')
   })
   let now = new Date()
   if (now.getHours() < 4) {

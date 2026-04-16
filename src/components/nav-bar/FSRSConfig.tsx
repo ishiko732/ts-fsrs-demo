@@ -2,9 +2,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import client from '@server/libs/rpc'
 import type { DeckTable } from '@server/models/decks'
+import { authClient } from '@server/services/auth/client'
 import type { Selectable } from 'kysely'
 // import Link from 'next/link'
-import { signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { type Resolver, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -97,7 +97,7 @@ export default function FSRSConfigForm({
       setDeckId(deckId)
 
       if (!resp.ok) {
-        signOut()
+        authClient.signOut()
         return
       }
       const deck = await resp.json()
@@ -126,7 +126,7 @@ export default function FSRSConfigForm({
     }
     loadDeck().catch((e) => {
       console.error(e)
-      signOut()
+      authClient.signOut()
     })
   }, [form])
   if (!params) {

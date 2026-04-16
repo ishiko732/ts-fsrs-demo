@@ -96,7 +96,7 @@ const buildQuery = async (searchParams: Params) => {
         params.append(key, value)
       }
     })
-    redirect(`/api/auth/signin?callbackUrl=/note?${params.toString()}`)
+    redirect(`/signin?callbackUrl=/note?${params.toString()}`)
   })
   return {
     request: {
