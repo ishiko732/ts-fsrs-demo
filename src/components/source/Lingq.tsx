@@ -10,6 +10,7 @@ import Audio from '@/components/card/Audio'
 
 import { getLingqToken } from './call/Lingq'
 import { HighlightedWord, MergeTransliteration } from './display/Lingq'
+
 export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
   const extend = note.extend as Partial<Lingq> & {
     lang: string
@@ -43,46 +44,54 @@ export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note, lang])
+
   return (
-    <div className="item-center">
-      <div className="w-full">
-        <span className="flex justify-center items-center text-2xl">
-          {note.question}
-          {/* <span className="badge">{note.answer}</span> */}
-        </span>
-        <div className="flex justify-center flex-col items-center opacity-60 pt-4">
-          {open && transliteration && (
-            <div> {<MergeTransliteration {...transliteration} />}</div>
-          )}
+    <div className="text-center">
+      <h2 className="break-words text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+        {note.question}
+      </h2>
+      <div className="mt-4 flex flex-col items-center gap-3 text-muted-foreground">
+        {open && transliteration && (
           <div className="text-sm">
-            {tags?.map((tag) => (
-              <span key={tag} className="badge">
+            <MergeTransliteration {...transliteration} />
+          </div>
+        )}
+        {tags && tags.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-1.5">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center rounded-full border border-border/70 bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+              >
                 {tag}
               </span>
             ))}
           </div>
-          {open && words ? (
-            <div className="text-sm pt-2">
-              {words?.map((word) => (
-                <span key={word} className="badge badge-ghost">
-                  {word}
-                </span>
-              ))}
-            </div>
-          ) : null}
-          <div>
-            <HighlightedWord text={fragment} word={note.question} />
+        )}
+        {open && words && words.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-1.5">
+            {words.map((word) => (
+              <span
+                key={word}
+                className="inline-flex items-center rounded-full bg-foreground/5 px-2.5 py-0.5 text-xs font-medium text-foreground/70"
+              >
+                {word}
+              </span>
+            ))}
           </div>
-          {audio && (
-            <Audio
-              url={audio}
-              ref={audioRef}
-              onCanPlay={() => {
-                audioRef.current?.play()
-              }}
-            />
-          )}
+        )}
+        <div className="text-sm leading-relaxed">
+          <HighlightedWord text={fragment} word={note.question} />
         </div>
+        {audio && (
+          <Audio
+            url={audio}
+            ref={audioRef}
+            onCanPlay={() => {
+              audioRef.current?.play()
+            }}
+          />
+        )}
       </div>
     </div>
   )
@@ -91,16 +100,24 @@ export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
 export function Answer({ open, note }: { open: boolean; note: TCardDetail }) {
   const extend = note.extend as Partial<Lingq>
   const hints = extend.hints
-  return open ? (
-    <div className="pt-4 mx-auto max-w-5xl px-4">
-      <ul>
+  if (!open) return null
+  return (
+    <div className="mt-8 border-t border-border/60 pt-8">
+      <ul className="mx-auto max-w-2xl space-y-2">
         {hints?.map((hint) => (
-          <li key={hint.id}>
-            <span className="badge">{hint.locale}</span>
-            {hint.text}
+          <li
+            key={hint.id}
+            className="flex items-start gap-2 text-base leading-relaxed text-muted-foreground"
+          >
+            <span className="mt-0.5 inline-flex items-center rounded-full border border-border/70 bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+              {hint.locale}
+            </span>
+            <span className="flex-1 break-words text-foreground/80">
+              {hint.text}
+            </span>
           </li>
         ))}
       </ul>
     </div>
-  ) : null
+  )
 }

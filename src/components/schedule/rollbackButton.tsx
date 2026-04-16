@@ -1,5 +1,7 @@
 'use client'
 
+import { Undo2 } from 'lucide-react'
+
 import { useCardContext } from '@/context/CardContext'
 
 import { Button } from '../ui/button'
@@ -7,16 +9,20 @@ import { Button } from '../ui/button'
 export default function RollbackButton() {
   const { rollbackAble, handleRollBack } = useCardContext()
 
-  return rollbackAble ? (
+  if (!rollbackAble) return null
+
+  return (
     <Button
-      className="sm:hidden w-full md:w-[80%] mt-4"
-      variant={'outline'}
+      variant="ghost"
+      size="sm"
       onClick={async () => {
         await handleRollBack()
       }}
-      title="Press Ctrl+Z(⌘+Z) to rollback"
+      title="Press Ctrl+Z (⌘+Z) to undo"
+      className="h-8 gap-1.5 px-2 text-muted-foreground hover:text-foreground"
     >
-      Rollback
+      <Undo2 className="size-4" />
+      <span className="hidden text-xs font-medium sm:inline">Undo</span>
     </Button>
-  ) : null
+  )
 }

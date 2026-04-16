@@ -74,8 +74,8 @@ export default async function Page(props: { searchParams: Params }) {
   return isFinish ? (
     <Finish />
   ) : (
-    <div className="flex justify-center flex-col items-center py-8">
+    <main className="mx-auto w-full max-w-3xl px-4 py-8 md:py-12">
       <CardClient noteBox={cardDetailMap} />
-    </div>
+    </main>
   )
 }
