@@ -12,9 +12,6 @@ type Props = {
   tip?: string
   className?: string
   children: React.ReactNode
-  onClick?:
-    | ((e: React.MouseEvent<HTMLElement, MouseEvent>) => void)
-    | (() => void)
   formAction?: ((formData: FormData) => void) | string | undefined
   dialog?: React.ReactNode
   disable?: boolean
@@ -24,7 +21,6 @@ export default async function MenuItem({
   tip,
   className,
   children,
-  onClick,
   formAction,
   dialog,
   disable,
@@ -34,39 +30,20 @@ export default async function MenuItem({
   }
   return formAction ? (
     <form action={formAction}>
-      <MenuItemContent
-        tip={tip}
-        className={className}
-        onClick={onClick}
-        dialog={dialog}
-      >
+      <MenuItemContent tip={tip} className={className} dialog={dialog}>
         {children}
       </MenuItemContent>
     </form>
   ) : (
-    <MenuItemContent
-      tip={tip}
-      className={className}
-      onClick={onClick}
-      dialog={dialog}
-    >
+    <MenuItemContent tip={tip} className={className} dialog={dialog}>
       {children}
     </MenuItemContent>
   )
 }
-function MenuItemContent({ tip, className, children, onClick, dialog }: Props) {
+function MenuItemContent({ tip, className, children, dialog }: Props) {
   return (
     <>
-      <li
-        onClick={onClick}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            onClick?.(e as unknown as React.MouseEvent<HTMLElement, MouseEvent>)
-          }
-        }}
-        className="max-w-[54px] max-h-10"
-        aria-label={tip}
-      >
+      <li className="max-w-[54px] max-h-10" aria-label={tip}>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
