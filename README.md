@@ -1,102 +1,146 @@
-# TS-FSRS-Demo
+# ts-fsrs-demo
 
-## Train
+A spaced-repetition flashcard demo built on [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs), showcasing the FSRS algorithm in a minimal Next.js application.
 
-You can now use this port for training: https://optimizer.parallelveil.com
+## Table of Contents
 
-Open Source Code: https://github.com/ishiko732/analyzer-and-train
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Environment Variables](#environment-variables)
+  - [Installation](#installation)
+  - [Run](#run)
+  - [Build](#build)
+- [Screenshots](#screenshots)
+- [Training](#training)
+- [License](#license)
 
-## introduction
+## Tech Stack
 
-Interval Repeat Flashcard Demo with Basic Simple Features Designed based on Next.js App Router, ts-fsrs, Hono.js and kysely.
+| Package         | Version    |
+| --------------- | ---------- |
+| next            | ^16.2.4    |
+| react           | ^19.2.5    |
+| ts-fsrs         | ^5.3.2     |
+| hono            | ^4.12.14   |
+| kysely          | ^0.28.16   |
+| next-auth       | 5.0.0-beta |
+| tailwindcss     | ^4.2.2     |
+| shadcn/ui       | —          |
 
-use packages:
+See [`package.json`](./package.json) for the full dependency list.
 
-````
-- next.js (>= 14.2.0)
-- ts-fsrs (>= 3.5.3)
-- hono.js
-- kysely
-- tailwindcss (>= 3)
-- shadcn 
-````
+## Getting Started
 
-## Environment Variables
+### Prerequisites
 
- An environment variable is a key value pair of string data that is stored on your machine's local environment. Refer to our [Environment variables reference documentation](https://www.prisma.io/docs/reference/api-reference/environment-variables-reference) for specific details.
+- Node.js 20+
+- pnpm (recommended) / npm / yarn / bun
+- Docker (for the local PostgreSQL instance)
 
-> Ref(prisma docs): [https://www.prisma.io/docs/guides/development-environment/environment-variables](https://www.prisma.io/docs/guides/development-environment/environment-variables)
+### Environment Variables
 
- `.env`  
+Create a `.env` file in the project root. The variables below are required; see the [Prisma environment variables reference](https://www.prisma.io/docs/reference/api-reference/environment-variables-reference) for background on the URL format.
 
 ```bash
+# PostgreSQL connection string
 DATABASE_URL="postgres://username:password@host:port/database?sslmode=require"
-DATABASE_URL_WITH_SCHEMA=${DATABASE_URL}&schema=fsrsDemo 
-# example
-DATABASE_URL="postgres://default:password@abc.com:5432/verceldb?sslmode=require&schema=fsrs"
+DATABASE_URL_WITH_SCHEMA="${DATABASE_URL}&schema=fsrsDemo"
 
+# NextAuth
 NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=**** # openssl rand -base64 32
+NEXTAUTH_SECRET=         # openssl rand -base64 32
 
-# GitHub OAuth https://github.com/settings/developers
-GITHUB_ID=***
-GITHUB_SECRET=***
+# GitHub OAuth — https://github.com/settings/developers
+GITHUB_ID=
+GITHUB_SECRET=
 
-# if need extra server
-# RSA
+# Optional: RSA keys for an external service
 # openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
 RSA_PRIVATE_KEY=""
 # openssl rsa -in private.pem -pubout -out public.pem
 RSA_PUBLIC_KEY=""
 ```
 
-
-## How to run?
-- run docker make sure the database is running on your machine: `docker-compose up`
-- Configure the database environment and use `npm run db:push`
-- Run demo
+### Installation
 
 ```bash
-npm run dev # or yarn dev/ pnpm dev/ bun dev
+pnpm install
 ```
 
-- Open [localhost:3000](http://localhost:3000)
-- Sign In
+### Run
 
-## Preview
+1. Start PostgreSQL via Docker:
+
+   ```bash
+   pnpm docker        # alias for `docker compose up`
+   ```
+
+2. Push the schema to the database:
+
+   ```bash
+   pnpm db:push
+   ```
+
+3. Start the dev server:
+
+   ```bash
+   pnpm dev
+   ```
+
+4. Open <http://localhost:3000> and sign in.
+
+### Build
+
+```bash
+pnpm build
+pnpm start
+```
+
+![build demo](images/build.png)
+
+## Screenshots
 
 ### Home
+
 ![home](images/home.png)
 
-> Tip: ts-fsrs version:3.5.3
-
 ### Notes
-![Notes](images/notes.png)
-> You can view the added note information and status here, and click on each note to enter the detailed note page.
+
+![notes list](images/notes.png)
+
+View added notes and their status. Click a note to open its detail page.
 
 ![note detail](images/detail.png)
 ![note forget](images/forget.png)
 
-> You can view detailed information about the note on this page, and you can click "forget" to reset the learning status of that card.
+On the detail page you can click **forget** to reset the learning state of the card.
 
 ### Review
 
 ![question](images/question-font.png)
-![show answer](images/answer.png)
-> You can perform review operations on the review page, and it is possible to display the answer using the keyboard. You can also schedule the timing and use `Ctrl+Z` or `⌘+Z` to undo or revert the operation.
+![answer](images/answer.png)
 
-![finish](images/finish.png) 
-> After completing the review, you will be prompted accordingly.
+Keyboard shortcuts are supported for revealing the answer and grading. Use `Ctrl+Z` / `⌘+Z` to undo the last review.
 
-## Settings
+![finish](images/finish.png)
 
-![setting-button](images/setting-button.png)
-> Click on the button, and you can set up.
+A completion message is shown after finishing a review session.
 
-![FSRS Settings](images/settings.png)
-> You can customize the parameters of your FSRS params
+### Settings
 
+![setting button](images/setting-button.png)
+![FSRS settings](images/settings.png)
 
-## Build
-You can compile the demo for better performance by using `npm run build`, and then start the project using `npm run start`.
-![build demo](images/build.png)
+Customize the FSRS parameters under settings.
+
+## Training
+
+Train your own FSRS parameters using the hosted optimizer:
+
+- Hosted tool: <https://optimizer.parallelveil.com>
+- Source code: <https://github.com/ishiko732/analyzer-and-train>
+
+## License
+
+See [LICENSE](./LICENSE).
