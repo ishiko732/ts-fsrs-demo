@@ -287,6 +287,9 @@ export default function DataTable({
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const timer = React.useRef<NodeJS.Timeout | null>(null)
+  // Skip mount-time router.push to avoid RSC refetch flash when navigating
+  // into /note (router.push to the current URL still triggers a refresh).
+  const didMountRef = React.useRef(false)
 
   // Ref:https://tocalai.medium.com/pagination-on-tanstack-table-under-next-js-787ed03198a3
   const router = useRouter()
@@ -373,11 +376,18 @@ export default function DataTable({
 
   // changed the route as well
   React.useEffect(() => {
+    if (!didMountRef.current) {
+      return
+    }
     changeRouter(pageIndex, pageSize, sorting, keywords)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, sorting, changeRouter, keywords])
 
   React.useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true
+      return
+    }
     // 200ms
     if (timer.current) {
       clearTimeout(timer.current)
