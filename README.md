@@ -4,7 +4,6 @@ A spaced-repetition flashcard demo built on [ts-fsrs](https://github.com/open-sp
 
 ## Table of Contents
 
-- [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Environment Variables](#environment-variables)
@@ -14,21 +13,6 @@ A spaced-repetition flashcard demo built on [ts-fsrs](https://github.com/open-sp
 - [Screenshots](#screenshots)
 - [Training](#training)
 - [License](#license)
-
-## Tech Stack
-
-| Package         | Version    |
-| --------------- | ---------- |
-| next            | ^16.2.4    |
-| react           | ^19.2.5    |
-| ts-fsrs         | ^5.3.2     |
-| hono            | ^4.12.14   |
-| kysely          | ^0.28.16   |
-| next-auth       | 5.0.0-beta |
-| tailwindcss     | ^4.2.2     |
-| shadcn/ui       | —          |
-
-See [`package.json`](./package.json) for the full dependency list.
 
 ## Getting Started
 
