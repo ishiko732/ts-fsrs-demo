@@ -61,6 +61,8 @@ async function FSRSMsgImpl({ card }: Props) {
   const retrievability = f.get_retrievability(card)
   const stateLabel = STATE_LABEL[card.state] ?? String(card.state)
   const showFsrsTriad = card.state !== State.New
+  const showLearningSteps =
+    card.state === State.Learning || card.state === State.Relearning
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
@@ -79,6 +81,9 @@ async function FSRSMsgImpl({ card }: Props) {
 
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
         <Meta label="State" value={stateLabel} />
+        {showLearningSteps ? (
+          <Meta label="Step" value={card.learning_steps} />
+        ) : null}
         <Meta label="Reps" value={card.reps} />
         <Meta label="Lapses" value={card.lapses} />
         <Meta label="Elapsed" value={`${card.elapsed_days}d`} />
