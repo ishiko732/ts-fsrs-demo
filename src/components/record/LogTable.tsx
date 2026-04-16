@@ -18,6 +18,7 @@ type Props = {
 
 async function LogTable({ logs }: Props) {
   const total_duration = logs.reduce((acc, log) => acc + log.duration, 0)
+  const reversedLogs = logs.slice().reverse()
   return (
     <Table>
       <TableHeader>
@@ -38,9 +39,11 @@ async function LogTable({ logs }: Props) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {logs.map((log, index) => (
+        {reversedLogs.map((log, index) => (
           <TableRow key={log.id}>
-            <TableCell className="font-medium">{index}</TableCell>
+            <TableCell className="font-medium">
+              {reversedLogs.length - index}
+            </TableCell>
             <TableCell>
               <DateItem date={log.review}></DateItem>
             </TableCell>
