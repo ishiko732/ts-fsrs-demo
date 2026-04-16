@@ -427,8 +427,8 @@ export default function DataTable({
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter question/answer..."
-          value={keywords ?? undefined}
-          onChange={(event) => setKeywords(event.target.value)}
+          value={keywords ?? ''}
+          onChange={(event) => setKeywords(event.target.value || null)}
           className="max-w-1/2 mr-4"
         />
         <DropdownMenu>
