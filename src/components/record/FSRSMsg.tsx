@@ -82,7 +82,7 @@ async function FSRSMsgImpl({ card }: Props) {
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
         <Meta label="State" value={stateLabel} />
         {showLearningSteps ? (
-          <Meta label="Step" value={card.learning_steps} />
+          <Meta label="Step" value={card.learning_steps + 1} />
         ) : null}
         <Meta label="Reps" value={card.reps} />
         <Meta label="Lapses" value={card.lapses} />
