@@ -100,11 +100,11 @@ export function Question({ open, note }: { open: boolean; note: TCardDetail }) {
 export function Answer({ open, note }: { open: boolean; note: TCardDetail }) {
   const extend = note.extend as Partial<Lingq>
   const hints = extend.hints
-  if (!open) return null
+  if (!open || !hints?.length) return null
   return (
     <div className="mt-8 border-t border-border/60 pt-8">
       <ul className="mx-auto max-w-2xl space-y-2">
-        {hints?.map((hint) => (
+        {hints.map((hint) => (
           <li
             key={hint.id}
             className="flex items-start gap-2 text-base leading-relaxed text-muted-foreground"
