@@ -115,8 +115,8 @@ importers:
         specifier: ^4.12.14
         version: 4.12.14
       kysely:
-        specifier: ^0.27.6
-        version: 0.27.6
+        specifier: ^0.28.14
+        version: 0.28.14
       lucide-react:
         specifier: ^0.395.0
         version: 0.395.0(react@19.2.4)
@@ -1895,9 +1895,9 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
-  kysely@0.27.6:
-    resolution: {integrity: sha512-FIyV/64EkKhJmjgC0g2hygpBv5RNWVPyNCqSAD7eTCv6eFWNIi4PN1UvdSJGicN/o35bnevgis4Y0UDC0qi8jQ==}
-    engines: {node: '>=14.0.0'}
+  kysely@0.28.14:
+    resolution: {integrity: sha512-SU3lgh0rPvq7upc6vvdVrCsSMUG1h3ChvHVOY7wJ2fw4C9QEB7X3d5eyYEyULUX7UQtxZJtZXGuT6U2US72UYA==}
+    engines: {node: '>=20.0.0'}
 
   lightningcss-darwin-arm64@1.29.2:
     resolution: {integrity: sha512-cK/eMabSViKn/PG8U/a7aCorpeKLMlK0bQeNHmdb7qUnBkNPnL+oV5DjJUo0kqWsJUapZsM4jCfYItbqBDvlcA==}
@@ -3912,7 +3912,7 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  kysely@0.27.6: {}
+  kysely@0.28.14: {}
 
   lightningcss-darwin-arm64@1.29.2:
     optional: true
