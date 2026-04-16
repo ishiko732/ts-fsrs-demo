@@ -170,13 +170,17 @@ class NoteService {
         return nid
       })
     } else {
-      // update
+      // Revive a soft-deleted note: note_from_db.deleted === true here
+      // (the non-deleted case threw above). The payload must clear the
+      // `deleted` flag explicitly — `Insertable<NoteTable>` cannot carry
+      // it (insert type is `never`), so spreading `note` would leave the
+      // row soft-deleted.
       return noteModel.db.transaction().execute(async (trx) => {
         // `created` is never-updatable per the Kysely ColumnType; strip it.
         const { created: _created, ...noteUpdate } = note
         const { id: nid } = await trx
           .updateTable('notes')
-          .set({ ...noteUpdate, updated: now })
+          .set({ ...noteUpdate, deleted: false, updated: now })
           .where('uid', '=', uid)
           .where('did', '=', did)
           .where('id', '=', note_from_db.id)
@@ -187,7 +191,7 @@ class NoteService {
         const { created: _cardCreated, ...cardUpdate } = card
         await trx
           .updateTable(cardModel.table)
-          .set(cardUpdate)
+          .set({ ...cardUpdate, deleted: false })
           .where('nid', '=', nid)
           .execute()
         return nid
@@ -224,13 +228,28 @@ class NoteService {
       const card_for_fsrs = createEmptyCard(now)
       const promises: Promise<unknown>[] = []
       if (update_nids.length > 0) {
+        // Only revive notes whose sourceId already exists as a soft-deleted
+        // row — match each incoming note to its stored id via sourceId.
+        const deletedIdBySourceId = new Map(
+          exist_notes
+            .filter((e) => e.deleted)
+            .map((e) => [e.sourceId, e.id] as const)
+        )
         for (const note of notes) {
+          const existingId = deletedIdBySourceId.get(note.sourceId)
+          if (existingId === undefined) {
+            continue
+          }
           // `created` is never-updatable per the Kysely ColumnType; strip it.
           const { created: _created, ...noteUpdate } = note
           promises.push(
             trx
               .updateTable('notes')
-              .set({ ...noteUpdate, updated: now })
+              // Revive: clear `deleted` explicitly (Insertable cannot carry it).
+              .set({ ...noteUpdate, deleted: false, updated: now })
+              .where('uid', '=', uid)
+              .where('did', '=', did)
+              .where('id', '=', existingId)
               .executeTakeFirstOrThrow()
           )
         }
