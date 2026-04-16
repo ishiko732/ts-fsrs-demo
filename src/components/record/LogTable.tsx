@@ -18,7 +18,7 @@ type Props = {
 
 async function LogTable({ logs }: Props) {
   const total_duration = logs.reduce((acc, log) => acc + log.duration, 0)
-  const reversedLogs = logs.slice().reverse()
+  const reversedLogs = logs.toReversed()
   return (
     <Table>
       <TableHeader>
