@@ -12,11 +12,10 @@ import UserProfile from './user-profile'
 const NavBar = async () => {
   const session = await getAuthSession()
   const user = session?.user
-  const env = process.env.NEXT_PUBLIC_VERCEL_ENV ?? process.env.NODE_ENV
   return (
     <nav className="pt-2 container flex flex-1  max-w-(--breakpoint-2xl) items-center">
       {/* Left */}
-      <Logo env={env} />
+      <Logo />
       {/* Right */}
       <div className="flex flex-1 items-center justify-end space-x-2">
         {user && <UserProfile user={user} />}

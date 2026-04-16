@@ -1,7 +1,6 @@
 import Link from 'next/link'
 
 import packageInfo from '@/../package.json' with { type: 'json' }
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
 export const dynamic = 'force-static'
@@ -34,21 +33,21 @@ async function HomePage() {
         </ul>
       </div>
       <div className="items-center flex-1 ">
-        <Link href={'/note'} legacyBehavior>
-          <Button className="m-2 w-full sm:w-auto min-w-6">Go to Notes</Button>
-        </Link>
-        <Link href={'/review'} legacyBehavior>
-          <Button className="m-2 w-full sm:w-auto min-w-6">Go to Review</Button>
-        </Link>
-        <Link
-          href={'https://optimizer.parallelveil.com/'}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button className="m-2 w-full sm:w-auto min-w-6">
-            Go to Train <Badge className="badge badge-ghost">beta</Badge>
-          </Button>
-        </Link>
+        <Button asChild className="m-2 w-full sm:w-auto min-w-6">
+          <Link href={'/note'}>Manage Notes</Link>
+        </Button>
+        <Button asChild className="m-2 w-full sm:w-auto min-w-6">
+          <Link href={'/review'}>Start Review</Link>
+        </Button>
+        <Button asChild className="m-2 w-full sm:w-auto min-w-6">
+          <Link
+            href={'https://optimizer.parallelveil.com/'}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Optimize Parameters
+          </Link>
+        </Button>
       </div>
     </div>
   )

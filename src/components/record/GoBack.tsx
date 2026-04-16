@@ -1,11 +1,15 @@
+import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
 import { Button } from '../ui/button'
 
 export default function GoBack() {
   return (
-    <Link href={'/note'} legacyBehavior>
-      <Button variant={'outline'}>Go Notes</Button>
-    </Link>
+    <Button asChild variant="ghost" size="sm">
+      <Link href="/note" prefetch={true}>
+        <ArrowLeft aria-hidden="true" />
+        Back to notes
+      </Link>
+    </Button>
   )
 }

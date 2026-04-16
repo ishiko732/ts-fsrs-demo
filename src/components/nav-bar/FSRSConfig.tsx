@@ -6,7 +6,7 @@ import type { Selectable } from 'kysely'
 // import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { type Resolver, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -36,12 +36,12 @@ const formSchema = z.object({
       message: 'Value must be a multiple of 0.01',
     })
     .refine(Number.isFinite, { message: 'Value must be a finite number' }),
-  maximum_interval: z.coerce.number().min(7).max(36500).step(1).int(),
+  maximum_interval: z.coerce.number().min(7).max(36500).int(),
   w: z.string(),
   enable_fuzz: z.coerce.boolean(),
   enable_short_term: z.coerce.boolean(),
-  card_limit: z.coerce.number().min(0).step(1).int(),
-  lapses: z.coerce.number().min(3).step(1).int(),
+  card_limit: z.coerce.number().min(0).int(),
+  lapses: z.coerce.number().min(3).int(),
   learning_steps: z.string().regex(/^(\d+[mhd])(,\d+[mhd])*$/, {
     message: "Format must be like '10m,2h,1h'",
   }),
@@ -51,6 +51,21 @@ const formSchema = z.object({
   // lingq_token: z.string().optional(), // disabled
 })
 
+// Explicit input shape so RHF field.value matches HTMLInputElement.value.
+// Zod 4's `z.coerce.*` exposes an `unknown` input type which cannot be
+// assigned to native inputs — declare the form-state types directly.
+type FormInput = {
+  request_retention: number | string
+  maximum_interval: number | string
+  w: string
+  enable_fuzz: boolean
+  enable_short_term: boolean
+  card_limit: number | string
+  lapses: number | string
+  learning_steps: string
+  relearning_steps: string
+}
+
 export default function FSRSConfigForm({
   loading,
   setLoading,
@@ -59,8 +74,14 @@ export default function FSRSConfigForm({
   setLoading: React.Dispatch<React.SetStateAction<boolean>>
 }) {
   const [params, setParams] = useState<Selectable<DeckTable>>()
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormInput, unknown, z.output<typeof formSchema>>({
+    // The resolver is produced from the Zod schema but typed against our
+    // explicit FormInput shape (see note above). Cast to bridge the two.
+    resolver: zodResolver(formSchema) as unknown as Resolver<
+      FormInput,
+      unknown,
+      z.output<typeof formSchema>
+    >,
   })
   const { toast } = useToast()
   const [deckId, setDeckId] = useState<number | null>(null)
@@ -112,7 +133,7 @@ export default function FSRSConfigForm({
     return <LoadingSpinner />
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.output<typeof formSchema>) {
     // process w
     const w = values.w
       .replace(/[[\]]/g, '')

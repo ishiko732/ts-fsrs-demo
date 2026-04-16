@@ -12,7 +12,13 @@ import {
   useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table'
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react'
+import {
+  ArrowUpDown,
+  ChevronDown,
+  Eye,
+  MoreHorizontal,
+  Trash2,
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
@@ -222,9 +228,8 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
-                  legacyBehavior
                   href={
                     noteSimpleInfo.deleted
                       ? `/note/${noteSimpleInfo.nid}?deleted=1&cid=${noteSimpleInfo.cid}`
@@ -232,11 +237,12 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
                   }
                   key={noteSimpleInfo.nid}
                 >
+                  <Eye aria-hidden="true" />
                   View Detail
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className=" bg-red-500"
+                className="text-destructive focus:bg-destructive/10 focus:text-destructive [&_svg]:text-destructive"
                 onClick={async () => {
                   await client.notes[':nid']
                     .$delete({
@@ -250,6 +256,7 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
                     })
                 }}
               >
+                <Trash2 aria-hidden="true" />
                 Delete Note
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -280,11 +287,19 @@ export default function DataTable({
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const timer = React.useRef<NodeJS.Timeout | null>(null)
+  // Skip mount-time router.push to avoid RSC refetch flash when navigating
+  // into /note (router.push to the current URL still triggers a refresh).
+  const didMountRef = React.useRef(false)
 
   // Ref:https://tocalai.medium.com/pagination-on-tanstack-table-under-next-js-787ed03198a3
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  // Keep latest searchParams in a ref so downstream callbacks have stable
+  // identity across renders (useSearchParams returns a fresh instance every
+  // render and would otherwise trigger an infinite router.push loop).
+  const searchParamsRef = React.useRef(searchParams)
+  searchParamsRef.current = searchParams
   // create query string
   const createQueryString = React.useCallback(
     (
@@ -293,7 +308,9 @@ export default function DataTable({
         string | number | null | string[] | number[] | undefined
       >
     ) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString())
+      const newSearchParams = new URLSearchParams(
+        searchParamsRef.current?.toString()
+      )
 
       for (const [key, value] of Object.entries(params)) {
         if (value === null || value === undefined) {
@@ -308,7 +325,7 @@ export default function DataTable({
 
       return newSearchParams.toString()
     },
-    [searchParams]
+    []
   )
   // handle server-side pagination
   const [{ pageIndex, pageSize }, setPagination] =
@@ -359,11 +376,18 @@ export default function DataTable({
 
   // changed the route as well
   React.useEffect(() => {
+    if (!didMountRef.current) {
+      return
+    }
     changeRouter(pageIndex, pageSize, sorting, keywords)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, sorting, changeRouter, keywords])
 
   React.useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true
+      return
+    }
     // 200ms
     if (timer.current) {
       clearTimeout(timer.current)

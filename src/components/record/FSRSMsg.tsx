@@ -1,5 +1,5 @@
 import type { TCardDetail } from '@server/services/decks/cards'
-import { fsrs, S_MIN } from 'ts-fsrs'
+import { fsrs, S_MIN, State } from 'ts-fsrs'
 
 import DateItem from '@/lib/formatDate'
 
@@ -10,43 +10,102 @@ type Props = {
   card: TCardDetail
 }
 
-export default async function FSRSMsg({ card }: Props) {
+const STATE_LABEL: Record<number, string> = {
+  [State.New]: 'New',
+  [State.Learning]: 'Learning',
+  [State.Review]: 'Review',
+  [State.Relearning]: 'Relearning',
+}
+
+function Metric({
+  label,
+  value,
+}: {
+  label: string
+  value: React.ReactNode
+}) {
+  return (
+    <div className="flex flex-col items-center px-6">
+      <div className="text-3xl md:text-4xl font-semibold tabular-nums tracking-tight">
+        {value}
+      </div>
+      <div className="mt-2 text-xs uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
+    </div>
+  )
+}
+
+function Meta({
+  label,
+  value,
+}: {
+  label: string
+  value: React.ReactNode
+}) {
+  return (
+    <div className="flex items-baseline gap-1.5">
+      <span className="text-xs uppercase tracking-wide text-muted-foreground/80">
+        {label}
+      </span>
+      <span className="font-medium text-foreground tabular-nums">{value}</span>
+    </div>
+  )
+}
+
+async function FSRSMsgImpl({ card }: Props) {
   const f = fsrs()
   // fix: s=0 https://github.com/ishiko732/ts-fsrs-demo/issues/52
   card.stability = Math.max(S_MIN, card.stability)
 
   const retrievability = f.get_retrievability(card)
+  const stateLabel = STATE_LABEL[card.state] ?? String(card.state)
+  const showFsrsTriad = card.state !== State.New
+
   return (
-    <div className="flex justify-start flex-col text-sm text-left">
-      <p className="leading-7 not-first:mt-1">Current State : {card.state}</p>
-      <p className="leading-7 not-first:mt-1">
-        Next Review :<DateItem date={card.due}></DateItem>
-      </p>
-      {card.last_review && (
-        <p className="leading-7 not-first:mt-1">
-          Last Review :<DateItem date={card.last_review}></DateItem>
-        </p>
-      )}
-      <p className="leading-7 not-first:mt-1">
-        elapsed : {card.elapsed_days}days
-      </p>
-      <p className="leading-7 not-first:mt-1">
-        scheduled : {card.scheduled_days}days
-      </p>
-      <p className="leading-7 not-first:mt-1">reps : {card.reps}</p>
-      <p className="leading-7 not-first:mt-1">lapses : {card.lapses}</p>
-      <p className="leading-7 not-first:mt-1">{`Suspended : ${String(card.suspended)}`}</p>
-      {retrievability && (
-        <div>
-          <div>D:{card.difficulty.toFixed(2)}</div>
-          <div>S:{card.stability.toFixed(2)}</div>
-          <div>R:{retrievability}</div>
+    <div className="mx-auto max-w-3xl space-y-8">
+      {showFsrsTriad ? (
+        <div className="flex items-stretch justify-center">
+          <Metric label="Difficulty" value={card.difficulty.toFixed(2)} />
+          <div className="w-px bg-border" aria-hidden="true" />
+          <Metric
+            label="Stability"
+            value={`${card.stability.toFixed(2)}d`}
+          />
+          <div className="w-px bg-border" aria-hidden="true" />
+          <Metric label="Retrievability" value={retrievability ?? '—'} />
         </div>
-      )}
-      <div className="mt-2 flex py-4 justify-center items-center">
-        <Forget cid={card.id} />
-        <Suspended cid={card.id} suspend={card.suspended} className="ml-2" />
+      ) : null}
+
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+        <Meta label="State" value={stateLabel} />
+        <Meta label="Reps" value={card.reps} />
+        <Meta label="Lapses" value={card.lapses} />
+        <Meta label="Elapsed" value={`${card.elapsed_days}d`} />
+        <Meta label="Scheduled" value={`${card.scheduled_days}d`} />
+        <Meta label="Next" value={<DateItem date={card.due} />} />
+        {card.last_review ? (
+          <Meta
+            label="Last"
+            value={<DateItem date={card.last_review} />}
+          />
+        ) : null}
+        {card.suspended ? (
+          <span className="font-medium text-destructive">Suspended</span>
+        ) : null}
       </div>
     </div>
   )
 }
+
+function FSRSMsgActions({ card }: Props) {
+  return (
+    <div className="flex items-center gap-2">
+      <Forget cid={card.id} />
+      <Suspended cid={card.id} suspend={card.suspended} />
+    </div>
+  )
+}
+
+const FSRSMsg = Object.assign(FSRSMsgImpl, { Actions: FSRSMsgActions })
+export default FSRSMsg

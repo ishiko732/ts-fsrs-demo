@@ -61,7 +61,6 @@ export class BaseModel<
       .updateTable(this.tableName)
       // @ts-expect-error 无法推断出类型
       .set(data)
-      // @ts-expect-error 基类无法推断出返回值类型
       .where(this.primaryKey, '=', id)
       .executeTakeFirst()
     return numUpdatedRows === BigInt(1)
