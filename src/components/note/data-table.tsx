@@ -12,7 +12,13 @@ import {
   useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table'
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react'
+import {
+  ArrowUpDown,
+  ChevronDown,
+  Eye,
+  MoreHorizontal,
+  Trash2,
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import * as React from 'react'
@@ -231,11 +237,12 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
                   }
                   key={noteSimpleInfo.nid}
                 >
+                  <Eye aria-hidden="true" />
                   View Detail
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className=" bg-red-500"
+                className="text-destructive focus:bg-destructive/10 focus:text-destructive [&_svg]:text-destructive"
                 onClick={async () => {
                   await client.notes[':nid']
                     .$delete({
@@ -249,6 +256,7 @@ export const columns: () => ColumnDef<ICardListData>[] = () => {
                     })
                 }}
               >
+                <Trash2 aria-hidden="true" />
                 Delete Note
               </DropdownMenuItem>
             </DropdownMenuContent>
