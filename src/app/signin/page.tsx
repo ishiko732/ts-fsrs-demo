@@ -13,7 +13,12 @@ export const dynamic = 'force-dynamic'
 export default async function SignInPage(props: {
   searchParams: Promise<Params>
 }) {
-  const { callbackUrl = '/' } = await props.searchParams
+  const { callbackUrl: rawCallback = '/' } = await props.searchParams
+  // Only allow same-origin, path-only callbacks to prevent open redirects.
+  const callbackUrl =
+    rawCallback.startsWith('/') && !rawCallback.startsWith('//')
+      ? rawCallback
+      : '/'
   const session = await getAuthSession()
   if (session?.user) {
     redirect(callbackUrl)

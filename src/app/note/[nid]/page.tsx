@@ -28,7 +28,8 @@ const buildQuery = async (props: Props) => {
   const uid = await getSessionUserIdThrow().catch(() => {
     const searchPath = new URLSearchParams()
     if (cid) searchPath.set('cid', String(cid))
-    redirect(`/signin?callbackUrl=/note/${nid}?${searchPath.toString()}`)
+    const callbackUrl = `/note/${nid}${searchPath.size ? `?${searchPath.toString()}` : ''}`
+    redirect(`/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`)
   })
   return {
     uid,
