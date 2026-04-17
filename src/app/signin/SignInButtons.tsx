@@ -28,12 +28,19 @@ export default function SignInButtons({
   const [loading, setLoading] = useState<'github' | 'dev' | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  // Prevent open redirect: only allow relative paths (starting with '/')
+  // and reject protocol-relative URLs ('//...').
+  const safeCallbackUrl =
+    callbackUrl.startsWith('/') && !callbackUrl.startsWith('//')
+      ? callbackUrl
+      : '/'
+
   const handleGitHub = async () => {
     setError(null)
     setLoading('github')
     const { error } = await authClient.signIn.social({
       provider: 'github',
-      callbackURL: callbackUrl,
+      callbackURL: safeCallbackUrl,
     })
     if (error) {
       setError(error.message ?? 'GitHub sign-in failed')
@@ -49,14 +56,14 @@ export default function SignInButtons({
     const signInResult = await authClient.signIn.email({
       email: DEV_USER.email,
       password: DEV_USER.password,
-      callbackURL: callbackUrl,
+      callbackURL: safeCallbackUrl,
     })
     if (signInResult.error) {
       const signUpResult = await authClient.signUp.email({
         email: DEV_USER.email,
         password: DEV_USER.password,
         name: DEV_USER.name,
-        callbackURL: callbackUrl,
+        callbackURL: safeCallbackUrl,
       })
       if (signUpResult.error) {
         setError(signUpResult.error.message ?? 'Dev sign-in failed')
@@ -64,7 +71,7 @@ export default function SignInButtons({
         return
       }
     }
-    window.location.assign(callbackUrl)
+    window.location.assign(safeCallbackUrl)
   }
 
   return (

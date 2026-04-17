@@ -11,10 +11,20 @@ import pg from 'pg'
 const isProduction =
   (process.env.NEXT_PUBLIC_VERCEL_ENV ?? envSchema.NODE_ENV) === 'production'
 
-const pool = new pg.Pool({
-  connectionString: envSchema.DATABASE_URL,
-  max: envSchema.NODE_ENV === 'development' ? 1 : undefined,
-})
+// Use a globalThis singleton in development to prevent HMR from creating
+// multiple pg.Pool instances and exhausting database connections.
+const pool =
+  ((globalThis as Record<string, unknown>).__betterAuthPool as
+    | pg.Pool
+    | undefined) ??
+  new pg.Pool({
+    connectionString: envSchema.DATABASE_URL,
+    max: envSchema.NODE_ENV === 'development' ? 1 : undefined,
+  })
+
+if (envSchema.NODE_ENV !== 'production') {
+  ;(globalThis as Record<string, unknown>).__betterAuthPool = pool
+}
 
 export const DEFAULT_DEV_USER = {
   email: 'dev@example.com',

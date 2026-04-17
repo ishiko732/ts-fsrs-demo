@@ -5,6 +5,7 @@ import { initData } from '@services/scheduler/init'
 import userService from '@services/users'
 import { waitUntil } from '@vercel/functions'
 import { headers as nextHeaders } from 'next/headers'
+import { cache } from 'react'
 
 import { auth } from './auth'
 
@@ -61,11 +62,11 @@ async function enrichSession(
   }
 }
 
-export async function getAuthSession(): Promise<AppSession | null> {
+export const getAuthSession = cache(async (): Promise<AppSession | null> => {
   const headers = await nextHeaders()
   const raw = await auth.api.getSession({ headers })
   return enrichSession(raw)
-}
+})
 
 export async function getAuthSessionFromHeaders(
   headers: Headers
@@ -107,7 +108,9 @@ async function mirrorToLegacyUser(authUserId: string) {
       ? Number(oauthId) === envSchema.GITHUB_ADMIN_ID
         ? 'admin'
         : 'user'
-      : 'admin'
+      : envSchema.NODE_ENV !== 'production'
+        ? 'admin'
+        : 'user'
 
   await db
     .updateTable('user')
