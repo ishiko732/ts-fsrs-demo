@@ -1,20 +1,15 @@
-import type { DefaultSession } from 'next-auth'
+import type { AppSession, AppSessionUser } from '@services/auth/session'
+
 export type Bindings = object
 
 export type Variables = {
-  authSession?: UserSession
-  authUser?: UserSession['user']
+  authSession?: AppSession
+  authUser?: AppSessionUser
   authUserId?: string
   authUserRole?: string
 }
 
-export interface UserSession {
-  user: {
-    id: string
-    role: string
-    userKey: string
-  } & DefaultSession
-}
+export type UserSession = AppSession
 
 export interface Env {
   Bindings: Bindings

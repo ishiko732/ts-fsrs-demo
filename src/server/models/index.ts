@@ -1,3 +1,9 @@
+import type {
+  BetterAuthAccountTable,
+  BetterAuthSessionTable,
+  BetterAuthUserTable,
+  BetterAuthVerificationTable,
+} from './auth'
 import type { CardTable } from './cards'
 import type { DeckTable } from './decks'
 import type { ExtraTable } from './extras'
@@ -14,4 +20,10 @@ export interface Database {
   notes: NoteTable
   cards: CardTable
   revlog: RevlogTable
+
+  // Better Auth managed tables.
+  user: BetterAuthUserTable
+  session: BetterAuthSessionTable
+  account: BetterAuthAccountTable
+  verification: BetterAuthVerificationTable
 }

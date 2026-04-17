@@ -7,7 +7,6 @@ import { Inter as FontSans } from 'next/font/google'
 
 import NavBar from '@/components/nav-bar'
 import { Toaster } from '@/components/ui/sonner'
-import AuthProvider from '@/context/AuthProvider'
 import ThemeProvider from '@/context/ThemesProvider'
 import { cn } from '@/lib/utils'
 
@@ -46,13 +45,11 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <NavBar />
-            {children}
-            <Toaster expand={true} visibleToasts={5} />
-            <SpeedInsights />
-            <Analytics />
-          </AuthProvider>
+          <NavBar />
+          {children}
+          <Toaster expand={true} visibleToasts={5} />
+          <SpeedInsights />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

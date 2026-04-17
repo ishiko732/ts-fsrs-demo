@@ -1,10 +1,13 @@
 'use client'
 
-import type { User } from 'next-auth'
-
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
-export default function UserProfile({ user }: { user: User }) {
+type ProfileUser = {
+  name?: string | null
+  image?: string | null
+}
+
+export default function UserProfile({ user }: { user: ProfileUser }) {
   return (
     <>
       <div className="hidden font-bold sm:inline-block mt-1 line-clamp-3 ">

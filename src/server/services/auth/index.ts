@@ -1,8 +1,12 @@
-import NextAuth from 'next-auth'
-
-import { options } from './options'
-
-export const {
-  handlers: { GET, POST },
-  auth: AuthHandler,
-} = NextAuth(options)
+export type { Auth } from './auth'
+export { auth, DEFAULT_DEV_USER } from './auth'
+export type { AppSession, AppSessionUser, Role } from './session'
+export {
+  getAuthSession,
+  getAuthSessionFromHeaders,
+  getSessionUserId,
+  getSessionUserIdThrow,
+  isAdmin,
+  isAdminOrSelf,
+  isSelf,
+} from './session'
