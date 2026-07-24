@@ -12,7 +12,7 @@
     "docker": "docker compose up"
   },
   "dependencies": {
-    "@auth/core": "^0.38.0",
+    "@auth/core": "^0.41.3",
     "@hono/zod-validator": "^0.7.6",
     "@hookform/resolvers": "^5.2.2",
     "@opentelemetry/api-logs": "^0.214.0",
