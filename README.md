@@ -18,8 +18,8 @@ A spaced-repetition flashcard demo built on [ts-fsrs](https://github.com/open-sp
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm (recommended) / npm / yarn / bun
+- Node.js 26+
+- pnpm 12+ (recommended) / yarn / bun
 - Docker (for the local PostgreSQL instance)
 
 ### Environment Variables

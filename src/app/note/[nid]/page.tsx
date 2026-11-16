@@ -63,9 +63,7 @@ export default async function Page(props: Props) {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold tracking-tight">
-          Review history
-        </h2>
+        <h2 className="text-lg font-semibold tracking-tight">Review history</h2>
         <div className="rounded-lg border overflow-x-auto">
           <LogTable logs={logs} />
         </div>
