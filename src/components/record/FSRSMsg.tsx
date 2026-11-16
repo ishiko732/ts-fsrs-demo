@@ -17,13 +17,7 @@ const STATE_LABEL: Record<number, string> = {
   [State.Relearning]: 'Relearning',
 }
 
-function Metric({
-  label,
-  value,
-}: {
-  label: string
-  value: React.ReactNode
-}) {
+function Metric({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center px-6">
       <div className="text-3xl md:text-4xl font-semibold tabular-nums tracking-tight">
@@ -36,13 +30,7 @@ function Metric({
   )
 }
 
-function Meta({
-  label,
-  value,
-}: {
-  label: string
-  value: React.ReactNode
-}) {
+function Meta({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-baseline gap-1.5">
       <span className="text-xs uppercase tracking-wide text-muted-foreground/80">
@@ -70,10 +58,7 @@ async function FSRSMsgImpl({ card }: Props) {
         <div className="flex items-stretch justify-center">
           <Metric label="Difficulty" value={card.difficulty.toFixed(2)} />
           <div className="w-px bg-border" aria-hidden="true" />
-          <Metric
-            label="Stability"
-            value={`${card.stability.toFixed(2)}d`}
-          />
+          <Metric label="Stability" value={`${card.stability.toFixed(2)}d`} />
           <div className="w-px bg-border" aria-hidden="true" />
           <Metric label="Retrievability" value={retrievability ?? '—'} />
         </div>
@@ -90,10 +75,7 @@ async function FSRSMsgImpl({ card }: Props) {
         <Meta label="Scheduled" value={`${card.scheduled_days}d`} />
         <Meta label="Next" value={<DateItem date={card.due} />} />
         {card.last_review ? (
-          <Meta
-            label="Last"
-            value={<DateItem date={card.last_review} />}
-          />
+          <Meta label="Last" value={<DateItem date={card.last_review} />} />
         ) : null}
         {card.suspended ? (
           <span className="font-medium text-destructive">Suspended</span>

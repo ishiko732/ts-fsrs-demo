@@ -3,12 +3,12 @@
   "vcs": {
     "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": false,
+    "useIgnoreFile": true,
     "defaultBranch": "main"
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**"]
+    "includes": ["**", "!public"]
   },
   "formatter": {
     "enabled": true,
@@ -22,7 +22,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "style": {
         "useImportType": {
           "level": "warn",
@@ -58,6 +58,11 @@
     },
     "formatter": {
       "enabled": true
+    }
+  },
+  "yaml": {
+    "formatter": {
+      "enabled": false
     }
   },
   "assist": {

@@ -28,15 +28,15 @@ export function getProviders(): Provider[] {
         profile.id === (Number(process.env.GITHUB_ADMIN_ID) ?? 62931549) // ishiko732 GitHub_Id=62931549
           ? 'admin'
           : 'user'
-      Object.assign(profile, {
+      return {
+        ...profile,
         id: user.id.toString(),
         name: user.name,
         image: profile.avatar_url,
         role: role,
         email: user.email,
         userKey: `${role} ${user.id}`,
-      })
-      return profile as Record<string, unknown>
+      }
     },
     clientId: process.env.GITHUB_ID as string,
     clientSecret: process.env.GITHUB_SECRET as string,
